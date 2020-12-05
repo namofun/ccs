@@ -1,0 +1,19 @@
+<Project>
+
+  <PropertyGroup>
+    <Title>$(AssemblyName)</Title>
+    <PackageProjectUrl>https://github.com/namofun/ccs</PackageProjectUrl>
+    <Company />
+    <PackageTags>online-judge</PackageTags>
+    <PackageReleaseNotes>Contest Control Module</PackageReleaseNotes>
+    <RepositoryUrl>https://github.com/namofun/ccs</RepositoryUrl>
+    <Authors>yang-er</Authors>
+    <Version>1.0.0</Version>
+    <PackageVersion>1.0.$(PreviewBuild)</PackageVersion>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+  </PropertyGroup>
+
+</Project>
