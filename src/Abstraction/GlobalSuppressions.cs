@@ -6,3 +6,12 @@
 using System.Diagnostics.CodeAnalysis;
 
 [assembly: SuppressMessage("Performance", "CA1819:Properties should not return arrays", Justification = "Source code should be base64 to prevent encoding problems.", Scope = "member", Target = "~P:Ccs.Entities.Printing.SourceCode")]
+[assembly: SuppressMessage("Performance", "CA1819:Properties should not return arrays", Justification = "API specification.", Scope = "member", Target = "~P:Ccs.Events.Team.Members")]
+[assembly: SuppressMessage("Performance", "CA1819:Properties should not return arrays", Justification = "API specification.", Scope = "member", Target = "~P:Ccs.Events.Team.GroupIds")]
+[assembly: SuppressMessage("Performance", "CA1819:Properties should not return arrays", Justification = "API specification.", Scope = "member", Target = "~P:Ccs.Events.Language.Extensions")]
+[assembly: SuppressMessage("Performance", "CA1819:Properties should not return arrays", Justification = "API specification.", Scope = "member", Target = "~P:Ccs.Events.Award.TeamIds")]
+[assembly: SuppressMessage("Performance", "CA1819:Properties should not return arrays", Justification = "API specification.", Scope = "member", Target = "~P:Ccs.Events.Submission.Files")]
+[assembly: SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "API specification.", Scope = "type", Target = "~T:Ccs.Events.Submission.FileMeta")]
+[assembly: SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "API specification.", Scope = "type", Target = "~T:Ccs.Events.Scoreboard.Row")]
+[assembly: SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "API specification.", Scope = "type", Target = "~T:Ccs.Events.Scoreboard.Problem")]
+[assembly: SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "API specification.", Scope = "type", Target = "~T:Ccs.Events.Scoreboard.Score")]
