@@ -10,6 +10,7 @@
     <PackageReference Include="SatelliteSite.GroupModule" Version="$(TenantVersion)" />
     <PackageReference Include="SatelliteSite.PolygonModule" Version="$(PolygonVersion)" />
     <PackageReference Include="SatelliteSite.Substrate" Version="$(SubstrateVersion)" />
+    <PackageReference Include="SatelliteSite.HostBuilder" Version="$(SubstrateVersion)" />
     <PackageReference Include="SatelliteSite.IdentityModule" Version="$(SubstrateVersion)" />
   </ItemGroup>
 
