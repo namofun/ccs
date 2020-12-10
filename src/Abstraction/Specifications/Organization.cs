@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Ccs.Events
+namespace Ccs.Specifications
 {
     /// <summary>
     /// Teams can be associated with organizations which will have some associated information, e.g. a logo. Typically organizations will be universities.

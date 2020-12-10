@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text.Json.Serialization;
 
-namespace Ccs.Events
+namespace Ccs.Specifications
 {
     /// <summary>
     /// Runs are judgements of individual test cases of a submission.

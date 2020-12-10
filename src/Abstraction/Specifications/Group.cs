@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Ccs.Events
+namespace Ccs.Specifications
 {
     /// <summary>
     /// Grouping of teams. At the World Finals these are the super regions, at regionals these are often different sites.

@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Ccs.Events
+namespace Ccs.Specifications
 {
     /// <summary>
     /// The problems to be solved in the contest.

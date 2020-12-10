@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text.Json.Serialization;
 
-namespace Ccs.Events
+namespace Ccs.Specifications
 {
     /// <summary>
     /// Current state of the contest, specifying whether it's running, the scoreboard is frozen or results are final.

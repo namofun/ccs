@@ -1,7 +1,7 @@
 ﻿using Polygon.Entities;
 using System.Text.Json.Serialization;
 
-namespace Ccs.Events
+namespace Ccs.Specifications
 {
     /// <summary>
     /// Judgement types are the possible responses from the system when judging a submission.
