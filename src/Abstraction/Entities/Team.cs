@@ -79,7 +79,7 @@ namespace Ccs.Entities
         /// <summary>
         /// The navigation to rank cache
         /// </summary>
-        public RankCache RankCache { get; set; }
+        public RankCache? RankCache { get; set; }
 
         /// <summary>
         /// The navigation to score cache
