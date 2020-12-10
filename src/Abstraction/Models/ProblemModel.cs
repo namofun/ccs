@@ -1,49 +1,22 @@
-﻿namespace Ccs.Models
+﻿using System;
+using System.ComponentModel;
+
+namespace Ccs.Models
 {
     /// <summary>
     /// The model class for contest problems.
     /// </summary>
-    public class ProblemModel
+    public class ProblemModel : Entities.ContestProblem
     {
-        /// <summary>
-        /// The contest ID
-        /// </summary>
-        public int ContestId { get; }
-
-        /// <summary>
-        /// The problem ID
-        /// </summary>
-        public int ProblemId { get; }
-
-        /// <summary>
-        /// The short name
-        /// </summary>
-        public string ShortName { get; set; }
-
         /// <summary>
         /// The rank order (starting from 1)
         /// </summary>
         public int Rank { get; set; }
 
         /// <summary>
-        /// Whether this problem allow submit
-        /// </summary>
-        public bool AllowSubmit { get; set; }
-
-        /// <summary>
         /// Whether this problem allow judge
         /// </summary>
         public bool AllowJudge { get; }
-
-        /// <summary>
-        /// The balloon color
-        /// </summary>
-        public string Color { get; set; }
-
-        /// <summary>
-        /// The full score in Codeforces Mode
-        /// </summary>
-        public int Score { get; set; }
 
         /// <summary>
         /// The problem title
@@ -63,7 +36,7 @@
         /// <summary>
         /// The count of testcases
         /// </summary>
-        public int TestcaseCount { get; }
+        public int TestcaseCount { get; set; }
 
         /// <summary>
         /// Whether this is interactive problem
@@ -76,9 +49,22 @@
         public bool Shared { get; }
 
         /// <summary>
+        /// The problem statement
+        /// </summary>
+        public string? Statement { get; set; }
+
+        /// <summary></summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public new MediatR.Unit Problem => throw new InvalidOperationException();
+
+        /// <summary></summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public new MediatR.Unit Contest => throw new InvalidOperationException();
+
+        /// <summary>
         /// Instantiate a model for contest problem.
         /// </summary>
-        public ProblemModel(int cid, int probid, string shortName, bool allowSubmit, bool allowJudge, string color, int codeforcesScore, string title, int timelimit, int memlimit, bool interactive, bool shared, int rank)
+        public ProblemModel(int cid, int probid, string shortName, bool allowSubmit, bool allowJudge, string color, int codeforcesScore, string title, int timelimit, int memlimit, bool interactive, bool shared)
         {
             AllowJudge = allowJudge;
             AllowSubmit = allowSubmit;
@@ -92,7 +78,6 @@
             Shared = shared;
             ShortName = shortName;
             Title = title;
-            Rank = rank;
         }
     }
 }

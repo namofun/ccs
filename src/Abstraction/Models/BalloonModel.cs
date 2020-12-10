@@ -56,7 +56,7 @@ namespace Ccs.Models
         /// <summary>
         /// Whether team is first to solve this problem
         /// </summary>
-        public bool FirstToSolve { get; }
+        public bool FirstToSolve { get; set; }
 
         /// <summary>
         /// The submission time

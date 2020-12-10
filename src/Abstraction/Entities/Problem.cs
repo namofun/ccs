@@ -8,7 +8,7 @@
         /// <summary>
         /// The contest ID
         /// </summary>
-        public int ContestId { get; }
+        public int ContestId { get; set; }
 
         /// <summary>
         /// The navigation to contest
@@ -18,7 +18,7 @@
         /// <summary>
         /// The problem ID
         /// </summary>
-        public int ProblemId { get; }
+        public int ProblemId { get; set; }
 
         /// <summary>
         /// The navigation to problem

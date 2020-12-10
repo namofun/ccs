@@ -77,14 +77,19 @@ namespace Ccs.Entities
         public string Location { get; set; }
 
         /// <summary>
-        /// The rank cache
+        /// The navigation to rank cache
         /// </summary>
         public RankCache RankCache { get; set; }
 
         /// <summary>
-        /// The score cache
+        /// The navigation to score cache
         /// </summary>
         public ICollection<ScoreCache> ScoreCache { get; set; }
+
+        /// <summary>
+        /// The navigation to members
+        /// </summary>
+        public ICollection<Member> Members { get; set; }
 
 #pragma warning disable CS8618
         /// <summary>

@@ -242,7 +242,7 @@ namespace Ccs.Entities
             entity.HasKey(e => new { e.ContestId, e.TeamId, e.UserId });
 
             entity.HasOne<Team>(e => e.Team)
-                .WithMany()
+                .WithMany(e => e.Members)
                 .HasForeignKey(e => new { e.ContestId, e.TeamId })
                 .OnDelete(DeleteBehavior.Cascade);
 

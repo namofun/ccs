@@ -96,6 +96,20 @@ namespace Ccs.Entities
         public int StatusAvailable { get; set; }
 
         /// <summary>
+        /// The available languages for submitting
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// When <c>null</c>, the allowed languages list comes from <see cref="Polygon.Entities.Language.AllowSubmit"/>.
+        /// </para>
+        /// <para>
+        /// Otherwise, a string of JSON array like <c>["c","cpp","java","python3"]</c>.
+        /// If such language ID doesn't exist, the language ID will be ignored.
+        /// </para>
+        /// </remarks>
+        public string? Languages { get; set; }
+
+        /// <summary>
         /// Get the state of contest.
         /// </summary>
         /// <param name="nowTime">The current datetime.</param>

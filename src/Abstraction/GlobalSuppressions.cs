@@ -15,3 +15,4 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "API specification.", Scope = "type", Target = "~T:Ccs.Events.Scoreboard.Row")]
 [assembly: SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "API specification.", Scope = "type", Target = "~T:Ccs.Events.Scoreboard.Problem")]
 [assembly: SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "API specification.", Scope = "type", Target = "~T:Ccs.Events.Scoreboard.Score")]
+[assembly: SuppressMessage("Design", "CA1036:Override methods on comparable types", Justification = "No value-type-like requirements.", Scope = "type", Target = "~T:Ccs.Models.ContestListModel")]

@@ -4,7 +4,7 @@
     <SubstrateVersion>1.0.20</SubstrateVersion>
     <PreviewBuild>1</PreviewBuild>
     <AspNetCoreVersion>3.1.10</AspNetCoreVersion>
-    <PolygonVersion>1.0.2</PolygonVersion>
+    <PolygonVersion>1.0.3</PolygonVersion>
     <TenantVersion>1.0.2</TenantVersion>
   </PropertyGroup>
 </Project>
