@@ -106,5 +106,12 @@ namespace Ccs.Services
         /// <param name="cid">The contest ID.</param>
         /// <returns>The task for fetching problems and scores.</returns>
         Task<Dictionary<int, int>> GetCodeforcesScoreAsync(int cid);
+
+        /// <summary>
+        /// Fetch the contest entity.
+        /// </summary>
+        /// <param name="cid">The contest ID.</param>
+        /// <returns>The task for fetching contest entity.</returns>
+        Task<Contest> FindContestAsync(int cid);
     }
 }

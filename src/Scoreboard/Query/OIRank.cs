@@ -35,7 +35,7 @@ namespace Ccs.Scoreboard.Query
     public class OIRank : IRankingStrategy
     {
         /// <inheritdoc />
-        public IEnumerable<Team> SortByRule(IEnumerable<Team> source, Contest contest, bool isPublic)
+        public IEnumerable<Team> SortByRule(IEnumerable<Team> source, bool isPublic)
             => isPublic
                 ? source.OrderByDescending(a => a.RankCache?.PointsPublic ?? 0)
                     .ThenBy(a => a.RankCache?.TotalTimePublic ?? 0)

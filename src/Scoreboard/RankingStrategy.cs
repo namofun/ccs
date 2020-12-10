@@ -17,10 +17,9 @@ namespace Ccs.Scoreboard
         /// Sort the teams with correct rules.
         /// </summary>
         /// <param name="source">The source team scoreboard information.</param>
-        /// <param name="contest">The contest entity.</param>
         /// <param name="isPublic">Whether to show the public scoreboard.</param>
         /// <returns>The enumerable for sorted scoreboard.</returns>
-        IEnumerable<Team> SortByRule(IEnumerable<Team> source, Contest contest, bool isPublic);
+        IEnumerable<Team> SortByRule(IEnumerable<Team> source, bool isPublic);
 
         /// <summary>
         /// A submission is created now, and is pending for judgement.
