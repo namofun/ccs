@@ -51,7 +51,9 @@ namespace Ccs.Services
         /// <returns></returns>
         Task<List<ContestProblem>> ListByProblemAsync(Polygon.Entities.Problem problem);
 
+        /*
         [Obsolete]
         Task<(bool ok, string msg)> CheckAvailabilityAsync(int cid, int pid, ClaimsPrincipal user);
+        */
     }
 }

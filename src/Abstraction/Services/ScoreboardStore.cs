@@ -105,7 +105,7 @@ namespace Ccs.Services
         /// <remarks>This function results will be cached, that is say, calling this may won't get SQL access.</remarks>
         /// <param name="cid">The contest ID.</param>
         /// <returns>The task for fetching problems and scores.</returns>
-        Task<Dictionary<int, int>> GetCodeforcesScoreAsync(int cid);
+        Task<IReadOnlyDictionary<int, int>> GetCodeforcesScoreAsync(int cid);
 
         /// <summary>
         /// Fetch the contest entity.

@@ -54,29 +54,6 @@ namespace Ccs.Services
         Task<Team> FindByUserAsync(int cid, int uid);
 
         /// <summary>
-        /// Batch create teams and re-generate passwords.
-        /// </summary>
-        /// <param name="userManager">The user manager.</param>
-        /// <param name="contest">The contest.</param>
-        /// <param name="affiliation">The affiliation.</param>
-        /// <param name="category">The category.</param>
-        /// <param name="teamNames">The team names.</param>
-        /// <returns>The list for generated teams.</returns>
-        Task<List<(Team team, string password)>> BatchCreateAsync(
-            IUserManager userManager,
-            Contest contest,
-            Affiliation affiliation,
-            Category category,
-            string[] teamNames);
-
-        /// <summary>
-        /// Clear the batch created teams.
-        /// </summary>
-        /// <param name="contest">The contest.</param>
-        /// <returns>The task for affected rows.</returns>
-        Task<int> BatchClearAsync(Contest contest);
-
-        /// <summary>
         /// Update the team.
         /// </summary>
         /// <param name="cid">The contest ID.</param>
@@ -92,7 +69,7 @@ namespace Ccs.Services
         /// <returns>The scoreboard data.</returns>
         Task<ScoreboardModel> LoadScoreboardAsync(Contest contest);
 
-
+        /*
 
         [Obsolete]
         Task<List<T>> ListAsync<T>(int cid,
@@ -127,5 +104,6 @@ namespace Ccs.Services
 
         [Obsolete]
         Task<IEnumerable<int>> DeleteAsync(Team team);
+        */
     }
 }

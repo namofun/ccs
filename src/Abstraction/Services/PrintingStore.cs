@@ -27,9 +27,11 @@ namespace Ccs.Services
         /// <returns>The task for setting state.</returns>
         Task<bool> SetStateAsync(Contest contest, int id, bool? done);
 
+        /*
         [Obsolete("This is going to be re-designed.", true)]
         Task<List<T>> ListAsync<T>(int takeCount, int page,
             Expression<Func<Printing, object, Team, T>> expression,
             Expression<Func<Printing, bool>>? predicate = null);
+        */
     }
 }

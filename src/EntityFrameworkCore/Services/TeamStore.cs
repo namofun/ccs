@@ -66,6 +66,7 @@ namespace Ccs.Services
             Expression<Func<Team, T>> selector,
             Expression<Func<Team, bool>>? predicate,
             (string, TimeSpan)? cacheTag)
+            where T : class
         {
             var query = Teams.Where(t => t.ContestId == cid && t.Status != 3);
             if (predicate != null) query = query.Where(predicate);
@@ -84,22 +85,6 @@ namespace Ccs.Services
                     valueSelector: t => t.TeamName,
                     tag: $"`c{cid}`teams`names_dict",
                     timeSpan: TimeSpan.FromMinutes(10));
-        }
-
-        public Task<ILookup<int, string>> ListMembersAsync(int cid)
-        {
-            return Context.CachedGetAsync($"`c{cid}`teams`members", TimeSpan.FromMinutes(10),
-            async () =>
-            {
-                var query =
-                    from tu in Members
-                    where tu.ContestId == cid
-                    join u in Context.Set<TUser>() on tu.UserId equals u.Id
-                    select new { tu.TeamId, u.UserName };
-
-                return (await query.ToListAsync())
-                    .ToLookup(a => a.TeamId, a => a.UserName);
-            });
         }
 
         public Task<Dictionary<int, (int ac, int tot)>> StatisticsSubmissionAsync(int cid, int teamid)
@@ -267,125 +252,6 @@ namespace Ccs.Services
             return results;
         }
 
-        private static Func<string> CreatePasswordGenerator()
-        {
-            const string passwordSource = "abcdefghjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ23456789";
-            var rng = new Random(unchecked((int)DateTimeOffset.Now.Ticks));
-            return () =>
-            {
-                Span<char> pwd = stackalloc char[8];
-                for (int i = 0; i < 8; i++) pwd[i] = passwordSource[rng.Next(passwordSource.Length)];
-                return new string(pwd.ToArray());
-            };
-        }
-
-        private async Task EnsureTeamWithPassword(
-            SatelliteSite.IdentityModule.Services.IUserManager userManager,
-            int cid, int teamId, string password)
-        {
-            string username = UserNameForTeamId(teamId);
-
-            var user = await userManager.FindByNameAsync(username);
-
-            if (user != null)
-            {
-                if (await userManager.HasPasswordAsync(user))
-                {
-                    var token = await userManager.GeneratePasswordResetTokenAsync(user);
-                    await userManager.ResetPasswordAsync(user, token, password);
-                }
-                else
-                {
-                    await userManager.AddPasswordAsync(user, password);
-                }
-
-                //if (await userManager.IsLockedOutAsync(user))
-                //{
-                //    await userManager.SetLockoutEndDateAsync(user, null);
-                //}
-            }
-            else
-            {
-                user = new TUser { UserName = username, Email = $"{username}@contest.acm.xylab.fun" };
-                await userManager.CreateAsync(user, password);
-            }
-
-            await Context.Set<Member>().MergeAsync(
-                sourceTable: new[] { new { ContestId = cid, TeamId = teamId, UserId = user.Id } },
-                targetKey: t => new { t.ContestId, t.TeamId, t.UserId },
-                sourceKey: t => new { t.ContestId, t.TeamId, t.UserId },
-                insertExpression: t => new Member { ContestId = t.ContestId, TeamId = t.TeamId, UserId = t.UserId, Temporary = true });
-
-            Context.RemoveCacheEntry($"`c{cid}`teams`t{teamId}");
-            Context.RemoveCacheEntry($"`c{cid}`teams`u{user.Id}");
-        }
-
-        private string UserNameForTeamId(int teamId) => $"team{teamId:D3}";
-
-        public async Task<List<(Team, string)>> BatchCreateAsync(
-            SatelliteSite.IdentityModule.Services.IUserManager userManager,
-            Contest contest,
-            Affiliation aff,
-            Category cat,
-            string[] names)
-        {
-            var rng = CreatePasswordGenerator();
-            var result = new List<(Team, string)>();
-
-            var list2 = await Context.Set<Team>()
-                .Where(c => c.ContestId == contest.Id && c.AffiliationId == aff.Id && c.CategoryId == cat.Id)
-                .ToListAsync();
-            var list = list2.ToLookup(a => a.TeamName);
-            
-            foreach (var item2 in names)
-            {
-                var item = item2.Trim();
-
-                if (list.Contains(item))
-                {
-                    var e = list[item];
-                    foreach (var team in e)
-                    {
-                        string pwd = rng();
-                        await EnsureTeamWithPassword(userManager, contest.Id, team.TeamId, pwd);
-                        result.Add((team, pwd));
-                    }
-                }
-                else
-                {
-                    var team = new Team
-                    {
-                        AffiliationId = aff.Id,
-                        CategoryId = cat.Id,
-                        ContestId = contest.Id,
-                        Status = 1,
-                        TeamName = item,
-                    };
-
-                    await CreateAsync(team, null);
-                    string pwd = rng();
-                    await EnsureTeamWithPassword(userManager, contest.Id, team.TeamId, pwd);
-                    result.Add((team, pwd));
-                }
-            }
-
-            return result;
-        }
-
-        public async Task<int> BatchLockOutAsync(int cid)
-        {
-            var lockOuts = Context.Set<Member>()
-                .Where(m => m.ContestId == cid && m.Temporary);
-
-            var lockOuts2 = lockOuts.Select(m => m.UserId);
-
-            await Context.Set<TUser>()
-                .Where(u => lockOuts2.Contains(u.Id))
-                .BatchUpdateAsync(u => new TUser { LockoutEnd = DateTimeOffset.MaxValue });
-
-            return await lockOuts.BatchDeleteAsync();
-        }
-
         public Task<int> CountPendingAsync(Contest contest)
         {
             throw new NotImplementedException();
@@ -429,14 +295,42 @@ namespace Ccs.Services
             return team;
         }
 
-        public Task<int> BatchClearAsync(Contest contest)
-        {
-            throw new NotImplementedException();
-        }
-
         public Task<ScoreboardModel> LoadScoreboardAsync(Contest contest)
         {
-            throw new NotImplementedException();
+            return Context.CachedGetAsync(
+                tag: $"`c{contest.Id}`scoreboard",
+                timeSpan: TimeSpan.FromSeconds(3),
+                async context =>
+                {
+                    int cid = contest.Id;
+
+                    var value = await Teams
+                        .Where(t => t.ContestId == cid && t.Status == 1)
+                        .Include(t => t.RankCache)
+                        .Include(t => t.ScoreCache)
+                        .ToDictionaryAsync(a => a.TeamId);
+
+                    var result = new ScoreboardModel
+                    {
+                        //Data = value,
+                        //RefreshTime = DateTimeOffset.Now,
+                        //Statistics = new Dictionary<int, int>()
+                    };
+
+                    /*
+                    foreach (var (_, item) in value)
+                    {
+                        foreach (var ot in item.ScoreCache)
+                        {
+                            var val = result.Statistics.GetValueOrDefault(ot.ProblemId);
+                            if (ot.IsCorrectRestricted)
+                                result.Statistics[ot.ProblemId] = ++val;
+                        }
+                    }
+                    */
+
+                    return result;
+                });
         }
     }
 }
