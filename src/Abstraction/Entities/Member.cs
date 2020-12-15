@@ -30,6 +30,11 @@
         /// </summary>
         public bool Temporary { get; set; }
 
+        /// <summary>
+        /// The rating delta for Codeforces Rounds Rating
+        /// </summary>
+        public int? RatingDelta { get; set; }
+
 #pragma warning disable CS8618
         /// <summary>
         /// Instantiate an entity for <see cref="Member"/>.
