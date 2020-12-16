@@ -70,5 +70,17 @@ namespace Ccs.Contexts.Immediate
                 username: username,
                 fullJudge: Contest.RankingStrategy == 1);
         }
+
+        public virtual Task<Team?> FindTeamByIdAsync(int teamId)
+        {
+            return _services.GetRequiredService<ITeamStore>()
+                .FindByIdAsync(Contest.Id, teamId);
+        }
+
+        public virtual Task<Team?> FindTeamByUserAsync(int userId)
+        {
+            return _services.GetRequiredService<ITeamStore>()
+                .FindByUserAsync(Contest.Id, userId);
+        }
     }
 }

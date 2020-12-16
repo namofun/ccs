@@ -28,6 +28,7 @@ namespace Ccs.Services
             Context = context;
         }
 
+        /*
         public async Task<HashSet<int>> ListRegisteredAsync(int uid)
         {
             var members = Members
@@ -96,20 +97,21 @@ namespace Ccs.Services
                     valueSelector: s => (s.AcceptedSubmission, s.TotalSubmission),
                     $"`c{cid}`teams`{teamid}`substat", TimeSpan.FromMinutes(1));
         }
+        */
 
-        public Task<Team> FindByIdAsync(int cid, int teamid)
+        public Task<Team?> FindByIdAsync(int cid, int teamid)
         {
             return Teams
                 .Where(t => t.ContestId == cid && t.TeamId == teamid)
-                .CachedSingleOrDefaultAsync($"`c{cid}`teams`t{teamid}", TimeSpan.FromMinutes(5));
+                .SingleOrDefaultAsync()!;
         }
 
-        public Task<Team> FindByUserAsync(int cid, int uid)
+        public Task<Team?> FindByUserAsync(int cid, int uid)
         {
             return Members
                 .Where(tu => tu.ContestId == cid && tu.UserId == uid)
                 .Select(tu => tu.Team)
-                .CachedSingleOrDefaultAsync($"`c{cid}`teams`u{uid}", TimeSpan.FromMinutes(5));
+                .SingleOrDefaultAsync()!;
         }
 
         public Task<ScoreboardModel> LoadScoreboardAsync(int cid)
@@ -146,6 +148,7 @@ namespace Ccs.Services
             });
         }
 
+        /*
         public Task<List<Affiliation>> ListAffiliationAsync(int cid, bool filtered = true)
         {
             var query = Context.Set<Affiliation>().AsQueryable();
@@ -186,6 +189,7 @@ namespace Ccs.Services
                     timeSpan: TimeSpan.FromMinutes(5));
             }
         }
+        */
 
         public async Task UpdateAsync(int cid, int teamid, Expression<Func<Team, Team>> activator)
         {
@@ -198,13 +202,6 @@ namespace Ccs.Services
             var list = await Members
                 .Where(tu => tu.ContestId == cid && tu.TeamId == teamid)
                 .ToListAsync();
-            Context.RemoveCacheEntry($"`c{cid}`teams`t{teamid}");
-            foreach (var uu in list)
-                Context.RemoveCacheEntry($"`c{cid}`teams`u{uu.UserId}");
-            Context.RemoveCacheEntry($"`c{cid}`teams`list_jury");
-            Context.RemoveCacheEntry($"`c{cid}`teams`aff0");
-            Context.RemoveCacheEntry($"`c{cid}`teams`cat`1");
-            Context.RemoveCacheEntry($"`c{cid}`teams`cat`2");
         }
 
         public async Task<IEnumerable<int>> DeleteAsync(Team team)

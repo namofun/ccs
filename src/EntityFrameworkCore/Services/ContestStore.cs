@@ -25,7 +25,7 @@ namespace Ccs.Services
         {
             return Contests
                 .Where(c => c.Id == cid)
-                .CachedSingleOrDefaultAsync($"`c{cid}`info", TimeSpan.FromMinutes(5));
+                .SingleOrDefaultAsync();
         }
 
         public Task<int> MaxEventIdAsync(int cid)
@@ -37,16 +37,11 @@ namespace Ccs.Services
                 .FirstOrDefaultAsync();
         }
 
-        public async Task UpdateAsync(int cid, Expression<Func<Contest, Contest>> expression)
+        public Task UpdateAsync(int cid, Expression<Func<Contest, Contest>> expression)
         {
-            int solved = await Contests
+            return Contests
                 .Where(c => c.Id == cid)
                 .BatchUpdateAsync(expression);
-
-            Context.RemoveCacheEntry($"`c{cid}`info");
-            Context.RemoveCacheEntry($"`c{cid}`internal_state");
-            Context.RemoveCacheEntry($"cont::list");
-            Context.RemoveCacheEntry($"gym::list");
         }
 
         public async Task<Contest> CreateAsync(Contest entity)

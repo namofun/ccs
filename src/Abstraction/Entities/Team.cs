@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Ccs.Models;
+using System;
 using System.Collections.Generic;
 using Tenant.Entities;
 
@@ -7,7 +8,7 @@ namespace Ccs.Entities
     /// <summary>
     /// The entity class for contest teams.
     /// </summary>
-    public class Team
+    public class Team : IScoreboardRow
     {
         /// <summary>
         /// The contest ID

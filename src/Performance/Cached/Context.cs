@@ -37,12 +37,26 @@ namespace Ccs.Contexts.Cached
 
         public override Task<IReadOnlyList<Language>> FetchLanguagesAsync()
         {
-            return CacheAsync("Languages", _options.Language, base.FetchLanguagesAsync);
+            return CacheAsync("Languages", _options.Language,
+                async () => await base.FetchLanguagesAsync());
         }
 
         public override Task<IReadOnlyList<ProblemModel>> FetchProblemsAsync()
         {
-            return CacheAsync("Problems", _options.Problem, base.FetchProblemsAsync);
+            return CacheAsync("Problems", _options.Problem,
+                async () => await base.FetchProblemsAsync());
+        }
+
+        public override Task<Team?> FindTeamByIdAsync(int teamId)
+        {
+            return CacheAsync($"Teams::Id({teamId})", _options.Team,
+                async () => await base.FindTeamByIdAsync(teamId));
+        }
+
+        public override Task<Team?> FindTeamByUserAsync(int userId)
+        {
+            return CacheAsync($"Teams::User({userId})", _options.Team,
+                async () => await base.FindTeamByUserAsync(userId));
         }
     }
 }

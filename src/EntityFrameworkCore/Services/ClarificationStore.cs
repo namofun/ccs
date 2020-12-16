@@ -58,7 +58,7 @@ namespace Ccs.Services
             int cid = contest.Id;
             return Clarifications
                 .Where(c => c.ContestId == cid && !c.Answered)
-                .CachedCountAsync($"`c{cid}`clar`una_count", TimeSpan.FromSeconds(10));
+                .CountAsync();
         }
 
         public async Task<bool> SetAnsweredAsync(Contest contest, int id, bool answered)

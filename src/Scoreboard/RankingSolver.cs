@@ -1,6 +1,7 @@
 ﻿using Ccs.Contexts;
 using Ccs.Entities;
 using Ccs.Events;
+using Ccs.Models;
 using Ccs.Services;
 using MediatR;
 using Polygon.Entities;
@@ -20,7 +21,7 @@ namespace Ccs.Scoreboard
         INotificationHandler<JudgingFinishedEvent>,
         INotificationHandler<SubmissionCreatedEvent>,
         INotificationHandler<ScoreboardRefreshEvent>,
-        IRequestHandler<ScoreboardSortEvent, IEnumerable<Team>>
+        IRequestHandler<ScoreboardSortEvent, IEnumerable<IScoreboardRow>>
     {
         /// <summary>
         /// The interface for scoreboard storage
@@ -108,7 +109,7 @@ namespace Ccs.Scoreboard
         }
 
         /// <inheritdoc />
-        public Task<IEnumerable<Team>> Handle(ScoreboardSortEvent request, CancellationToken cancellationToken)
+        public Task<IEnumerable<IScoreboardRow>> Handle(ScoreboardSortEvent request, CancellationToken cancellationToken)
         {
             return Task.FromResult(Select(request.Contest).SortByRule(request.Source, request.IsPublic));
         }

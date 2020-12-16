@@ -41,6 +41,20 @@ namespace Ccs.Contexts
         Task<IReadOnlyList<ProblemModel>> FetchProblemsAsync();
 
         /// <summary>
+        /// Find team by team ID.
+        /// </summary>
+        /// <param name="teamId">The team ID.</param>
+        /// <returns>The task for fetching team entity.</returns>
+        Task<Team?> FindTeamByIdAsync(int teamId);
+
+        /// <summary>
+        /// Find team by user ID.
+        /// </summary>
+        /// <param name="userId">The user ID.</param>
+        /// <returns>The task for fetching team entity.</returns>
+        Task<Team?> FindTeamByUserAsync(int userId);
+
+        /// <summary>
         /// Create a submission for team.
         /// </summary>
         /// <param name="code">The source code.</param>

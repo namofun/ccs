@@ -44,7 +44,7 @@ namespace Ccs.Services
         /// <param name="cid">The contest ID.</param>
         /// <param name="teamid">The team ID.</param>
         /// <returns>The task for fetching team entity.</returns>
-        Task<Team> FindByIdAsync(int cid, int teamid);
+        Task<Team?> FindByIdAsync(int cid, int teamid);
 
         /// <summary>
         /// Find team by user ID.
@@ -52,7 +52,7 @@ namespace Ccs.Services
         /// <param name="cid">The contest ID.</param>
         /// <param name="uid">The user ID.</param>
         /// <returns>The task for fetching team entity.</returns>
-        Task<Team> FindByUserAsync(int cid, int uid);
+        Task<Team?> FindByUserAsync(int cid, int uid);
 
         /// <summary>
         /// Update the team.

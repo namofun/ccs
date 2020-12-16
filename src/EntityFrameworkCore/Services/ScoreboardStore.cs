@@ -46,16 +46,6 @@ namespace Ccs.Services
                 });
         }
 
-        public Task<Contest> FindContestAsync(int cid)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IReadOnlyDictionary<int, int>> GetCodeforcesScoreAsync(int cid)
-        {
-            throw new NotImplementedException();
-        }
-
         public Task<bool> IsFirstToSolveAsync(
             int cid, int teamid, int probid)
         {

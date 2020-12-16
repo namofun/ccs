@@ -66,7 +66,7 @@ namespace Ccs.Services
         /// <summary>
         /// Check whether the current solution is first to solve.
         /// </summary>
-        /// <remarks>Note that this should be executed before running exact updates.</remarks>
+        /// <remarks>Note that this should be executed before running exact updates. This only runs when we are using the XCPC rules.</remarks>
         /// <param name="cid">The contest ID.</param>
         /// <param name="teamid">The team ID.</param>
         /// <param name="probid">The problem ID.</param>

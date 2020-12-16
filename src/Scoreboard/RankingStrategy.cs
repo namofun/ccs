@@ -1,5 +1,6 @@
 ﻿using Ccs.Entities;
 using Ccs.Events;
+using Ccs.Models;
 using Ccs.Services;
 using Polygon.Entities;
 using Polygon.Events;
@@ -19,7 +20,7 @@ namespace Ccs.Scoreboard
         /// <param name="source">The source team scoreboard information.</param>
         /// <param name="isPublic">Whether to show the public scoreboard.</param>
         /// <returns>The enumerable for sorted scoreboard.</returns>
-        IEnumerable<Team> SortByRule(IEnumerable<Team> source, bool isPublic);
+        IEnumerable<IScoreboardRow> SortByRule(IEnumerable<IScoreboardRow> source, bool isPublic);
 
         /// <summary>
         /// A submission is created now, and is pending for judgement.

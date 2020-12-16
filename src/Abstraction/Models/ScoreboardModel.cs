@@ -7,7 +7,7 @@ namespace Ccs.Models
 {
     public class ScoreboardModel
     {
-        public IReadOnlyDictionary<int, Team>? Data { get; }
+        public IReadOnlyDictionary<int, IScoreboardRow>? Data { get; }
 
         public DateTimeOffset RefreshTime { get; }
     }

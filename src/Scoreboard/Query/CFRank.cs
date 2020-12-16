@@ -1,5 +1,6 @@
 using Ccs.Entities;
 using Ccs.Events;
+using Ccs.Models;
 using Ccs.Services;
 using Polygon.Entities;
 using Polygon.Events;
@@ -38,7 +39,7 @@ namespace Ccs.Scoreboard.Query
     public class CFRank : IRankingStrategy
     {
         /// <inheritdoc />
-        public IEnumerable<Team> SortByRule(IEnumerable<Team> source, bool isPublic)
+        public IEnumerable<IScoreboardRow> SortByRule(IEnumerable<IScoreboardRow> source, bool isPublic)
             => source.OrderByDescending(a => a.RankCache?.PointsPublic ?? 0)
                 .ThenBy(a => a.RankCache?.TotalTimePublic ?? 0);
 

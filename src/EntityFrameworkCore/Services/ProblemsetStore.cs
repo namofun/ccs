@@ -94,30 +94,27 @@ namespace Ccs.Services
             */
         }
 
-        public async Task CreateAsync(ContestProblem problem)
+        public Task CreateAsync(ContestProblem problem)
         {
             ContestProblems.Add(problem);
-            await Context.SaveChangesAsync();
-            Context.RemoveCacheEntry($"`c{problem.ContestId}`probs");
+            return Context.SaveChangesAsync();
         }
 
-        public async Task DeleteAsync(ProblemModel problem)
+        public Task DeleteAsync(ProblemModel problem)
         {
             var (cid, pid) = (problem.ContestId, problem.ProblemId);
-            await ContestProblems
+            return ContestProblems
                 .Where(cp => cp.ContestId == cid && cp.ProblemId == pid)
                 .BatchDeleteAsync();
-            Context.RemoveCacheEntry($"`c{problem.ContestId}`probs");
         }
 
-        public async Task UpdateAsync(int cid, int pid, Expression<Func<ContestProblem>> change)
+        public Task UpdateAsync(int cid, int pid, Expression<Func<ContestProblem>> change)
         {
             var change2 = Expression.Lambda<Func<ContestProblem, ContestProblem>>(
                 change.Body, Expression.Parameter(typeof(ContestProblem), "oldcp"));
-            await ContestProblems
+            return ContestProblems
                 .Where(oldcp => oldcp.ContestId == cid && oldcp.ProblemId == pid)
                 .BatchUpdateAsync(change2);
-            Context.RemoveCacheEntry($"`c{cid}`probs");
         }
 
         public Task<List<ContestProblem>> ListByProblemAsync(Problem problem)
