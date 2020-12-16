@@ -17,7 +17,8 @@ namespace Ccs.Entities
         IEntityTypeConfiguration<Team>,
         IEntityTypeConfiguration<Contest>,
         IEntityTypeConfiguration<Member>,
-        IEntityTypeConfiguration<ContestProblem>
+        IEntityTypeConfiguration<ContestProblem>,
+        IEntityTypeConfiguration<Jury>
         where TUser : User
         where TRole : Role
         where TContext : DbContext
@@ -214,7 +215,7 @@ namespace Ccs.Entities
                 .HasForeignKey(sc => new { sc.ContestId, sc.TeamId })
                 .OnDelete(DeleteBehavior.Cascade);
 
-            entity.HasOne<RankCache>(e => e.RankCache)
+            entity.HasOne<RankCache>(e => e.RankCache!)
                 .WithOne()
                 .HasForeignKey<RankCache>(rc => new { rc.ContestId, rc.TeamId })
                 .OnDelete(DeleteBehavior.Cascade);
@@ -281,6 +282,23 @@ namespace Ccs.Entities
 
             entity.Property(e => e.Color)
                 .IsRequired();
+        }
+
+        public void Configure(EntityTypeBuilder<Jury> entity)
+        {
+            entity.ToTable("ContestJury");
+
+            entity.HasKey(e => new { e.ContestId, e.UserId });
+
+            entity.HasOne<Contest>()
+                .WithMany()
+                .HasForeignKey(e => e.ContestId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne<TUser>()
+                .WithMany()
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

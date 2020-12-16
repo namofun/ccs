@@ -15,6 +15,9 @@ namespace Ccs.Models
         /// <inheritdoc cref="Contest.Name" />
         public string Name { get; }
 
+        /// <inheritdoc cref="Contest.ShortName" />
+        public string ShortName { get; }
+
         /// <inheritdoc cref="Contest.StartTime" />
         public DateTimeOffset? StartTime { get; }
 
@@ -30,25 +33,37 @@ namespace Ccs.Models
         /// <inheritdoc cref="Contest.IsPublic" />
         public bool IsPublic { get; }
 
+        /// <inheritdoc cref="Contest.TeamCount" />
+        public int TeamCount { get; }
+
+        /// <inheritdoc cref="Contest.ProblemCount" />
+        public int ProblemCount { get; }
+
         /// <summary>
         /// Construct a <see cref="ContestListModel"/>.
         /// </summary>
         /// <param name="id">The contest ID.</param>
         /// <param name="name">The contest name.</param>
+        /// <param name="shortName">The contest short name.</param>
         /// <param name="start">The start time.</param>
         /// <param name="duration">The duration.</param>
         /// <param name="kind">The contest kind.</param>
         /// <param name="ranker">The ranking strategy.</param>
         /// <param name="isPublic">Whether to show to public.</param>
-        public ContestListModel(int id, string name, DateTimeOffset? start, TimeSpan? duration, int kind, int ranker, bool isPublic)
+        /// <param name="problemCount">The count of problems.</param>
+        /// <param name="teamCount">The count of teams.</param>
+        public ContestListModel(int id, string name, string shortName, DateTimeOffset? start, TimeSpan? duration, int kind, int ranker, bool isPublic, int teamCount, int problemCount)
         {
             ContestId = id;
             Name = name;
+            ShortName = shortName;
             StartTime = start;
             Duration = duration;
             Kind = kind;
             RankingStrategy = ranker;
             IsPublic = isPublic;
+            TeamCount = teamCount;
+            ProblemCount = problemCount;
 
             if (!StartTime.HasValue)
                 _state = 1; // Not Scheduled
@@ -58,9 +73,6 @@ namespace Ccs.Models
                 _state = 3; // Ended
         }
 
-
-        [Obsolete]
-        public int TeamCount { get; set; }
 
         [Obsolete]
         public bool IsRegistered { get; set; }

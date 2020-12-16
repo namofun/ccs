@@ -15,7 +15,7 @@ namespace Ccs.Entities
         /// <summary>
         /// The contest title
         /// </summary>
-        public string Name { get; set; } = "Contest Regular Round";
+        public string Name { get; set; } = "";
 
         /// <summary>
         /// The contest short name
@@ -108,6 +108,18 @@ namespace Ccs.Entities
         /// </para>
         /// </remarks>
         public string? Languages { get; set; }
+
+        /// <summary>
+        /// The count of registered teams
+        /// </summary>
+        /// <remarks>This field is used for caching.</remarks>
+        public int TeamCount { get; set; }
+
+        /// <summary>
+        /// The count of problems
+        /// </summary>
+        /// <remarks>This field is used for caching.</remarks>
+        public int ProblemCount { get; set; }
 
         /// <summary>
         /// Get the state of contest.

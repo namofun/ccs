@@ -22,4 +22,8 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Module\SatelliteSite.ContestModule.csproj" />
+  </ItemGroup>
+
 </Project>

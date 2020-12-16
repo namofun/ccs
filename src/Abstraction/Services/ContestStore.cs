@@ -1,5 +1,6 @@
 ﻿using Ccs.Entities;
 using Ccs.Models;
+using SatelliteSite.IdentityModule.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -74,5 +75,21 @@ namespace Ccs.Services
         /// <param name="event">The new event entity.</param>
         /// <returns>The task for emitting.</returns>
         Task EmitAsync(Event @event);
+
+        /// <summary>
+        /// Assign jury user to contest.
+        /// </summary>
+        /// <param name="contest">The contest entity.</param>
+        /// <param name="user">The jury user.</param>
+        /// <returns>The task for assigning jury.</returns>
+        Task AssignJuryAsync(Contest contest, IUser user);
+
+        /// <summary>
+        /// Unassign jury user to contest.
+        /// </summary>
+        /// <param name="contest">The contest entity.</param>
+        /// <param name="user">The jury user.</param>
+        /// <returns>The task for assigning jury.</returns>
+        Task UnassignJuryAsync(Contest contest, IUser user);
     }
 }

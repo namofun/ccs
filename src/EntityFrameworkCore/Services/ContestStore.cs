@@ -1,6 +1,7 @@
 ﻿using Ccs.Entities;
 using Ccs.Models;
 using Microsoft.EntityFrameworkCore;
+using SatelliteSite.IdentityModule.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -51,14 +52,20 @@ namespace Ccs.Services
             return e.Entity;
         }
 
-        public Task<IPagedList<ContestListModel>> ListAsync(int userId, int kind, int page = 1, int limit = 100)
+        public Task<IPagedList<ContestListModel>> ListAsync(
+            int userId, int kind,
+            int page = 1, int limit = 100)
         {
             throw new NotImplementedException();
         }
 
-        public Task<IPagedList<ContestListModel>> ListAsync(int page = 1, int limit = 100)
+        public Task<IPagedList<ContestListModel>> ListAsync(
+            int page = 1, int limit = 100)
         {
-            throw new NotImplementedException();
+            return Contests
+                .OrderByDescending(c => c.Id)
+                .Select(c => new ContestListModel(c.Id, c.Name, c.ShortName, c.StartTime, c.EndTime, c.Kind, c.RankingStrategy, c.IsPublic, c.TeamCount, c.ProblemCount))
+                .ToPagedListAsync(page, limit);
         }
 
         public Task<List<Event>> FetchEventAsync(int cid, int after = 0)
@@ -72,6 +79,35 @@ namespace Ccs.Services
         {
             Context.Set<Event>().Add(@event);
             return Context.SaveChangesAsync();
+        }
+
+        public async Task AssignJuryAsync(Contest contest, IUser user)
+        {
+            var jury = await Context.Set<Jury>()
+                .Where(j => j.ContestId == contest.Id && j.UserId == user.Id)
+                .SingleOrDefaultAsync();
+
+            if (jury != null) return;
+
+            Context.Set<Jury>().Add(new Jury
+            {
+                ContestId = contest.Id,
+                UserId = user.Id,
+            });
+
+            await Context.SaveChangesAsync();
+        }
+
+        public async Task UnassignJuryAsync(Contest contest, IUser user)
+        {
+            var jury = await Context.Set<Jury>()
+                .Where(j => j.ContestId == contest.Id && j.UserId == user.Id)
+                .SingleOrDefaultAsync();
+
+            if (jury == null) return;
+
+            Context.Set<Jury>().Remove(jury);
+            await Context.SaveChangesAsync();
         }
     }
 }

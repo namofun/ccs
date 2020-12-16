@@ -37,23 +37,6 @@ namespace JudgeWeb.Domains.Contests
             Submissions = store4;
         }
 
-        public Task<Dictionary<int, int>> StatisticsTeamAsync()
-        {
-            return Context.Set<Team>()
-                .Where(t => t.Status == 1)
-                .GroupBy(t => t.ContestId)
-                .Select(g => new { ContestId = g.Key, TeamCount = g.Count() })
-                .ToDictionaryAsync(k => k.ContestId, v => v.TeamCount);
-        }
-
-        public Task<Dictionary<int, int>> StatisticsProblemAsync()
-        {
-            return Context.Set<ContestProblem>()
-                .GroupBy(t => t.ContestId)
-                .Select(g => new { ContestId = g.Key, TeamCount = g.Count() })
-                .ToDictionaryAsync(k => k.ContestId, v => v.TeamCount);
-        }
-
         public Task<Dictionary<int, int>> StatisticAcceptedAsync(int cid)
         {
             return Context.Set<SubmissionStatistics>()

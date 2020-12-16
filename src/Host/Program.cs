@@ -1,6 +1,7 @@
 using Markdig;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SatelliteSite.IdentityModule.Entities;
@@ -25,7 +26,8 @@ namespace SatelliteSite
                 .AddModule<IdentityModule.IdentityModule<User, Role, DefaultContext>>()
                 .AddModule<PolygonModule.PolygonModule<Polygon.DefaultRole<User, Role, DefaultContext>>>()
                 .AddModule<GroupModule.GroupModule<DefaultContext>>()
-                .AddDatabaseMssql<DefaultContext>("UserDbConnection")
+                .AddModule<ContestModule.ContestModule<User, Role, DefaultContext>>()
+                .AddDatabaseMssql<DefaultContext>("UserDbConnection")//, d => d.UseTableSplittingJoinsRemoval())
                 .ConfigureSubstrateDefaults<DefaultContext>(builder =>
                 {
                     builder.ConfigureServices((context, services) =>
