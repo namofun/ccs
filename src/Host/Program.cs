@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Polygon;
 using SatelliteSite.IdentityModule.Entities;
 using System.IO;
 
@@ -24,7 +23,7 @@ namespace SatelliteSite
             Host.CreateDefaultBuilder(args)
                 .MarkDomain<Program>()
                 .AddModule<IdentityModule.IdentityModule<User, Role, DefaultContext>>()
-                .AddModule<PolygonModule.PolygonModule<User, Role, DefaultContext>>()
+                .AddModule<PolygonModule.PolygonModule<Polygon.DefaultRole<User, Role, DefaultContext>>>()
                 .AddModule<GroupModule.GroupModule<DefaultContext>>()
                 .AddDatabaseMssql<DefaultContext>("UserDbConnection")
                 .ConfigureSubstrateDefaults<DefaultContext>(builder =>
@@ -32,7 +31,7 @@ namespace SatelliteSite
                     builder.ConfigureServices((context, services) =>
                     {
                         services.AddMarkdown();
-                        services.Configure<PolygonOptions>(options =>
+                        services.Configure<Polygon.PolygonPhysicalOptions>(options =>
                         {
                             options.JudgingDirectory = Path.Combine(context.HostingEnvironment.ContentRootPath, "Runs");
                             options.ProblemDirectory = Path.Combine(context.HostingEnvironment.ContentRootPath, "Problems");

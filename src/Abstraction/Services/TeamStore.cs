@@ -13,6 +13,7 @@ namespace Ccs.Services
     /// <summary>
     /// The storage interface for <see cref="Team"/> and <see cref="Member"/>.
     /// </summary>
+    /// <remarks>Note that all store interfaces shouldn't cache the result.</remarks>
     public interface ITeamStore
     {
         /// <summary>

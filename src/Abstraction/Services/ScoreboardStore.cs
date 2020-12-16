@@ -10,6 +10,7 @@ namespace Ccs.Services
     /// <summary>
     /// The interface for updating scoreboard.
     /// </summary>
+    /// <remarks>Note that all store interfaces shouldn't cache the result.</remarks>
     public interface IScoreboardStore
     {
         /// <summary>
@@ -98,20 +99,5 @@ namespace Ccs.Services
         /// <param name="cid">The contest ID.</param>
         /// <returns>The task for recalculating.</returns>
         Task RebuildPartialScoreAsync(int cid);
-
-        /// <summary>
-        /// Fetch the codeforces time-related score.
-        /// </summary>
-        /// <remarks>This function results will be cached, that is say, calling this may won't get SQL access.</remarks>
-        /// <param name="cid">The contest ID.</param>
-        /// <returns>The task for fetching problems and scores.</returns>
-        Task<IReadOnlyDictionary<int, int>> GetCodeforcesScoreAsync(int cid);
-
-        /// <summary>
-        /// Fetch the contest entity.
-        /// </summary>
-        /// <param name="cid">The contest ID.</param>
-        /// <returns>The task for fetching contest entity.</returns>
-        Task<Contest> FindContestAsync(int cid);
     }
 }

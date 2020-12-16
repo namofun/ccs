@@ -9,6 +9,7 @@ namespace Ccs.Services
     /// <summary>
     /// The storage interface for <see cref="Clarification"/>.
     /// </summary>
+    /// <remarks>Note that all store interfaces shouldn't cache the result.</remarks>
     public interface IClarificationStore
     {
         /// <summary>

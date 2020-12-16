@@ -8,6 +8,7 @@ namespace Ccs.Services
     /// <summary>
     /// The storage interface for <see cref="Balloon"/>.
     /// </summary>
+    /// <remarks>Note that all store interfaces shouldn't cache the result.</remarks>
     public interface IBalloonStore
     {
         /// <summary>

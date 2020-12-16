@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace JudgeWeb.Domains.Contests
 {
-    public class ContestFacade<TContext> : IContestFacade
+    public class ContestFacade<TContext>
         where TContext : DbContext
     {
         public DbContext Context { get; }
@@ -35,14 +35,6 @@ namespace JudgeWeb.Domains.Contests
             Problemset = store2;
             Teams = store3;
             Submissions = store4;
-        }
-
-        public Task<Dictionary<string, Language>> ListLanguageAsync(int cid)
-        {
-            return Context.Set<Language>().CachedToDictionaryAsync(
-                keySelector: k => k.Id,
-                tag: $"`c{cid}`langs",
-                timeSpan: TimeSpan.FromMinutes(10));
         }
 
         public Task<Dictionary<int, int>> StatisticsTeamAsync()

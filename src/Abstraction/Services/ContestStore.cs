@@ -10,6 +10,7 @@ namespace Ccs.Services
     /// <summary>
     /// The storage interface for <see cref="Contest"/>.
     /// </summary>
+    /// <remarks>Note that all store interfaces shouldn't cache the result.</remarks>
     public interface IContestStore
     {
         /// <summary>

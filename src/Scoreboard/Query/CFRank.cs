@@ -101,8 +101,7 @@ namespace Ccs.Scoreboard.Query
         {
             double time = (args.SubmitTime - contest.StartTime)?.TotalSeconds ?? 0;
             int timee = (int)(time / 60);
-            var scores = await store.GetCodeforcesScoreAsync(args.ContestId!.Value);
-            var cfscore = scores.GetValueOrDefault(args.ProblemId);
+            var cfscore = ((JudgingFinishedEvent2)args).CodeforcesScore;
             int minScore = cfscore * 3 / 10, rateScore = cfscore - timee * (cfscore / 250);
 
             await store.RankUpsertAsync(
@@ -138,7 +137,7 @@ namespace Ccs.Scoreboard.Query
         public async Task RefreshCache(IScoreboardStore store, ScoreboardRefreshEvent args)
         {
             int cid = args.Contest.Id;
-            var scores = await store.GetCodeforcesScoreAsync(cid);
+            var scores = args.Problems.ToDictionary(k => k.ProblemId, v => v.Score);
             var results = await store.FetchRecalculateAsync(cid, args.Deadline);
 
             var rcc = new Dictionary<int, RankCache>();

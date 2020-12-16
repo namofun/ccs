@@ -1,4 +1,5 @@
-﻿using Ccs.Entities;
+﻿using Ccs.Contexts;
+using Ccs.Entities;
 using Ccs.Events;
 using Ccs.Services;
 using MediatR;
@@ -6,6 +7,7 @@ using Polygon.Entities;
 using Polygon.Events;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -24,6 +26,11 @@ namespace Ccs.Scoreboard
         /// The interface for scoreboard storage
         /// </summary>
         private IScoreboardStore Store { get; }
+
+        /// <summary>
+        /// The interface for contest context
+        /// </summary>
+        private ScopedContestContextFactory Factory { get; }
 
         /// <summary>
         /// The known strategies
@@ -52,10 +59,11 @@ namespace Ccs.Scoreboard
         /// <summary>
         /// Construct a <see cref="RankingSolver"/>.
         /// </summary>
-        /// <param name="store">The scoreboard store.</param>
-        public RankingSolver(IScoreboardStore store)
+        /// <param name="factory">The contest context factory.</param>
+        public RankingSolver(ScopedContestContextFactory factory)
         {
-            Store = store;
+            Store = factory.CreateScoreboardStore();
+            Factory = factory;
         }
 
         /// <inheritdoc />
@@ -68,7 +76,8 @@ namespace Ccs.Scoreboard
         public async Task Handle(SubmissionCreatedEvent notification, CancellationToken cancellationToken)
         {
             if (notification.Submission.ContestId == 0) return;
-            var contest = await Store.FindContestAsync(notification.Submission.ContestId);
+            var context = await Factory.CreateAsync(notification.Submission.ContestId);
+            var contest = context.Contest;
             if (contest.GetState(notification.Submission.Time) >= ContestState.Ended) return;
             await Select(contest).Pending(Store, contest, notification);
         }
@@ -78,8 +87,16 @@ namespace Ccs.Scoreboard
         {
             if (notification.ContestId == null) return;
             if (!notification.Judging.Active) return;
-            var contest = await Store.FindContestAsync(notification.ContestId.Value);
+            var context = await Factory.CreateAsync(notification.ContestId.Value);
+            var contest = context.Contest;
             if (contest.GetState(notification.SubmitTime) >= ContestState.Ended) return;
+
+            if (contest.RankingStrategy == 2 && notification.Judging.Status == Verdict.Accepted)
+            {
+                var problems = await context.FetchProblemsAsync();
+                var cfscore = problems.Where(p => p.ProblemId == notification.ProblemId).FirstOrDefault()?.Score ?? 0;
+                notification = new JudgingFinishedEvent2(notification, cfscore);
+            }
 
             var strategy = Select(contest);
             await (notification.Judging.Status switch

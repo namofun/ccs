@@ -27,57 +27,54 @@ namespace Ccs.Services
             Problems = probs;
         }
 
-        public Task<IReadOnlyList<ProblemModel>> ListAsync(Contest contest)
+        public async Task<IReadOnlyList<ProblemModel>> ListAsync(Contest contest)
         {
-            return Context.CachedGetAsync($"`c{contest.Id}`probs", TimeSpan.FromMinutes(5), async () =>
+            var cid = contest.Id;
+            var query =
+                from cp in Context.Set<ContestProblem>()
+                where cp.ContestId == contest.Id
+                join p in Context.Set<Problem>() on cp.ProblemId equals p.Id
+                select new ProblemModel(
+                    cp.ContestId,
+                    cp.ProblemId,
+                    cp.ShortName,
+                    cp.AllowSubmit,
+                    p.AllowJudge,
+                    cp.Color,
+                    cp.Score,
+                    p.Title,
+                    p.TimeLimit,
+                    p.MemoryLimit,
+                    p.CombinedRunCompare,
+                    p.Shared);
+
+            var result = await query.ToListAsync();
+
+            var query2 =
+                from cp in Context.Set<ContestProblem>()
+                where cp.ContestId == cid
+                join t in Context.Set<Testcase>() on cp.ProblemId equals t.ProblemId
+                group t by cp.ProblemId into g
+                select new { g.Key, Count = g.Count(), Score = g.Sum(t => t.Point) };
+
+            var result2 = await query2.ToDictionaryAsync(a => a.Key);
+
+            foreach (var item in result)
             {
-                var cid = contest.Id;
-                var query =
-                    from cp in ContestProblems
-                    where cp.ContestId == contest.Id
-                    join p in Context.Set<Problem>() on cp.ProblemId equals p.Id
-                    select new ProblemModel(
-                        cp.ContestId,
-                        cp.ProblemId,
-                        cp.ShortName,
-                        cp.AllowSubmit,
-                        p.AllowJudge,
-                        cp.Color,
-                        cp.Score,
-                        p.Title,
-                        p.TimeLimit,
-                        p.MemoryLimit,
-                        p.CombinedRunCompare,
-                        p.Shared);
-
-                var result = await query.ToListAsync();
-
-                var query2 =
-                    from cp in ContestProblems
-                    where cp.ContestId == cid
-                    join t in Context.Set<Testcase>() on cp.ProblemId equals t.ProblemId
-                    group t by cp.ProblemId into g
-                    select new { g.Key, Count = g.Count(), Score = g.Sum(t => t.Point) };
-
-                var result2 = await query2.ToDictionaryAsync(a => a.Key);
-
-                foreach (var item in result)
+                if (result2.TryGetValue(item.ProblemId, out var res))
                 {
-                    if (result2.TryGetValue(item.ProblemId, out var res))
-                    {
-                        item.TestcaseCount = res.Count;
-                        if (item.Score == 0) item.Score = res.Score;
-                    }
-
-                    item.Statement = await Problems.ReadCompiledHtmlAsync(item.ProblemId);
+                    item.TestcaseCount = res.Count;
+                    if (item.Score == 0) item.Score = res.Score;
                 }
 
-                result.Sort((a, b) => a.ShortName.CompareTo(b.ShortName));
-                for (int i = 0; i < result.Count; i++)
-                    result[i].Rank = i + 1;
+                item.Statement = await Problems.ReadCompiledHtmlAsync(item.ProblemId);
+            }
 
-                return (IReadOnlyList<ProblemModel>)result;
-            });
+            result.Sort((a, b) => a.ShortName.CompareTo(b.ShortName));
+            for (int i = 0; i < result.Count; i++)
+                result[i].Rank = i + 1;
+
+            return result;
         }
 
         public Task<(bool ok, string msg)> CheckAvailabilityAsync(

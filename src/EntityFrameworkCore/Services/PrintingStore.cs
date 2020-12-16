@@ -59,14 +59,6 @@ namespace Ccs.Services
             */
         }
 
-        public async Task<bool> SetStateAsync(int pid, bool? done)
-        {
-            int status = await Printings
-                .Where(p => p.Id == pid)
-                .BatchUpdateAsync(p => new Printing { Done = done });
-            return status > 0;
-        }
-
         public async Task<Printing> CreateAsync(Printing entity)
         {
             var e = Printings.Add(entity);

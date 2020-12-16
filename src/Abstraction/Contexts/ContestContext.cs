@@ -5,10 +5,10 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 
-namespace Ccs.Services
+namespace Ccs.Contexts
 {
     /// <summary>
-    /// The context interface for a contest.
+    /// The context interface for fetching the information of a contest.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -59,18 +59,5 @@ namespace Ccs.Services
             IPAddress ipAddr,
             string via,
             string username);
-    }
-
-    /// <summary>
-    /// The interface for creating <see cref="IContestContext"/>.
-    /// </summary>
-    public interface IContestContextFactory
-    {
-        /// <summary>
-        /// Creates an <see cref="IContestContext"/> for reading contest informations.
-        /// </summary>
-        /// <param name="cid">The contest ID.</param>
-        /// <returns>The task for creating contest context.</returns>
-        Task<IContestContext> CreateAsync(int cid);
     }
 }
