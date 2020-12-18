@@ -20,7 +20,7 @@ namespace Ccs.Contexts
         /// <param name="cid">The contest ID.</param>
         /// <param name="serviceProvider">The scoped service provider. This parameter usually comes from <c>HttpContext.RequestServices</c>.</param>
         /// <returns>The task for creating contest context.</returns>
-        Task<IContestContext> CreateAsync(int cid, IServiceProvider serviceProvider);
+        Task<IContestContext?> CreateAsync(int cid, IServiceProvider serviceProvider);
     }
 
     /// <summary>
@@ -51,7 +51,7 @@ namespace Ccs.Contexts
         /// </summary>
         /// <param name="cid">The contest ID.</param>
         /// <returns>The task for creating contest context.</returns>
-        public Task<IContestContext> CreateAsync(int cid)
+        public Task<IContestContext?> CreateAsync(int cid)
         {
             return ServiceProvider
                 .GetRequiredService<IContestContextFactory>()

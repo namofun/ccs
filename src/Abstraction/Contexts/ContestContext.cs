@@ -1,7 +1,9 @@
 ﻿using Ccs.Entities;
 using Ccs.Models;
 using Polygon.Entities;
+using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -18,9 +20,24 @@ namespace Ccs.Contexts
     public interface IContestContext
     {
         /// <summary>
+        /// Get service of type <typeparamref name="T"/> from the <see cref="IServiceProvider"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of service object to get.</typeparam>
+        /// <returns>A service object of type T.</returns>
+        /// <exception cref="InvalidOperationException">There is no service of type <typeparamref name="T"/>.</exception>
+        T GetRequiredService<T>();
+
+        /// <summary>
         /// The contest entity
         /// </summary>
         Contest Contest { get; }
+
+        /// <summary>
+        /// Asynchronously update the contest.
+        /// </summary>
+        /// <param name="updateExpression">The update expression.</param>
+        /// <returns>The task for updating the contest.</returns>
+        Task<Contest> UpdateContestAsync(Expression<Func<Contest, Contest>> updateExpression);
 
         /// <summary>
         /// Fetch the contest scoreboard.

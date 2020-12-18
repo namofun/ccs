@@ -19,13 +19,18 @@ namespace Ccs.Contexts
             _options = options;
         }
 
-        public async Task<IContestContext> CreateAsync(int cid, IServiceProvider serviceProvider)
+        public async Task<IContestContext?> CreateAsync(int cid, IServiceProvider serviceProvider)
         {
-            var contest = await _cache.GetOrCreateAsync($"Contest({cid})::Core", async entry =>
-            {
-                return await serviceProvider.GetRequiredService<IContestStore>().FindAsync(cid);
-            });
-            
+            var contest = await _cache.GetOrCreateAsync(
+                $"Contest({cid})::Core",
+                async entry =>
+                {
+                    var cst = await serviceProvider.GetRequiredService<IContestStore>().FindAsync(cid);
+                    entry.AbsoluteExpirationRelativeToNow = _options.Value.Contest;
+                    return cst;
+                });
+
+            if (contest == null) return null;
             return new Cached.CachedContestContext(contest, _cache, serviceProvider, _options);
         }
     }

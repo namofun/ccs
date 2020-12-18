@@ -7,6 +7,7 @@ using Polygon.Storages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -27,7 +28,7 @@ namespace Ccs.Contexts.Immediate
 
         public virtual async Task<IReadOnlyList<Language>> FetchLanguagesAsync()
         {
-            var store = _services.GetRequiredService<ILanguageStore>();
+            var store = GetRequiredService<ILanguageStore>();
             IReadOnlyList<Language> langs = await store.ListAsync(true);
             if (!string.IsNullOrEmpty(Contest.Languages))
             {
@@ -40,13 +41,13 @@ namespace Ccs.Contexts.Immediate
 
         public virtual Task<IReadOnlyList<ProblemModel>> FetchProblemsAsync()
         {
-            return _services.GetRequiredService<IProblemsetStore>()
+            return GetRequiredService<IProblemsetStore>()
                 .ListAsync(Contest);
         }
 
         public virtual Task<ScoreboardModel> FetchScoreboardAsync()
         {
-            return _services.GetRequiredService<ITeamStore>()
+            return GetRequiredService<ITeamStore>()
                 .LoadScoreboardAsync(Contest);
         }
 
@@ -59,7 +60,7 @@ namespace Ccs.Contexts.Immediate
             string via,
             string username)
         {
-            return _services.GetRequiredService<ISubmissionStore>().CreateAsync(
+            return GetRequiredService<ISubmissionStore>().CreateAsync(
                 code: code,
                 language: language.Id,
                 problemId: problem.ProblemId,
@@ -73,14 +74,26 @@ namespace Ccs.Contexts.Immediate
 
         public virtual Task<Team?> FindTeamByIdAsync(int teamId)
         {
-            return _services.GetRequiredService<ITeamStore>()
+            return GetRequiredService<ITeamStore>()
                 .FindByIdAsync(Contest.Id, teamId);
         }
 
         public virtual Task<Team?> FindTeamByUserAsync(int userId)
         {
-            return _services.GetRequiredService<ITeamStore>()
+            return GetRequiredService<ITeamStore>()
                 .FindByUserAsync(Contest.Id, userId);
+        }
+
+        public virtual async Task<Contest> UpdateContestAsync(Expression<Func<Contest, Contest>> updateExpression)
+        {
+            var store = GetRequiredService<IContestStore>();
+            await store.UpdateAsync(Contest.Id, updateExpression);
+            return await store.FindAsync(Contest.Id);
+        }
+
+        public T GetRequiredService<T>()
+        {
+            return _services.GetRequiredService<T>();
         }
     }
 }

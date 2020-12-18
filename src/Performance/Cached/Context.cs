@@ -1,10 +1,13 @@
 ﻿using Ccs.Entities;
 using Ccs.Models;
+using Ccs.Services;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Polygon.Entities;
 using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace Ccs.Contexts.Cached
@@ -35,6 +38,11 @@ namespace Ccs.Contexts.Cached
             });
         }
 
+        private void Expire(string tag)
+        {
+            _cache.Remove($"Context({Contest.Id})::{tag}");
+        }
+
         public override Task<IReadOnlyList<Language>> FetchLanguagesAsync()
         {
             return CacheAsync("Languages", _options.Language,
@@ -57,6 +65,19 @@ namespace Ccs.Contexts.Cached
         {
             return CacheAsync($"Teams::User({userId})", _options.Team,
                 async () => await base.FindTeamByUserAsync(userId));
+        }
+
+        public override async Task<Contest> UpdateContestAsync(Expression<Func<Contest, Contest>> updateExpression)
+        {
+            var store = GetRequiredService<IContestStore>();
+            await store.UpdateAsync(Contest.Id, updateExpression);
+            Expire("Core");
+            Expire("Languages");
+
+            return await CacheAsync("Core", _options.Contest, async () =>
+            {
+                return await store.FindAsync(Contest.Id);
+            });
         }
     }
 }

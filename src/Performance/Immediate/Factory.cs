@@ -7,9 +7,10 @@ namespace Ccs.Contexts
 {
     public class ImmediateContestContextFactory : IContestContextFactory
     {
-        public async Task<IContestContext> CreateAsync(int cid, IServiceProvider serviceProvider)
+        public async Task<IContestContext?> CreateAsync(int cid, IServiceProvider serviceProvider)
         {
             var cst = await serviceProvider.GetRequiredService<IContestStore>().FindAsync(cid);
+            if (cst == null) return null;
             return new Immediate.ImmediateContestContext(cst, serviceProvider);
         }
     }
