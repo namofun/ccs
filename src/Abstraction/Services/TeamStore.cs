@@ -70,6 +70,17 @@ namespace Ccs.Services
         /// <returns>The scoreboard data.</returns>
         Task<ScoreboardModel> LoadScoreboardAsync(Contest contest);
 
+        /// <summary>
+        /// List the teams with selected conditions.
+        /// </summary>
+        /// <typeparam name="T">The selected entity type.</typeparam>
+        /// <param name="selector">The result selector.</param>
+        /// <param name="predicate">The conditions to match.</param>
+        /// <returns>The task for listing entities.</returns>
+        Task<List<T>> ListAsync<T>(
+            Expression<Func<Team, T>> selector,
+            Expression<Func<Team, bool>>? predicate = null);
+
         /*
 
         [Obsolete]

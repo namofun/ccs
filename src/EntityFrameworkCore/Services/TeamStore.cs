@@ -329,5 +329,15 @@ namespace Ccs.Services
                     return result;
                 });
         }
+
+        public Task<List<T>> ListAsync<T>(
+            Expression<Func<Team, T>> selector,
+            Expression<Func<Team, bool>>? predicate = null)
+        {
+            return Teams
+                .WhereIf(predicate != null, predicate!)
+                .Select(selector)
+                .ToListAsync();
+        }
     }
 }

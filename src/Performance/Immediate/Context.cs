@@ -10,6 +10,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Net;
 using System.Threading.Tasks;
+using Tenant.Entities;
 
 namespace Ccs.Contexts.Immediate
 {
@@ -58,7 +59,8 @@ namespace Ccs.Contexts.Immediate
             Team team,
             IPAddress ipAddr,
             string via,
-            string username)
+            string username,
+            DateTimeOffset? time)
         {
             return GetRequiredService<ISubmissionStore>().CreateAsync(
                 code: code,
@@ -69,6 +71,7 @@ namespace Ccs.Contexts.Immediate
                 ipAddr: ipAddr,
                 via: via,
                 username: username,
+                time: time,
                 fullJudge: Contest.RankingStrategy == 1);
         }
 
@@ -94,6 +97,16 @@ namespace Ccs.Contexts.Immediate
         public T GetRequiredService<T>()
         {
             return _services.GetRequiredService<T>();
+        }
+
+        public Task<IReadOnlyDictionary<int, Affiliation>> FetchAffiliationsAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IReadOnlyDictionary<int, Category>> FetchCategoriesAsync()
+        {
+            throw new NotImplementedException();
         }
     }
 }

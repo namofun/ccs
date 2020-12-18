@@ -14,6 +14,21 @@ namespace Ccs.Models
         int TeamId { get; }
 
         /// <summary>
+        /// The team name
+        /// </summary>
+        string TeamName { get; }
+
+        /// <summary>
+        /// The category ID
+        /// </summary>
+        int CategoryId { get; }
+
+        /// <summary>
+        /// The affiliation ID
+        /// </summary>
+        int AffiliationId { get; }
+
+        /// <summary>
         /// The navigation to rank cache
         /// </summary>
         RankCache? RankCache { get; }

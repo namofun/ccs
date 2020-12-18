@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Net;
 using System.Threading.Tasks;
+using Tenant.Entities;
 
 namespace Ccs.Contexts
 {
@@ -58,6 +59,18 @@ namespace Ccs.Contexts
         Task<IReadOnlyList<ProblemModel>> FetchProblemsAsync();
 
         /// <summary>
+        /// Fetch the affiliations used in contest.
+        /// </summary>
+        /// <returns>The task for fetching affiliations.</returns>
+        Task<IReadOnlyDictionary<int, Affiliation>> FetchAffiliationsAsync();
+
+        /// <summary>
+        /// Fetch the categories used in contest.
+        /// </summary>
+        /// <returns>The task for fetching affiliations.</returns>
+        Task<IReadOnlyDictionary<int, Category>> FetchCategoriesAsync();
+
+        /// <summary>
         /// Find team by team ID.
         /// </summary>
         /// <param name="teamId">The team ID.</param>
@@ -81,6 +94,7 @@ namespace Ccs.Contexts
         /// <param name="ipAddr">The IP Address.</param>
         /// <param name="via">The submission source.</param>
         /// <param name="username">The submission username.</param>
+        /// <param name="time">The submission time.</param>
         /// <returns>The task for creating submission.</returns>
         Task<Submission> SubmitAsync(
             string code,
@@ -89,6 +103,7 @@ namespace Ccs.Contexts
             Team team,
             IPAddress ipAddr,
             string via,
-            string username);
+            string username,
+            DateTimeOffset? time = null);
     }
 }
