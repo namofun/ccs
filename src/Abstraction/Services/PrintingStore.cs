@@ -22,11 +22,24 @@ namespace Ccs.Services
         /// <summary>
         /// Set the state of contest printing.
         /// </summary>
-        /// <param name="contest">The contest.</param>
-        /// <param name="id">The printing ID.</param>
+        /// <param name="printing">The printing entity.</param>
         /// <param name="done">The state.</param>
         /// <returns>The task for setting state.</returns>
-        Task<bool> SetStateAsync(Contest contest, int id, bool? done);
+        Task<bool> SetStateAsync(Printing printing, bool? done);
+
+        /// <summary>
+        /// Find the printing entity.
+        /// </summary>
+        /// <param name="id">The printing ID.</param>
+        /// <returns>The task for fetching entity.</returns>
+        Task<Printing?> FindAsync(int id);
+
+        /// <summary>
+        /// Find the first printing entity satisfying the condition.
+        /// </summary>
+        /// <param name="condition">The condition expression.</param>
+        /// <returns>The task for fetching entity.</returns>
+        Task<Printing?> FirstAsync(Expression<Func<Printing, bool>> condition);
 
         /*
         [Obsolete("This is going to be re-designed.", true)]

@@ -15,8 +15,6 @@ namespace Ccs.Services
 
         DbSet<Printing> Printings => Context.Set<Printing>();
 
-        DbSet<Member> Members => Context.Set<Member>();
-
         public PrintingStore(TContext context)
         {
             Context = context;
@@ -66,12 +64,26 @@ namespace Ccs.Services
             return e.Entity;
         }
 
-        public async Task<bool> SetStateAsync(Contest contest, int id, bool? done)
+        public async Task<bool> SetStateAsync(Printing entity, bool? done)
         {
-            int cid = contest.Id;
+            int id = entity.Id;
             return 1 == await Printings
-                .Where(p => p.Id == id && p.ContestId == cid)
+                .Where(p => p.Id == id)
                 .BatchUpdateAsync(p => new Printing { Done = done });
+        }
+
+        public Task<Printing?> FindAsync(int id)
+        {
+            return Printings
+                .Where(p => p.Id == id)
+                .SingleOrDefaultAsync()!;
+        }
+
+        public Task<Printing?> FirstAsync(Expression<Func<Printing, bool>> condition)
+        {
+            return Printings
+                .Where(condition)
+                .FirstOrDefaultAsync()!;
         }
     }
 }
