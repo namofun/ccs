@@ -58,9 +58,10 @@ namespace Ccs.Services
         /// Fetch the event for a contest after some ID.
         /// </summary>
         /// <param name="cid">The contest ID.</param>
+        /// <param name="type">The endpoint type.</param>
         /// <param name="after">The first event ID.</param>
         /// <returns>The task for fetching new events.</returns>
-        Task<List<Event>> FetchEventAsync(int cid, int after = 0);
+        Task<List<Event>> FetchEventAsync(int cid, string[]? type = null, int after = 0);
 
         /// <summary>
         /// Fetch the ID of the latest event.

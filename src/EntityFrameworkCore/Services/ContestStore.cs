@@ -68,10 +68,11 @@ namespace Ccs.Services
                 .ToPagedListAsync(page, limit);
         }
 
-        public Task<List<Event>> FetchEventAsync(int cid, int after = 0)
+        public Task<List<Event>> FetchEventAsync(int cid, string[]? type = null, int after = 0)
         {
             return Context.Set<Event>()
                 .Where(e => e.ContestId == cid && e.Id > after)
+                .WhereIf(type != null, e => type.Contains(e.EndpointType))
                 .ToListAsync();
         }
 
