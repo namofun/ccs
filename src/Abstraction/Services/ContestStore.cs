@@ -92,5 +92,12 @@ namespace Ccs.Services
         /// <param name="user">The jury user.</param>
         /// <returns>The task for assigning jury.</returns>
         Task UnassignJuryAsync(Contest contest, IUser user);
+
+        /// <summary>
+        /// List all jury for such contest.
+        /// </summary>
+        /// <param name="contest">The contest entity.</param>
+        /// <returns>The task for listing jury.</returns>
+        Task<HashSet<int>> ListJuryAsync(Contest contest);
     }
 }

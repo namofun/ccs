@@ -1,10 +1,9 @@
 ﻿using Ccs.Entities;
 using Ccs.Models;
-using Polygon.Models;
+using Polygon.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Ccs.Services
@@ -50,11 +49,22 @@ namespace Ccs.Services
         /// </summary>
         /// <param name="problem">The problem view.</param>
         /// <returns></returns>
-        Task<List<ContestProblem>> ListByProblemAsync(Polygon.Entities.Problem problem);
+        Task<List<ContestProblem>> ListByProblemAsync(Problem problem);
 
-        /*
-        [Obsolete]
-        Task<(bool ok, string msg)> CheckAvailabilityAsync(int cid, int pid, ClaimsPrincipal user);
-        */
+        /// <summary>
+        /// Get all statements from problems.
+        /// </summary>
+        /// <param name="cid">The contest ID.</param>
+        /// <returns>The task for fetching list of statements.</returns>
+        Task<List<Problem>> RawProblemsAsync(int cid);
+
+        /// <summary>
+        /// Check the availability of problems to add into contest.
+        /// </summary>
+        /// <param name="cid">The contest ID.</param>
+        /// <param name="pid">The problem ID.</param>
+        /// <param name="user">The current user.</param>
+        /// <returns>The task for getting availability.</returns>
+        Task<(bool Available, string Message)> CheckAvailabilityAsync(int cid, int pid, int? user);
     }
 }

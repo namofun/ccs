@@ -110,5 +110,14 @@ namespace Ccs.Services
             Context.Set<Jury>().Remove(jury);
             await Context.SaveChangesAsync();
         }
+
+        public async Task<HashSet<int>> ListJuryAsync(Contest contest)
+        {
+            var result = new HashSet<int>();
+            var query = Context.Set<Jury>().Where(j => j.ContestId == contest.Id);
+            await foreach (var item in query.AsAsyncEnumerable())
+                result.Add(item.UserId);
+            return result;
+        }
     }
 }

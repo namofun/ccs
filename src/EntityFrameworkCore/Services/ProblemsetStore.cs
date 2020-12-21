@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Ccs.Services
@@ -77,21 +76,24 @@ namespace Ccs.Services
             return result;
         }
 
-        public Task<(bool ok, string msg)> CheckAvailabilityAsync(
-            int cid, int pid, ClaimsPrincipal user)
+        public async Task<(bool, string)> CheckAvailabilityAsync(int cid, int pid, int? user)
         {
-            throw new NotImplementedException();
-            /*
-            var list = await ListAsync(cid);
-            if (list.Any(p => p.ProblemId == pid))
+            if (await ContestProblems.Where(cp => cp.ContestId == cid && cp.ProblemId == pid).AnyAsync())
                 return (false, "Problem has been added.");
-            var prob = await Parent.FindAsync(pid);
+            IQueryable<Problem> query;
+
+            if (user == null)
+                query = Context.Set<Problem>()
+                    .Where(p => p.Id == pid);
+            else
+                query = Context.Set<ProblemAuthor>()
+                    .Where(pa => pa.ProblemId == pid && pa.UserId == user)
+                    .Join(Context.Set<Problem>(), pa => pa.ProblemId, p => p.Id, (pa, p) => p);
+
+            var prob = await query.FirstOrDefaultAsync();
             if (prob == null)
-                return (false, "Problem not found.");
-            if (!user.IsInRole("Administrator") && !user.IsInRole($"AuthorOfProblem{pid}"))
-                return (false, "Access denined.");
+                return (false, "Problem not found or access denined.");
             return (true, prob.Title);
-            */
         }
 
         public Task CreateAsync(ContestProblem problem)
@@ -123,6 +125,15 @@ namespace Ccs.Services
                 .Where(cp => cp.ProblemId == problem.Id)
                 .OrderBy(cp => cp.ContestId)
                 .Include(cp => cp.Contest)
+                .ToListAsync();
+        }
+        
+        public Task<List<Problem>> RawProblemsAsync(int cid)
+        {
+            return ContestProblems
+                .Where(cp => cp.ContestId == cid)
+                .OrderBy(cp => cp.ShortName)
+                .Select(cp => cp.Problem)
                 .ToListAsync();
         }
     }

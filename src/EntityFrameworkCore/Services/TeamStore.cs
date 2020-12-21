@@ -106,11 +106,10 @@ namespace Ccs.Services
                 .SingleOrDefaultAsync()!;
         }
 
-        public Task<Team?> FindByUserAsync(int cid, int uid)
+        public Task<Member?> FindByUserAsync(int cid, int uid)
         {
             return Members
                 .Where(tu => tu.ContestId == cid && tu.UserId == uid)
-                .Select(tu => tu.Team)
                 .SingleOrDefaultAsync()!;
         }
 
@@ -191,11 +190,11 @@ namespace Ccs.Services
         }
         */
 
-        public async Task UpdateAsync(int cid, int teamid, Expression<Func<Team, Team>> activator)
+        public async Task UpdateAsync(int cid, int teamid, Expression<Func<Team>> activator)
         {
             var affected = await Teams
                 .Where(t => t.ContestId == cid && t.TeamId == teamid)
-                .BatchUpdateAsync(activator);
+                .BatchUpdateAsync(Expression.Lambda<Func<Team, Team>>(activator.Body, Expression.Parameter(typeof(Team), "_")));
             if (affected != 1)
                 throw new DbUpdateException();
 

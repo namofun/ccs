@@ -4,6 +4,7 @@ using Ccs.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Polygon.Entities;
 using Polygon.Storages;
+using SatelliteSite.IdentityModule.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -81,7 +82,7 @@ namespace Ccs.Contexts.Immediate
                 .FindByIdAsync(Contest.Id, teamId);
         }
 
-        public virtual Task<Team?> FindTeamByUserAsync(int userId)
+        public virtual Task<Member?> FindMemberByUserAsync(int userId)
         {
             return GetRequiredService<ITeamStore>()
                 .FindByUserAsync(Contest.Id, userId);
@@ -99,14 +100,60 @@ namespace Ccs.Contexts.Immediate
             return _services.GetRequiredService<T>();
         }
 
-        public Task<IReadOnlyDictionary<int, Affiliation>> FetchAffiliationsAsync()
+        public virtual Task<IReadOnlyDictionary<int, Affiliation>> FetchAffiliationsAsync()
         {
             throw new NotImplementedException();
         }
 
-        public Task<IReadOnlyDictionary<int, Category>> FetchCategoriesAsync()
+        public virtual Task<IReadOnlyDictionary<int, Category>> FetchCategoriesAsync()
         {
             throw new NotImplementedException();
+        }
+
+        public virtual Task<IReadOnlyDictionary<int, string>> FetchTeamNamesAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual Task UpdateProblemAsync(ProblemModel origin, Expression<Func<ContestProblem>> expression)
+        {
+            return GetRequiredService<IProblemsetStore>()
+                .UpdateAsync(origin.ContestId, origin.ProblemId, expression);
+        }
+
+        public virtual Task<HashSet<int>> FetchJuryAsync()
+        {
+            return GetRequiredService<IContestStore>().ListJuryAsync(Contest);
+        }
+
+        public virtual Task AssignJuryAsync(IUser user)
+        {
+            return GetRequiredService<IContestStore>()
+                .AssignJuryAsync(Contest, user);
+        }
+
+        public virtual Task UnassignJuryAsync(IUser user)
+        {
+            return GetRequiredService<IContestStore>()
+                .UnassignJuryAsync(Contest, user);
+        }
+
+        public virtual Task UpdateTeamAsync(Team origin, Expression<Func<Team>> expression)
+        {
+            return GetRequiredService<ITeamStore>()
+                .UpdateAsync(origin.ContestId, origin.TeamId, expression);
+        }
+
+        public virtual Task CreateProblemAsync(Expression<Func<ContestProblem>> expression)
+        {
+            return GetRequiredService<IProblemsetStore>()
+                .CreateAsync(expression.Compile().Invoke());
+        }
+
+        public virtual Task DeleteProblemAsync(ProblemModel problem)
+        {
+            return GetRequiredService<IProblemsetStore>()
+                .DeleteAsync(problem);
         }
     }
 }
