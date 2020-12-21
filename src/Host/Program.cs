@@ -1,9 +1,9 @@
 using Markdig;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Polygon.FakeJudgehost;
 using SatelliteSite.IdentityModule.Entities;
 using System.IO;
 
@@ -38,6 +38,11 @@ namespace SatelliteSite
                             options.JudgingDirectory = Path.Combine(context.HostingEnvironment.ContentRootPath, "Runs");
                             options.ProblemDirectory = Path.Combine(context.HostingEnvironment.ContentRootPath, "Problems");
                         });
+
+                        services.AddFakeJudgehost()
+                            .AddFakeSeeds<DefaultContext>()
+                            .AddJudgehost<FakeJudgeActivity>("fake-judgehost-0")
+                            .AddHttpClientFactory(_ => new System.Net.Http.HttpClient { BaseAddress = new System.Uri("http://localhost:9121/api/") });
                     });
                 });
     }

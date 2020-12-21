@@ -22,6 +22,12 @@ namespace SatelliteSite.ContestModule
         public override void RegisterEndpoints(IEndpointBuilder endpoints)
         {
             endpoints.MapControllers();
+
+            endpoints.MapApiDocument(
+                name: "ccsapi",
+                title: "Contest Module",
+                description: "ICPC Contest API (compatible as CCS)",
+                version: "2020");
         }
 
         public override void RegisterServices(IServiceCollection services)
@@ -45,6 +51,13 @@ namespace SatelliteSite.ContestModule
                 menu.HasEntry(150)
                     .HasTitle(string.Empty, "Contests")
                     .HasLink("Dashboard", "Contests", "List");
+            });
+
+            menus.Submenu(MenuNameDefaults.DashboardDocuments, menu =>
+            {
+                menu.HasEntry(151)
+                    .HasTitle(string.Empty, "ICPC Contest API")
+                    .HasLink("/api/doc/ccsapi");
             });
         }
     }
