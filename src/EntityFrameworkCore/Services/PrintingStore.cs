@@ -1,4 +1,5 @@
 ﻿using Ccs.Entities;
+using Ccs.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,8 @@ using System.Threading.Tasks;
 
 namespace Ccs.Services
 {
-    public class PrintingStore<TContext> : IPrintingStore
+    public class PrintingStore<TUser, TContext> : IPrintingStore
+        where TUser : SatelliteSite.IdentityModule.Entities.User
         where TContext : DbContext
     {
         public TContext Context { get; }
@@ -20,41 +22,30 @@ namespace Ccs.Services
             Context = context;
         }
 
-        public Task<List<T>> ListAsync<T>(
-            int takeCount, int page,
-            Expression<Func<Printing, object, Team, T>> expression,
-            Expression<Func<Printing, bool>>? predicate)
+        public Task<List<PrintingTask>> ListAsync(int contestId, int limit)
         {
-            throw new NotImplementedException();
-            /*
-            IQueryable<Printing> prints = Printings;
-            if (predicate != null) prints = prints.Where(predicate);
-
             var query =
-                from p in prints
-                join u in Context.Set<object>() on p.UserId equals u.Id
+                from p in Printings
+                where p.ContestId == contestId
+                orderby p.Id descending
+                join u in Context.Set<TUser>() on p.UserId equals u.Id
                 into uu from u in uu.DefaultIfEmpty()
-                join tu in Members on new { p.ContestId, p.UserId } equals new { tu.ContestId, tu.UserId }
+                join tu in Context.Set<Member>() on new { p.ContestId, p.UserId } equals new { tu.ContestId, tu.UserId }
                 into tuu from tu in tuu.DefaultIfEmpty()
-                select new { p, u, t = tu.Team };
+                select new PrintingTask
+                {
+                    Id = p.Id,
+                    FileName = p.FileName,
+                    Language = p.LanguageId,
+                    Done = p.Done,
+                    Location = tu.Team.Location,
+                    Time = p.Time,
+                    TeamName = tu == null
+                        ? $"u{u.Id} - {u.UserName}"
+                        : $"t{tu.TeamId} - {tu.Team.TeamName}",
+                };
 
-            if (page > 0)
-            {
-                query = query.OrderByDescending(a => a.p.Time);
-            }
-            else
-            {
-                query = query.OrderBy(a => a.p.Time);
-                page = -page;
-            }
-
-            var selector = expression.Combine(
-                objectTemplate: new { p = (Printing)null, u = (User)null, t = (Team)null },
-                place1: a => a.p, place2: a => a.u, place3: a => a.t);
-            return query.Select(selector)
-                .Skip((page - 1) * takeCount).Take(takeCount)
-                .ToListAsync();
-            */
+            return query.Take(limit).ToListAsync();
         }
 
         public async Task<Printing> CreateAsync(Printing entity)
@@ -72,11 +63,25 @@ namespace Ccs.Services
                 .BatchUpdateAsync(p => new Printing { Done = done });
         }
 
-        public Task<Printing?> FindAsync(int id)
+        public Task<Printing?> FindAsync(int id, bool full)
         {
-            return Printings
-                .Where(p => p.Id == id)
-                .SingleOrDefaultAsync()!;
+            var query = Printings.Where(p => p.Id == id);
+
+            if (!full)
+            {
+                query = query.Select(p => new Printing
+                {
+                    ContestId = p.ContestId,
+                    Done = p.Done,
+                    FileName = p.FileName,
+                    Id = p.Id,
+                    LanguageId = p.LanguageId,
+                    Time = p.Time,
+                    UserId = p.UserId,
+                });
+            }
+
+            return query.SingleOrDefaultAsync()!;
         }
 
         public Task<Printing?> FirstAsync(Expression<Func<Printing, bool>> condition)

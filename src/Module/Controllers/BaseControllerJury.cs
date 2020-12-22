@@ -29,11 +29,13 @@ namespace SatelliteSite.ContestModule.Controllers
         /// Set the status message and redirect to jury home page.
         /// </summary>
         /// <param name="message">The status message.</param>
+        /// <param name="action">The home page action.</param>
+        /// <param name="controller">The home page controller.</param>
         /// <returns>The action result.</returns>
-        protected IActionResult GoBackHome(string message)
+        protected virtual IActionResult GoBackHome(string message, string action = "Home", string controller = "Jury")
         {
             StatusMessage = message;
-            return RedirectToAction("Home", "Jury");
+            return RedirectToAction(action, controller);
         }
     }
 }

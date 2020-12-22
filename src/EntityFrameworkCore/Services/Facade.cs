@@ -1,5 +1,4 @@
-﻿using Ccs.Entities;
-using Ccs.Services;
+﻿using Ccs.Services;
 using Microsoft.EntityFrameworkCore;
 using Polygon.Entities;
 using Polygon.Storages;
@@ -8,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace JudgeWeb.Domains.Contests
+namespace Ccs
 {
     public class ContestFacade<TContext>
         where TContext : DbContext

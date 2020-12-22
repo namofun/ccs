@@ -96,7 +96,7 @@ namespace SatelliteSite.ContestModule.Apis
         public async Task<ActionResult<PrintingDocument>> SetDone(
             [FromRoute] int id)
         {
-            var p = await _store.FindAsync(id);
+            var p = await _store.FindAsync(id, true);
             if (p == null) return NotFound();
             if (p.Done == true) return NoContent();
 

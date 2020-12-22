@@ -1,4 +1,5 @@
 ﻿using Ccs.Entities;
+using Ccs.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -31,8 +32,9 @@ namespace Ccs.Services
         /// Find the printing entity.
         /// </summary>
         /// <param name="id">The printing ID.</param>
+        /// <param name="full">Whether to include source code.</param>
         /// <returns>The task for fetching entity.</returns>
-        Task<Printing?> FindAsync(int id);
+        Task<Printing?> FindAsync(int id, bool full = false);
 
         /// <summary>
         /// Find the first printing entity satisfying the condition.
@@ -41,11 +43,12 @@ namespace Ccs.Services
         /// <returns>The task for fetching entity.</returns>
         Task<Printing?> FirstAsync(Expression<Func<Printing, bool>> condition);
 
-        /*
-        [Obsolete("This is going to be re-designed.", true)]
-        Task<List<T>> ListAsync<T>(int takeCount, int page,
-            Expression<Func<Printing, object, Team, T>> expression,
-            Expression<Func<Printing, bool>>? predicate = null);
-        */
+        /// <summary>
+        /// List the printing tasks for jury page.
+        /// </summary>
+        /// <param name="contestId">The contest ID.</param>
+        /// <param name="limit">The count per page.</param>
+        /// <returns>The task for fetching models.</returns>
+        Task<List<PrintingTask>> ListAsync(int contestId, int limit);
     }
 }
