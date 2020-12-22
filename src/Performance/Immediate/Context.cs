@@ -110,11 +110,6 @@ namespace Ccs.Contexts.Immediate
             throw new NotImplementedException();
         }
 
-        public virtual Task<IReadOnlyDictionary<int, string>> FetchTeamNamesAsync()
-        {
-            throw new NotImplementedException();
-        }
-
         public virtual Task UpdateProblemAsync(ProblemModel origin, Expression<Func<ContestProblem>> expression)
         {
             return GetRequiredService<IProblemsetStore>()
@@ -154,6 +149,20 @@ namespace Ccs.Contexts.Immediate
         {
             return GetRequiredService<IProblemsetStore>()
                 .DeleteAsync(problem);
+        }
+
+        public virtual async Task<IReadOnlyDictionary<int, string>> FetchTeamNamesAsync()
+        {
+            var list = await GetRequiredService<ITeamStore>()
+                .ListAsync(t => new { t.TeamId, t.TeamName }, t => t.Status == 1);
+            return list.ToDictionary(k => k.TeamId, k => k.TeamName);
+        }
+
+        public virtual async Task<IReadOnlyDictionary<int, (string Name, string Affiliation)>> FetchPublicTeamNamesWithAffiliationAsync()
+        {
+            var list = await GetRequiredService<ITeamStore>()
+                .ListAsync(t => new { t.TeamId, t.TeamName, t.Affiliation.Abbreviation }, t => t.Status == 1 && t.Category.IsPublic);
+            return list.ToDictionary(k => k.TeamId, k => (k.TeamName, k.Abbreviation));
         }
     }
 }

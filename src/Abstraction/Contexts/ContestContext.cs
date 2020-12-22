@@ -92,6 +92,12 @@ namespace Ccs
         Task<IReadOnlyDictionary<int, string>> FetchTeamNamesAsync();
 
         /// <summary>
+        /// Fetch the team names as a lookup dictionary.
+        /// </summary>
+        /// <returns>The task for getting this dictionary.</returns>
+        Task<IReadOnlyDictionary<int, (string Name, string Affiliation)>> FetchPublicTeamNamesWithAffiliationAsync();
+
+        /// <summary>
         /// Get the jury list.
         /// </summary>
         /// <returns>The task for fetching jury list.</returns>

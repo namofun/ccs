@@ -123,6 +123,16 @@ namespace Ccs.Contexts.Cached
 
         #region Aggregate Root: Team
 
+        private void ExpireTeamThings(params string[] another)
+        {
+            foreach (var item in another ?? Array.Empty<string>())
+                Expire(item);
+            Expire("Teams::Affiliations");
+            Expire("Teams::Categories");
+            Expire("Teams::Names");
+            Expire("Teams::Analysis");
+        }
+
         public override Task<Team?> FindTeamByIdAsync(int teamId)
         {
             return CacheAsync($"Teams::Id({teamId})", _options.Team,
@@ -150,9 +160,19 @@ namespace Ccs.Contexts.Cached
         public override async Task UpdateTeamAsync(Team origin, Expression<Func<Team>> expression)
         {
             await base.UpdateTeamAsync(origin, expression);
-            Expire($"Teams::Id({origin.TeamId})");
-            Expire("Teams::Affiliations");
-            Expire("Teams::Categories");
+            ExpireTeamThings($"Teams::Id({origin.TeamId})");
+        }
+
+        public override Task<IReadOnlyDictionary<int, string>> FetchTeamNamesAsync()
+        {
+            return CacheAsync("Teams::Names", _options.Teams,
+                async () => await base.FetchTeamNamesAsync());
+        }
+
+        public override Task<IReadOnlyDictionary<int, (string Name, string Affiliation)>> FetchPublicTeamNamesWithAffiliationAsync()
+        {
+            return CacheAsync("Teams::Analysis", TimeSpan.FromMinutes(2),
+                async () => await base.FetchPublicTeamNamesWithAffiliationAsync());
         }
 
         #endregion

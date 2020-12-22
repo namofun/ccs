@@ -1,0 +1,95 @@
+﻿@using Polygon.Models
+@using Polygon.Entities
+@model IEnumerable<Solution>
+@{
+    ViewData["Title"] = "Submission";
+    ViewData["RefreshSpan"] = 30;
+    if (ViewData.ContainsKey("InAjax")) { Layout = null; }
+    Contest ctx = ViewBag.Contest;
+    var probs = await Context.GetContestContext().FetchProblemsAsync();
+    int correct = 0, total = 0;
+    var tn = await Context.GetContestContext().FetchTeamNamesAsync();
+}
+
+@section Header {
+    <h2 class="mt-2">Submissions</h2>
+    <p style="font-size:1.1em">
+        Show submissions:
+        <a asp-action="List" asp-route-all="false">newest</a>
+        |
+        <a asp-action="List" asp-route-all="true">all</a>
+    </p>
+}
+
+<table class="data-table table table-hover table-striped table-sm submissions-table">
+    <thead class="thead-light">
+        <tr>
+            <th scope="col">ID</th>
+            <th scope="col">time</th>
+            <th scope="col">team</th>
+            <th scope="col">problem</th>
+            <th scope="col">lang</th>
+            <th scope="col">result</th>
+            <th scope="col" class="not-sortable not-searchable">test results</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var sub in Model)
+        {
+            var prob = probs.SingleOrDefault(p => p.ProblemId == sub.ProblemId);
+            if (prob == null) { continue; }
+            var tooLate = ((ctx.StartTime + ctx.EndTime) ?? DateTimeOffset.MaxValue) < sub.Time;
+            if (sub.Verdict == Verdict.Accepted) { correct++; }
+            total++;
+            <tr asp-controller="Submissions" asp-action="Detail" asp-route-sid="@sub.SubmissionId"
+                data-toggle="gotoUrl"
+                data-problem-id="@sub.ProblemId"
+                data-team-id="@sub.TeamId"
+                data-language-id="@sub.Language"
+                data-submission-id="@sub.SubmissionId">
+                <td use-a>s@(sub.SubmissionId)</td>
+                <td use-a title="@sub.Time">@((sub.Time - ctx.StartTime).GetValueOrDefault().ToDeltaString())</td>
+                <td use-a>@tn.GetValueOrDefault(sub.TeamId) (t@(sub.TeamId))</td>
+                <td use-a class="probid">@prob.ShortName</td>
+                <td use-a class="langid">@sub.Language</td>
+                <td use-a>
+                    <span asp-show-if="ctx.RankingStrategy == 2">@(sub.TotalScore ?? 0) - </span>
+                    <verdict3 skipped="@sub.Skipped" value="@sub.Verdict" too-late="tooLate" />
+                    <razor asp-show-if="tooLate && !sub.Skipped"> (<verdict3 value="@sub.Verdict" />)</razor>
+                </td>
+                <td class="testcase-results">
+                    @{ int t = 0; foreach (var item in sub.Details) { t++;<verdict6 value="@item.Status" />}@for (; t < prob.TestcaseCount; t++) {<verdict6 value="Pending" judging-pending="@(sub.Verdict == Verdict.Pending || sub.Verdict == Verdict.Running)" />}}
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<p>
+    Total correct: @correct, submitted: @total.
+</p>
+
+<style>
+
+    .data-table td a, .data-table td a:hover {
+        display: block;
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .data-table th {
+        white-space: nowrap;
+    }
+
+    .data-table td {
+        white-space: nowrap;
+    }
+
+    .dataTables_filter {
+        text-align: inherit;
+    }
+
+    .table-wrapper {
+        display: inline-block;
+    }
+</style>
