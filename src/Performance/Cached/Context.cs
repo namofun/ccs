@@ -7,6 +7,7 @@ using Polygon.Entities;
 using SatelliteSite.IdentityModule.Services;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Tenant.Entities;
@@ -123,14 +124,27 @@ namespace Ccs.Contexts.Cached
 
         #region Aggregate Root: Team
 
-        private void ExpireTeamThings(params string[] another)
+        private void ExpireTeamThings(string one, IEnumerable<string>? another = null)
         {
+            Expire(one);
             foreach (var item in another ?? Array.Empty<string>())
                 Expire(item);
-            Expire("Teams::Affiliations");
-            Expire("Teams::Categories");
+            Expire("Teams::Affiliations(Filtered=True)");
+            Expire("Teams::Categories(Filtered=True)");
             Expire("Teams::Names");
             Expire("Teams::Analysis");
+            Expire("Teams::Members");
+        }
+
+        public override async Task<IReadOnlyList<Member>> DeleteTeamAsync(Team origin)
+        {
+            var members = await base.DeleteTeamAsync(origin);
+
+            ExpireTeamThings(
+                $"Teams::Id({origin.TeamId})",
+                members.Select(m => $"Teams::User({m.UserId})"));
+
+            return members;
         }
 
         public override Task<Team?> FindTeamByIdAsync(int teamId)
@@ -145,16 +159,16 @@ namespace Ccs.Contexts.Cached
                 async () => await base.FindMemberByUserAsync(userId));
         }
 
-        public override Task<IReadOnlyDictionary<int, Affiliation>> FetchAffiliationsAsync()
+        public override Task<IReadOnlyDictionary<int, Affiliation>> FetchAffiliationsAsync(bool filtered)
         {
-            return CacheAsync("Teams::Affiliations", _options.Teams,
-                async () => await base.FetchAffiliationsAsync());
+            return CacheAsync($"Teams::Affiliations(Filtered={filtered})", _options.Teams,
+                async () => await base.FetchAffiliationsAsync(filtered));
         }
 
-        public override Task<IReadOnlyDictionary<int, Category>> FetchCategoriesAsync()
+        public override Task<IReadOnlyDictionary<int, Category>> FetchCategoriesAsync(bool filtered)
         {
-            return CacheAsync("Teams::Categories", _options.Teams,
-                async () => await base.FetchCategoriesAsync());
+            return CacheAsync($"Teams::Categories(Filtered={filtered})", _options.Teams,
+                async () => await base.FetchCategoriesAsync(filtered));
         }
 
         public override async Task UpdateTeamAsync(Team origin, Expression<Func<Team>> expression)
@@ -173,6 +187,28 @@ namespace Ccs.Contexts.Cached
         {
             return CacheAsync("Teams::Analysis", TimeSpan.FromMinutes(2),
                 async () => await base.FetchPublicTeamNamesWithAffiliationAsync());
+        }
+
+        public override async Task<Team> CreateTeamAsync(Team team, IEnumerable<IUser>? users)
+        {
+            team = await base.CreateTeamAsync(team, users);
+
+            ExpireTeamThings(
+                $"Teams::Id({team.TeamId})",
+                users?.Select(m => $"Teams::User({m.Id})"));
+
+            return team;
+        }
+
+        public override Task<ILookup<int, string>> FetchTeamMembersAsync()
+        {
+            return CacheAsync("Teams::Members", _options.Teams,
+                async () => await base.FetchTeamMembersAsync());
+        }
+
+        public override async Task<IEnumerable<string>> FetchTeamMemberAsync(Team team)
+        {
+            return (await FetchTeamMembersAsync())[team.TeamId];
         }
 
         #endregion

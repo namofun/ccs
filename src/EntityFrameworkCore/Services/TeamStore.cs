@@ -195,44 +195,29 @@ namespace Ccs.Services
             var affected = await Teams
                 .Where(t => t.ContestId == cid && t.TeamId == teamid)
                 .BatchUpdateAsync(Expression.Lambda<Func<Team, Team>>(activator.Body, Expression.Parameter(typeof(Team), "_")));
+
+            if (affected != 1)
+                throw new DbUpdateException();
+        }
+
+        public async Task<IReadOnlyList<Member>> DeleteAsync(Team team)
+        {
+            var affected = await Teams
+                .Where(t => t.ContestId == team.ContestId && t.TeamId == team.TeamId)
+                .BatchUpdateAsync(_ => new Team { Status = 3 });
+
             if (affected != 1)
                 throw new DbUpdateException();
 
             var list = await Members
-                .Where(tu => tu.ContestId == cid && tu.TeamId == teamid)
-                .ToListAsync();
-        }
-
-        public async Task<IEnumerable<int>> DeleteAsync(Team team)
-        {
-            var list = await Members
                 .Where(tu => tu.ContestId == team.ContestId && tu.TeamId == team.TeamId)
                 .ToListAsync();
-
-            team.Status = 3;
-            Teams.Update(team);
-            await Context.SaveChangesAsync();
 
             await Members
                 .Where(tu => tu.ContestId == team.ContestId && tu.TeamId == team.TeamId)
                 .BatchDeleteAsync();
 
-            Context.RemoveCacheEntry($"`c{team.ContestId}`teams`t{team.TeamId}");
-            foreach (var uu in list)
-                Context.RemoveCacheEntry($"`c{team.ContestId}`teams`u{uu.UserId}");
-            Context.RemoveCacheEntry($"`c{team.ContestId}`teams`list_jury");
-            Context.RemoveCacheEntry($"`c{team.ContestId}`teams`aff0");
-            Context.RemoveCacheEntry($"`c{team.ContestId}`teams`cat`1");
-            Context.RemoveCacheEntry($"`c{team.ContestId}`teams`cat`2");
-            Context.RemoveCacheEntry($"`c{team.ContestId}`teams`members");
-            return list.Select(t => t.UserId);
-        }
-
-        public Task<int> GetJuryStatusAsync(int cid)
-        {
-            return Teams
-                .Where(t => t.Status == 0 && t.ContestId == cid)
-                .CachedCountAsync($"`c{cid}`teams`pending_count", TimeSpan.FromSeconds(10));
+            return list;
         }
 
         public async Task<HashSet<int>> ListMemberUidsAsync(int cid)
@@ -250,7 +235,9 @@ namespace Ccs.Services
 
         public Task<int> CountPendingAsync(Contest contest)
         {
-            throw new NotImplementedException();
+            return Teams
+                .Where(t => t.Status == 0 && t.ContestId == contest.Id)
+                .CountAsync();
         }
 
         public Task<ILookup<int, string>> ListMembersAsync(Contest contest)
@@ -281,13 +268,6 @@ namespace Ccs.Services
             }
 
             await Context.SaveChangesAsync();
-            Context.RemoveCacheEntry($"`c{cid}`teams`list_jury");
-            Context.RemoveCacheEntry($"`c{cid}`teams`t{team.TeamId}");
-            Context.RemoveCacheEntry($"`c{cid}`teams`members");
-
-            if (users != null)
-                foreach (var uid in users)
-                    Context.RemoveCacheEntry($"`c{cid}`teams`u{uid}");
             return team;
         }
 
@@ -332,11 +312,17 @@ namespace Ccs.Services
         public Task<List<T>> ListAsync<T>(
             Expression<Func<Team, T>> selector,
             Expression<Func<Team, bool>>? predicate = null)
+            where T : class
         {
             return Teams
                 .WhereIf(predicate != null, predicate!)
                 .Select(selector)
                 .ToListAsync();
+        }
+
+        public Task<IEnumerable<string>> ListMembersAsync(Team team)
+        {
+            throw new NotImplementedException();
         }
     }
 }

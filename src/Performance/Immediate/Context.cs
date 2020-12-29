@@ -100,12 +100,12 @@ namespace Ccs.Contexts.Immediate
             return _services.GetRequiredService<T>();
         }
 
-        public virtual Task<IReadOnlyDictionary<int, Affiliation>> FetchAffiliationsAsync()
+        public virtual Task<IReadOnlyDictionary<int, Affiliation>> FetchAffiliationsAsync(bool contestFiltered)
         {
             throw new NotImplementedException();
         }
 
-        public virtual Task<IReadOnlyDictionary<int, Category>> FetchCategoriesAsync()
+        public virtual Task<IReadOnlyDictionary<int, Category>> FetchCategoriesAsync(bool contestFiltered)
         {
             throw new NotImplementedException();
         }
@@ -163,6 +163,30 @@ namespace Ccs.Contexts.Immediate
             var list = await GetRequiredService<ITeamStore>()
                 .ListAsync(t => new { t.TeamId, t.TeamName, t.Affiliation.Abbreviation }, t => t.Status == 1 && t.Category.IsPublic);
             return list.ToDictionary(k => k.TeamId, k => (k.TeamName, k.Abbreviation));
+        }
+
+        public virtual Task<IReadOnlyList<Member>> DeleteTeamAsync(Team origin)
+        {
+            return GetRequiredService<ITeamStore>()
+                .DeleteAsync(origin);
+        }
+
+        public virtual Task<ILookup<int, string>> FetchTeamMembersAsync()
+        {
+            return GetRequiredService<ITeamStore>()
+                .ListMembersAsync(Contest);
+        }
+
+        public virtual Task<IEnumerable<string>> FetchTeamMemberAsync(Team team)
+        {
+            return GetRequiredService<ITeamStore>()
+                .ListMembersAsync(team);
+        }
+
+        public virtual Task<Team> CreateTeamAsync(Team team, IEnumerable<IUser>? users)
+        {
+            return GetRequiredService<ITeamStore>()
+                .CreateAsync(team, users);
         }
     }
 }

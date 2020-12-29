@@ -177,39 +177,40 @@ namespace SatelliteSite.ContestModule.Controllers
                     await zip.CreateEntryFromStream(olympStream, "olymp.sty");
 
                 var documentBuilder = new System.Text.StringBuilder()
-                    .AppendLine(@"\documentclass [11pt, a4paper, oneside] {article}")
-                    .AppendLine()
-                    .AppendLine(@"\usepackage {import}")
-                    .AppendLine(@"\usepackage [T2A] {fontenc}")
-                    .AppendLine(@"\usepackage [utf8] {inputenc}")
-                    .AppendLine(@"\usepackage [english, russian] {babel}")
-                    .AppendLine(@"\usepackage {amsmath}")
-                    .AppendLine(@"\usepackage {amssymb}")
-                    .AppendLine(@"\usepackage {olymp}")
-                    .AppendLine(@"\usepackage {comment}")
-                    .AppendLine(@"\usepackage {epigraph}")
-                    .AppendLine(@"\usepackage {expdlist}")
-                    .AppendLine(@"\usepackage {listings}")
-                    .AppendLine(@"\usepackage {graphicx}")
-                    .AppendLine(@"\usepackage {ulem}")
-                    .AppendLine(@"\usepackage {xeCJK}")
-                    .AppendLine()
-                    .AppendLine(@"\lstset{basicstyle=\ttfamily}")
-                    .AppendLine()
-                    .AppendLine()
-                    .AppendLine(@"\begin {document}")
-                    .AppendLine()
-                    .AppendLine(@"\contest")
-                    .AppendLine($"{{{Contest.Name}}}%")
-                    .AppendLine("{ACM.XYLAB.FUN}%")
-                    .AppendLine($"{{{startDate}}}%")
-                    .AppendLine()
-                    .AppendLine(@"\binoppenalty=10000")
-                    .AppendLine(@"\relpenalty=10000")
-                    .AppendLine()
-                    .AppendLine(@"\renewcommand{\t}{\texttt}")
-                    .AppendLine()
-                    .AppendLine();
+                    .Append(@"
+\documentclass [11pt, a4paper, oneside] {article}
+
+\usepackage {import}
+\usepackage [T2A] {fontenc}
+\usepackage [utf8] {inputenc}
+\usepackage [english, russian] {babel}
+\usepackage {amsmath}
+\usepackage {amssymb}
+\usepackage {olymp}
+\usepackage {comment}
+\usepackage {epigraph}
+\usepackage {expdlist}
+\usepackage {listings}
+\usepackage {graphicx}
+\usepackage {ulem}
+\usepackage {xeCJK}
+
+\lstset{basicstyle=\ttfamily}
+
+
+\begin {document}
+
+\contest
+{").Append(Contest.Name).Append(@"}%
+{ACM.XYLAB.FUN}%
+{").Append(startDate).Append(@"}%
+
+\binoppenalty=10000
+\relpenalty=10000
+
+\renewcommand{\t}{\texttt}
+
+");
 
                 foreach (var item in stmts)
                 {

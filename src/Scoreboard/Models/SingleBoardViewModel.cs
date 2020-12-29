@@ -8,7 +8,7 @@ namespace Ccs.Models
 {
     public class SingleBoardViewModel : BoardViewModel
     {
-        public Team QueryInfo { get; set; }
+        public IScoreboardRow QueryInfo { get; set; }
 
         public Category Category { get; set; }
 

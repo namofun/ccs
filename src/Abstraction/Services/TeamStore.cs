@@ -31,6 +31,13 @@ namespace Ccs.Services
         Task<ILookup<int, string>> ListMembersAsync(Contest contest);
 
         /// <summary>
+        /// List the members with team ID as key and username as values.
+        /// </summary>
+        /// <param name="team">The contest team.</param>
+        /// <returns>The task for lookups.</returns>
+        Task<IEnumerable<string>> ListMembersAsync(Team team);
+
+        /// <summary>
         /// Create a team with specified users.
         /// </summary>
         /// <param name="team">The team.</param>
@@ -79,7 +86,15 @@ namespace Ccs.Services
         /// <returns>The task for listing entities.</returns>
         Task<List<T>> ListAsync<T>(
             Expression<Func<Team, T>> selector,
-            Expression<Func<Team, bool>>? predicate = null);
+            Expression<Func<Team, bool>>? predicate = null)
+            where T : class;
+
+        /// <summary>
+        /// Delete the teams returning the members.
+        /// </summary>
+        /// <param name="team">The team to delete.</param>
+        /// <returns>The task for deleting teams, returning the members.</returns>
+        Task<IReadOnlyList<Member>> DeleteAsync(Team team);
 
         /*
 
@@ -100,13 +115,7 @@ namespace Ccs.Services
         Task<List<Member>> ListRegisteredWithDetailAsync(int uid);
 
         [Obsolete]
-        Task<List<Affiliation>> ListAffiliationAsync(int cid, bool filtered = true);
-
-        [Obsolete]
         Task<HashSet<int>> ListMemberUidsAsync(int cid);
-
-        [Obsolete]
-        Task<List<Category>> ListCategoryAsync(int cid, bool? requirePublic = null);
 
         [Obsolete]
         Task<Dictionary<int, string>> ListNamesAsync(int cid);
@@ -114,8 +123,6 @@ namespace Ccs.Services
         [Obsolete]
         Task<Dictionary<int, (int ac, int tot)>> StatisticsSubmissionAsync(int cid, int teamid);
 
-        [Obsolete]
-        Task<IEnumerable<int>> DeleteAsync(Team team);
         */
     }
 }

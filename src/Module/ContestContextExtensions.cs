@@ -162,5 +162,31 @@ namespace Ccs
                 .GetRequiredService<ISubmissionStore>()
                 .ListWithJudgingAsync(cond, true, limit);
         }
+
+        /// <summary>
+        /// Gets the single board view.
+        /// </summary>
+        /// <param name="context">The contest context.</param>
+        /// <param name="teamid">The team ID.</param>
+        /// <returns>The single scoreboard.</returns>
+        public static async Task<SingleBoardViewModel?> SingleBoardAsync(
+            this IContestContext context,
+            int teamid)
+        {
+            var scb = await context.FetchScoreboardAsync();
+            var bq = scb.Data.GetValueOrDefault(teamid);
+            if (bq == null) return null;
+            var cats = await context.FetchCategoriesAsync();
+            var affs = await context.FetchAffiliationsAsync();
+
+            return new SingleBoardViewModel
+            {
+                QueryInfo = bq,
+                Contest = context.Contest,
+                Problems = await context.FetchProblemsAsync(),
+                Affiliation = affs[bq.AffiliationId],
+                Category = cats[bq.CategoryId],
+            };
+        }
     }
 }

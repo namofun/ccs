@@ -4,6 +4,7 @@ using Polygon.Entities;
 using SatelliteSite.IdentityModule.Services;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Net;
 using System.Threading.Tasks;
@@ -62,14 +63,16 @@ namespace Ccs
         /// <summary>
         /// Fetch the affiliations used in contest.
         /// </summary>
+        /// <param name="contestFiltered">Whether filtering the entities only used in this contest.</param>
         /// <returns>The task for fetching affiliations.</returns>
-        Task<IReadOnlyDictionary<int, Affiliation>> FetchAffiliationsAsync();
+        Task<IReadOnlyDictionary<int, Affiliation>> FetchAffiliationsAsync(bool contestFiltered = true);
 
         /// <summary>
         /// Fetch the categories used in contest.
         /// </summary>
+        /// <param name="contestFiltered">Whether filtering the entities only used in this contest.</param>
         /// <returns>The task for fetching affiliations.</returns>
-        Task<IReadOnlyDictionary<int, Category>> FetchCategoriesAsync();
+        Task<IReadOnlyDictionary<int, Category>> FetchCategoriesAsync(bool contestFiltered = true);
 
         /// <summary>
         /// Find team by team ID.
@@ -90,6 +93,19 @@ namespace Ccs
         /// </summary>
         /// <returns>The task for getting this dictionary.</returns>
         Task<IReadOnlyDictionary<int, string>> FetchTeamNamesAsync();
+
+        /// <summary>
+        /// Fetch the team members as a lookup dictionary.
+        /// </summary>
+        /// <returns>The task for getting this lookup.</returns>
+        Task<ILookup<int, string>> FetchTeamMembersAsync();
+
+        /// <summary>
+        /// Fetch the team member.
+        /// </summary>
+        /// <param name="team">The team.</param>
+        /// <returns>The task for getting member.</returns>
+        Task<IEnumerable<string>> FetchTeamMemberAsync(Team team);
 
         /// <summary>
         /// Fetch the team names as a lookup dictionary.
@@ -141,12 +157,27 @@ namespace Ccs
         Task DeleteProblemAsync(ProblemModel problem);
 
         /// <summary>
+        /// Create team.
+        /// </summary>
+        /// <param name="team">The original team model.</param>
+        /// <param name="users">The team members.</param>
+        /// <returns>The task for creating contest teams, returning the team id.</returns>
+        Task<Team> CreateTeamAsync(Team team, IEnumerable<IUser>? users);
+
+        /// <summary>
         /// Update team by expression.
         /// </summary>
         /// <param name="origin">The original team model.</param>
         /// <param name="expression">The expression for updating team.</param>
         /// <returns>The task for updating contest teams.</returns>
         Task UpdateTeamAsync(Team origin, Expression<Func<Team>> expression);
+
+        /// <summary>
+        /// Delete the team and returns existing members.
+        /// </summary>
+        /// <param name="origin">The original team.</param>
+        /// <returns>The task for deleting contest teams.</returns>
+        Task<IReadOnlyList<Member>> DeleteTeamAsync(Team origin);
 
         /// <summary>
         /// Create a submission for team.
