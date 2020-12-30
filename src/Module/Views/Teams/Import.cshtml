@@ -1,0 +1,22 @@
+﻿@{
+    Layout = "_WindowLayout";
+    Contest ctx = ViewBag.Contest;
+    ViewData["Title"] = "Team Import";
+    ViewData["FormAjaxUpload"] = Url.Action("Import");
+}
+
+<div class="form-group">
+    <label for="file">TSV File</label>
+    <div class="custom-file">
+        <input name="file" type="file" class="custom-file-input" id="file" />
+        <label class="custom-file-label" for="customFile">Choose file</label>
+    </div>
+    <small class="text-muted mt-2">
+        For each line in tsv, it should be <code>[name]\t[affname]\t[category]\t[uid]</code>.
+    </small>
+</div>
+<div class="upload-progress"><div></div></div>
+
+@section Footer {
+    <button type="submit" class="btn btn-primary">Begin</button>
+}
