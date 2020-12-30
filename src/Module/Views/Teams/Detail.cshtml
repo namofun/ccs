@@ -64,7 +64,7 @@
 
 <razor asp-show-if="scoreboard != null">
     <h3>Score</h3>
-    <scoreboard model="scoreboard" />
+    @Html.ContestScoreboard(scoreboard, false, false)
 </razor>
 
 <h3 class="mt-3">Submissions</h3>
