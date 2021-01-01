@@ -32,7 +32,7 @@ namespace SatelliteSite.ContestModule.Controllers
             if (submit == null || submit.ContestId != Contest.Id) return NotFound();
             var judgings = submit.Judgings;
 
-            var prob = await Context.FindProblemAsync(submit.ProblemId);
+            var prob = Problems.Find(submit.ProblemId);
             if (prob == null) return NotFound(); // the problem is deleted later
 
             var judging = jid.HasValue

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -34,6 +35,11 @@ namespace SatelliteSite.ContestModule.Controllers
         /// The team entity for current user
         /// </summary>
         protected Ccs.Entities.Team Team { get; private set; }
+
+        /// <summary>
+        /// The problem list
+        /// </summary>
+        protected IReadOnlyList<Ccs.Models.ProblemModel> Problems { get; private set; }
 
         /// <summary>
         /// Presents a view for printing codes.
@@ -96,7 +102,6 @@ namespace SatelliteSite.ContestModule.Controllers
             var scb = await Context.FetchScoreboardAsync();
             var affs = await Context.FetchAffiliationsAsync();
             var orgs = await Context.FetchCategoriesAsync();
-            var probs = await Context.FetchProblemsAsync();
 
             if (!isJury)
                 orgs = orgs.Values.Where(o => o.IsPublic).ToDictionary(c => c.Id);
@@ -105,7 +110,7 @@ namespace SatelliteSite.ContestModule.Controllers
             {
                 RankCache = scb.Data.Values,
                 UpdateTime = scb.RefreshTime,
-                Problems = probs,
+                Problems = Problems,
                 IsPublic = isPublic && !isJury,
                 Categories = orgs,
                 Contest = Contest,
@@ -154,9 +159,11 @@ namespace SatelliteSite.ContestModule.Controllers
             }
             else
             {
+                Problems = await Context.FetchProblemsAsync();
                 HttpContext.Items[nameof(cid)] = cid;
                 HttpContext.Features.Set(Context);
                 ViewBag.Contest = Contest;
+                ViewBag.Problems = Problems;
             }
 
             // the event of contest state change

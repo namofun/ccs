@@ -33,7 +33,7 @@ namespace SatelliteSite.ContestModule.Controllers
         [HttpGet("{pid}")]
         public async Task<IActionResult> Detail(int pid, bool all = false)
         {
-            var prob = await Context.FindProblemAsync(pid);
+            var prob = Problems.Find(pid);
             if (prob == null) return NotFound();
             ViewBag.Submissions = await Context.FetchSolutionsAsync(probid: pid, all: all);            
             return View(prob);
@@ -44,7 +44,7 @@ namespace SatelliteSite.ContestModule.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Add(ContestProblem model)
         {
-            if (null != await Context.FindProblemAsync(model.ShortName))
+            if (null != Problems.Find(model.ShortName))
                 ModelState.AddModelError("xys::duplicate", "Duplicate short name for problem.");
 
             var probDetect = await Context
@@ -85,9 +85,9 @@ namespace SatelliteSite.ContestModule.Controllers
 
 
         [HttpGet("{pid}/[action]")]
-        public async Task<IActionResult> Edit(int pid)
+        public IActionResult Edit(int pid)
         {
-            var prob = await Context.FindProblemAsync(pid);
+            var prob = Problems.Find(pid);
             if (prob == null) return NotFound();
             return Window(prob);
         }
@@ -97,11 +97,10 @@ namespace SatelliteSite.ContestModule.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int pid, ContestProblem model)
         {
-            var problems = await Context.FetchProblemsAsync();
-            var origin = problems.FirstOrDefault(cp => cp.ProblemId == pid);
+            var origin = Problems.Find(pid);
             if (origin == null) return NotFound();
 
-            if (problems.Any(cp => cp.ShortName == model.ShortName && cp.ProblemId != pid))
+            if (Problems.Any(cp => cp.ShortName == model.ShortName && cp.ProblemId != pid))
                 ModelState.AddModelError("xys::duplicate", "Duplicate short name for problem.");
             if (!ModelState.IsValid)
                 return Window(model);
@@ -122,9 +121,9 @@ namespace SatelliteSite.ContestModule.Controllers
 
 
         [HttpGet("{pid}/[action]")]
-        public async Task<IActionResult> Delete(int pid)
+        public IActionResult Delete(int pid)
         {
-            var prob = await Context.FindProblemAsync(pid);
+            var prob = Problems.Find(pid);
             if (prob == null) return NotFound();
 
             return AskPost(
@@ -139,7 +138,7 @@ namespace SatelliteSite.ContestModule.Controllers
         [HttpPost("{pid}/[action]")]
         public async Task<IActionResult> Delete(int pid, bool _ = true)
         {
-            var prob = await Context.FindProblemAsync(pid);
+            var prob = Problems.Find(pid);
             if (prob == null) return NotFound();
 
             await Context.DeleteProblemAsync(prob);
@@ -157,14 +156,13 @@ namespace SatelliteSite.ContestModule.Controllers
             var provider = Context.GetRequiredService<IStatementProvider>();
             var writer = Context.GetRequiredService<IStatementWriter>();
             var raw = await store.RawProblemsAsync(Contest.Id);
-            var probs = await Context.FetchProblemsAsync();
             var stmts = new List<Statement>();
             foreach (var prob in raw)
             {
                 var stmt = await provider.ReadAsync(prob);
                 stmts.Add(new Statement(prob,
                     stmt.Description, stmt.Input, stmt.Output, stmt.Hint, stmt.Interaction,
-                    probs.Find(prob.Id).ShortName, stmt.Samples));
+                    Problems.Find(prob.Id).ShortName, stmt.Samples));
             }
 
             var startTime = Contest.StartTime ?? DateTimeOffset.Now;

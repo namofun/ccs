@@ -127,7 +127,7 @@ namespace SatelliteSite.ContestModule.Controllers
         [HttpGet("[action]/{pid}")]
         public async Task<IActionResult> Problem(int pid)
         {
-            var prob = await Context.FindProblemAsync(pid);
+            var prob = Problems.Find(pid);
             if (prob == null) return NotFound();
 
             int cid = Contest.Id;

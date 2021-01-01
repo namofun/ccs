@@ -25,7 +25,7 @@ namespace SatelliteSite.ContestModule.Controllers
             return View(new JuryListClarificationModel
             {
                 AllClarifications = await Store.ListAsync(Contest, c => c.Recipient == null),
-                Problems = await Context.FetchProblemsAsync(),
+                Problems = Problems,
                 TeamNames = await Context.FetchTeamNamesAsync(),
                 JuryName = User.GetUserName(),
             });
@@ -50,8 +50,7 @@ namespace SatelliteSite.ContestModule.Controllers
             }
 
             // determine category
-            var problems = await Context.FetchProblemsAsync();
-            var usage = problems.GetClarificationCategories().FirstOrDefault(cp => model.Type == cp.Item1);
+            var usage = Problems.GetClarificationCategories().FirstOrDefault(cp => model.Type == cp.Item1);
             if (usage.Item1 == null)
                 ModelState.AddModelError("xys::error_cate", "The category specified is wrong.");
 
@@ -121,7 +120,7 @@ namespace SatelliteSite.ContestModule.Controllers
             {
                 Associated = query,
                 Main = query.First(),
-                Problems = await Context.FetchProblemsAsync(),
+                Problems = Problems,
                 Teams = await Context.FetchTeamNamesAsync(),
                 UserName = User.GetUserName(),
             });

@@ -19,8 +19,14 @@ namespace Ccs.Contexts.Immediate
     {
         private readonly IServiceProvider _services;
         private readonly Contest _contest;
+        private IClarificationStore? _clars;
+        private ITeamStore? _teams;
 
         public Contest Contest => _contest;
+
+        public IClarificationStore Clarifications => _clars ??= GetRequiredService<IClarificationStore>();
+
+        public ITeamStore TeamStore => _teams ??= GetRequiredService<ITeamStore>();
 
         public ImmediateContestContext(Contest contest, IServiceProvider serviceProvider)
         {
@@ -49,8 +55,7 @@ namespace Ccs.Contexts.Immediate
 
         public virtual Task<ScoreboardModel> FetchScoreboardAsync()
         {
-            return GetRequiredService<ITeamStore>()
-                .LoadScoreboardAsync(Contest);
+            return TeamStore.LoadScoreboardAsync(Contest);
         }
 
         public virtual Task<Submission> SubmitAsync(
@@ -78,14 +83,12 @@ namespace Ccs.Contexts.Immediate
 
         public virtual Task<Team?> FindTeamByIdAsync(int teamId)
         {
-            return GetRequiredService<ITeamStore>()
-                .FindByIdAsync(Contest.Id, teamId);
+            return TeamStore.FindByIdAsync(Contest.Id, teamId);
         }
 
         public virtual Task<Member?> FindMemberByUserAsync(int userId)
         {
-            return GetRequiredService<ITeamStore>()
-                .FindByUserAsync(Contest.Id, userId);
+            return TeamStore.FindByUserAsync(Contest.Id, userId);
         }
 
         public virtual async Task<Contest> UpdateContestAsync(Expression<Func<Contest, Contest>> updateExpression)
@@ -135,8 +138,7 @@ namespace Ccs.Contexts.Immediate
 
         public virtual Task UpdateTeamAsync(Team origin, Expression<Func<Team>> expression)
         {
-            return GetRequiredService<ITeamStore>()
-                .UpdateAsync(origin.ContestId, origin.TeamId, expression);
+            return TeamStore.UpdateAsync(origin.ContestId, origin.TeamId, expression);
         }
 
         public virtual Task CreateProblemAsync(Expression<Func<ContestProblem>> expression)
@@ -153,40 +155,34 @@ namespace Ccs.Contexts.Immediate
 
         public virtual async Task<IReadOnlyDictionary<int, string>> FetchTeamNamesAsync()
         {
-            var list = await GetRequiredService<ITeamStore>()
-                .ListAsync(t => new { t.TeamId, t.TeamName }, t => t.Status == 1);
+            var list = await TeamStore.ListAsync(t => new { t.TeamId, t.TeamName }, t => t.Status == 1);
             return list.ToDictionary(k => k.TeamId, k => k.TeamName);
         }
 
         public virtual async Task<IReadOnlyDictionary<int, (string Name, string Affiliation)>> FetchPublicTeamNamesWithAffiliationAsync()
         {
-            var list = await GetRequiredService<ITeamStore>()
-                .ListAsync(t => new { t.TeamId, t.TeamName, t.Affiliation.Abbreviation }, t => t.Status == 1 && t.Category.IsPublic);
+            var list = await TeamStore.ListAsync(t => new { t.TeamId, t.TeamName, t.Affiliation.Abbreviation }, t => t.Status == 1 && t.Category.IsPublic);
             return list.ToDictionary(k => k.TeamId, k => (k.TeamName, k.Abbreviation));
         }
 
         public virtual Task<IReadOnlyList<Member>> DeleteTeamAsync(Team origin)
         {
-            return GetRequiredService<ITeamStore>()
-                .DeleteAsync(origin);
+            return TeamStore.DeleteAsync(origin);
         }
 
         public virtual Task<ILookup<int, string>> FetchTeamMembersAsync()
         {
-            return GetRequiredService<ITeamStore>()
-                .ListMembersAsync(Contest);
+            return TeamStore.ListMembersAsync(Contest);
         }
 
         public virtual Task<IEnumerable<string>> FetchTeamMemberAsync(Team team)
         {
-            return GetRequiredService<ITeamStore>()
-                .ListMembersAsync(team);
+            return TeamStore.ListMembersAsync(team);
         }
 
         public virtual Task<Team> CreateTeamAsync(Team team, IEnumerable<IUser>? users)
         {
-            return GetRequiredService<ITeamStore>()
-                .CreateAsync(team, users);
+            return TeamStore.CreateAsync(team, users);
         }
     }
 }
