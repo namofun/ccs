@@ -24,7 +24,7 @@ namespace SatelliteSite.ContestModule.Controllers
         {
             return View(new JuryListClarificationModel
             {
-                AllClarifications = await Store.ListAsync(Contest, c => c.Recipient == null),
+                AllClarifications = await Context.ListClarificationsAsync(c => c.Recipient == null),
                 Problems = Problems,
                 TeamNames = await Context.FetchTeamNamesAsync(),
                 JuryName = User.GetUserName(),
@@ -44,7 +44,7 @@ namespace SatelliteSite.ContestModule.Controllers
             Clarification replyTo = null;
             if (model.ReplyTo.HasValue)
             {
-                replyTo = await Store.FindAsync(Contest, model.ReplyTo.Value);
+                replyTo = await Context.FindClarificationAsync(model.ReplyTo.Value);
                 if (replyTo == null)
                     ModelState.AddModelError("xys::clar_not_found", "The clarification replied to not found.");
             }
@@ -55,7 +55,7 @@ namespace SatelliteSite.ContestModule.Controllers
                 ModelState.AddModelError("xys::error_cate", "The category specified is wrong.");
 
             if (!ModelState.IsValid) return View(model);
-            var clarId = await Store.SendAsync(
+            var clarId = await Context.ClarifyAsync(
                 replyTo: replyTo,
                 clar: new Clarification
                 {
@@ -101,18 +101,18 @@ namespace SatelliteSite.ContestModule.Controllers
         [HttpGet("{clarid}")]
         public async Task<IActionResult> Detail(int clarid)
         {
-            var clar = await Store.FindAsync(Contest, clarid);
+            var clar = await Context.FindClarificationAsync(clarid);
             if (clar == null) return NotFound();
             var query = Enumerable.Repeat(clar, 1);
 
             if (clar.Sender == null && clar.ResponseToId != null)
             {
-                var clar2 = await Store.FindAsync(Contest, clar.ResponseToId.Value);
+                var clar2 = await Context.FindClarificationAsync(clar.ResponseToId.Value);
                 if (clar2 != null) query = query.Prepend(clar2);
             }
             else if (clar.Sender != null)
             {
-                var otherClars = await Store.ListAsync(Contest, c => c.ResponseToId == clarid && c.Sender == null);
+                var otherClars = await Context.ListClarificationsAsync(c => c.ResponseToId == clarid && c.Sender == null);
                 query = query.Concat(otherClars);
             }
 

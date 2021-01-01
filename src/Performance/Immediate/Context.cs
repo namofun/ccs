@@ -21,12 +21,15 @@ namespace Ccs.Contexts.Immediate
         private readonly Contest _contest;
         private IClarificationStore? _clars;
         private ITeamStore? _teams;
+        private IProblemsetStore? _probs;
 
         public Contest Contest => _contest;
 
-        public IClarificationStore Clarifications => _clars ??= GetRequiredService<IClarificationStore>();
+        public IClarificationStore ClarificationStore => _clars ??= GetRequiredService<IClarificationStore>();
 
         public ITeamStore TeamStore => _teams ??= GetRequiredService<ITeamStore>();
+
+        public IProblemsetStore ProblemsetStore => _probs ??= GetRequiredService<IProblemsetStore>();
 
         public ImmediateContestContext(Contest contest, IServiceProvider serviceProvider)
         {
@@ -49,8 +52,7 @@ namespace Ccs.Contexts.Immediate
 
         public virtual Task<IReadOnlyList<ProblemModel>> FetchProblemsAsync()
         {
-            return GetRequiredService<IProblemsetStore>()
-                .ListAsync(Contest);
+            return ProblemsetStore.ListAsync(Contest);
         }
 
         public virtual Task<ScoreboardModel> FetchScoreboardAsync()
@@ -115,8 +117,7 @@ namespace Ccs.Contexts.Immediate
 
         public virtual Task UpdateProblemAsync(ProblemModel origin, Expression<Func<ContestProblem>> expression)
         {
-            return GetRequiredService<IProblemsetStore>()
-                .UpdateAsync(origin.ContestId, origin.ProblemId, expression);
+            return ProblemsetStore.UpdateAsync(origin.ContestId, origin.ProblemId, expression);
         }
 
         public virtual Task<HashSet<int>> FetchJuryAsync()
@@ -143,14 +144,12 @@ namespace Ccs.Contexts.Immediate
 
         public virtual Task CreateProblemAsync(Expression<Func<ContestProblem>> expression)
         {
-            return GetRequiredService<IProblemsetStore>()
-                .CreateAsync(expression.Compile().Invoke());
+            return ProblemsetStore.CreateAsync(expression.Compile().Invoke());
         }
 
         public virtual Task DeleteProblemAsync(ProblemModel problem)
         {
-            return GetRequiredService<IProblemsetStore>()
-                .DeleteAsync(problem);
+            return ProblemsetStore.DeleteAsync(problem);
         }
 
         public virtual async Task<IReadOnlyDictionary<int, string>> FetchTeamNamesAsync()
@@ -183,6 +182,21 @@ namespace Ccs.Contexts.Immediate
         public virtual Task<Team> CreateTeamAsync(Team team, IEnumerable<IUser>? users)
         {
             return TeamStore.CreateAsync(team, users);
+        }
+
+        public Task<List<Clarification>> ListClarificationsAsync(Expression<Func<Clarification, bool>> predicate)
+        {
+            return ClarificationStore.ListAsync(Contest, predicate);
+        }
+
+        public Task<Clarification> FindClarificationAsync(int id)
+        {
+            return ClarificationStore.FindAsync(Contest, id);
+        }
+
+        public Task<Clarification> ClarifyAsync(Clarification clar, Clarification? replyTo = null)
+        {
+            return ClarificationStore.SendAsync(clar, replyTo);
         }
     }
 }

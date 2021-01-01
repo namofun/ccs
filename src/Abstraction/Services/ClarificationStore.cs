@@ -43,7 +43,7 @@ namespace Ccs.Services
         /// <param name="clar">The new clarification to create.</param>
         /// <param name="replyTo">The clarification to reply to.</param>
         /// <returns>The task for creating clarification.</returns>
-        Task<Clarification> SendAsync(Clarification clar, Clarification replyTo = null);
+        Task<Clarification> SendAsync(Clarification clar, Clarification? replyTo = null);
 
         /// <summary>
         /// Mark the clarification as <paramref name="answered"/> directly.
