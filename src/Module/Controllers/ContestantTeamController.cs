@@ -18,14 +18,9 @@ namespace SatelliteSite.ContestModule.Controllers
     {
         public bool TooEarly => Contest.GetState() < ContestState.Started;
 
-        private new IActionResult NotFound() => StatusCodePage(404);
-
-        public override async Task OnActionExecutingAsync(ActionExecutingContext context)
+        public override Task OnActionExecutingAsync(ActionExecutingContext context)
         {
-            if (Contest.Gym)
-                context.Result = RedirectToAction("Home", "Gym");
-
-            else if (Team == null || Team.Status != 1)
+            if (Team == null || Team.Status != 1)
             {
                 context.Result = IsWindowAjax
                     ? Message("401 Unauthorized",
@@ -34,7 +29,7 @@ namespace SatelliteSite.ContestModule.Controllers
                     : View("AccessDenied");
             }
 
-            await base.OnActionExecutingAsync(context);
+            return base.OnActionExecutingAsync(context);
         }
 
 

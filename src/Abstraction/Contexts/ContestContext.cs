@@ -202,6 +202,33 @@ namespace Ccs
         Task<Clarification> ClarifyAsync(Clarification clar, Clarification? replyTo = null);
 
         /// <summary>
+        /// Get the readme content.
+        /// </summary>
+        /// <returns>The task for reading me.</returns>
+        Task<string> GetReadmeAsync();
+
+        /// <summary>
+        /// Get the readme content.
+        /// </summary>
+        /// <param name="content">The readme content.</param>
+        /// <returns>The task for saving readme.</returns>
+        Task SetReadmeAsync(string content);
+
+        /// <summary>
+        /// Get the auditlogs.
+        /// </summary>
+        /// <param name="page">The page to show.</param>
+        /// <param name="pageCount">The count of pages to show.</param>
+        /// <returns>The task with auditlogs.</returns>
+        Task<IPagedList<SatelliteSite.Entities.Auditlog>> ViewLogsAsync(int page, int pageCount);
+
+        /// <summary>
+        /// Get the ajax update overview.
+        /// </summary>
+        /// <returns>The object for update results.</returns>
+        Task<object> GetUpdatesAsync();
+
+        /// <summary>
         /// Create a submission for team.
         /// </summary>
         /// <param name="code">The source code.</param>

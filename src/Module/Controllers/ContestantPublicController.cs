@@ -1,9 +1,7 @@
 ﻿using Ccs.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
 using SatelliteSite.IdentityModule.Services;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,14 +12,6 @@ namespace SatelliteSite.ContestModule.Controllers
     [Route("[area]/{cid}/[action]")]
     public class PublicController : ContestControllerBase
     {
-        public override Task OnActionExecutingAsync(ActionExecutingContext context)
-        {
-            if (Contest.Gym)
-                context.Result = RedirectToAction("Home", "Gym");
-            return base.OnActionExecutingAsync(context);
-        }
-
-
         [HttpGet]
         public Task<IActionResult> Scoreboard(
             [FromQuery(Name = "affiliations[]")] int[] affiliations,
@@ -38,9 +28,7 @@ namespace SatelliteSite.ContestModule.Controllers
         {
             ViewBag.Affiliations = await Context.FetchAffiliationsAsync();
             ViewBag.Categories = await Context.FetchCategoriesAsync();
-
-            var fileInfo = io.GetFileInfo($"c{cid}/readme.html");
-            ViewBag.Markdown = await fileInfo.ReadAsync();
+            ViewBag.Markdown = await Context.GetReadmeAsync();
             return View();
         }
 

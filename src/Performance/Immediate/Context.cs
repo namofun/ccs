@@ -4,7 +4,9 @@ using Ccs.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Polygon.Entities;
 using Polygon.Storages;
+using SatelliteSite.Entities;
 using SatelliteSite.IdentityModule.Services;
+using SatelliteSite.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -197,6 +199,31 @@ namespace Ccs.Contexts.Immediate
         public Task<Clarification> ClarifyAsync(Clarification clar, Clarification? replyTo = null)
         {
             return ClarificationStore.SendAsync(clar, replyTo);
+        }
+
+        public Task<string> GetReadmeAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<IPagedList<Auditlog>> ViewLogsAsync(int page, int pageCount)
+        {
+            return await GetRequiredService<IAuditlogger>().ViewLogsAsync(Contest.Id, page, pageCount);
+        }
+
+        public virtual async Task<object> GetUpdatesAsync()
+        {
+            return new
+            {
+                clarifications = await ClarificationStore.CountUnansweredAsync(Contest),
+                teams = await TeamStore.CountPendingAsync(Contest),
+                rejudgings = await GetRequiredService<IRejudgingStore>().CountUndoneAsync(Contest.Id),
+            };
+        }
+
+        public Task SetReadmeAsync(string content)
+        {
+            throw new NotImplementedException();
         }
     }
 }

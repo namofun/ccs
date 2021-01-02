@@ -1,4 +1,5 @@
 ﻿using Ccs;
+using Ccs.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -17,8 +18,6 @@ namespace SatelliteSite.ContestModule.Controllers
     public class GymController : ContestControllerBase
     {
         public bool TooEarly => Contest.GetState() < ContestState.Started;
-
-        private new IActionResult NotFound() => StatusCodePage(404);
 
         private IActionResult GoBackHome(string message)
         {
@@ -47,7 +46,7 @@ namespace SatelliteSite.ContestModule.Controllers
         public async Task<IActionResult> Scoreboard(int cid)
         {
             ViewBag.Members = await Facade.Teams.ListMembersAsync(cid);
-            return await ScoreboardView(
+            return await Scoreboard(
                 isPublic: Contest.GetState() < ContestState.Finalized,
                 isJury: false, true, null, null);
         }
@@ -59,11 +58,8 @@ namespace SatelliteSite.ContestModule.Controllers
             ViewBag.Statistics = await Facade.StatisticAcceptedAsync(cid);
 
             int? teamid = Team?.TeamId;
-            ViewBag.Clarifications =
-                await Context.ListClarificationsAsync(c => c.Recipient == null && c.Sender == null);
-
-            var readme = io.GetFileInfo($"c{cid}/readme.html");
-            ViewBag.Markdown = await readme.ReadAsync();
+            ViewBag.Clarifications = await Context.ListClarificationsAsync(c => c.Recipient == null && c.Sender == null);
+            ViewBag.Markdown = await Context.GetReadmeAsync();
             return View();
         }
 
@@ -98,12 +94,12 @@ namespace SatelliteSite.ContestModule.Controllers
 
             if (model.TeamId != Team.TeamId)
             {
-                if (Contest.StatusAvaliable == 2)
+                if (Contest.StatusAvailable == 2)
                 {
                     if (substat.GetValueOrDefault(model.Problem.ProblemId).ac == 0)
                         return Forbid();
                 }
-                else if (Contest.StatusAvaliable == 0)
+                else if (Contest.StatusAvailable == 0)
                 {
                     return Forbid();
                 }
@@ -175,7 +171,7 @@ namespace SatelliteSite.ContestModule.Controllers
         {
             if (ViewData.ContainsKey("HasTeam"))
                 return GoBackHome("Already registered");
-            if (Contest.RegisterDefaultCategory == 0 || User.IsInRole("Blocked"))
+            if (Contest.RegisterCategory == null || User.IsInRole("Blocked"))
                 return GoBackHome("Error registration closed.");
 
             string teamName;
@@ -212,13 +208,13 @@ namespace SatelliteSite.ContestModule.Controllers
                     return GoBackHome("Error team or team member.");
             }
 
-            int tid = await Facade.Teams.CreateAsync(
+            int tid = await Context.CreateTeamAsync(
                 uids: uids,
                 team: new Team
                 {
                     AffiliationId = affId,
-                    ContestId = Contest.ContestId,
-                    CategoryId = Contest.RegisterDefaultCategory,
+                    ContestId = Contest.Id,
+                    CategoryId = Contest.RegisterCategory.Value,
                     RegisterTime = DateTimeOffset.Now,
                     Status = 1,
                     TeamName = teamName,

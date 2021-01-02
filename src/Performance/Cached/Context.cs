@@ -90,6 +90,12 @@ namespace Ccs.Contexts.Cached
             });
         }
 
+        public override Task<object> GetUpdatesAsync()
+        {
+            return CacheAsync("Updates", TimeSpan.FromSeconds(10),
+                async () => await base.GetUpdatesAsync());
+        }
+
         #endregion
 
         #region Aggregate Root: Problem
