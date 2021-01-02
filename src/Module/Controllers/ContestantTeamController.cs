@@ -64,17 +64,16 @@ namespace SatelliteSite.ContestModule.Controllers
                 c => (c.Sender == null && c.Recipient == null)
                 || c.Recipient == teamid || c.Sender == teamid);
 
-            ViewBag.Submissions = 
-                await submits.ListWithJudgingAsync(
-                predicate: s => s.ContestId == cid && s.Author == teamid,
+            ViewBag.Submissions = await Context.FetchSolutionsAsync(
+                teamid: teamid,
                 selector: (s, j) => new SubmissionViewModel
                 {
-                    Grade = j.TotalScore ?? 0,
-                    Language = Languages[s.Language],
-                    SubmissionId = s.SubmissionId,
+                    Points = j.TotalScore ?? 0,
+                    Language = s.Language,
+                    SubmissionId = s.Id,
                     Time = s.Time,
                     Verdict = j.Status,
-                    Problem = Problems.Find(s.ProblemId),
+                    Problem = s.ProblemId,
                 });
 
             return View(board);
@@ -93,21 +92,19 @@ namespace SatelliteSite.ContestModule.Controllers
         {
             int teamid = Team.TeamId;
 
-            var models = await submissions.ListWithJudgingAsync(
-                predicate: s => s.ContestId == cid && s.SubmissionId == sid,
-                selector: (s, j) => new SubmissionViewModel
+            var model = await Context.FetchSolutionAsync(
+                sid, (s, j) => new SubmissionViewModel
                 {
-                    SubmissionId = s.SubmissionId,
-                    Grade = j.TotalScore ?? 0,
-                    Language = Languages[s.Language],
+                    SubmissionId = s.Id,
+                    Points = j.TotalScore ?? 0,
+                    Language = s.Language,
                     Time = s.Time,
                     Verdict = j.Status,
-                    Problem = Problems.Find(s.ProblemId),
+                    Problem = s.ProblemId,
                     CompilerOutput = j.CompileError,
                     SourceCode = s.SourceCode,
                 });
 
-            var model = models.SingleOrDefault();
             if (model == null) return NotFound();
             return Window(model);
         }

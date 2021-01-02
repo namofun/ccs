@@ -24,7 +24,7 @@ namespace Ccs.Services
         /// <param name="contest">The contest.</param>
         /// <param name="probs">The problem dictionary.</param>
         /// <returns>The task for balloon models.</returns>
-        Task<List<BalloonModel>> ListAsync(Contest contest, Dictionary<int, ProblemModel> probs);
+        Task<List<BalloonModel>> ListAsync(Contest contest, IReadOnlyList<ProblemModel> probs);
 
         /// <summary>
         /// Set the balloon in contest as done.

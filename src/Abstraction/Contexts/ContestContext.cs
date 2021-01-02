@@ -204,15 +204,16 @@ namespace Ccs
         /// <summary>
         /// Get the readme content.
         /// </summary>
+        /// <param name="source">The source code.</param>
         /// <returns>The task for reading me.</returns>
-        Task<string> GetReadmeAsync();
+        Task<string> GetReadmeAsync(bool source = false);
 
         /// <summary>
         /// Get the readme content.
         /// </summary>
-        /// <param name="content">The readme content.</param>
+        /// <param name="source">The original source code.</param>
         /// <returns>The task for saving readme.</returns>
-        Task SetReadmeAsync(string content);
+        Task SetReadmeAsync(string source);
 
         /// <summary>
         /// Get the auditlogs.

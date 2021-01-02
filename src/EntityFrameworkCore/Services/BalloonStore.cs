@@ -33,7 +33,7 @@ namespace Ccs.Services
             return Context.SaveChangesAsync();
         }
 
-        public async Task<List<BalloonModel>> ListAsync(Contest contest, Dictionary<int, ProblemModel> probs)
+        public async Task<List<BalloonModel>> ListAsync(Contest contest, IReadOnlyList<ProblemModel> probs)
         {
             int cid = contest.Id;
             var balloonQuery =
@@ -59,7 +59,8 @@ namespace Ccs.Services
             var hashSet = new HashSet<long>();
             await foreach (var item in balloonQuery.AsAsyncEnumerable())
             {
-                if (!probs.TryGetValue(item.ProblemId, out var p)) continue;
+                var p = probs.FirstOrDefault(p => p.ProblemId == item.ProblemId);
+                if (p == null) continue;
                 item.FirstToSolve = hashSet.Add(((long)item.ProblemId) << 32 | (long)item.SortOrder);
                 item.BalloonColor = p.Color;
                 item.ProblemShortName = p.ShortName;

@@ -201,7 +201,7 @@ namespace Ccs.Contexts.Immediate
             return ClarificationStore.SendAsync(clar, replyTo);
         }
 
-        public Task<string> GetReadmeAsync()
+        public virtual Task<string> GetReadmeAsync(bool source)
         {
             throw new NotImplementedException();
         }
@@ -221,7 +221,7 @@ namespace Ccs.Contexts.Immediate
             };
         }
 
-        public Task SetReadmeAsync(string content)
+        public virtual Task SetReadmeAsync(string source)
         {
             throw new NotImplementedException();
         }

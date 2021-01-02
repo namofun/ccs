@@ -3,8 +3,9 @@ using Ccs.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.DependencyInjection;
 using SatelliteSite.ContestModule.Models;
+using SatelliteSite.IdentityModule.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,23 +30,21 @@ namespace SatelliteSite.ContestModule.Controllers
 
         public override async Task OnActionExecutingAsync(ActionExecutingContext context)
         {
-            if (!Contest.Gym)
-                context.Result = RedirectToAction("Info", "Public");
-            else if ((Contest.StartTime ?? DateTimeOffset.MaxValue) >= DateTimeOffset.Now)
+            if ((Contest.StartTime ?? DateTimeOffset.MaxValue) >= DateTimeOffset.Now)
                 context.Result = NotStarted();
             
             await base.OnActionExecutingAsync(context);
 
-            if (context.Result == null && Team != null)
-                ViewBag.TeamStatistics = await Facade.Teams
-                    .StatisticsSubmissionAsync(Team.ContestId, Team.TeamId);
+            //if (context.Result == null && Team != null)
+            //    ViewBag.TeamStatistics = await Facade.Teams
+            //        .StatisticsSubmissionAsync(Team.ContestId, Team.TeamId);
         }
 
 
         [HttpGet("[action]")]
         public async Task<IActionResult> Scoreboard(int cid)
         {
-            ViewBag.Members = await Facade.Teams.ListMembersAsync(cid);
+            ViewBag.Members = await Context.FetchTeamMembersAsync();
             return await Scoreboard(
                 isPublic: Contest.GetState() < ContestState.Finalized,
                 isJury: false, true, null, null);
@@ -55,7 +54,7 @@ namespace SatelliteSite.ContestModule.Controllers
         [HttpGet]
         public async Task<IActionResult> Home()
         {
-            ViewBag.Statistics = await Facade.StatisticAcceptedAsync(cid);
+            //ViewBag.Statistics = await Facade.StatisticAcceptedAsync(cid);
 
             int? teamid = Team?.TeamId;
             ViewBag.Clarifications = await Context.ListClarificationsAsync(c => c.Recipient == null && c.Sender == null);
@@ -69,25 +68,23 @@ namespace SatelliteSite.ContestModule.Controllers
         {
             if (Team == null) return Forbid();
 
-            var models = await submissions.ListWithJudgingAsync(
-                predicate: s => s.SubmissionId == sid && s.ContestId == cid,
-                selector: (s, j) => new SubmissionViewModel
+            var model = await Context.FetchSolutionAsync(
+                sid, (s, j) => new SubmissionViewModel
                 {
-                    SubmissionId = s.SubmissionId,
+                    SubmissionId = s.Id,
                     Verdict = j.Status,
                     Time = s.Time,
-                    Problem = Problems.Find(s.ProblemId),
+                    Problem = s.ProblemId,
                     CompilerOutput = j.CompileError,
-                    Language = Languages[s.Language],
+                    Language = s.Language,
                     SourceCode = s.SourceCode,
-                    Grade = j.TotalScore ?? 0,
-                    TeamId = s.Author,
-                    JudgingId = j.JudgingId,
+                    Points = j.TotalScore ?? 0,
+                    TeamId = s.TeamId,
+                    JudgingId = j.Id,
                     ExecuteMemory = j.ExecuteMemory,
                     ExecuteTime = j.ExecuteTime,
                 });
 
-            var model = models.SingleOrDefault();
             if (model == null) return NotFound();
             Dictionary<int, (int ac, int tot)> substat = ViewBag.TeamStatistics;
             model.TeamName = (await Context.FindTeamByIdAsync(model.TeamId)).TeamName;
@@ -96,7 +93,7 @@ namespace SatelliteSite.ContestModule.Controllers
             {
                 if (Contest.StatusAvailable == 2)
                 {
-                    if (substat.GetValueOrDefault(model.Problem.ProblemId).ac == 0)
+                    if (substat.GetValueOrDefault(model.Problem).ac == 0)
                         return Forbid();
                 }
                 else if (Contest.StatusAvailable == 0)
@@ -105,10 +102,10 @@ namespace SatelliteSite.ContestModule.Controllers
                 }
             }
 
-            var tcs = await judgings.GetDetailsAsync(model.Problem.ProblemId, model.JudgingId);
-            if (!model.Problem.Shared)
-                tcs = tcs.Where(t => !t.Item2.IsSecret);
-            ViewBag.Runs = tcs;
+            //var tcs = await judgings.GetDetailsAsync(model.Problem.ProblemId, model.JudgingId);
+            //if (!model.Problem.Shared)
+            //    tcs = tcs.Where(t => !t.Item2.IsSecret);
+            //ViewBag.Runs = tcs;
 
             return Window(model);
         }
@@ -126,12 +123,7 @@ namespace SatelliteSite.ContestModule.Controllers
             if (string.IsNullOrEmpty(view)) return NotFound();
             ViewData["Content"] = view;
 
-            int pid = problem.ProblemId;
-            int tid = Team?.TeamId ?? -1000;
-            int cid = Contest.Id;
-
-            var model = await submissions.ListWithJudgingAsync(
-                s => s.ProblemId == pid && s.Author == tid && s.ContestId == cid);
+            var model = await Context.FetchSolutionsAsync(problem.ProblemId, null, Team?.TeamId ?? -1000, true);
             return View(model);
         }
 
@@ -146,17 +138,17 @@ namespace SatelliteSite.ContestModule.Controllers
 
 
         [HttpGet("[action]")]
-        public async Task<IActionResult> Register(
-            [FromServices] ITrainingStore training)
+        public async Task<IActionResult> Register()
         {
             if (Team != null) return NotFound();
-            var items = await training.ListAsync(int.Parse(User.GetUserId()), true);
+            /*var items = await training.ListAsync(int.Parse(User.GetUserId()), true);
             ViewData["TeamsJson"] = items.Select(g => new
             {
                 team = new { name = g.Key.TeamName, id = g.Key.TrainingTeamId },
                 users = g.Select(v => new { name = v.UserName, id = v.UserId }).ToList()
             })
-            .ToJson();
+            .ToJson();*/
+            await Task.CompletedTask;
 
             return View(new GymRegisterModel { AsIndividual = true });
         }
@@ -164,10 +156,7 @@ namespace SatelliteSite.ContestModule.Controllers
 
         [HttpPost("[action]")]
         [AuditPoint(Entities.AuditlogType.Team)]
-        public async Task<IActionResult> Register(
-            int cid, GymRegisterModel model,
-            [FromServices] ITrainingStore training,
-            [FromServices] UserManager userManager)
+        public async Task<IActionResult> Register(GymRegisterModel model)
         {
             if (ViewData.ContainsKey("HasTeam"))
                 return GoBackHome("Already registered");
@@ -175,28 +164,30 @@ namespace SatelliteSite.ContestModule.Controllers
                 return GoBackHome("Error registration closed.");
 
             string teamName;
-            int[] uids;
+            IUser[] uids;
             int affId;
             var uid = int.Parse(User.GetUserId());
 
-            if (model.AsIndividual)
-            {
-                var affs = await Facade.Teams.ListAffiliationAsync(cid, false);
+            //if (model.AsIndividual)
+            //{
+                var affs = await Context.FetchAffiliationsAsync(false);
                 string defaultAff = User.IsInRole("Student") ? "jlu" : "null";
-                var aff = affs.FirstOrDefault(a => a.ExternalId == defaultAff);
-                if (aff == null) return GoBackHome("No default affiliation.");
-                affId = aff.AffiliationId;
-                uids = new[] { uid };
+                var aff = affs.Values.FirstOrDefault(a => a.Abbreviation == defaultAff);
+                if (aff == null)
+                    return GoBackHome("No default affiliation.");
+                affId = aff.Id;
+                uids = null;// new[] { uid };
 
-                var user = await userManager.GetUserAsync(User);
-                if (user.StudentId.HasValue && user.StudentVerified)
-                    teamName = (await userManager.FindStudentAsync(user.StudentId.Value)).Name;
-                else
+                var user = await HttpContext.RequestServices.GetRequiredService<IUserManager>().GetUserAsync(User);
+                //if (user.StudentId.HasValue && user.StudentVerified)
+                //    teamName = (await userManager.FindStudentAsync(user.StudentId.Value)).Name;
+                //else
                     teamName = user.NickName;
                 teamName ??= user.UserName;
-            }
+            /*}
             else
             {
+                
                 var team = await training.FindTeamByIdAsync(model.TeamId);
                 if (team == null)
                     return GoBackHome("Error team or team member.");
@@ -205,11 +196,11 @@ namespace SatelliteSite.ContestModule.Controllers
                 var users = await training.ListMembersAsync(team, true);
                 uids = (model.UserIds ?? Enumerable.Empty<int>()).Append(uid).Distinct().ToArray();
                 if (uids.Except(users.Select(g => g.UserId)).Any())
-                    return GoBackHome("Error team or team member.");
-            }
+                    return GoBackHome("Error team or team member.");*/
+            //}
 
-            int tid = await Context.CreateTeamAsync(
-                uids: uids,
+            var team = await Context.CreateTeamAsync(
+                users: uids,
                 team: new Team
                 {
                     AffiliationId = affId,
@@ -220,7 +211,7 @@ namespace SatelliteSite.ContestModule.Controllers
                     TeamName = teamName,
                 });
 
-            await HttpContext.AuditAsync("added", $"{tid}");
+            await HttpContext.AuditAsync("added", $"{team.TeamId}");
             StatusMessage = "Registration succeeded.";
             return RedirectToAction(nameof(Home));
         }
@@ -272,9 +263,7 @@ namespace SatelliteSite.ContestModule.Controllers
 
 
         [HttpGet("problem/{prob}/testcase/{tcid}/fetch/{filetype}")]
-        public async Task<IActionResult> FetchTestcase(
-            string prob, int tcid, string filetype,
-            [FromServices] ITestcaseStore testcases)
+        public async Task<IActionResult> FetchTestcase(string prob, int tcid, string filetype)
         {
             if (filetype == "input") filetype = "in";
             else if (filetype == "output") filetype = "out";
@@ -284,32 +273,25 @@ namespace SatelliteSite.ContestModule.Controllers
             var problem = Problems.Find(prob);
             if (problem == null) return NotFound();
 
-            var tc = await testcases.FindAsync(problem.ProblemId, tcid);
-            if (tc == null) return NotFound();
-            if (tc.IsSecret && !problem.Shared) return NotFound();
+            //var tc = await testcases.FindAsync(problem.ProblemId, tcid);
+            //if (tc == null) return NotFound();
+            //if (tc.IsSecret && !problem.Shared) return NotFound();
 
-            var file = testcases.GetFile(tc, filetype);
-            if (!file.Exists) return NotFound();
+            //var file = testcases.GetFile(tc, filetype);
+            //if (!file.Exists) return NotFound();
 
             return File(
-                fileStream: file.CreateReadStream(),
+                fileStream: null, // file.CreateReadStream(),
                 contentType: "application/octet-stream",
                 fileDownloadName: $"{problem.ShortName}.t{tcid}.{filetype}");
         }
 
 
         [HttpGet("[action]")]
-        public async Task<IActionResult> Submissions(
-            [FromServices] ISubmissionStore submissions,
-            int cid, int page = 1)
+        public async Task<IActionResult> Submissions(int page = 1)
         {
             if (page <= 0) return BadRequest();
-
-            var (model, count) = await submissions.ListWithJudgingAsync(
-                pagination: (page, 50),
-                predicate: s => s.ContestId == cid);
-
-            ViewBag.Page = page;
+            var model = await Context.FetchSolutionsAsync(page, 50);
             ViewBag.TeamsName = await Context.FetchTeamNamesAsync();
             return View(model);
         }

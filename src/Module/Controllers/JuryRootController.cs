@@ -1,10 +1,9 @@
 ﻿using Ccs.Entities;
+using Ccs.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.FileProviders;
 using SatelliteSite.ContestModule.Models;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SatelliteSite.ContestModule.Controllers
@@ -45,7 +44,7 @@ namespace SatelliteSite.ContestModule.Controllers
                 message: "After reseting event feed, you can connect to CDS. " +
                     "But you shouldn't change any settings more, and you should use it only before contest start. " +
                     "Or it will lead to event missing. Are you sure?",
-                area: "Contest", controller: "Jury", action: "ResetEventFeedConfirmation",
+                area: "Contest", controller: "Jury", action: "ResetEventFeed",
                 routeValues: new { cid = Contest.Id },
                 type: BootstrapColor.warning);
 
@@ -53,6 +52,7 @@ namespace SatelliteSite.ContestModule.Controllers
         [HttpPost("[action]")]
         [ValidateAntiForgeryToken]
         [AuditPoint(Entities.AuditlogType.Contest)]
+        [ActionName("ResetEventFeed")]
         public async Task<IActionResult> ResetEventFeedConfirmation()
         {
             await Mediator.Publish(new Ccs.Events.ScoreboardRefreshEvent(Contest, Problems));
@@ -142,19 +142,19 @@ namespace SatelliteSite.ContestModule.Controllers
 
 
         [HttpGet("[action]")]
-        public async Task<IActionResult> Balloon(int cid,
-            [FromServices] IBalloonStore store)
+        public async Task<IActionResult> Balloon([FromServices] IBalloonStore store)
         {
-            var model = await store.ListAsync(cid, Problems);
+            if (!Contest.BalloonAvailable) return NotFound();
+            var model = await store.ListAsync(Contest, Problems);
             return View(model);
         }
 
 
         [HttpGet("balloon/{bid}/set-done")]
-        public async Task<IActionResult> BalloonSetDone(int cid, int bid,
-            [FromServices] IBalloonStore store)
+        public async Task<IActionResult> BalloonSetDone(int bid, [FromServices] IBalloonStore store)
         {
-            await store.SetDoneAsync(cid, bid);
+            if (!Contest.BalloonAvailable) return NotFound();
+            await store.SetDoneAsync(Contest, bid);
             return RedirectToAction(nameof(Balloon));
         }
 
@@ -168,10 +168,10 @@ namespace SatelliteSite.ContestModule.Controllers
         [HttpPost("[action]")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrator")]
-        [AuditPoint(Entities.AuditlogType.Contest)]
+        [AuditPoint(Entities.AuditlogType.User)]
         public async Task<IActionResult> Assign(JuryAssignModel model)
         {
-            var user = await userManager.FindByNameAsync(model.UserName);
+            var user = await UserManager.FindByNameAsync(model.UserName);
 
             if (user == null)
             {
@@ -179,8 +179,8 @@ namespace SatelliteSite.ContestModule.Controllers
             }
             else
             {
-                var result = await userManager.AddToRoleAsync(user, $"JuryOfContest{cid}");
-                await HttpContext.AuditAsync("assigned jury", $"user {user.Id}");
+                await Context.AssignJuryAsync(user);
+                await HttpContext.AuditAsync("assigned jury", $"{user.Id}");
             }
 
             return RedirectToAction(nameof(Home));
@@ -191,7 +191,7 @@ namespace SatelliteSite.ContestModule.Controllers
         [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> Unassign(int uid)
         {
-            var user = await userManager.FindByIdAsync(uid.ToString());
+            var user = await UserManager.FindByIdAsync(uid);
             if (user == null) return NotFound();
 
             return AskPost(
@@ -207,34 +207,25 @@ namespace SatelliteSite.ContestModule.Controllers
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrator")]
         [AuditPoint(Entities.AuditlogType.User)]
-        public async Task<IActionResult> Unassign(int cid, int uid,
-            [FromServices] UserManager userManager)
+        [ActionName("Unassign")]
+        public async Task<IActionResult> UnassignConfirmation(int uid)
         {
-            var user = await userManager.FindByIdAsync(uid.ToString());
+            var user = await UserManager.FindByIdAsync(uid);
             if (user == null) return NotFound();
-            var result = await userManager.RemoveFromRoleAsync(user, $"JuryOfContest{cid}");
-
-            if (result.Succeeded)
-            {
-                StatusMessage = $"Jury role of user {user.UserName} unassigned.";
-                await HttpContext.AuditAsync("unassigned jury", $"{uid}", $"c{cid}");
-            }
-            else
-            {
-                StatusMessage = "Error " + string.Join('\n', result.Errors.Select(e => e.Description));
-            }
-
+            await Context.UnassignJuryAsync(user);
+            StatusMessage = $"Jury role of user {user.UserName} unassigned.";
+            await HttpContext.AuditAsync("unassigned jury", $"{uid}");
             return RedirectToAction(nameof(Home));
         }
 
 
         [HttpGet("[action]/{userName?}")]
-        public async Task<IActionResult> TestUser(string userName,
-            [FromServices] UserManager userManager)
+        [Authorize(Roles = "Administrator")]
+        public async Task<IActionResult> TestUser(string userName)
         {
             if (userName != null)
             {
-                var user = await userManager.FindByNameAsync(userName);
+                var user = await UserManager.FindByNameAsync(userName);
                 if (user == null)
                     return Content("No such user.", "text/html");
                 return Content("", "text/html");
@@ -341,7 +332,7 @@ namespace SatelliteSite.ContestModule.Controllers
                 title: "Refresh scoreboard cache",
                 message: "Do you want to refresh scoreboard cache? " +
                     "This will lead to a heavy database load in minutes.",
-                area: "Contest", controller: "Jury", action: "RefreshCacheConfirmation",
+                area: "Contest", controller: "Jury", action: "RefreshCache",
                 routeValues: new { cid = Contest.Id },
                 type: BootstrapColor.warning);
 
@@ -350,6 +341,7 @@ namespace SatelliteSite.ContestModule.Controllers
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrator")]
         [AuditPoint(Entities.AuditlogType.Contest)]
+        [ActionName("RefreshCache")]
         public async Task<IActionResult> RefreshCacheConfirmation()
         {
             await Mediator.Publish(new Ccs.Events.ScoreboardRefreshEvent(Contest, Problems));
@@ -360,11 +352,9 @@ namespace SatelliteSite.ContestModule.Controllers
 
 
         [HttpGet("[action]")]
-        public async Task<IActionResult> Description(int cid,
-            [FromServices] IProblemFileRepository io)
+        public async Task<IActionResult> Description()
         {
-            var fileInfo = io.GetFileInfo($"c{cid}/readme.md");
-            var content = await fileInfo.ReadAsync();
+            var content = await Context.GetReadmeAsync(true);
             return View(new JuryMarkdownModel { Markdown = content });
         }
 
@@ -372,18 +362,11 @@ namespace SatelliteSite.ContestModule.Controllers
         [HttpPost("[action]")]
         [ValidateAntiForgeryToken]
         [AuditPoint(Entities.AuditlogType.Contest)]
-        public async Task<IActionResult> Description(
-            int cid, JuryMarkdownModel model,
-            [FromServices] IProblemFileRepository io,
-            [FromServices] IMarkdownService md)
+        public async Task<IActionResult> Description(JuryMarkdownModel model)
         {
             model.Markdown ??= "";
-            await io.WriteStringAsync($"c{cid}/readme.md", model.Markdown);
-
-            var document = md.Parse(model.Markdown);
-            await io.WriteStringAsync($"c{cid}/readme.html", md.RenderAsHtml(document));
-
-            await HttpContext.AuditAsync("updated", $"{cid}", "description");
+            await Context.SetReadmeAsync(model.Markdown);
+            await HttpContext.AuditAsync("updated", $"{Contest.Id}", "description");
             return View(model);
         }
 

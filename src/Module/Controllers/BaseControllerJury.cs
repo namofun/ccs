@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.DependencyInjection;
+using SatelliteSite.IdentityModule.Services;
 using System.Threading.Tasks;
 
 namespace SatelliteSite.ContestModule.Controllers
@@ -11,6 +13,11 @@ namespace SatelliteSite.ContestModule.Controllers
     [Authorize]
     public abstract class JuryControllerBase : ContestControllerBase
     {
+        /// <summary>
+        /// Gets the user manager.
+        /// </summary>
+        protected IUserManager UserManager => HttpContext.RequestServices.GetRequiredService<IUserManager>();
+
         /// <inheritdoc />
         public override Task OnActionExecutingAsync(ActionExecutingContext context)
         {
