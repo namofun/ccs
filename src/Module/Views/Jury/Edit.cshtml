@@ -1,0 +1,115 @@
+﻿@model JuryEditModel
+@{
+    ViewData["Title"] = "Edit contest";
+    IReadOnlyDictionary<int, Tenant.Entities.Category> cats = ViewBag.Categories;
+    var catSel = cats.Values.Select(c => new SelectListItem(c.Name, c.Id.ToString()));
+}
+
+<h2 class="mt-2">Edit contest @Model.ContestId</h2>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="ContestId" />
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label asp-for="ShortName" class="required"></label>
+                <input type="text" asp-for="ShortName" class="form-control" />
+                <span asp-validation-for="ShortName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Name" class="required"></label>
+                <input type="text" asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="StartTime" class="required"></label>
+                <input type="datetime" asp-for="StartTime" class="form-control" />
+                <span asp-validation-for="StartTime" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="FreezeTime"></label>
+                <input type="text" asp-for="FreezeTime" class="form-control" />
+                <span asp-validation-for="FreezeTime" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="StopTime" class="required"></label>
+                <input type="text" asp-for="StopTime" class="form-control" />
+                <span asp-validation-for="StopTime" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="UnfreezeTime"></label>
+                <input type="text" asp-for="UnfreezeTime" class="form-control" />
+                <span asp-validation-for="UnfreezeTime" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="RankingStrategy"></label>
+                <select class="form-control" asp-for="RankingStrategy">
+                    <option value="0">XCPC style</option>
+                    <option value="1">OI style</option>
+                    <option value="2">Codeforces style</option>
+                </select>
+                <span asp-validation-for="RankingStrategy" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label>Visiblity</label>
+                <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" asp-for="IsPublic">
+                    <label class="custom-control-label" asp-for="IsPublic"></label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Others</label>
+                <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" asp-for="UseBalloon">
+                    <label class="custom-control-label" asp-for="UseBalloon"></label>
+                </div>
+                <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" asp-for="UsePrintings">
+                    <label class="custom-control-label" asp-for="UsePrintings"></label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="DefaultCategory"></label>
+                <select class="form-control" asp-for="DefaultCategory" asp-items="catSel">
+                    <option value="0">-- Registration Closed --</option>
+                </select>
+                <span asp-validation-for="DefaultCategory" class="text-danger"></span>
+            </div>
+            <div class="form-group" asp-show-if="ViewBag.Contest.Gym">
+                <label asp-for="StatusAvailable"></label>
+                <select class="form-control" asp-for="StatusAvailable">
+                    <option value="0">Users can see only his submissions</option>
+                    <option value="1">Users can see all submissions</option>
+                    <option value="2">Users can see submissions for problems he solved</option>
+                </select>
+                <span asp-validation-for="StatusAvailable" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <b>Specification of short name:</b><br />
+            Note that the short name will display on the title bar. <br /><br /><br />
+
+            <b>Specification of contest times:</b><br />
+            Each of the contest times can be specified as absolute time or relative
+            to the start time (except for start time itself).<br /><br />
+            Absolute time format: <b><tt>YYYY-MM-DD HH:MM:SS</tt></b><br />
+            Relative time format: <b><tt>+[HHH]H:MM:SS</tt></b><br /><br /><br />
+
+            <b>Specification of ranking strategy:</b><br />
+            If the ICPC-style is chosen, any rejected solutions before accepted
+            solutions excluding compiler-error will be 20 minutes penalty. Ranking
+            will take the count of solved problems and total penalty into
+            consideration.<br />
+            If the Codeforces-style is chosen, points gained from solving problems
+            will be calculated with the submitting time. Each re-submission will
+            cause 50 points decrease.<br />
+            If the NOI-style is chosen, ranking will take the points from each
+            testcase into total.<br />
+        </div>
+    </div>
+
+    <div class="form-group">
+        <button type="submit" class="btn-primary btn">Save</button>
+    </div>
+</form>

@@ -1,0 +1,15 @@
+﻿@model JuryAssignModel
+@{
+    Layout = "_WindowLayout";
+    ViewData["Title"] = "Assign jury";
+}
+
+<div class="form-group">
+    <label asp-for="UserName"></label>
+    <input asp-for="UserName" onblur="ajaxget('jury/test-user/' + $(this).val(),'#tryUser')" class="form-control" required />
+    <small id="tryUser" class="text-danger"></small>
+</div>
+
+@section Footer {
+    <button asp-action="Assign" type="submit" class="btn btn-primary">Save</button>
+}

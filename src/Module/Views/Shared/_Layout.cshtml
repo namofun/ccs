@@ -1,0 +1,52 @@
+﻿@{
+    Layout = "/Views/Shared/_Layout.cshtml";
+    Contest cont = ViewBag.Contest;
+    ViewData["BigTitle"] = cont.ShortName;
+    var initial = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+    var now = initial / 1000;
+    var startTime = cont.StartTime is null ? -1 : cont.StartTime.Value.ToUnixTimeSeconds();
+    var endTime = cont.EndTime is null ? -1 : (cont.StartTime + cont.EndTime).Value.ToUnixTimeSeconds();
+    if (ViewData.ContainsKey("InJury")) { ViewData["AjaxUpdateUrl"] = $"/contest/{cont.Id}/jury/updates"; }
+}
+
+@section Clocking {
+    <div class="navbar-text" style="white-space:nowrap;">
+        <i style="padding-left: 10px;" class="fas fa-clock"></i>
+        <span id="timeleft"></span>
+    </div>
+
+    <script type="text/javascript">
+        var initial = @now;
+        var activatetime = 1500000000;
+        var starttime = @startTime;
+        var endtime = @endTime;
+        var offset = 0;
+        var date = new Date(@initial);
+        var timeleftelt = document.getElementById("timeleft");
+
+        setInterval(function () { updateClock(); }, 1000);
+        updateClock();
+    </script>
+}
+
+@section Banner {
+    <partial name="_Progress" />
+}
+
+@section Header {
+    @RenderSection("Header", required: false)
+}
+
+@section Footer {
+    @RenderSection("Footer", required: false)
+}
+
+@section BannerFooter {
+    @RenderSection("BannerFooter", required: false)
+}
+
+@section Scripts {
+    @RenderSection("Scripts", required: false)
+}
+
+@RenderBody()

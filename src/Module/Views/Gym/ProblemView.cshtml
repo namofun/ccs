@@ -1,0 +1,90 @@
+﻿@model IEnumerable<Polygon.Models.Solution>
+@{
+    ViewData["Title"] = "View Problem";
+    ViewData["DisableAjaxRefresh"] = true;
+    Contest ctx = ViewBag.Contest;
+    ProblemModel cp = ViewBag.CurrentProblem;
+}
+
+<link rel="stylesheet" href="~/lib/katex/katex.min.css" />
+<script defer src="~/lib/katex/katex.min.js"></script>
+<script defer src="~/lib/clipboard-js/clipboard.min.js"></script>
+
+<div class="container pl-0 pr-0">
+<partial name="_StatusMessage" model="@TempData["StatusMessage"]" />
+@{ TempData.Remove("StatusMessage"); }
+<div class="row">
+<div class="col-12 col-lg-8" id="problem-descibe-parent">
+    @Html.Raw((string)ViewData["Content"])
+</div>
+<div class="col-12 col-lg-4 sidebar">
+    <h3 class="mt-lg-5">Gym</h3>
+    <p>@ctx.Name</p>
+    <h3>Operation</h3>
+    <p><a class="btn btn-success btn-sm" asp-action="Submit" asp-route-prob="@cp.ShortName" data-toggle="ajaxWindow" data-target="submitCode"><i class="fas fa-cloud-upload-alt"></i> Submit</a></p>
+    <h3>My Submissions</h3>
+    <table class="data-table table table-hover table-striped table-sm submissions-table" role="grid">
+        <thead class="thead-light">
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">time</th>
+                <th scope="col">lang</th>
+                <th scope="col">verdict</th>
+            </tr>
+        </thead>
+        <tbody id="my-submissions">
+            @foreach (var sub in Model)
+            {
+                <tr asp-action="Submission" asp-route-sid="@sub.SubmissionId" data-toggle="ajaxWindow" data-target="view" role="row">
+                    <td use-a>s@(sub.SubmissionId)</td>
+                    <td use-a>@Html.CstTime(sub.Time)</td>
+                    <td use-a class="text-variant">@sub.Language</td>
+                    <td use-a><verdict3 skipped="@sub.Skipped" value="@sub.Verdict" /></td>
+                </tr>
+            }
+
+            <tr asp-show-if="Model.Count() == 0" role="row">
+                <td colspan="4" class="text-center">No submissions were found.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+</div>
+</div>
+
+<style>
+    
+@@media print {
+    body {
+        font-size: 1.3em;
+        margin: 1cm;
+    }
+
+    #problem-descibe {
+        margin: 0em !important;
+    }
+}
+
+#problem-descibe-parent h1:first-child { font-size:2rem; text-align: center; margin-top: 1rem; }
+
+#problem-descibe-parent h1:first-child ~ ul { text-align: center; }
+
+#problem-descibe h3, .sidebar h3 { font-size: 1.5rem; }
+
+#problem-descibe p {
+    font-size: 1.05em;
+}
+
+#problem-descibe p > code, #problem-descibe li > code {
+    font-size: 100%;
+    background: rgba(27, 31, 35, 0.05);
+    color: #24292e;
+    padding: .2em .4em;
+    border-radius: .2em;
+}
+
+span.katex-src ~ .katex {
+    font-size: 1.1em;
+}
+
+</style>

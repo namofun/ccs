@@ -1,0 +1,137 @@
+﻿@model FullBoardViewModel
+@{
+    ViewData["Title"] = "Scoreboard";
+    ViewData["RefreshAfter"] = "initializeScoreboard";
+    ViewData["DataAjaxClass"] = "mt-3";
+    ViewData["RefreshSpan"] = 30;
+    bool inajax = ViewData.ContainsKey("InAjax");
+    if (inajax) { Layout = null; }
+    var fil_aff = (HashSet<int>)ViewData["Filter_affiliations"];
+    var fil_cat = (HashSet<int>)ViewData["Filter_categories"];
+    var inJury = ViewData.ContainsKey("InJury");
+    var affs = Model.Affiliations.Values.Where(a => a.Id != 0 || inJury);
+    var grps = Model.Categories.Values.Where(g => g.IsPublic || inJury);
+    var state = Model.Contest.GetState();
+    var dateFormat = System.Globalization.CultureInfo.GetCultureInfo(1033);
+    var freezeLength = (int)((Model.Contest.EndTime - Model.Contest.FreezeTime)?.TotalMinutes ?? 0);
+}
+
+<div class="card">
+    <div class="card-header" style="font-family: Roboto, sans-serif; display: flex;">
+        <span style="font-weight: bold;">@Model.Contest.Name</span>
+        <span style="color: DimGray; margin-left: auto;">
+            <razor asp-show-if="@(state == ContestState.NotScheduled)">
+                scheduling
+            </razor>
+            <razor asp-show-if="@(state == ContestState.ScheduledToStart)">
+                <razor asp-show-if="@(Model.Contest.StartTime.Value.Date > DateTimeOffset.Now)">
+                    scheduled to start on @string.Format(dateFormat, "{0:ddd, dd MMM yyyy HH:mm:ss CST}", Model.Contest.StartTime)
+                </razor>
+                <razor asp-show-if="@(Model.Contest.StartTime.Value.Date < DateTimeOffset.Now)">
+                    scheduled to start on @Model.Contest.StartTime?.ToString("HH:mm")
+                </razor>
+            </razor>
+            <razor asp-show-if="@(state == ContestState.Started || state == ContestState.Frozen)">
+                starts: @Model.Contest.StartTime?.ToString("HH:mm") - ends: @Model.Contest.EndTime?.ToString("HH:mm")
+            </razor>
+            <razor asp-show-if="@(state == ContestState.Ended)">
+                contest over, waiting for results
+            </razor>
+            <razor asp-show-if="@(state == ContestState.Finalized)">
+                final standings
+            </razor>
+        </span>
+    </div>
+</div>
+
+<div asp-show-if="state == ContestState.Frozen || state == ContestState.Ended" class="alert alert-warning" role="alert" style="font-size: 80%;">
+    The @(inJury ? "public" : "") scoreboard was frozen with @freezeLength minutes remaining - solutions
+    submitted in the last @freezeLength minutes of the contest are still shown as pending.
+</div>
+
+@if ((state == ContestState.NotScheduled || state == ContestState.ScheduledToStart) && !inJury)
+{
+    <br />
+
+    <div class="card-deck">
+        @foreach (var (_, grp) in Model.Categories)
+        {
+            <div class="card" style="font-family: Roboto, sans-serif;">
+                <div class="card-header">@grp.Name</div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        @foreach (var affid in Model.RankCache.Where(g => g.CategoryId == grp.Id).Select(g => g.AffiliationId).Distinct())
+                        {
+                            var aff = Model.Affiliations.Values.SingleOrDefault(a => a.Id == affid);
+                            <li class="list-group-item">@aff?.Name</li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="dropdown">
+        <button class="btn btn-outline-secondary btn-sm m-2 dropdown-toggle" data-toggle="dropdown"
+                aria-haspopup="true" aria-expanded="false" id="filter-toggle">
+            <i class="fas fa-filter"></i>
+            Filter
+            @(fil_aff is null ? "" : "(affiliations)")
+            @(fil_cat is null ? "" : "(categories)")
+        </button>
+
+        <div class="dropdown-menu" aria-labelledby="filter-toggle">
+            <form asp-action="Scoreboard" method="get">
+                <div class="m-2 p-2 form-inline">
+                    <select class="form-control mr-2" multiple size="8" name="affiliations[]">
+                        @foreach (var aff in affs)
+                        {
+                            <option issel="@(fil_aff?.Contains(aff.Id) ?? false)" value="@aff.Id">@aff.Name</option>
+                        }
+                    </select>
+                    <select class="form-control mr-2" multiple size="8" name="categories[]">
+                        @foreach (var grp in grps)
+                        {
+                            <option issel="@(fil_cat?.Contains(grp.Id) ?? false)" value="@grp.Id">@grp.Name</option>
+                        }
+                    </select>
+                    <input type="submit" class="btn btn-primary btn-sm align-top" name="filter" value="filter" />
+                    <a class="btn btn-secondary btn-sm align-top" asp-action="Scoreboard">clear</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @Html.ContestScoreboard(Model, true, ViewData.ContainsKey("InJury"))
+}
+
+<p id="lastmod">
+    Last Update: @string.Format(dateFormat, "{0:ddd, dd MMM yyyy HH:mm:ss CST}", Model.UpdateTime)<br />
+    using <a href="https://www.domjudge.org/" rel="nofollow" target="_top">DOMjudge</a> judgehost and theme
+</p>
+
+@if (!inajax)
+{
+    @section Scripts {
+        <script>
+            initFavouriteTeams();
+
+            var scoreboardUrl = '@Html.Raw(ViewData["RefreshUrl"])';
+
+            $(function () {
+                window.initializeScoreboard = function () {
+                    var $newProgress = $('[data-ajax-refresh-target] > .d-none > [data-progress-bar]');
+                    if ($newProgress.length) {
+                        var $oldProgress = $('body > [data-progress-bar]');
+                        $oldProgress.html($newProgress.children());
+                        $newProgress.parent().remove();
+                    }
+
+                    initFavouriteTeams();
+                };
+            });
+        </script>
+    }
+}

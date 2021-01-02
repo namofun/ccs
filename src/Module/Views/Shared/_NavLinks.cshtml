@@ -1,0 +1,81 @@
+﻿@{ Contest ctx = ViewBag.Contest; }
+
+<ul class="navbar-nav mr-auto">
+    <li class="nav-item">
+        <a class="nav-link" active-ctrl="Teams" asp-controller="Teams" asp-action="List" id="menu_teams">
+            <i class="fas fa-address-book"></i>
+            Teams
+            <span class="badge badge-warning" id="num-alerts-teams"></span>
+        </a>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link" active-ctrl="Clarifications" asp-controller="Clarifications" asp-action="List" id="menu_clarifications">
+            <i class="fas fa-comments"></i>
+            Clarifications
+            <span class="badge badge-info" id="num-alerts-clarifications"></span>
+        </a>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link" active-ctrl="Submissions" asp-controller="Submissions" asp-action="List">
+            <i class="fas fa-file-code"></i>
+            Submissions
+        </a>
+    </li>
+    
+    <li class="nav-item">
+        <a class="nav-link" active-ctrl="Rejudgings" asp-controller="Rejudgings" asp-action="List" id="menu_rejudgings">
+            <i class="fas fa-sync-alt"></i>
+            Rejudgings
+            <span class="badge badge-info" id="num-alerts-rejudgings"></span>
+        </a>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link" active-act="Scoreboard" asp-controller="Jury" asp-action="Scoreboard">
+            <i class="fas fa-list-ol"></i>
+            Scoreboard
+        </a>
+    </li>
+
+    <li asp-viewdata-key="HasTeam" class="nav-item">
+        <a class="nav-link" asp-controller="Team" asp-action="Home">
+            <i class="fas fa-arrow-right"></i>
+            Team
+        </a>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link" asp-controller="Gym" asp-action="Home">
+            <i class="fas fa-arrow-right"></i>
+            Gym
+        </a>
+    </li>
+</ul>
+
+<ul class="navbar-nav">
+    <li class="ajax-loader-container">
+        <div class="spinner-border spinner-border-sm ajax-loader" style="display: none;" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </li>
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <i class="fas fa-user"></i> @User.GetUserName()
+        </a>
+        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+            <a class="dropdown-item disabled" href="#">@User.GetNickName()</a>
+            <a asp-viewdata-key="RefreshSpan" class="dropdown-item" href="#" id="refresh-navitem">
+                <i class="fas fa-sync-alt fa-fw"></i>
+                <span id="refresh-toggle">
+                    Disable Refresh
+                </span>
+                <span class="small text-muted">(@ViewData["RefreshSpan"]s)</span>
+            </a>
+            <a class="dropdown-item" asp-area="Misc" asp-controller="Home" asp-action="Index">
+                <i class="fas fa-sign-out-alt fa-fw"></i> Back to main site
+            </a>
+        </div>
+    </li>
+</ul>
