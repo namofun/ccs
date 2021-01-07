@@ -26,7 +26,7 @@ namespace SatelliteSite.ContestModule.Apis
             [FromRoute] int cid,
             [FromQuery] string[] ids = null)
         {
-            if (ids.Length == 0)
+            if (ids == null || ids.Length == 0)
                 return JudgementType.Defaults;
             return ids
                 .Join(JudgementType.Defaults, s => s, j => j.Id, (s, j) => j)

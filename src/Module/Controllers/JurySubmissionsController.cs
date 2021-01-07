@@ -4,6 +4,7 @@ using Polygon.Entities;
 using Polygon.Storages;
 using SatelliteSite.ContestModule.Models;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace SatelliteSite.ContestModule.Controllers
@@ -12,11 +13,6 @@ namespace SatelliteSite.ContestModule.Controllers
     [Route("[area]/{cid}/jury/[controller]")]
     public class SubmissionsController : JuryControllerBase
     {
-        private ISubmissionStore Store { get; }
-
-        public SubmissionsController(ISubmissionStore store) => Store = store;
-
-
         [HttpGet]
         public async Task<IActionResult> List(bool all = false)
         {
@@ -28,8 +24,8 @@ namespace SatelliteSite.ContestModule.Controllers
         [HttpGet("{sid}/{jid?}")]
         public async Task<IActionResult> Detail(int sid, int? jid)
         {
-            var submit = await Store.FindAsync(sid, true);
-            if (submit == null || submit.ContestId != Contest.Id) return NotFound();
+            var submit = await Context.FindSubmissionAsync(sid, true);
+            if (submit == null) return NotFound();
             var judgings = submit.Judgings;
 
             var prob = Problems.Find(submit.ProblemId);
@@ -58,16 +54,16 @@ namespace SatelliteSite.ContestModule.Controllers
         [HttpGet("{sid}/[action]")]
         public async Task<IActionResult> Source(int sid, int? last = null)
         {
-            var submit = await Store.FindAsync(sid);
-            if (submit == null || submit.ContestId != Contest.Id) return NotFound();
+            var submit = await Context.FindSubmissionAsync(sid);
+            if (submit == null) return NotFound();
 
             var cond = Expr
-                .Create<Submission>(s => s.ContestId == submit.ContestId
-                                      && s.TeamId == submit.TeamId
-                                      && s.ProblemId == submit.ProblemId)
+                .Of<Submission>(s => s.ContestId == submit.ContestId
+                                  && s.TeamId == submit.TeamId
+                                  && s.ProblemId == submit.ProblemId)
                 .CombineIf(last.HasValue, s => s.Id == last)
                 .CombineIf(!last.HasValue, s => s.Id < sid);
-            
+
             var lastSubmit = (await Store.ListWithJudgingAsync(
                 selector: (s, j) => new { s.Language, s.SourceCode, s.Id },
                 predicate: cond, 1))
@@ -92,8 +88,8 @@ namespace SatelliteSite.ContestModule.Controllers
         [HttpGet("{sid}/[action]")]
         public async Task<IActionResult> Rejudge(int sid)
         {
-            var sub = await Store.FindAsync(sid);
-            if (sub == null || sub.ContestId != Contest.Id) return NotFound();
+            var sub = await Context.FindSubmissionAsync(sid);
+            if (sub == null) return NotFound();
 
             if (sub.RejudgingId != null)
                 return RedirectToAction("Detail", "Rejudgings", new { rid = sub.RejudgingId });

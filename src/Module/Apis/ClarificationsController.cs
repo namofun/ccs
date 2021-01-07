@@ -1,5 +1,4 @@
-﻿using Ccs.Services;
-using Ccs.Specifications;
+﻿using Ccs.Specifications;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -32,14 +31,13 @@ namespace SatelliteSite.ContestModule.Apis
             [FromQuery] int[] ids = null,
             [FromQuery] int? problem = null)
         {
-            Expression<Func<Ccs.Entities.Clarification, bool>> cond = null;
-            if (ids != null && ids.Length > 0)
-                cond = cond.Combine(c => ids.Contains(c.Id));
-            if (problem.HasValue)
-                cond = cond.Combine(c => c.ProblemId == problem);
+            var cond = Expr
+                .Of<Ccs.Entities.Clarification>(null)
+                .CombineIf(ids != null && ids.Length > 0, c => ids.Contains(c.Id))
+                .CombineIf(problem.HasValue, c => c.ProblemId == problem);
             var contestTime = Contest.StartTime ?? DateTimeOffset.Now;
 
-            var res = await Context.GetRequiredService<IClarificationStore>().ListAsync(Contest, cond);
+            var res = await Context.ListClarificationsAsync(cond);
             return res.Select(c => new Clarification(c, contestTime)).ToArray();
         }
 
@@ -56,7 +54,7 @@ namespace SatelliteSite.ContestModule.Apis
             [FromRoute] int id)
         {
             var contestTime = Contest.StartTime ?? DateTimeOffset.Now;
-            var clar = await Context.GetRequiredService<IClarificationStore>().FindAsync(Contest, id);
+            var clar = await Context.FindClarificationAsync(id);
             return clar == null ? null : new Clarification(clar, contestTime);
         }
     }

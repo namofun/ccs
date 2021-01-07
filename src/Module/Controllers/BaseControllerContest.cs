@@ -65,7 +65,7 @@ namespace SatelliteSite.ContestModule.Controllers
             for (int i = 0; i < bytes.Length;)
                 i += await stream.ReadAsync(bytes, i, bytes.Length - i);
 
-            var Printings = Context.GetRequiredService<Ccs.Services.IPrintingStore>();
+            var Printings = HttpContext.RequestServices.GetRequiredService<Ccs.Services.IPrintingStore>();
             var p = await Printings.CreateAsync(new Ccs.Entities.Printing
             {
                 ContestId = Contest.Id,

@@ -5,13 +5,9 @@ using Ccs.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
-using Polygon.Entities;
-using Polygon.Models;
-using Polygon.Storages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -133,115 +129,6 @@ namespace Ccs
         {
             var probs = await context.FetchProblemsAsync();
             return probs.Find(shortName);
-        }
-
-        /// <summary>
-        /// Fetch solutions with contest.
-        /// </summary>
-        /// <param name="context">The contest context.</param>
-        /// <param name="probid">The problem ID.</param>
-        /// <param name="langid">The language ID.</param>
-        /// <param name="teamid">The team ID.</param>
-        /// <param name="all">Whether to show all solutions.</param>
-        /// <returns>The task for fetching solution list.</returns>
-        public static Task<List<Solution>> FetchSolutionsAsync(
-            this IContestContext context,
-            int? probid = null,
-            string? langid = null,
-            int? teamid = null,
-            bool all = false)
-        {
-            int cid = context.Contest.Id;
-            var cond = Expr
-                .Create<Submission>(s => s.ContestId == cid)
-                .CombineIf(probid.HasValue, s => s.ProblemId == probid)
-                .CombineIf(teamid.HasValue, s => s.TeamId == teamid)
-                .CombineIf(!string.IsNullOrEmpty(langid), s => s.Language == langid);
-            int? limit = all ? default(int?) : 75;
-
-            return context
-                .GetRequiredService<ISubmissionStore>()
-                .ListWithJudgingAsync(cond, true, limit);
-        }
-
-        /// <summary>
-        /// Fetch solutions with contest.
-        /// </summary>
-        /// <param name="context">The contest context.</param>
-        /// <param name="page">The page.</param>
-        /// <param name="perPage">The count per page.</param>
-        /// <returns>The task for fetching solution list.</returns>
-        public static Task<IPagedList<Solution>> FetchSolutionsAsync(
-            this IContestContext context, int page, int perPage)
-        {
-            int cid = context.Contest.Id;
-            return context
-                .GetRequiredService<ISubmissionStore>()
-                .ListWithJudgingAsync((page, perPage), s => s.ContestId == cid);
-        }
-
-        /// <summary>
-        /// Fetch solutions with contest.
-        /// </summary>
-        /// <param name="context">The contest context.</param>
-        /// <param name="submitid">The submission ID.</param>
-        /// <returns>The task for fetching solution list.</returns>
-        public static async Task<Solution> FetchSolutionAsync(
-            this IContestContext context, int submitid)
-        {
-            int cid = context.Contest.Id;
-            var res = await context
-                .GetRequiredService<ISubmissionStore>()
-                .ListWithJudgingAsync(s => s.ContestId == cid && s.Id == submitid, true, 1);
-            return res.FirstOrDefault();
-        }
-
-        /// <summary>
-        /// Fetch solution with contest.
-        /// </summary>
-        /// <typeparam name="TSolution">The solution type.</typeparam>
-        /// <param name="context">The contest context.</param>
-        /// <param name="selector">The result selector.</param>
-        /// <param name="probid">The problem ID.</param>
-        /// <param name="langid">The language ID.</param>
-        /// <param name="teamid">The team ID.</param>
-        /// <returns>The task for fetching solution list.</returns>
-        public static Task<List<TSolution>> FetchSolutionsAsync<TSolution>(
-            this IContestContext context,
-            Expression<Func<Submission, Judging, TSolution>> selector,
-            int? probid = null,
-            string? langid = null,
-            int? teamid = null)
-        {
-            int cid = context.Contest.Id;
-            var cond = Expr
-                .Create<Submission>(s => s.ContestId == cid)
-                .CombineIf(probid.HasValue, s => s.ProblemId == probid)
-                .CombineIf(teamid.HasValue, s => s.TeamId == teamid)
-                .CombineIf(!string.IsNullOrEmpty(langid), s => s.Language == langid);
-
-            return context
-                .GetRequiredService<ISubmissionStore>()
-                .ListWithJudgingAsync(selector, cond);
-        }
-
-        /// <summary>
-        /// Fetch solution with contest.
-        /// </summary>
-        /// <typeparam name="TSolution">The solution type.</typeparam>
-        /// <param name="context">The contest context.</param>
-        /// <param name="submitid">The submission ID.</param>
-        /// <param name="selector">The result selector.</param>
-        /// <returns>The task for fetching solution list.</returns>
-        public static async Task<TSolution> FetchSolutionAsync<TSolution>(
-            this IContestContext context, int submitid,
-            Expression<Func<Submission, Judging, TSolution>> selector)
-        {
-            int cid = context.Contest.Id;
-            var res = await context
-                .GetRequiredService<ISubmissionStore>()
-                .ListWithJudgingAsync(selector, s => s.ContestId == cid && s.Id == submitid, 1);
-            return res.FirstOrDefault();
         }
 
         /// <summary>

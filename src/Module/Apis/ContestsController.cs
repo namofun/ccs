@@ -3,9 +3,7 @@ using Ccs.Specifications;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Polygon.Models;
-using Polygon.Storages;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SatelliteSite.ContestModule.Apis
@@ -58,10 +56,11 @@ namespace SatelliteSite.ContestModule.Apis
             if (now + TimeSpan.FromSeconds(30) > oldtime)
                 return StatusCode(403); // left time
 
-            var newcont = await Context.UpdateContestAsync(_ => new Ccs.Entities.Contest
-            {
-                StartTime = newTime,
-            });
+            var newcont = await Context.UpdateContestAsync(
+                _ => new Ccs.Entities.Contest
+                {
+                    StartTime = newTime,
+                });
 
             await HttpContext.AuditAsync("changed time", $"{Contest.Id}", "via ccs-api");
             await Mediator.Publish(new ContestUpdateEvent(Contest, newcont));
@@ -98,11 +97,8 @@ namespace SatelliteSite.ContestModule.Apis
             [FromQuery] string types = null,
             [FromQuery] bool stream = true)
         {
-            string[] endpointTypes = null;
-            if (!string.IsNullOrWhiteSpace(types))
-                endpointTypes = types.Split(',');
-            var store = Context.GetRequiredService<Ccs.Services.IContestStore>();
-            return new EventFeedResult(store, cid, endpointTypes, stream, since_id ?? 0);
+            string[] endpointTypes = string.IsNullOrWhiteSpace(types) ? null : types.Split(',');
+            return new EventFeedResult(Context, endpointTypes, stream, since_id ?? 0);
         }
 
 
@@ -115,8 +111,7 @@ namespace SatelliteSite.ContestModule.Apis
         public async Task<ActionResult<ServerStatus>> Status(
             [FromRoute] int cid)
         {
-            var stats = await Context.GetRequiredService<IJudgingStore>().GetJudgeQueueAsync(cid);
-            return stats.SingleOrDefault() ?? new ServerStatus { ContestId = cid };
+            return await Context.GetJudgeQueueAsync();
         }
     }
 }

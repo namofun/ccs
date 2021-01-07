@@ -1,10 +1,10 @@
-﻿using Ccs.Services;
-using Ccs.Specifications;
+﻿using Ccs.Specifications;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace SatelliteSite.ContestModule.Apis
@@ -37,14 +37,13 @@ namespace SatelliteSite.ContestModule.Apis
             [FromQuery] bool @public = false)
         {
             var cond = Expr
-                .Create<Ccs.Entities.Team>(t => t.ContestId == cid && t.Status == 1)
+                .Of<Ccs.Entities.Team>(t => t.ContestId == cid && t.Status == 1)
                 .CombineIf(category.HasValue, t => t.CategoryId == category)
                 .CombineIf(ids != null && ids.Length > 0, t => ids.Contains(t.TeamId))
                 .CombineIf(affiliation != null, t => t.Affiliation.Abbreviation == affiliation)
                 .CombineIf(@public, t => t.Category.IsPublic);
 
-            var store = Context.GetRequiredService<ITeamStore>();
-            return await store.ListAsync(t => new Team(t, t.Affiliation), cond);
+            return await Context.ListTeamsAsync(t => new Team(t, t.Affiliation), cond);
         }
 
 
@@ -60,8 +59,8 @@ namespace SatelliteSite.ContestModule.Apis
             [FromRoute] int id)
         {
             var team = await Context.FindTeamByIdAsync(id);
-            var affs = await Context.FetchAffiliationsAsync();
-            return new Team(team, affs[team.AffiliationId]);
+            var aff = await Context.FetchAffiliationAsync(team.AffiliationId);
+            return new Team(team, aff);
         }
     }
 }

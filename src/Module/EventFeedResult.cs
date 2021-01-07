@@ -1,4 +1,4 @@
-﻿using Ccs.Services;
+﻿using Ccs;
 using Microsoft.AspNetCore.Mvc;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,8 +10,7 @@ namespace SatelliteSite.ContestModule
     /// </summary>
     public class EventFeedResult : IActionResult
     {
-        private readonly IContestStore _store;
-        private readonly int _cid;
+        private readonly IContestContext _ctx;
         private readonly string[] _type;
         private readonly bool _keepAlive;
         private int after, step;
@@ -19,15 +18,13 @@ namespace SatelliteSite.ContestModule
         /// <summary>
         /// Instantiate an <see cref="EventFeedResult"/>.
         /// </summary>
-        /// <param name="store">The storage interface to fetch events.</param>
-        /// <param name="cid">The contest ID.</param>
+        /// <param name="context">The contest context.</param>
         /// <param name="type">Allowed endpoint types.</param>
         /// <param name="stream">Whether to stream output.</param>
         /// <param name="sinceid">The first event ID.</param>
-        public EventFeedResult(IContestStore store, int cid, string[] type, bool stream, int sinceid)
+        public EventFeedResult(IContestContext context, string[] type, bool stream, int sinceid)
         {
-            _store = store;
-            _cid = cid;
+            _ctx = context;
             _type = type;
             _keepAlive = stream;
             after = sinceid;
@@ -45,7 +42,7 @@ namespace SatelliteSite.ContestModule
             {
                 if (context.HttpContext.RequestAborted.IsCancellationRequested) break;
 
-                var events = await _store.FetchEventAsync(_cid, _type, after);
+                var events = await _ctx.FetchEventAsync(_type, after);
                 if (events.Count > 0) after = events[^1].Id;
                 var newline = Encoding.UTF8.GetBytes("\n");
 

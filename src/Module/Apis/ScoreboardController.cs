@@ -1,5 +1,4 @@
 ﻿using Ccs.Models;
-using Ccs.Services;
 using Ccs.Specifications;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -62,7 +61,7 @@ namespace SatelliteSite.ContestModule.Apis
                     Problems = opt.Select(i => MakeProblem(t.Problems[i], probs[i]))
                 });
 
-            var maxEventId = await Context.GetRequiredService<IContestStore>().MaxEventIdAsync(cid);
+            var maxEventId = await Context.MaxEventIdAsync();
             return new Scoreboard
             {
                 Time = Contest.StartTime.Value,

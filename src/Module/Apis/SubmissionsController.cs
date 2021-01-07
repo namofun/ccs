@@ -1,10 +1,10 @@
 ﻿using Ccs.Specifications;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Polygon.Storages;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace SatelliteSite.ContestModule.Apis
@@ -33,12 +33,11 @@ namespace SatelliteSite.ContestModule.Apis
             [FromQuery] string language_id = null)
         {
             var condition = Expr
-                .Create<Polygon.Entities.Submission>(s => s.ContestId == cid)
+                .Of<Polygon.Entities.Submission>(s => s.ContestId == cid)
                 .CombineIf(ids != null && ids.Length > 0, s => ids.Contains(s.Id))
                 .CombineIf(language_id != null, s => s.Language == language_id);
 
-            var store = Context.GetRequiredService<ISubmissionStore>();
-            var submissions = await store.ListAsync(
+            var submissions = await Context.ListSubmissionsAsync(
                 predicate: condition,
                 projection: s => new { s.Language, s.Id, s.ProblemId, s.TeamId, s.Time });
             var contestTime = Contest.StartTime ?? DateTimeOffset.Now;
@@ -59,8 +58,8 @@ namespace SatelliteSite.ContestModule.Apis
             [FromRoute] int cid,
             [FromRoute] int id)
         {
-            var ss = await Context.GetRequiredService<ISubmissionStore>().FindAsync(id);
-            if (ss == null || ss.ContestId != cid) return null;
+            var ss = await Context.FindSubmissionAsync(id);
+            if (ss == null) return null;
             var contestTime = Contest.StartTime ?? DateTimeOffset.Now;
             return new Submission(cid, ss.Language, ss.Id, ss.ProblemId, ss.TeamId, ss.Time, ss.Time - contestTime);
         }
@@ -105,7 +104,7 @@ namespace SatelliteSite.ContestModule.Apis
                 username: "api",
                 time: time);
 
-            return Created($"/api/contests/{cid}/submissions/{s.Id}",
+            return CreatedAtAction(nameof(GetOne), new { cid, id = s.Id },
                 new Submission(cid, s.Language, s.Id, s.ProblemId, s.TeamId, s.Time, s.Time - (Contest.StartTime ?? DateTimeOffset.Now)));
         }
     }

@@ -21,9 +21,8 @@ namespace SatelliteSite.ContestModule.Controllers
         [HttpGet]
         public async Task<IActionResult> List()
         {
-            var model = await Context.GetRequiredService<ITeamStore>().ListAsync(
-                predicate: t => t.ContestId == Contest.Id,
-                selector: t => new JuryListTeamModel
+            var model = await Context.ListTeamsAsync(
+                t => new JuryListTeamModel
                 {
                     Status = t.Status,
                     TeamId = t.TeamId,
@@ -64,10 +63,9 @@ namespace SatelliteSite.ContestModule.Controllers
             if (model.UserName != null)
             {
                 var userNames = model.UserName.Split(',', StringSplitOptions.RemoveEmptyEntries);
-                var userManager = Context.GetRequiredService<IUserManager>();
                 foreach (var userName in userNames)
                 {
-                    var user = await userManager.FindByNameAsync(userName.Trim());
+                    var user = await UserManager.FindByNameAsync(userName.Trim());
                     if (user == null)
                         ModelState.AddModelError("xys::no_user", $"No such user {userName.Trim()}.");
                     else if ((await Context.FindMemberByUserAsync(user.Id)) != null)
