@@ -3,7 +3,6 @@ using Ccs.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Polygon.Entities;
-using Polygon.Storages;
 using SatelliteSite.ContestModule.Models;
 using System;
 using System.Collections.Generic;
@@ -16,10 +15,6 @@ namespace SatelliteSite.ContestModule.Controllers
     [Route("[area]/{cid}/jury/[controller]")]
     public class AnalysisController : JuryControllerBase
     {
-        private ISubmissionStore Store { get; }
-
-        public AnalysisController(ISubmissionStore store) => Store = store;
-
         public IReadOnlyDictionary<int, (string Name, string Affiliation)> Teams { get; set; }
 
         private static void Add<T>(Dictionary<T, int> kvp, T key)
@@ -76,7 +71,7 @@ namespace SatelliteSite.ContestModule.Controllers
             var startTime = Contest.StartTime.Value;
             var endTime = startTime + Contest.EndTime.Value;
 
-            var result = await Store.ListWithJudgingAsync(
+            var result = await Context.FetchSolutionsAsync(
                 predicate: s => s.ContestId == cid && s.Time >= startTime && s.Time <= endTime,
                 selector: (s, j) => new { s.Time, j.Status, s.ProblemId, s.TeamId, s.Language });
 
@@ -134,7 +129,7 @@ namespace SatelliteSite.ContestModule.Controllers
             var startTime = Contest.StartTime.Value;
             var endTime = startTime + Contest.EndTime.Value;
 
-            var result = await Store.ListWithJudgingAsync(
+            var result = await Context.FetchSolutionsAsync(
                 predicate: s => s.ContestId == cid && s.Time >= startTime && s.Time <= endTime && s.ProblemId == pid,
                 selector: (s, j) => new { s.Time, SubmissionId = s.Id, j.Status, s.TeamId, s.Language, JudgingId = j.Id, j.ExecuteTime });
 

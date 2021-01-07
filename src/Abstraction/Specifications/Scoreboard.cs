@@ -1,7 +1,6 @@
 ﻿#nullable disable
 using System;
 using System.Collections.Generic;
-using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Ccs.Specifications
@@ -79,7 +78,6 @@ namespace Ccs.Specifications
         /// <summary>
         /// The class for problem object.
         /// </summary>
-        [JsonConverter(typeof(ProblemConverter))]
         public class Problem
         {
             /// <summary>
@@ -111,7 +109,13 @@ namespace Ccs.Specifications
             /// </summary>
             [JsonPropertyName("solved")]
             public bool Solved { get; set; }
+        }
 
+        /// <summary>
+        /// The class for problem object.
+        /// </summary>
+        public class ProblemSolved : Problem
+        {
             /// <summary>
             /// minutes into the contest when this problem was solved by the team
             /// </summary>
@@ -124,35 +128,6 @@ namespace Ccs.Specifications
             /// </summary>
             [JsonPropertyName("first_to_solve")]
             public bool FirstToSolve { get; set; }
-        }
-
-        /// <summary>
-        /// Converting problems depending on whether solved.
-        /// </summary>
-        private class ProblemConverter : JsonConverter<Problem>
-        {
-            /// <inheritdoc />
-            public override Problem Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-                => throw new InvalidOperationException();
-
-            /// <inheritdoc />
-            public override void Write(Utf8JsonWriter writer, Problem value, JsonSerializerOptions options)
-            {
-                writer.WriteStartObject();
-                writer.WriteString("label", value.Label);
-                writer.WriteString("problem_id", value.ProblemId);
-                writer.WriteNumber("num_judged", value.NumJudged);
-                writer.WriteNumber("num_pending", value.NumPending);
-                writer.WriteBoolean("solved", value.Solved);
-
-                if (value.Solved)
-                {
-                    writer.WriteBoolean("first_to_solve", value.FirstToSolve);
-                    writer.WriteNumber("time", value.Time);
-                }
-
-                writer.WriteEndObject();
-            }
         }
 
         /// <summary>

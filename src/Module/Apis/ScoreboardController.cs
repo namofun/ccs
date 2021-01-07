@@ -82,9 +82,9 @@ namespace SatelliteSite.ContestModule.Apis
                     Label = p.ShortName
                 };
             }
-            else
+            else if (s.Score.HasValue)
             {
-                return new Scoreboard.Problem
+                return new Scoreboard.ProblemSolved
                 {
                     FirstToSolve = s.IsFirstToSolve,
                     NumJudged = s.JudgedCount,
@@ -93,6 +93,17 @@ namespace SatelliteSite.ContestModule.Apis
                     Solved = s.Score.HasValue,
                     Label = p.ShortName,
                     Time = s.Score ?? 0
+                };
+            }
+            else
+            {
+                return new Scoreboard.Problem
+                {
+                    NumJudged = s.JudgedCount,
+                    NumPending = s.PendingCount,
+                    ProblemId = $"{p.ProblemId}",
+                    Solved = s.Score.HasValue,
+                    Label = p.ShortName,
                 };
             }
         }

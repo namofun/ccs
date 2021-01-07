@@ -33,19 +33,19 @@ namespace Ccs.Contexts.Immediate
 
         public Contest Contest => _contest;
 
-        public IClarificationStore ClarificationStore => _clars ??= GetRequiredService<IClarificationStore>();
+        public IClarificationStore ClarificationStore => _clars ??= _services.GetRequiredService<IClarificationStore>();
 
-        public ITeamStore TeamStore => _teams ??= GetRequiredService<ITeamStore>();
+        public ITeamStore TeamStore => _teams ??= _services.GetRequiredService<ITeamStore>();
 
-        public IProblemsetStore ProblemsetStore => _probs ??= GetRequiredService<IProblemsetStore>();
+        public IProblemsetStore ProblemsetStore => _probs ??= _services.GetRequiredService<IProblemsetStore>();
 
-        public IContestStore ContestStore => _ctsx ??= GetRequiredService<IContestStore>();
+        public IContestStore ContestStore => _ctsx ??= _services.GetRequiredService<IContestStore>();
 
-        public ISubmissionStore SubmissionStore => _submits ??= GetRequiredService<ISubmissionStore>();
+        public ISubmissionStore SubmissionStore => _submits ??= _services.GetRequiredService<ISubmissionStore>();
 
-        public IJudgingStore JudgingStore => _judgings ??= GetRequiredService<IJudgingStore>();
+        public IJudgingStore JudgingStore => _judgings ??= _services.GetRequiredService<IJudgingStore>();
 
-        public IRejudgingStore RejudgingStore => _rejudgings ??= GetRequiredService<IRejudgingStore>();
+        public IRejudgingStore RejudgingStore => _rejudgings ??= _services.GetRequiredService<IRejudgingStore>();
 
         public ImmediateContestContext(Contest contest, IServiceProvider serviceProvider)
         {
@@ -55,7 +55,7 @@ namespace Ccs.Contexts.Immediate
 
         public virtual async Task<IReadOnlyList<Language>> FetchLanguagesAsync()
         {
-            var store = GetRequiredService<ILanguageStore>();
+            var store = _services.GetRequiredService<ILanguageStore>();
             IReadOnlyList<Language> langs = await store.ListAsync(true);
             if (!string.IsNullOrEmpty(Contest.Languages))
             {
@@ -113,11 +113,6 @@ namespace Ccs.Contexts.Immediate
         {
             await ContestStore.UpdateAsync(Contest.Id, updateExpression);
             return await ContestStore.FindAsync(Contest.Id);
-        }
-
-        public T GetRequiredService<T>()
-        {
-            return _services.GetRequiredService<T>();
         }
 
         public virtual Task<IReadOnlyDictionary<int, Affiliation>> FetchAffiliationsAsync(bool contestFiltered)
@@ -219,7 +214,7 @@ namespace Ccs.Contexts.Immediate
 
         public async Task<IPagedList<Auditlog>> ViewLogsAsync(int page, int pageCount)
         {
-            return await GetRequiredService<IAuditlogger>().ViewLogsAsync(Contest.Id, page, pageCount);
+            return await _services.GetRequiredService<IAuditlogger>().ViewLogsAsync(Contest.Id, page, pageCount);
         }
 
         public virtual async Task<object> GetUpdatesAsync()
@@ -349,10 +344,9 @@ namespace Ccs.Contexts.Immediate
 
         public async Task<List<Statement>> FetchRawStatementsAsync()
         {
-            var store = GetRequiredService<IProblemsetStore>();
             var problems = await FetchProblemsAsync();
-            var provider = GetRequiredService<Polygon.Packaging.IStatementProvider>();
-            var raw = await store.RawProblemsAsync(Contest.Id);
+            var provider = _services.GetRequiredService<Polygon.Packaging.IStatementProvider>();
+            var raw = await ProblemsetStore.RawProblemsAsync(Contest.Id);
             var stmts = new List<Statement>();
             foreach (var prob in raw)
             {
@@ -446,6 +440,11 @@ namespace Ccs.Contexts.Immediate
         }
 
         public Task<SubmissionSource> FetchSourceAsync(Expression<Func<Submission, bool>> predicate)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<T>> FetchSolutionsAsync<T>(Expression<Func<Submission, Judging, T>> selector, Expression<Func<Submission, bool>>? predicate = null, int? limits = null)
         {
             throw new NotImplementedException();
         }

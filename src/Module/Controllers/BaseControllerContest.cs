@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
+using SatelliteSite.IdentityModule.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,10 +17,16 @@ namespace SatelliteSite.ContestModule.Controllers
     /// </summary>
     public class ContestControllerBase : ViewControllerBase
     {
+        private IUserManager _lazy_userManager;
+        private IMediator _lazy_mediator;
+        private IContestContext _private_context;
+        private Ccs.Entities.Team _private_team;
+        private IReadOnlyList<Ccs.Models.ProblemModel> _private_problems;
+
         /// <summary>
         /// Context for contest controlling
         /// </summary>
-        protected IContestContext Context { get; private set; }
+        protected IContestContext Context => _private_context;
 
         /// <summary>
         /// The contest entity
@@ -29,17 +36,22 @@ namespace SatelliteSite.ContestModule.Controllers
         /// <summary>
         /// The messaging center
         /// </summary>
-        protected IMediator Mediator { get; private set; }
+        protected IMediator Mediator => _lazy_mediator ??= HttpContext.RequestServices.GetRequiredService<IMediator>();
+
+        /// <summary>
+        /// Gets the user manager.
+        /// </summary>
+        protected IUserManager UserManager => _lazy_userManager ??= HttpContext.RequestServices.GetRequiredService<IUserManager>();
 
         /// <summary>
         /// The team entity for current user
         /// </summary>
-        protected Ccs.Entities.Team Team { get; private set; }
+        protected Ccs.Entities.Team Team => _private_team;
 
         /// <summary>
         /// The problem list
         /// </summary>
-        protected IReadOnlyList<Ccs.Models.ProblemModel> Problems { get; private set; }
+        protected IReadOnlyList<Ccs.Models.ProblemModel> Problems => _private_problems;
 
         /// <summary>
         /// Presents a view for printing codes.
@@ -150,8 +162,7 @@ namespace SatelliteSite.ContestModule.Controllers
             }
 
             // parse the base service
-            Mediator = HttpContext.RequestServices.GetRequiredService<IMediator>();
-            Context = await HttpContext.CreateContestContextAsync(cid);
+            _private_context = await HttpContext.CreateContestContextAsync(cid);
             if (Context == null)
             {
                 context.Result = NotFound();
@@ -159,7 +170,7 @@ namespace SatelliteSite.ContestModule.Controllers
             }
             else
             {
-                Problems = await Context.FetchProblemsAsync();
+                _private_problems = await Context.FetchProblemsAsync();
                 HttpContext.Items[nameof(cid)] = cid;
                 HttpContext.Features.Set(Context);
                 ViewBag.Contest = Contest;
@@ -188,7 +199,7 @@ namespace SatelliteSite.ContestModule.Controllers
 
             if (int.TryParse(User.GetUserId() ?? "-1", out int uid) && uid > 0)
             {
-                ViewBag.Team = Team = await Context.FindTeamByUserAsync(uid);
+                ViewBag.Team = _private_team = await Context.FindTeamByUserAsync(uid);
                 if (Team != null) ViewData["HasTeam"] = true;
             }
 

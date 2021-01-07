@@ -13,11 +13,6 @@ namespace SatelliteSite.ContestModule.Controllers
     [Authorize]
     public abstract class JuryControllerBase : ContestControllerBase
     {
-        /// <summary>
-        /// Gets the user manager.
-        /// </summary>
-        protected IUserManager UserManager => HttpContext.RequestServices.GetRequiredService<IUserManager>();
-
         /// <inheritdoc />
         public override Task OnActionExecutingAsync(ActionExecutingContext context)
         {
