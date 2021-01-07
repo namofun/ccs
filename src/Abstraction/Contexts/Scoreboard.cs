@@ -10,8 +10,7 @@ namespace Ccs.Services
     /// <summary>
     /// The interface for updating scoreboard.
     /// </summary>
-    /// <remarks>Note that all store interfaces shouldn't cache the result.</remarks>
-    public interface IScoreboardStore
+    public interface IScoreboard
     {
         /// <summary>
         /// Remove all caches from the contest and set up the new ranks and scores.

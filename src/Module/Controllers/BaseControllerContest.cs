@@ -1,4 +1,7 @@
 ﻿using Ccs;
+using Ccs.Entities;
+using Ccs.Models;
+using Ccs.Services;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -20,8 +23,8 @@ namespace SatelliteSite.ContestModule.Controllers
         private IUserManager _lazy_userManager;
         private IMediator _lazy_mediator;
         private IContestContext _private_context;
-        private Ccs.Entities.Team _private_team;
-        private IReadOnlyList<Ccs.Models.ProblemModel> _private_problems;
+        private Team _private_team;
+        private IReadOnlyList<ProblemModel> _private_problems;
 
         /// <summary>
         /// Context for contest controlling
@@ -31,7 +34,7 @@ namespace SatelliteSite.ContestModule.Controllers
         /// <summary>
         /// The contest entity
         /// </summary>
-        protected Ccs.Entities.Contest Contest => Context.Contest;
+        protected Contest Contest => Context.Contest;
 
         /// <summary>
         /// The messaging center
@@ -46,12 +49,12 @@ namespace SatelliteSite.ContestModule.Controllers
         /// <summary>
         /// The team entity for current user
         /// </summary>
-        protected Ccs.Entities.Team Team => _private_team;
+        protected Team Team => _private_team;
 
         /// <summary>
         /// The problem list
         /// </summary>
-        protected IReadOnlyList<Ccs.Models.ProblemModel> Problems => _private_problems;
+        protected IReadOnlyList<ProblemModel> Problems => _private_problems;
 
         /// <summary>
         /// Presents a view for printing codes.
@@ -77,8 +80,8 @@ namespace SatelliteSite.ContestModule.Controllers
             for (int i = 0; i < bytes.Length;)
                 i += await stream.ReadAsync(bytes, i, bytes.Length - i);
 
-            var Printings = HttpContext.RequestServices.GetRequiredService<Ccs.Services.IPrintingStore>();
-            var p = await Printings.CreateAsync(new Ccs.Entities.Printing
+            var Printings = HttpContext.RequestServices.GetRequiredService<IPrintingService>();
+            var p = await Printings.CreateAsync(new Printing
             {
                 ContestId = Contest.Id,
                 LanguageId = model.Language ?? "plain",
@@ -118,7 +121,7 @@ namespace SatelliteSite.ContestModule.Controllers
             if (!isJury)
                 orgs = orgs.Values.Where(o => o.IsPublic).ToDictionary(c => c.Id);
 
-            var board = new Ccs.Models.FullBoardViewModel
+            var board = new FullBoardViewModel
             {
                 RankCache = scb.Data.Values,
                 UpdateTime = scb.RefreshTime,

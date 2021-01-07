@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Ccs.Services
 {
-    public class ScoreboardStore<TContext> : IScoreboardStore
+    public class ScoreboardStore<TContext> : IScoreboard
         where TContext : DbContext
     {
         TContext Context { get; }

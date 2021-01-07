@@ -46,7 +46,7 @@ namespace Ccs.Scoreboard.Query
 
         /// <inheritdoc />
         /// <remarks>The race condition caused by FirstToSolve query can be ignored. FirstToSolve field isn't important.</remarks>
-        public async Task Accept(IScoreboardStore store, Contest contest, JudgingFinishedEvent args)
+        public async Task Accept(IScoreboard store, Contest contest, JudgingFinishedEvent args)
         {
             bool fb = await store.IsFirstToSolveAsync(
                 cid: args.ContestId!.Value,
@@ -96,7 +96,7 @@ namespace Ccs.Scoreboard.Query
 
 
         /// <inheritdoc />
-        public Task CompileError(IScoreboardStore store, Contest contest, JudgingFinishedEvent args)
+        public Task CompileError(IScoreboard store, Contest contest, JudgingFinishedEvent args)
         {
             bool showPublic = contest.GetState(args.SubmitTime) < ContestState.Frozen;
             return store.ScoreUpdateAsync(
@@ -113,7 +113,7 @@ namespace Ccs.Scoreboard.Query
 
 
         /// <inheritdoc />
-        public Task Pending(IScoreboardStore store, Contest contest, SubmissionCreatedEvent args)
+        public Task Pending(IScoreboard store, Contest contest, SubmissionCreatedEvent args)
         {
             return store.ScoreUpsertAsync(
                 cid: args.Submission.ContestId,
@@ -128,7 +128,7 @@ namespace Ccs.Scoreboard.Query
 
 
         /// <inheritdoc />
-        public Task Reject(IScoreboardStore store, Contest contest, JudgingFinishedEvent args)
+        public Task Reject(IScoreboard store, Contest contest, JudgingFinishedEvent args)
         {
             bool showPublic = contest.GetState(args.SubmitTime) < ContestState.Frozen;
             return store.ScoreUpdateAsync(
@@ -147,7 +147,7 @@ namespace Ccs.Scoreboard.Query
 
 
         /// <inheritdoc />
-        public async Task RefreshCache(IScoreboardStore store, ScoreboardRefreshEvent args)
+        public async Task RefreshCache(IScoreboard store, ScoreboardRefreshEvent args)
         {
             int cid = args.Contest.Id;
             var results = await store.FetchRecalculateAsync(cid, args.Deadline);

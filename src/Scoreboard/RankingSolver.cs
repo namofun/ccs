@@ -26,7 +26,7 @@ namespace Ccs.Scoreboard
         /// <summary>
         /// The interface for scoreboard storage
         /// </summary>
-        private IScoreboardStore Store { get; }
+        private IScoreboard Store { get; }
 
         /// <summary>
         /// The interface for contest context
@@ -63,7 +63,7 @@ namespace Ccs.Scoreboard
         /// <param name="factory">The contest context factory.</param>
         public RankingSolver(ScopedContestContextFactory factory)
         {
-            Store = factory.CreateScoreboardStore();
+            Store = factory.CreateScoreboard();
             Factory = factory;
         }
 

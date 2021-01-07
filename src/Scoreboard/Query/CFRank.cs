@@ -45,7 +45,7 @@ namespace Ccs.Scoreboard.Query
 
 
         /// <inheritdoc />
-        public Task CompileError(IScoreboardStore store, Contest contest, JudgingFinishedEvent args)
+        public Task CompileError(IScoreboard store, Contest contest, JudgingFinishedEvent args)
         {
             return store.ScoreUpdateAsync(
                 cid: args.ContestId!.Value,
@@ -60,7 +60,7 @@ namespace Ccs.Scoreboard.Query
 
 
         /// <inheritdoc />
-        public Task Pending(IScoreboardStore store, Contest contest, SubmissionCreatedEvent args)
+        public Task Pending(IScoreboard store, Contest contest, SubmissionCreatedEvent args)
         {
             return store.ScoreUpsertAsync(
                 cid: args.Submission.ContestId,
@@ -80,7 +80,7 @@ namespace Ccs.Scoreboard.Query
         /// solution comes from accepted to rejected, and the variable
         /// <c>fst</c> will be true.
         /// </remarks>
-        public Task Reject(IScoreboardStore store, Contest contest, JudgingFinishedEvent args)
+        public Task Reject(IScoreboard store, Contest contest, JudgingFinishedEvent args)
         {
             bool fst = args.Judging.Active && args.Judging.RejudgingId.HasValue;
 
@@ -98,7 +98,7 @@ namespace Ccs.Scoreboard.Query
 
 
         /// <inheritdoc />
-        public async Task Accept(IScoreboardStore store, Contest contest, JudgingFinishedEvent args)
+        public async Task Accept(IScoreboard store, Contest contest, JudgingFinishedEvent args)
         {
             double time = (args.SubmitTime - contest.StartTime)?.TotalSeconds ?? 0;
             int timee = (int)(time / 60);
@@ -112,8 +112,7 @@ namespace Ccs.Scoreboard.Query
                 expression: (r, s) => new RankCache
                 {
                     PointsPublic = r.PointsPublic - (s.ScorePublic ?? 0)
-                        + minScore > (rateScore - s.SubmissionRestricted * 50)
-                        ? minScore : (rateScore - s.SubmissionRestricted * 50),
+                        + Math.Max(minScore, rateScore - s.SubmissionRestricted * 50),
                     TotalTimePublic = timee,
                 });
 
@@ -125,8 +124,7 @@ namespace Ccs.Scoreboard.Query
                 {
                     SubmissionRestricted = s.SubmissionRestricted + 1,
                     PendingRestricted    = s.PendingRestricted - 1,
-                    ScorePublic          = minScore > (rateScore - s.SubmissionRestricted * 50)
-                                         ? minScore : (rateScore - s.SubmissionRestricted * 50),
+                    ScorePublic          = Math.Max(minScore, rateScore - s.SubmissionRestricted * 50),
                     IsCorrectPublic      = true,
                     SolveTimePublic      = time,
                     SubmissionPublic     = s.SubmissionRestricted + 1,
@@ -135,7 +133,7 @@ namespace Ccs.Scoreboard.Query
 
 
         /// <inheritdoc />
-        public async Task RefreshCache(IScoreboardStore store, ScoreboardRefreshEvent args)
+        public async Task RefreshCache(IScoreboard store, ScoreboardRefreshEvent args)
         {
             int cid = args.Contest.Id;
             var scores = args.Problems.ToDictionary(k => k.ProblemId, v => v.Score);

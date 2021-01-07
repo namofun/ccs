@@ -62,10 +62,10 @@ namespace Ccs.Contexts
         /// Get the scoreboard store.
         /// </summary>
         /// <returns>The scoreboard store.</returns>
-        public IScoreboardStore CreateScoreboardStore()
+        public IScoreboard CreateScoreboard()
         {
             return ServiceProvider
-                .GetRequiredService<IScoreboardStore>();
+                .GetRequiredService<IScoreboard>();
         }
     }
 }

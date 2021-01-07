@@ -29,7 +29,7 @@ namespace Ccs.Scoreboard
         /// <param name="contest">The contest entity.</param>
         /// <param name="args">The submission created event.</param>
         /// <returns>The task for updating scoreboard.</returns>
-        Task Pending(IScoreboardStore store, Contest contest, SubmissionCreatedEvent args);
+        Task Pending(IScoreboard store, Contest contest, SubmissionCreatedEvent args);
 
         /// <summary>
         /// A submission is judged as <see cref="Verdict.CompileError"/>.
@@ -38,7 +38,7 @@ namespace Ccs.Scoreboard
         /// <param name="contest">The contest entity.</param>
         /// <param name="args">The judging finished event.</param>
         /// <returns>The task for updating scoreboard.</returns>
-        Task CompileError(IScoreboardStore store, Contest contest, JudgingFinishedEvent args);
+        Task CompileError(IScoreboard store, Contest contest, JudgingFinishedEvent args);
 
         /// <summary>
         /// A submission is judged as <see cref="Verdict.WrongAnswer"/> or other rejected verdicts.
@@ -47,7 +47,7 @@ namespace Ccs.Scoreboard
         /// <param name="contest">The contest entity.</param>
         /// <param name="args">The judging finished event.</param>
         /// <returns>The task for updating scoreboard.</returns>
-        Task Reject(IScoreboardStore store, Contest contest, JudgingFinishedEvent args);
+        Task Reject(IScoreboard store, Contest contest, JudgingFinishedEvent args);
 
         /// <summary>
         /// A submission is judged as <see cref="Verdict.Accepted"/>.
@@ -56,7 +56,7 @@ namespace Ccs.Scoreboard
         /// <param name="contest">The contest entity.</param>
         /// <param name="args">The judging finished event.</param>
         /// <returns>The task for updating scoreboard.</returns>
-        Task Accept(IScoreboardStore store, Contest contest, JudgingFinishedEvent args);
+        Task Accept(IScoreboard store, Contest contest, JudgingFinishedEvent args);
 
         /// <summary>
         /// The scoreboard cache is asked to be refreshed.
@@ -64,6 +64,6 @@ namespace Ccs.Scoreboard
         /// <param name="store">The scoreboard store.</param>
         /// <param name="args">The scoreboard refresh event.</param>
         /// <returns>The task for updating scoreboard.</returns>
-        Task RefreshCache(IScoreboardStore store, ScoreboardRefreshEvent args);
+        Task RefreshCache(IScoreboard store, ScoreboardRefreshEvent args);
     }
 }

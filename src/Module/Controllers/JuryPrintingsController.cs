@@ -9,9 +9,9 @@ namespace SatelliteSite.ContestModule.Controllers
     [Route("[area]/{cid}/jury/[controller]")]
     public class PrintingsController : JuryControllerBase
     {
-        IPrintingStore Store { get; }
+        IPrintingService Store { get; }
 
-        public PrintingsController(IPrintingStore store) => Store = store;
+        public PrintingsController(IPrintingService store) => Store = store;
 
         public override void OnActionExecuting(ActionExecutingContext context)
         {

@@ -22,11 +22,11 @@ namespace SatelliteSite.ContestModule.Apis
     public class PrintingController : Microsoft.AspNetCore.Mvc.ApiControllerBase
     {
         private static readonly AsyncLock _locker = new AsyncLock();
-        private readonly IPrintingStore _store;
+        private readonly IPrintingService _store;
         private readonly ScopedContestContextFactory _factory;
         private readonly IUserManager _userManager;
 
-        public PrintingController(IPrintingStore store, ScopedContestContextFactory factory, IUserManager userManager)
+        public PrintingController(IPrintingService store, ScopedContestContextFactory factory, IUserManager userManager)
         {
             _factory = factory;
             _store = store;
