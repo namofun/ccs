@@ -24,6 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\EntityFrameworkCore\Ccs.Storage.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\Module\SatelliteSite.ContestModule.csproj" />
   </ItemGroup>
 

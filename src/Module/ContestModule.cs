@@ -1,17 +1,11 @@
-﻿using Ccs.Entities;
-using Ccs.Services;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using SatelliteSite.IdentityModule.Entities;
 
 namespace SatelliteSite.ContestModule
 {
-    public class ContestModule<TUser, TRole, TContext> : AbstractModule
-        where TUser : User, new()
-        where TRole : Role, new()
-        where TContext : DbContext
+    public class ContestModule<TRole> : AbstractModule
+        where TRole : class, Ccs.IServiceRole, new()
     {
         public override string Area => "Contest";
 
@@ -32,8 +26,7 @@ namespace SatelliteSite.ContestModule
 
         public override void RegisterServices(IServiceCollection services)
         {
-            services.AddDbModelSupplier<TContext, ContestEntityConfiguration<TUser, TRole, TContext>>();
-            services.AddScoped<IContestStore, ContestStore<TContext>>();
+            new TRole().Configure(services);
         }
 
         public override void RegisterMenu(IMenuContributor menus)

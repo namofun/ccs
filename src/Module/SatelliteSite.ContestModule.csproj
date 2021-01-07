@@ -17,7 +17,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Abstraction\Ccs.Abstraction.csproj" />
-    <ProjectReference Include="..\EntityFrameworkCore\Ccs.Storage.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\Scoreboard\Ccs.Scoreboard.csproj" />
   </ItemGroup>
 
