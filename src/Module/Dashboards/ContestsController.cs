@@ -15,7 +15,7 @@ namespace SatelliteSite.ContestModule.Dashboards
     {
         [HttpGet]
         public async Task<IActionResult> List(
-            [FromServices] IContestStore store)
+            [FromServices] IContestRepository store)
         {
             var model = await store.ListAsync();
             return View(model);
@@ -24,15 +24,12 @@ namespace SatelliteSite.ContestModule.Dashboards
 
         [HttpGet("[action]")]
         public async Task<IActionResult> Add(
-            [FromServices] IContestStore store,
+            [FromServices] IContestRepository store,
             [FromServices] IUserManager userManager)
         {
-            var c = await store.CreateAsync(new Contest());
-            await HttpContext.AuditAsync("added", $"{c.Id}");
-
             var user = await userManager.GetUserAsync(User);
-            await store.AssignJuryAsync(c, user);
-
+            var c = await store.CreateAndAssignAsync(new Contest(), user);
+            await HttpContext.AuditAsync("added", $"{c.Id}");
             return RedirectToAction("Home", "Jury", new { area = "Contest", cid = c.Id });
         }
     }
