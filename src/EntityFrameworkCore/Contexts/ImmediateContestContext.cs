@@ -3,6 +3,7 @@ using Ccs.Models;
 using Ccs.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Polygon.Entities;
+using Polygon.Models;
 using Polygon.Storages;
 using SatelliteSite.Entities;
 using SatelliteSite.IdentityModule.Services;
@@ -24,6 +25,10 @@ namespace Ccs.Contexts.Immediate
         private IClarificationStore? _clars;
         private ITeamStore? _teams;
         private IProblemsetStore? _probs;
+        private IContestStore? _ctsx;
+        private IJudgingStore? _judgings;
+        private ISubmissionStore? _submits;
+        private IRejudgingStore? _rejudgings;
 
         public Contest Contest => _contest;
 
@@ -32,6 +37,14 @@ namespace Ccs.Contexts.Immediate
         public ITeamStore TeamStore => _teams ??= GetRequiredService<ITeamStore>();
 
         public IProblemsetStore ProblemsetStore => _probs ??= GetRequiredService<IProblemsetStore>();
+
+        public IContestStore ContestStore => _ctsx ??= GetRequiredService<IContestStore>();
+
+        public ISubmissionStore SubmissionStore => _submits ??= GetRequiredService<ISubmissionStore>();
+
+        public IJudgingStore JudgingStore => _judgings ??= GetRequiredService<IJudgingStore>();
+
+        public IRejudgingStore RejudgingStore => _rejudgings ??= GetRequiredService<IRejudgingStore>();
 
         public ImmediateContestContext(Contest contest, IServiceProvider serviceProvider)
         {
@@ -72,7 +85,7 @@ namespace Ccs.Contexts.Immediate
             string username,
             DateTimeOffset? time)
         {
-            return GetRequiredService<ISubmissionStore>().CreateAsync(
+            return SubmissionStore.CreateAsync(
                 code: code,
                 language: language.Id,
                 problemId: problem.ProblemId,
@@ -97,9 +110,8 @@ namespace Ccs.Contexts.Immediate
 
         public virtual async Task<Contest> UpdateContestAsync(Expression<Func<Contest, Contest>> updateExpression)
         {
-            var store = GetRequiredService<IContestStore>();
-            await store.UpdateAsync(Contest.Id, updateExpression);
-            return await store.FindAsync(Contest.Id);
+            await ContestStore.UpdateAsync(Contest.Id, updateExpression);
+            return await ContestStore.FindAsync(Contest.Id);
         }
 
         public T GetRequiredService<T>()
@@ -124,19 +136,17 @@ namespace Ccs.Contexts.Immediate
 
         public virtual Task<HashSet<int>> FetchJuryAsync()
         {
-            return GetRequiredService<IContestStore>().ListJuryAsync(Contest);
+            return ContestStore.ListJuryAsync(Contest);
         }
 
         public virtual Task AssignJuryAsync(IUser user)
         {
-            return GetRequiredService<IContestStore>()
-                .AssignJuryAsync(Contest, user);
+            return ContestStore.AssignJuryAsync(Contest, user);
         }
 
         public virtual Task UnassignJuryAsync(IUser user)
         {
-            return GetRequiredService<IContestStore>()
-                .UnassignJuryAsync(Contest, user);
+            return ContestStore.UnassignJuryAsync(Contest, user);
         }
 
         public virtual Task UpdateTeamAsync(Team origin, Expression<Func<Team>> expression)
@@ -217,11 +227,106 @@ namespace Ccs.Contexts.Immediate
             {
                 clarifications = await ClarificationStore.CountUnansweredAsync(Contest),
                 teams = await TeamStore.CountPendingAsync(Contest),
-                rejudgings = await GetRequiredService<IRejudgingStore>().CountUndoneAsync(Contest.Id),
+                rejudgings = await RejudgingStore.CountUndoneAsync(Contest.Id),
             };
         }
 
         public virtual Task SetReadmeAsync(string source)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<Event>> FetchEventAsync(string[]? type, int after)
+        {
+            return ContestStore.FetchEventAsync(Contest.Id, type, after);
+        }
+
+        public Task<int> MaxEventIdAsync()
+        {
+            return ContestStore.MaxEventIdAsync(Contest.Id);
+        }
+
+        public Task<List<T>> ListTeamsAsync<T>(Expression<Func<Team, T>> selector, Expression<Func<Team, bool>>? predicate = null) where T : class
+        {
+            int cid = Contest.Id;
+            return TeamStore.ListAsync(selector, predicate.Combine(t => t.ContestId == cid));
+        }
+
+        public async Task<ServerStatus> GetJudgeQueueAsync()
+        {
+            var lists = await JudgingStore.GetJudgeQueueAsync(Contest.Id);
+            return lists.SingleOrDefault() ?? new ServerStatus { ContestId = Contest.Id };
+        }
+
+        public async Task<Submission?> FindSubmissionAsync(int submissionId, bool includeJudgings = false)
+        {
+            var result = await SubmissionStore.FindAsync(submissionId, includeJudgings);
+            return result?.ContestId == Contest.Id ? result : null;
+        }
+
+        public Task<List<T>> ListSubmissionsAsync<T>(Expression<Func<Submission, T>> projection, Expression<Func<Submission, bool>>? predicate = null)
+        {
+            int cid = Contest.Id;
+            return SubmissionStore.ListAsync(projection, predicate.Combine(s => s.ContestId == cid));
+        }
+
+        public Task<List<Solution>> FetchSolutionsAsync(int? probid = null, string? langid = null, int? teamid = null, bool all = false)
+        {
+            int cid = Contest.Id;
+            Expression<Func<Submission, bool>> cond = s => s.ContestId == cid;
+            if (probid.HasValue) cond = cond.Combine(s => s.ProblemId == probid);
+            if (teamid.HasValue) cond = cond.Combine(s => s.TeamId == teamid);
+            if (!string.IsNullOrEmpty(langid)) cond = cond.Combine(s => s.Language == langid);
+            int? limit = all ? default(int?) : 75;
+
+            return SubmissionStore.ListWithJudgingAsync(cond, true, limit);
+        }
+
+        public Task<IPagedList<Solution>> FetchSolutionsAsync(int page, int perPage)
+        {
+            int cid = Contest.Id;
+            return SubmissionStore.ListWithJudgingAsync((page, perPage), s => s.ContestId == cid);
+        }
+
+        public async Task<Solution> FetchSolutionAsync(int submitid)
+        {
+            int cid = Contest.Id;
+            var res = await SubmissionStore.ListWithJudgingAsync(s => s.ContestId == cid && s.Id == submitid, true, 1);
+            return res.FirstOrDefault();
+        }
+
+        public Task<List<TSolution>> FetchSolutionsAsync<TSolution>(
+            Expression<Func<Submission, Judging, TSolution>> selector,
+            int? probid = null,
+            string? langid = null,
+            int? teamid = null)
+        {
+            int cid = Contest.Id;
+            Expression<Func<Submission, bool>> cond = s => s.ContestId == cid;
+            if (probid.HasValue) cond = cond.Combine(s => s.ProblemId == probid);
+            if (teamid.HasValue) cond = cond.Combine(s => s.TeamId == teamid);
+            if (!string.IsNullOrEmpty(langid)) cond = cond.Combine(s => s.Language == langid);
+            return SubmissionStore.ListWithJudgingAsync(selector, cond);
+        }
+
+        public async Task<TSolution> FetchSolutionAsync<TSolution>(int submitid, Expression<Func<Submission, Judging, TSolution>> selector)
+        {
+            int cid = Contest.Id;
+            var res = await SubmissionStore.ListWithJudgingAsync(selector, s => s.ContestId == cid && s.Id == submitid, 1);
+            return res.FirstOrDefault();
+        }
+
+        public Task<Affiliation?> FetchAffiliationAsync(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<BalloonModel>> FetchBalloonsAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task SetBalloonDoneAsync(int id)
         {
             throw new NotImplementedException();
         }

@@ -5,6 +5,7 @@ using Polygon.Entities;
 using Polygon.Storages;
 using System;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace SatelliteSite.ContestModule.Apis
@@ -39,7 +40,7 @@ namespace SatelliteSite.ContestModule.Apis
             [FromQuery] int? limit = null)
         {
             var condition = Expr
-                .Create<Testcase, JudgingRun>((t, d) => d.j.s.ContestId == cid)
+                .Of<Testcase, JudgingRun>((t, d) => d.j.s.ContestId == cid)
                 .CombineIf(ids != null && ids.Length > 0, (t, d) => ids.Contains(d.Id))
                 .CombineIf(first_id.HasValue, (t, d) => d.Id >= first_id)
                 .CombineIf(last_id.HasValue, (t, d) => d.Id <= last_id)

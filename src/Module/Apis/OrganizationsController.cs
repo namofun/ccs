@@ -31,10 +31,11 @@ namespace SatelliteSite.ContestModule.Apis
             [FromQuery] string country = null)
         {
             var results = await Context.FetchAffiliationsAsync();
-            var query = results.Values;
-            if (country != null) query = query.Where(t => t.CountryCode == country);
-            if (ids != null && ids.Length > 0) query = query.Where(t => ids.Contains(t.Abbreviation));
-            return query.Select(a => new Organization(a)).ToArray();
+            return results.Values
+                .WhereIf(country != null, t => t.CountryCode == country)
+                .WhereIf(ids != null && ids.Length > 0, t => ids.Contains(t.Abbreviation))
+                .Select(a => new Organization(a))
+                .ToArray();
         }
 
 

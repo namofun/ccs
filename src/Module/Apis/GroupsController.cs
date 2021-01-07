@@ -32,10 +32,11 @@ namespace SatelliteSite.ContestModule.Apis
             [FromQuery] bool @public = false)
         {
             var cats = await Context.FetchCategoriesAsync();
-            var results = cats.Values;
-            if (@public) results = results.Where(c => c.IsPublic);
-            if (ids != null && ids.Length > 0) results = results.Where(c => ids.Contains(c.Id));
-            return results.Select(c => new Group(c)).ToArray();
+            return cats.Values
+                .WhereIf(@public, c => c.IsPublic)
+                .WhereIf(ids != null && ids.Length > 0, c => ids.Contains(c.Id))
+                .Select(c => new Group(c))
+                .ToArray();
         }
 
 

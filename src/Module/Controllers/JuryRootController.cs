@@ -1,5 +1,4 @@
 ﻿using Ccs.Entities;
-using Ccs.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SatelliteSite.ContestModule.Models;
@@ -142,19 +141,19 @@ namespace SatelliteSite.ContestModule.Controllers
 
 
         [HttpGet("[action]")]
-        public async Task<IActionResult> Balloon([FromServices] IBalloonStore store)
+        public async Task<IActionResult> Balloon()
         {
             if (!Contest.BalloonAvailable) return NotFound();
-            var model = await store.ListAsync(Contest, Problems);
+            var model = await Context.FetchBalloonsAsync();
             return View(model);
         }
 
 
         [HttpGet("balloon/{bid}/set-done")]
-        public async Task<IActionResult> BalloonSetDone(int bid, [FromServices] IBalloonStore store)
+        public async Task<IActionResult> BalloonSetDone(int bid)
         {
             if (!Contest.BalloonAvailable) return NotFound();
-            await store.SetDoneAsync(Contest, bid);
+            await Context.SetBalloonDoneAsync(bid);
             return RedirectToAction(nameof(Balloon));
         }
 

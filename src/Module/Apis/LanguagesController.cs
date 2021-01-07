@@ -28,11 +28,10 @@ namespace SatelliteSite.ContestModule.Apis
             [FromRoute] int cid,
             [FromQuery] string[] ids = null)
         {
-            var langs = await Context.FetchLanguagesAsync();
-            var query = langs.AsEnumerable();
-            if (ids != null && ids.Length > 0)
-                query = query.Where(l => ids.Contains(l.Id));
-            return query.Select(l => new Language(l)).ToArray();
+            return (await Context.FetchLanguagesAsync())
+                .WhereIf(ids != null && ids.Length > 0, l => ids.Contains(l.Id))
+                .Select(l => new Language(l))
+                .ToArray();
         }
 
 

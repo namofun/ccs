@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -29,10 +28,10 @@ namespace SatelliteSite.ContestModule.Apis
             [FromRoute] int cid,
             [FromQuery] int[] ids = null)
         {
-            IEnumerable<Ccs.Models.ProblemModel> probs = await Context.FetchProblemsAsync();
-            if (ids != null && ids.Length > 0)
-                probs = probs.Where(cp => ids.Contains(cp.ProblemId));
-            return probs.Select(cp => new Problem(cp)).ToArray();
+            return (await Context.FetchProblemsAsync())
+                .WhereIf(ids != null && ids.Length > 0, cp => ids.Contains(cp.ProblemId))
+                .Select(cp => new Problem(cp))
+                .ToArray();
         }
 
 

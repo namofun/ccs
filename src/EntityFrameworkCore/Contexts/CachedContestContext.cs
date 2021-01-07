@@ -78,16 +78,13 @@ namespace Ccs.Contexts.Cached
         public override async Task<Contest> UpdateContestAsync(
             Expression<Func<Contest, Contest>> updateExpression)
         {
-            var store = GetRequiredService<IContestStore>();
-            await store.UpdateAsync(Contest.Id, updateExpression);
+            await ContestStore.UpdateAsync(Contest.Id, updateExpression);
             Expire("Core");
             Expire("Languages");
 
             // The other occurrence is in Factory.cs
-            return await CacheAsync("Core", _options.Contest, async () =>
-            {
-                return await store.FindAsync(Contest.Id);
-            });
+            return await CacheAsync("Core", _options.Contest,
+                async () => await ContestStore.FindAsync(Contest.Id));
         }
 
         public override Task<object> GetUpdatesAsync()

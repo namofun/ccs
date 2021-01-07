@@ -5,12 +5,13 @@ using Polygon.Entities;
 using Polygon.Storages;
 using System;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace SatelliteSite.ContestModule.Apis
 {
     /// <summary>
-    /// The endpoints for groups to connect to CDS.
+    /// The endpoints for judgements to connect to CDS.
     /// </summary>
     [Area("Api")]
     [Route("[area]/contests/{cid}/[controller]")]
@@ -34,10 +35,9 @@ namespace SatelliteSite.ContestModule.Apis
             [FromQuery] string result = null,
             [FromQuery] int? submission_id = null)
         {
-            var store = Context.GetRequiredService<IJudgingStore>();
             var r2 = JudgementType.For(result);
             var cond = Expr
-                .Create<Judging>(j => j.StartTime != null)
+                .Of<Judging>(j => j.StartTime != null && j.s.ContestId == cid)
                 .CombineIf(ids != null && ids.Length > 0, j => ids.Contains(j.Id))
                 .CombineIf(submission_id.HasValue, j => j.SubmissionId == submission_id)
                 .CombineIf(r2 != Verdict.Unknown, j => j.Status == r2);
@@ -59,7 +59,6 @@ namespace SatelliteSite.ContestModule.Apis
             [FromRoute] int cid,
             [FromRoute] int id)
         {
-            var store = Context.GetRequiredService<IJudgingStore>();
             var (j, _, cid2, _, _) = await store.FindAsync(id);
             if (j == null || cid2 != cid || j.StartTime == null) return null;
             var contestTime = Contest.StartTime ?? DateTimeOffset.Now;
