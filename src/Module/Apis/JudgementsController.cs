@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Polygon.Entities;
-using Polygon.Storages;
 using System;
 using System.Linq;
 using System.Linq.Expressions;
@@ -42,7 +41,7 @@ namespace SatelliteSite.ContestModule.Apis
                 .CombineIf(submission_id.HasValue, j => j.SubmissionId == submission_id)
                 .CombineIf(r2 != Verdict.Unknown, j => j.Status == r2);
 
-            var js = await store.ListAsync(cond, 100000);
+            var js = await Context.FetchJudgingsAsync(cond, 100000);
             var contestTime = Contest.StartTime ?? DateTimeOffset.Now;
             return js.Select(judging => new Judgement(judging, contestTime)).ToArray();
         }
@@ -59,8 +58,8 @@ namespace SatelliteSite.ContestModule.Apis
             [FromRoute] int cid,
             [FromRoute] int id)
         {
-            var (j, _, cid2, _, _) = await store.FindAsync(id);
-            if (j == null || cid2 != cid || j.StartTime == null) return null;
+            var j = await Context.FindJudgingAsync(id);
+            if (j == null || j.StartTime == null) return null;
             var contestTime = Contest.StartTime ?? DateTimeOffset.Now;
             return new Judgement(j, contestTime);
         }

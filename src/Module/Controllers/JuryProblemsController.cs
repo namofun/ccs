@@ -1,11 +1,8 @@
 ﻿using Ccs;
 using Ccs.Entities;
-using Ccs.Services;
 using Microsoft.AspNetCore.Mvc;
-using Polygon.Models;
 using Polygon.Packaging;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.IO.Compression;
@@ -47,9 +44,7 @@ namespace SatelliteSite.ContestModule.Controllers
             if (null != Problems.Find(model.ShortName))
                 ModelState.AddModelError("xys::duplicate", "Duplicate short name for problem.");
 
-            var probDetect = await Context
-                .GetRequiredService<IProblemsetStore>()
-                .CheckAvailabilityAsync(Contest.Id, model.ProblemId, User.IsInRole("Administrator") ? default(int?) : int.Parse(User.GetUserId()));
+            var probDetect = await Context.CheckProblemAvailabilityAsync(model.ProblemId, User);
             if (!probDetect.Available)
                 ModelState.AddModelError("xys::prob", probDetect.Message);
 
@@ -75,11 +70,9 @@ namespace SatelliteSite.ContestModule.Controllers
 
 
         [HttpGet("[action]/{pid}")]
-        public async Task<IActionResult> Find(int cid, int pid)
+        public async Task<IActionResult> Find(int pid)
         {
-            var (_, msg) = await Context
-                .GetRequiredService<IProblemsetStore>()
-                .CheckAvailabilityAsync(cid, pid, User.IsInRole("Administrator") ? default(int?) : int.Parse(User.GetUserId()));
+            var (_, msg) = await Context.CheckProblemAvailabilityAsync(pid, User);
             return Content(msg);
         }
 
@@ -150,28 +143,17 @@ namespace SatelliteSite.ContestModule.Controllers
 
 
         [HttpGet("[action]")]
-        public async Task<IActionResult> GenerateStatement()
+        public async Task<IActionResult> GenerateStatement(
+            [FromServices] IStatementWriter writer)
         {
-            var store = Context.GetRequiredService<IProblemsetStore>();
-            var provider = Context.GetRequiredService<IStatementProvider>();
-            var writer = Context.GetRequiredService<IStatementWriter>();
-            var raw = await store.RawProblemsAsync(Contest.Id);
-            var stmts = new List<Statement>();
-            foreach (var prob in raw)
-            {
-                var stmt = await provider.ReadAsync(prob);
-                stmts.Add(new Statement(prob,
-                    stmt.Description, stmt.Input, stmt.Output, stmt.Hint, stmt.Interaction,
-                    Problems.Find(prob.Id).ShortName, stmt.Samples));
-            }
-
+            var stmts = await Context.FetchRawStatementsAsync();
             var startTime = Contest.StartTime ?? DateTimeOffset.Now;
             var startDate = startTime.ToString("dddd, MMMM d, yyyy", CultureInfo.GetCultureInfo(1033));
 
             var memstream = new MemoryStream();
             using (var zip = new ZipArchive(memstream, ZipArchiveMode.Create, true))
             {
-                using (var olympStream = typeof(ContestModule<,,>).Assembly.GetManifestResourceStream("SatelliteSite.ContestModule.olymp.sty"))
+                using (var olympStream = typeof(ContestModule<>).Assembly.GetManifestResourceStream("SatelliteSite.ContestModule.olymp.sty"))
                     await zip.CreateEntryFromStream(olympStream, "olymp.sty");
 
                 var documentBuilder = new System.Text.StringBuilder()

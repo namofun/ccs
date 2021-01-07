@@ -37,13 +37,12 @@ namespace SatelliteSite.ContestModule.Controllers
             if (judging == null) return NotFound();
 
             var langs = await Context.FetchLanguagesAsync();
-            var store2 = Context.GetRequiredService<IJudgingStore>();
             return View(new JuryViewSubmissionModel
             {
                 Submission = submit,
                 Judging = judging,
                 AllJudgings = judgings,
-                DetailsV2 = await store2.GetDetailsAsync(submit.ProblemId, judging.Id),
+                DetailsV2 = await Context.FetchDetailsAsync(submit.ProblemId, judging.Id),
                 Team = await Context.FindTeamByIdAsync(submit.TeamId),
                 Problem = prob,
                 Language = langs.First(l => l.Id == submit.Language),
@@ -54,21 +53,17 @@ namespace SatelliteSite.ContestModule.Controllers
         [HttpGet("{sid}/[action]")]
         public async Task<IActionResult> Source(int sid, int? last = null)
         {
-            var submit = await Context.FindSubmissionAsync(sid);
+            int cid = Contest.Id;
+            var submit = await Context.FetchSourceAsync(s => s.ContestId == cid && s.Id == sid);
             if (submit == null) return NotFound();
 
             var cond = Expr
-                .Of<Submission>(s => s.ContestId == submit.ContestId
-                                  && s.TeamId == submit.TeamId
-                                  && s.ProblemId == submit.ProblemId)
+                .Of<Submission>(s => s.ContestId == cid)
+                .Combine(s => s.TeamId == submit.TeamId && s.ProblemId == submit.ProblemId)
                 .CombineIf(last.HasValue, s => s.Id == last)
                 .CombineIf(!last.HasValue, s => s.Id < sid);
 
-            var lastSubmit = (await Store.ListWithJudgingAsync(
-                selector: (s, j) => new { s.Language, s.SourceCode, s.Id },
-                predicate: cond, 1))
-                .FirstOrDefault();
-
+            var lastSubmit = await Context.FetchSourceAsync(cond);
             var langs = await Context.FetchLanguagesAsync();
 
             return View(new SubmissionSourceModel

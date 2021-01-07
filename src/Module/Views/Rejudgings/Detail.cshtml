@@ -7,7 +7,7 @@
     IEnumerable<(Judging @new, Judging old, int probid, string langid, DateTimeOffset time, int teamid)> js = ViewBag.Judgings;
     Dictionary<int, string> teams = ViewBag.Teams;
     Dictionary<string, Language> langs = ViewBag.Languages;
-    ContestProblem[] probs = ViewBag.Problems;
+    IReadOnlyList<ProblemModel> probs = ViewBag.Problems;
     Contest ctx = ViewBag.Contest;
     if (ViewData.ContainsKey("InAjax")) { Layout = null; }
 }
@@ -23,7 +23,6 @@
             Verdict.OutputLimitExceeded => "OLE",
             Verdict.WrongAnswer => "WA",
             Verdict.CompileError => "CE",
-            Verdict.PresentationError => "PE",
             Verdict.Accepted => "AC",
             Verdict.Pending => null,
             Verdict.Running => null,
@@ -52,16 +51,16 @@
                 <tr>
                     <th>Issued by</th>
                     <td>
-                        <a asp-area="Account" asp-controller="Profile" asp-action="Show" asp-route-username="@Model.Issuer">
-                            @Model.Issuer
+                        <a asp-area="Account" asp-controller="Profile" asp-action="Show" asp-route-username="@ViewBag.Issuer">
+                            @ViewBag.Issuer
                         </a>
                     </td>
                 </tr>
                 <tr asp-show-if="Model.OperatedBy.HasValue">
                     <th>@(Model.Applied.Value ? "Accepted" : "Cancelled") by</th>
                     <td>
-                        <a asp-area="Account" asp-controller="Profile" asp-action="Show" asp-route-username="@Model.Operator">
-                            @Model.Operator
+                        <a asp-area="Account" asp-controller="Profile" asp-action="Show" asp-route-username="@ViewBag.Operator">
+                            @ViewBag.Operator
                         </a>
                     </td>
                 </tr>

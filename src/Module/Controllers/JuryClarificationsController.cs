@@ -1,6 +1,5 @@
 ﻿using Ccs;
 using Ccs.Entities;
-using Ccs.Services;
 using Microsoft.AspNetCore.Mvc;
 using SatelliteSite.ContestModule.Models;
 using System;
@@ -14,11 +13,6 @@ namespace SatelliteSite.ContestModule.Controllers
     [AuditPoint(Entities.AuditlogType.Clarification)]
     public class ClarificationsController : JuryControllerBase
     {
-        IClarificationStore Store { get; }
-
-        public ClarificationsController(IClarificationStore store) => Store = store;
-
-
         [HttpGet]
         public async Task<IActionResult> List()
         {
@@ -87,7 +81,7 @@ namespace SatelliteSite.ContestModule.Controllers
         [HttpGet("{clarid}/[action]/{answered}")]
         public async Task<IActionResult> SetAnswered(int clarid, bool answered)
         {
-            var result = await Store.SetAnsweredAsync(Contest, clarid, answered);
+            var result = await Context.SetClarificationAnsweredAsync(clarid, answered);
 
             if (result && answered)
                 return GoBackHome($"Clarification #{clarid} is now answered.", "List", "Clarifications");
@@ -131,7 +125,7 @@ namespace SatelliteSite.ContestModule.Controllers
         public async Task<IActionResult> Claim(int cid, int clarid, bool claim)
         {
             var admin = User.GetUserName();
-            var result = await Store.ClaimAsync(Contest, clarid, admin, claim);
+            var result = await Context.ClaimClarificationAsync(clarid, admin, claim);
 
             if (result && claim)
                 return RedirectToAction(nameof(Detail));

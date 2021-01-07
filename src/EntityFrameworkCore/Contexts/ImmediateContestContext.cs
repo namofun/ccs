@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Net;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Tenant.Entities;
 
@@ -327,6 +328,124 @@ namespace Ccs.Contexts.Immediate
         }
 
         public Task SetBalloonDoneAsync(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> SetClarificationAnsweredAsync(int id, bool answered)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> ClaimClarificationAsync(int id, string jury, bool claim)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<(bool Available, string Message)> CheckProblemAvailabilityAsync(int probId, ClaimsPrincipal user)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<List<Statement>> FetchRawStatementsAsync()
+        {
+            var store = GetRequiredService<IProblemsetStore>();
+            var problems = await FetchProblemsAsync();
+            var provider = GetRequiredService<Polygon.Packaging.IStatementProvider>();
+            var raw = await store.RawProblemsAsync(Contest.Id);
+            var stmts = new List<Statement>();
+            foreach (var prob in raw)
+            {
+                var stmt = await provider.ReadAsync(prob);
+                stmts.Add(new Statement(prob,
+                    stmt.Description, stmt.Input, stmt.Output, stmt.Hint, stmt.Interaction,
+                    problems.FirstOrDefault(p => p.ProblemId == prob.Id).ShortName, stmt.Samples));
+            }
+
+            return stmts;
+        }
+
+        public Task<IEnumerable<(JudgingRun, Testcase)>> FetchDetailsAsync(int problemId, int judgingId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<T>> FetchDetailsAsync<T>(Expression<Func<Testcase, JudgingRun, T>> selector, Expression<Func<Testcase, JudgingRun, bool>>? predicate = null, int? limit = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Rejudging> CreateRejudgingAsync(Rejudging entity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task UpdateRejudgingAsync(Rejudging entity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task UpdateRejudgingAsync(int id, Expression<Func<Rejudging, Rejudging>> expression)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task DeleteRejudgingAsync(Rejudging entity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Rejudging> FindRejudgingAsync(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<Rejudging>> FetchRejudgingsAsync(bool includeStat = true)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<Judgehost>> FetchJudgehostsAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<RejudgingDifference>> ViewRejudgingAsync(Rejudging rejudge, Expression<Func<Judging, Judging, Submission, bool>>? filter = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<int> BatchRejudgeAsync(Expression<Func<Submission, Judging, bool>> predicate, Rejudging? rejudge = null, bool fullTest = false)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task CancelRejudgingAsync(Rejudging rejudge, int uid)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task ApplyRejudgingAsync(Rejudging rejudge, int uid)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<int> CountJudgingAsync(Expression<Func<Judging, bool>> predicate)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Judging> FindJudgingAsync(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<Judging>> FetchJudgingsAsync(Expression<Func<Judging, bool>> predicate, int topCount)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<SubmissionSource> FetchSourceAsync(Expression<Func<Submission, bool>> predicate)
         {
             throw new NotImplementedException();
         }

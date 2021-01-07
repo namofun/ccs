@@ -27,8 +27,8 @@
                 <tr asp-action="Detail" asp-route-rid="@rej.Id" class="@(rej.OperatedBy.HasValue ? "disabled" : "")">
                     <td use-a>@rej.Id</td>
                     <td use-a>@rej.Reason</td>
-                    <td use-a>@rej.Issuer</td>
-                    <td use-a>@(rej.Operator ?? "-")</td>
+                    <td use-a>@@rej.Issuer</td>
+                    <td use-a>@@(rej.Operator ?? "-")</td>
                     <td use-a>@rej.StartTime?.ToString("HH:mm")</td>
                     <td use-a>@(rej.EndTime?.ToString("HH:mm") ?? "-")</td>
                     <td use-a>

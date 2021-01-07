@@ -46,8 +46,7 @@ namespace SatelliteSite.ContestModule.Apis
                 .CombineIf(last_id.HasValue, (t, d) => d.Id <= last_id)
                 .CombineIf(judging_id.HasValue, (t, d) => d.JudgingId == judging_id);
 
-            var store = Context.GetRequiredService<IJudgingStore>();
-            var runs = await store.GetDetailsAsync(
+            var runs = await Context.FetchDetailsAsync(
                 selector: (t, d) => new { d.JudgingId, d.CompleteTime, d.ExecuteTime, d.Status, d.Id, t.Rank },
                 predicate: condition, limit: limit);
 
@@ -69,8 +68,7 @@ namespace SatelliteSite.ContestModule.Apis
             [FromRoute] int cid,
             [FromRoute] int id)
         {
-            var store = Context.GetRequiredService<IJudgingStore>();
-            var runQuery = await store.GetDetailsAsync(
+            var runQuery = await Context.FetchDetailsAsync(
                 selector: (t, d) => new { d.JudgingId, d.CompleteTime, d.ExecuteTime, d.Status, d.Id, t.Rank },
                 predicate: (t, d) => d.j.s.ContestId == cid && d.Id == id);
             var run = runQuery.SingleOrDefault();
