@@ -1,5 +1,4 @@
 ﻿using Ccs.Entities;
-using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -13,13 +12,6 @@ namespace Ccs.Services
     /// <remarks>Note that all store interfaces shouldn't cache the result.</remarks>
     public interface IContestStore : IContestRepository
     {
-        /// <summary>
-        /// Create an instance of entity.
-        /// </summary>
-        /// <param name="entity">The entity.</param>
-        /// <returns>The task for creating entity.</returns>
-        Task<Contest> CreateAsync(Contest entity);
-
         /// <summary>
         /// Update the instance of entity.
         /// </summary>
@@ -61,24 +53,24 @@ namespace Ccs.Services
         /// <summary>
         /// Assign jury user to contest.
         /// </summary>
-        /// <param name="contest">The contest entity.</param>
-        /// <param name="user">The jury user.</param>
+        /// <param name="cid">The contest ID.</param>
+        /// <param name="userid">The user ID.</param>
         /// <returns>The task for assigning jury.</returns>
-        Task AssignJuryAsync(Contest contest, IUser user);
+        Task AssignJuryAsync(int cid, int userid);
 
         /// <summary>
         /// Unassign jury user to contest.
         /// </summary>
-        /// <param name="contest">The contest entity.</param>
-        /// <param name="user">The jury user.</param>
+        /// <param name="cid">The contest ID.</param>
+        /// <param name="userid">The user ID.</param>
         /// <returns>The task for assigning jury.</returns>
-        Task UnassignJuryAsync(Contest contest, IUser user);
+        Task UnassignJuryAsync(int cid, int userid);
 
         /// <summary>
         /// List all jury for such contest.
         /// </summary>
-        /// <param name="contest">The contest entity.</param>
+        /// <param name="cid">The contest ID.</param>
         /// <returns>The task for listing jury.</returns>
-        Task<HashSet<int>> ListJuryAsync(Contest contest);
+        Task<HashSet<int>> ListJuryAsync(int cid);
     }
 }

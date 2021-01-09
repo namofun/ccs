@@ -10,22 +10,9 @@ using System.Threading.Tasks;
 
 namespace Ccs.Services
 {
-    public class TeamStore<TUser, TContext> : ITeamStore
-        where TContext : DbContext
-        where TUser : SatelliteSite.IdentityModule.Entities.User, new()
+    public partial class CcsFacade<TUser, TContext> : ITeamStore
     {
-        private static AsyncLock TeamLock { get; } = new AsyncLock();
-
-        public TContext Context { get; }
-
-        DbSet<Team> Teams => Context.Set<Team>();
-
-        DbSet<Member> Members => Context.Set<Member>();
-
-        public TeamStore(TContext context)
-        {
-            Context = context;
-        }
+        private static readonly ConcurrentAsyncLock _teamLock = new ConcurrentAsyncLock();
 
         /*
         public async Task<HashSet<int>> ListRegisteredAsync(int uid)
@@ -98,21 +85,21 @@ namespace Ccs.Services
         }
         */
 
-        public Task<Team?> FindByIdAsync(int cid, int teamid)
+        Task<Team?> ITeamStore.FindByIdAsync(int cid, int teamid)
         {
             return Teams
                 .Where(t => t.ContestId == cid && t.TeamId == teamid)
                 .SingleOrDefaultAsync()!;
         }
 
-        public Task<Member?> FindByUserAsync(int cid, int uid)
+        Task<Member?> ITeamStore.FindByUserAsync(int cid, int uid)
         {
             return Members
                 .Where(tu => tu.ContestId == cid && tu.UserId == uid)
                 .SingleOrDefaultAsync()!;
         }
 
-        public Task<ScoreboardModel> LoadScoreboardAsync(int cid)
+        Task<ScoreboardModel> ITeamStore.LoadScoreboardAsync(int cid)
         {
             return Context.CachedGetAsync($"`c{cid}`scoreboard", TimeSpan.FromSeconds(3),
             async () =>
@@ -189,17 +176,17 @@ namespace Ccs.Services
         }
         */
 
-        public async Task UpdateAsync(int cid, int teamid, Expression<Func<Team>> activator)
+        async Task ITeamStore.UpdateAsync(int cid, int teamid, Expression<Func<Team>> expression)
         {
             var affected = await Teams
                 .Where(t => t.ContestId == cid && t.TeamId == teamid)
-                .BatchUpdateAsync(Expression.Lambda<Func<Team, Team>>(activator.Body, Expression.Parameter(typeof(Team), "_")));
+                .BatchUpdateAsync(Expression.Lambda<Func<Team, Team>>(expression.Body, Expression.Parameter(typeof(Team), "_")));
 
             if (affected != 1)
                 throw new DbUpdateException();
         }
 
-        public async Task<IReadOnlyList<Member>> DeleteAsync(Team team)
+        async Task<IReadOnlyList<Member>> ITeamStore.DeleteAsync(Team team)
         {
             var affected = await Teams
                 .Where(t => t.ContestId == team.ContestId && t.TeamId == team.TeamId)
@@ -232,22 +219,29 @@ namespace Ccs.Services
             return results;
         }
 
-        public Task<int> CountPendingAsync(Contest contest)
+        Task<int> ITeamStore.CountPendingAsync(int cid)
         {
             return Teams
-                .Where(t => t.Status == 0 && t.ContestId == contest.Id)
+                .Where(t => t.Status == 0 && t.ContestId == cid)
                 .CountAsync();
         }
 
-        public Task<ILookup<int, string>> ListMembersAsync(Contest contest)
+        async Task<ILookup<int, string>> ITeamStore.ListMembersAsync(int cid)
         {
-            throw new NotImplementedException();
+            var query =
+                from m in Members
+                where m.ContestId == cid
+                join u in Users on m.UserId equals u.Id
+                select new { m.TeamId, u.UserName };
+
+            var results = await query.ToListAsync();
+            return results.ToLookup(a => a.TeamId, a => a.UserName);
         }
 
-        public async Task<Team> CreateAsync(Team team, IEnumerable<IUser>? users = null)
+        async Task<Team> ITeamStore.CreateAsync(Team team, IEnumerable<IUser>? users)
         {
-            using var _lock = await TeamLock.LockAsync();
             int cid = team.ContestId;
+            using var _lock = await _teamLock.LockAsync(cid);
 
             team.TeamId = 1 + await Teams.CountAsync(tt => tt.ContestId == cid);
             Teams.Add(team);
@@ -270,48 +264,7 @@ namespace Ccs.Services
             return team;
         }
 
-        public Task<ScoreboardModel> LoadScoreboardAsync(Contest contest)
-        {
-            return Context.CachedGetAsync(
-                tag: $"`c{contest.Id}`scoreboard",
-                timeSpan: TimeSpan.FromSeconds(3),
-                async context =>
-                {
-                    int cid = contest.Id;
-
-                    var value = await Teams
-                        .Where(t => t.ContestId == cid && t.Status == 1)
-                        .Include(t => t.RankCache)
-                        .Include(t => t.ScoreCache)
-                        .ToDictionaryAsync(a => a.TeamId);
-
-                    var result = new ScoreboardModel
-                    {
-                        //Data = value,
-                        //RefreshTime = DateTimeOffset.Now,
-                        //Statistics = new Dictionary<int, int>()
-                    };
-
-                    /*
-                    foreach (var (_, item) in value)
-                    {
-                        foreach (var ot in item.ScoreCache)
-                        {
-                            var val = result.Statistics.GetValueOrDefault(ot.ProblemId);
-                            if (ot.IsCorrectRestricted)
-                                result.Statistics[ot.ProblemId] = ++val;
-                        }
-                    }
-                    */
-
-                    return result;
-                });
-        }
-
-        public Task<List<T>> ListAsync<T>(
-            Expression<Func<Team, T>> selector,
-            Expression<Func<Team, bool>>? predicate = null)
-            where T : class
+        Task<List<T>> ITeamStore.ListAsync<T>(Expression<Func<Team, T>> selector, Expression<Func<Team, bool>>? predicate) where T : class
         {
             return Teams
                 .WhereIf(predicate != null, predicate!)
@@ -319,7 +272,7 @@ namespace Ccs.Services
                 .ToListAsync();
         }
 
-        public Task<IEnumerable<string>> ListMembersAsync(Team team)
+        Task<IEnumerable<string>> ITeamStore.ListMembersAsync(Team team)
         {
             throw new NotImplementedException();
         }

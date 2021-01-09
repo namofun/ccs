@@ -33,23 +33,24 @@ namespace Ccs.Services
         /// <summary>
         /// Delete the problem from contest.
         /// </summary>
-        /// <param name="problem">The problem model.</param>
+        /// <param name="cid">The contest ID.</param>
+        /// <param name="probid">The problem ID.</param>
         /// <returns>The task for deleting.</returns>
-        Task DeleteAsync(ProblemModel problem);
+        Task DeleteAsync(int cid, int probid);
 
         /// <summary>
         /// List the contest problem.
         /// </summary>
-        /// <param name="contest">The contest.</param>
+        /// <param name="cid">The contest ID.</param>
         /// <returns>The task for listing problems.</returns>
-        Task<IReadOnlyList<ProblemModel>> ListAsync(Contest contest);
+        Task<IReadOnlyList<ProblemModel>> ListAsync(int cid);
 
         /// <summary>
         /// List contest problems by problem view.
         /// </summary>
-        /// <param name="problem">The problem view.</param>
-        /// <returns></returns>
-        Task<List<ContestProblem>> ListByProblemAsync(Problem problem);
+        /// <param name="probid">The problem ID.</param>
+        /// <returns>The contest problems.</returns>
+        Task<IReadOnlyList<ProblemModel>> ListByProblemAsync(int probid);
 
         /// <summary>
         /// Get all statements from problems.
@@ -62,9 +63,9 @@ namespace Ccs.Services
         /// Check the availability of problems to add into contest.
         /// </summary>
         /// <param name="cid">The contest ID.</param>
-        /// <param name="pid">The problem ID.</param>
+        /// <param name="probid">The problem ID.</param>
         /// <param name="user">The current user.</param>
         /// <returns>The task for getting availability.</returns>
-        Task<(bool Available, string Message)> CheckAvailabilityAsync(int cid, int pid, int? user);
+        Task<CheckResult> CheckAvailabilityAsync(int cid, int probid, int? user);
     }
 }

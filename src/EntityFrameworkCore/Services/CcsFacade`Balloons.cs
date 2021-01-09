@@ -7,51 +7,45 @@ using System.Threading.Tasks;
 
 namespace Ccs.Services
 {
-    public class BalloonStore<TContext> : IBalloonStore
-        where TContext : DbContext
+    public partial class CcsFacade<TUser, TContext> : IBalloonStore
     {
-        public TContext Context { get; }
-
-        public DbSet<Balloon> Balloons => Context.Set<Balloon>();
-
-        public BalloonStore(TContext context)
-        {
-            Context = context;
-        }
-
-        public Task SetDoneAsync(Contest contest, int id)
+        Task IBalloonStore.SetDoneAsync(Contest contest, int id)
         {
             int cid = contest.Id;
-            return Balloons
-                .Where(b => b.Id == id && b.Submission.ContestId == cid)
-                .BatchUpdateAsync(b => new Balloon { Done = true });
+            return Balloons.BatchUpdateJoinAsync(
+                inner: Submissions,
+                outerKeySelector: b => b.SubmissionId,
+                innerKeySelector: s => s.Id,
+                updateSelector: (b, _) => new Balloon { Done = true },
+                condition: (b, s) => b.Id == id && s.ContestId == cid);
         }
 
-        public Task CreateAsync(int submissionId)
+        Task IBalloonStore.CreateAsync(int submissionId)
         {
             Balloons.Add(new Balloon { SubmissionId = submissionId });
             return Context.SaveChangesAsync();
         }
 
-        public async Task<List<BalloonModel>> ListAsync(Contest contest, IReadOnlyList<ProblemModel> probs)
+        async Task<List<BalloonModel>> IBalloonStore.ListAsync(Contest contest, IReadOnlyList<ProblemModel> probs)
         {
             int cid = contest.Id;
             var balloonQuery =
                 from b in Balloons
-                where b.Submission.ContestId == cid
-                join t in Context.Set<Team>()
-                    on new { b.Submission.ContestId, b.Submission.TeamId }
+                join s in Submissions on b.SubmissionId equals s.Id
+                where s.ContestId == cid
+                orderby s.Time
+                join t in Teams
+                    on new { s.ContestId, s.TeamId }
                     equals new { t.ContestId, t.TeamId }
-                orderby b.Submission.Time
                 select new BalloonModel(
                     b.Id,
                     b.SubmissionId,
                     b.Done,
-                    b.Submission.ProblemId,
-                    b.Submission.TeamId,
+                    s.ProblemId,
+                    s.TeamId,
                     t.TeamName,
                     t.Location,
-                    b.Submission.Time,
+                    s.Time,
                     t.Category.Name,
                     t.Category.SortOrder);
 

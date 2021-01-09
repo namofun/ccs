@@ -18,16 +18,16 @@ namespace Ccs.Services
         /// <summary>
         /// Count the pending teams.
         /// </summary>
-        /// <param name="contest">The contest.</param>
+        /// <param name="cid">The contest ID.</param>
         /// <returns>The task for counting.</returns>
-        Task<int> CountPendingAsync(Contest contest);
+        Task<int> CountPendingAsync(int cid);
 
         /// <summary>
         /// List the members with team ID as key and username as values.
         /// </summary>
-        /// <param name="contest">The contest.</param>
+        /// <param name="cid">The contest ID.</param>
         /// <returns>The task for lookups.</returns>
-        Task<ILookup<int, string>> ListMembersAsync(Contest contest);
+        Task<ILookup<int, string>> ListMembersAsync(int cid);
 
         /// <summary>
         /// List the members with team ID as key and username as values.
@@ -72,9 +72,9 @@ namespace Ccs.Services
         /// <summary>
         /// Load the scoreboard.
         /// </summary>
-        /// <param name="contest">The contest.</param>
+        /// <param name="cid">The contest ID.</param>
         /// <returns>The scoreboard data.</returns>
-        Task<ScoreboardModel> LoadScoreboardAsync(Contest contest);
+        Task<ScoreboardModel> LoadScoreboardAsync(int cid);
 
         /// <summary>
         /// List the teams with selected conditions.

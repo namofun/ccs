@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Ccs.Services
 {
-    public class PrintingStore<TUser, TContext> : IPrintingService
+    public class PrintingService<TUser, TContext> : IPrintingService
         where TUser : SatelliteSite.IdentityModule.Entities.User
         where TContext : DbContext
     {
@@ -17,7 +17,7 @@ namespace Ccs.Services
 
         DbSet<Printing> Printings => Context.Set<Printing>();
 
-        public PrintingStore(TContext context)
+        public PrintingService(TContext context)
         {
             Context = context;
         }

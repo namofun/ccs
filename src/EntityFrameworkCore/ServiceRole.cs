@@ -15,9 +15,16 @@ namespace Ccs
         public void Configure(IServiceCollection services)
         {
             services.AddDbModelSupplier<TContext, ContestEntityConfiguration<TUser, TRole, TContext>>();
-            services.AddScoped<IContestStore, ContestStore<TContext>>();
-            services.AddScoped<IContestRepository>(sp => sp.GetRequiredService<IContestStore>());
-            services.AddScoped<IPrintingService, PrintingStore<TUser, TContext>>();
+            services.AddScoped<ICcsFacade, CcsFacade<TUser, TContext>>();
+
+            services.AddScoped(sp => sp.GetRequiredService<ICcsFacade>().ContestStore);
+            services.AddScoped(sp => sp.GetRequiredService<ICcsFacade>().BalloonStore);
+            services.AddScoped(sp => sp.GetRequiredService<ICcsFacade>().ClarificationStore);
+            services.AddScoped(sp => sp.GetRequiredService<ICcsFacade>().ProblemStore);
+            services.AddScoped(sp => sp.GetRequiredService<ICcsFacade>().TeamStore);
+            services.AddScoped<IContestRepository>(sp => sp.GetRequiredService<ICcsFacade>().ContestStore);
+
+            services.AddScoped<IPrintingService, PrintingService<TUser, TContext>>();
             services.AddScoped<IScoreboard, ScoreboardStore<TContext>>();
             services.AddSingleton<IContestContextFactory, CachedContestContextFactory>();
         }

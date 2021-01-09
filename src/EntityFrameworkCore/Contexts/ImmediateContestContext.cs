@@ -66,14 +66,22 @@ namespace Ccs.Contexts.Immediate
             return langs;
         }
 
-        public virtual Task<IReadOnlyList<ProblemModel>> FetchProblemsAsync()
+        public virtual async Task<IReadOnlyList<ProblemModel>> FetchProblemsAsync()
         {
-            return ProblemsetStore.ListAsync(Contest);
+            var res = await ProblemsetStore.ListAsync(Contest.Id);
+            var problems = _services.GetRequiredService<IProblemStore>();
+
+            for (int i = 0; i < res.Count; i++)
+            {
+                res[i].Statement = await problems.ReadCompiledHtmlAsync(res[i].ProblemId);
+            }
+
+            return res;
         }
 
         public virtual Task<ScoreboardModel> FetchScoreboardAsync()
         {
-            return TeamStore.LoadScoreboardAsync(Contest);
+            return TeamStore.LoadScoreboardAsync(Contest.Id);
         }
 
         public virtual Task<Submission> SubmitAsync(
@@ -132,17 +140,17 @@ namespace Ccs.Contexts.Immediate
 
         public virtual Task<HashSet<int>> FetchJuryAsync()
         {
-            return ContestStore.ListJuryAsync(Contest);
+            return ContestStore.ListJuryAsync(Contest.Id);
         }
 
         public virtual Task AssignJuryAsync(IUser user)
         {
-            return ContestStore.AssignJuryAsync(Contest, user);
+            return ContestStore.AssignJuryAsync(Contest.Id, user.Id);
         }
 
         public virtual Task UnassignJuryAsync(IUser user)
         {
-            return ContestStore.UnassignJuryAsync(Contest, user);
+            return ContestStore.UnassignJuryAsync(Contest.Id, user.Id);
         }
 
         public virtual Task UpdateTeamAsync(Team origin, Expression<Func<Team>> expression)
@@ -157,7 +165,7 @@ namespace Ccs.Contexts.Immediate
 
         public virtual Task DeleteProblemAsync(ProblemModel problem)
         {
-            return ProblemsetStore.DeleteAsync(problem);
+            return ProblemsetStore.DeleteAsync(problem.ContestId, problem.ProblemId);
         }
 
         public virtual async Task<IReadOnlyDictionary<int, string>> FetchTeamNamesAsync()
@@ -179,7 +187,7 @@ namespace Ccs.Contexts.Immediate
 
         public virtual Task<ILookup<int, string>> FetchTeamMembersAsync()
         {
-            return TeamStore.ListMembersAsync(Contest);
+            return TeamStore.ListMembersAsync(Contest.Id);
         }
 
         public virtual Task<IEnumerable<string>> FetchTeamMemberAsync(Team team)
@@ -194,12 +202,12 @@ namespace Ccs.Contexts.Immediate
 
         public Task<List<Clarification>> ListClarificationsAsync(Expression<Func<Clarification, bool>> predicate)
         {
-            return ClarificationStore.ListAsync(Contest, predicate);
+            return ClarificationStore.ListAsync(Contest.Id, predicate);
         }
 
         public Task<Clarification> FindClarificationAsync(int id)
         {
-            return ClarificationStore.FindAsync(Contest, id);
+            return ClarificationStore.FindAsync(Contest.Id, id);
         }
 
         public Task<Clarification> ClarifyAsync(Clarification clar, Clarification? replyTo = null)
@@ -221,8 +229,8 @@ namespace Ccs.Contexts.Immediate
         {
             return new
             {
-                clarifications = await ClarificationStore.CountUnansweredAsync(Contest),
-                teams = await TeamStore.CountPendingAsync(Contest),
+                clarifications = await ClarificationStore.CountUnansweredAsync(Contest.Id),
+                teams = await TeamStore.CountPendingAsync(Contest.Id),
                 rejudgings = await RejudgingStore.CountUndoneAsync(Contest.Id),
             };
         }

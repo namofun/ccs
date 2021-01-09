@@ -29,7 +29,7 @@ namespace Ccs.Entities
 
             entity.HasKey(e => e.Id);
 
-            entity.HasOne<Submission>(e => e.Submission)
+            entity.HasOne<Submission>()
                 .WithMany()
                 .HasForeignKey(e => e.SubmissionId)
                 .OnDelete(DeleteBehavior.Cascade);
