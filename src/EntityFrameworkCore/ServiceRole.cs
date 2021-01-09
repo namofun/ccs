@@ -1,4 +1,5 @@
-﻿using Ccs.Entities;
+﻿using Ccs.Contexts;
+using Ccs.Entities;
 using Ccs.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,6 +16,10 @@ namespace Ccs
         {
             services.AddDbModelSupplier<TContext, ContestEntityConfiguration<TUser, TRole, TContext>>();
             services.AddScoped<IContestStore, ContestStore<TContext>>();
+            services.AddScoped<IContestRepository>(sp => sp.GetRequiredService<IContestStore>());
+            services.AddScoped<IPrintingService, PrintingStore<TUser, TContext>>();
+            services.AddScoped<IScoreboard, ScoreboardStore<TContext>>();
+            services.AddSingleton<IContestContextFactory, CachedContestContextFactory>();
         }
     }
 }

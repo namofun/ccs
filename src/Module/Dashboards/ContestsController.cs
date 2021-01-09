@@ -1,7 +1,5 @@
-﻿using Ccs.Entities;
-using Ccs.Services;
+﻿using Ccs.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
@@ -13,22 +11,26 @@ namespace SatelliteSite.ContestModule.Dashboards
     [AuditPoint(AuditlogType.Contest)]
     public class ContestsController : ViewControllerBase
     {
-        [HttpGet]
-        public async Task<IActionResult> List(
-            [FromServices] IContestRepository store)
+        private readonly IContestRepository _store;
+
+        public ContestsController(IContestRepository store)
         {
-            var model = await store.ListAsync();
+            _store = store;
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> List(int page = 1)
+        {
+            var model = await _store.ListAsync(page);
             return View(model);
         }
 
 
         [HttpGet("[action]")]
-        public async Task<IActionResult> Add(
-            [FromServices] IContestRepository store,
-            [FromServices] IUserManager userManager)
+        public async Task<IActionResult> Add(int kind)
         {
-            var user = await userManager.GetUserAsync(User);
-            var c = await store.CreateAndAssignAsync(new Contest(), user);
+            var c = await _store.CreateAndAssignAsync(kind, User);
             await HttpContext.AuditAsync("added", $"{c.Id}");
             return RedirectToAction("Home", "Jury", new { area = "Contest", cid = c.Id });
         }

@@ -10,7 +10,7 @@ namespace Ccs
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This context should be constructed by <see cref="Contexts.IContestContextFactory"/>.
+    /// This context should be constructed by <see cref="Services.IContestContextFactory"/>.
     /// </para>
     /// </remarks>
     public partial interface IContestContext

@@ -1,7 +1,7 @@
 ﻿using Ccs.Entities;
 using Ccs.Models;
-using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Ccs.Services
@@ -9,16 +9,16 @@ namespace Ccs.Services
     /// <summary>
     /// The storage interface for <see cref="Contest"/>.
     /// </summary>
-    /// <remarks>Note that all store interfaces shouldn't cache the result.</remarks>
+    /// <remarks>Note that the implementation for this interface shouldn't cache the result.</remarks>
     public interface IContestRepository
     {
         /// <summary>
         /// Create an instance of entity.
         /// </summary>
-        /// <param name="entity">The entity.</param>
+        /// <param name="kind">The contest kind.</param>
         /// <param name="user">The creation user.</param>
         /// <returns>The task for creating entity.</returns>
-        Task<Contest> CreateAndAssignAsync(Contest entity, IUser user);
+        Task<Contest> CreateAndAssignAsync(int kind, ClaimsPrincipal user);
 
         /// <summary>
         /// List the contests with user and kind limitation.

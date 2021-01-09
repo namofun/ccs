@@ -1,5 +1,4 @@
 ﻿using Ccs.Entities;
-using Ccs.Models;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
@@ -12,7 +11,7 @@ namespace Ccs.Services
     /// The storage interface for <see cref="Contest"/>.
     /// </summary>
     /// <remarks>Note that all store interfaces shouldn't cache the result.</remarks>
-    public interface IContestStore
+    public interface IContestStore : IContestRepository
     {
         /// <summary>
         /// Create an instance of entity.
@@ -35,24 +34,6 @@ namespace Ccs.Services
         /// <param name="cid">The contest ID.</param>
         /// <returns>The task for fetching entity.</returns>
         Task<Contest> FindAsync(int cid);
-
-        /// <summary>
-        /// List the contests with user and kind limitation.
-        /// </summary>
-        /// <param name="userId">The user ID.</param>
-        /// <param name="kind">The contest kind.</param>
-        /// <param name="page">The current page.</param>
-        /// <param name="limit">The count per page.</param>
-        /// <returns>The task for fetching paged lists.</returns>
-        Task<IPagedList<ContestListModel>> ListAsync(int userId, int kind, int page = 1, int limit = 100);
-
-        /// <summary>
-        /// List the contests with original entity.
-        /// </summary>
-        /// <param name="page">The current page.</param>
-        /// <param name="limit">The count per page.</param>
-        /// <returns>The task for fetching paged lists.</returns>
-        Task<IPagedList<ContestListModel>> ListAsync(int page = 1, int limit = 100);
 
         /// <summary>
         /// Fetch the event for a contest after some ID.

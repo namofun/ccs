@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Ccs.Services
@@ -118,6 +119,11 @@ namespace Ccs.Services
             await foreach (var item in query.AsAsyncEnumerable())
                 result.Add(item.UserId);
             return result;
+        }
+
+        public Task<Contest> CreateAndAssignAsync(int kind, ClaimsPrincipal user)
+        {
+            throw new NotImplementedException();
         }
     }
 }

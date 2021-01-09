@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Ccs.Services;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 
 namespace SatelliteSite.ContestModule
 {
@@ -24,9 +26,32 @@ namespace SatelliteSite.ContestModule
                 version: "2020");
         }
 
+        private static void EnsureRegistered<TService>(IServiceCollection services, ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
+        {
+            var serviceType = typeof(TService);
+
+            for (int i = 0; i < services.Count; i++)
+            {
+                if (services[i].ServiceType != serviceType) continue;
+                if (services[i].Lifetime != serviceLifetime)
+                    throw new InvalidOperationException(
+                        $"The service lifetime for {serviceType} is not correct.");
+                return;
+            }
+
+            throw new InvalidOperationException(
+                $"No implementation for {serviceType} was registered.");
+        }
+
         public override void RegisterServices(IServiceCollection services)
         {
             new TRole().Configure(services);
+
+            services.AddScoped<ScopedContestContextFactory>();
+            EnsureRegistered<IContestContextFactory>(services, ServiceLifetime.Singleton);
+            EnsureRegistered<IScoreboard>(services);
+            EnsureRegistered<IPrintingService>(services);
+            EnsureRegistered<IContestRepository>(services);
         }
 
         public override void RegisterMenu(IMenuContributor menus)

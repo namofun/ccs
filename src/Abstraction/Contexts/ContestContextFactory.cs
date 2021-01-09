@@ -1,9 +1,8 @@
-﻿using Ccs.Services;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Threading.Tasks;
 
-namespace Ccs.Contexts
+namespace Ccs.Services
 {
     /// <summary>
     /// The interface for creating <see cref="IContestContext"/>.
