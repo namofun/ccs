@@ -1,10 +1,9 @@
 ﻿using Ccs;
 using Ccs.Entities;
-using Ccs.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using SatelliteSite.ContestModule.Models;
-using SatelliteSite.IdentityModule.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +14,7 @@ namespace SatelliteSite.ContestModule.Controllers
     [Area("Contest")]
     [Authorize]
     [Route("[area]/{cid}/jury/[controller]")]
-    [AuditPoint(Entities.AuditlogType.Team)]
+    [AuditPoint(AuditlogType.Team)]
     public partial class TeamsController : JuryControllerBase
     {
         [HttpGet]

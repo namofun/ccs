@@ -1,11 +1,10 @@
 ﻿using Ccs;
 using Ccs.Entities;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Extensions.DependencyInjection;
 using SatelliteSite.ContestModule.Models;
-using SatelliteSite.IdentityModule.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,7 +41,7 @@ namespace SatelliteSite.ContestModule.Controllers
 
 
         [HttpGet("[action]")]
-        public async Task<IActionResult> Scoreboard(int cid)
+        public async Task<IActionResult> Scoreboard()
         {
             ViewBag.Members = await Context.FetchTeamMembersAsync();
             return await Scoreboard(
@@ -155,7 +154,7 @@ namespace SatelliteSite.ContestModule.Controllers
 
 
         [HttpPost("[action]")]
-        [AuditPoint(Entities.AuditlogType.Team)]
+        [AuditPoint(AuditlogType.Team)]
         public async Task<IActionResult> Register(GymRegisterModel model)
         {
             if (ViewData.ContainsKey("HasTeam"))
@@ -178,7 +177,7 @@ namespace SatelliteSite.ContestModule.Controllers
                 affId = aff.Id;
                 uids = null;// new[] { uid };
 
-                var user = await HttpContext.RequestServices.GetRequiredService<IUserManager>().GetUserAsync(User);
+                var user = await UserManager.GetUserAsync(User);
                 //if (user.StudentId.HasValue && user.StudentVerified)
                 //    teamName = (await userManager.FindStudentAsync(user.StudentId.Value)).Name;
                 //else

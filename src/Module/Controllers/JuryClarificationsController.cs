@@ -10,7 +10,7 @@ namespace SatelliteSite.ContestModule.Controllers
 {
     [Area("Contest")]
     [Route("[area]/{cid}/jury/[controller]")]
-    [AuditPoint(Entities.AuditlogType.Clarification)]
+    [AuditPoint(AuditlogType.Clarification)]
     public class ClarificationsController : JuryControllerBase
     {
         [HttpGet]

@@ -1,9 +1,8 @@
-﻿@inject SatelliteSite.IdentityModule.Services.IUserManager UserManager
-@{
+﻿@{
     ViewData["Title"] = "Jury";
     Contest ctx = ViewBag.Contest;
     var state = ctx.GetState();
-    var users = await UserManager.GetUsersInRoleAsync("JuryOfContest" + ctx.Id);
+    var users = await Context.GetContestContext().FetchJuryAsync();
     IReadOnlyList<ProblemModel> probs = ViewBag.Problems;
 }
 
@@ -153,11 +152,11 @@
                     <tbody>
                         @foreach (var u in users)
                         {
-                            <tr asp-area="Account" asp-controller="Profile" asp-action="Show" asp-route-username="@u.UserName" data-toggle="gotoUrl">
-                                <td use-a>u@(u.Id)</td>
-                                <td use-a>@u.UserName</td>
-                                <td use-a>@u.NickName</td>
-                                <td><a asp-in-roles="Administrator" asp-action="Unassign" asp-route-uid="@u.Id" data-toggle="ajaxWindow" data-target="unassign"><i class="fas fa-trash-alt"></i></a></td>
+                            <tr asp-area="Account" asp-controller="Profile" asp-action="Show" asp-route-username="@u" data-toggle="gotoUrl">
+                                <td use-a>u@(u)</td>
+                                <td use-a>@u</td>
+                                <td use-a>@u</td>
+                                <td><a asp-in-roles="Administrator" asp-action="Unassign" asp-route-uid="@u" data-toggle="ajaxWindow" data-target="unassign"><i class="fas fa-trash-alt"></i></a></td>
                             </tr>
                         }
                     </tbody>

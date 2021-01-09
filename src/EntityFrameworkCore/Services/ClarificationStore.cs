@@ -20,7 +20,7 @@ namespace Ccs.Services
             Context = context;
         }
 
-        public async Task<Clarification> SendAsync(Clarification clar, Clarification replyTo)
+        public async Task<Clarification> SendAsync(Clarification clar, Clarification? replyTo)
         {
             var cl = Clarifications.Add(clar);
 

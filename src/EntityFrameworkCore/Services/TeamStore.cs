@@ -1,13 +1,12 @@
 ﻿using Ccs.Entities;
 using Ccs.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Polygon.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Tenant.Entities;
 
 namespace Ccs.Services
 {
@@ -245,7 +244,7 @@ namespace Ccs.Services
             throw new NotImplementedException();
         }
 
-        public async Task<Team> CreateAsync(Team team, IEnumerable<SatelliteSite.IdentityModule.Services.IUser>? users = null)
+        public async Task<Team> CreateAsync(Team team, IEnumerable<IUser>? users = null)
         {
             using var _lock = await TeamLock.LockAsync();
             int cid = team.ContestId;

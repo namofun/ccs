@@ -39,7 +39,7 @@ namespace SatelliteSite.ContestModule.Apis
         /// <response code="200">Contest start time changed successfully</response>
         /// <response code="403">Changing start time not allowed</response>
         [HttpPatch]
-        [AuditPoint(Entities.AuditlogType.Contest)]
+        [AuditPoint(AuditlogType.Contest)]
         [Consumes("application/x-www-form-urlencoded")]
         public async Task<IActionResult> ChangeTime(
             [FromRoute] int cid,

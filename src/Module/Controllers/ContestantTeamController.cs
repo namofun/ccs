@@ -39,7 +39,7 @@ namespace SatelliteSite.ContestModule.Controllers
 
 
         [HttpPost("[action]")]
-        [AuditPoint(Entities.AuditlogType.Attachment)]
+        [AuditPoint(AuditlogType.Printing)]
         public new Task<IActionResult> Print(AddPrintModel model)
             => base.Print(model);
 
@@ -159,7 +159,7 @@ namespace SatelliteSite.ContestModule.Controllers
 
         [HttpPost("clarifications/{op}")]
         [ValidateAntiForgeryToken]
-        [AuditPoint(Entities.AuditlogType.Clarification)]
+        [AuditPoint(AuditlogType.Clarification)]
         public async Task<IActionResult> Clarification(
             string op, AddClarificationModel model)
         {

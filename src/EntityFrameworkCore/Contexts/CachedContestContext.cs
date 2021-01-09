@@ -1,10 +1,9 @@
 ﻿using Ccs.Entities;
 using Ccs.Models;
-using Ccs.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using Polygon.Entities;
-using SatelliteSite.IdentityModule.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;

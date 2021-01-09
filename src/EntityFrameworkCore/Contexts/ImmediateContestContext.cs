@@ -1,12 +1,12 @@
 ﻿using Ccs.Entities;
 using Ccs.Models;
 using Ccs.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Polygon.Entities;
 using Polygon.Models;
 using Polygon.Storages;
 using SatelliteSite.Entities;
-using SatelliteSite.IdentityModule.Services;
 using SatelliteSite.Services;
 using System;
 using System.Collections.Generic;

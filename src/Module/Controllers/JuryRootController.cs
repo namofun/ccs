@@ -17,7 +17,7 @@ namespace SatelliteSite.ContestModule.Controllers
 
 
         [HttpPost("[action]")]
-        [AuditPoint(Entities.AuditlogType.Attachment)]
+        [AuditPoint(AuditlogType.Printing)]
         public new Task<IActionResult> Print(AddPrintModel model)
             => base.Print(model);
 
@@ -50,7 +50,7 @@ namespace SatelliteSite.ContestModule.Controllers
 
         [HttpPost("[action]")]
         [ValidateAntiForgeryToken]
-        [AuditPoint(Entities.AuditlogType.Contest)]
+        [AuditPoint(AuditlogType.Contest)]
         [ActionName("ResetEventFeed")]
         public async Task<IActionResult> ResetEventFeedConfirmation()
         {
@@ -73,7 +73,7 @@ namespace SatelliteSite.ContestModule.Controllers
         [HttpPost("[action]/{target}")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrator")]
-        [AuditPoint(Entities.AuditlogType.Contest)]
+        [AuditPoint(AuditlogType.Contest)]
         public async Task<IActionResult> ChangeState(string target)
         {
             var now = DateTimeOffset.Now;
@@ -167,7 +167,7 @@ namespace SatelliteSite.ContestModule.Controllers
         [HttpPost("[action]")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrator")]
-        [AuditPoint(Entities.AuditlogType.User)]
+        [AuditPoint(AuditlogType.User)]
         public async Task<IActionResult> Assign(JuryAssignModel model)
         {
             var user = await UserManager.FindByNameAsync(model.UserName);
@@ -205,7 +205,7 @@ namespace SatelliteSite.ContestModule.Controllers
         [HttpPost("[action]/{uid}")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrator")]
-        [AuditPoint(Entities.AuditlogType.User)]
+        [AuditPoint(AuditlogType.User)]
         [ActionName("Unassign")]
         public async Task<IActionResult> UnassignConfirmation(int uid)
         {
@@ -246,7 +246,7 @@ namespace SatelliteSite.ContestModule.Controllers
 
         [HttpPost("[action]")]
         [ValidateAntiForgeryToken]
-        [AuditPoint(Entities.AuditlogType.Contest)]
+        [AuditPoint(AuditlogType.Contest)]
         public async Task<IActionResult> Edit(JuryEditModel model)
         {
             // check the category id
@@ -339,7 +339,7 @@ namespace SatelliteSite.ContestModule.Controllers
         [HttpPost("[action]")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrator")]
-        [AuditPoint(Entities.AuditlogType.Contest)]
+        [AuditPoint(AuditlogType.Contest)]
         [ActionName("RefreshCache")]
         public async Task<IActionResult> RefreshCacheConfirmation()
         {
@@ -360,7 +360,7 @@ namespace SatelliteSite.ContestModule.Controllers
 
         [HttpPost("[action]")]
         [ValidateAntiForgeryToken]
-        [AuditPoint(Entities.AuditlogType.Contest)]
+        [AuditPoint(AuditlogType.Contest)]
         public async Task<IActionResult> Description(JuryMarkdownModel model)
         {
             model.Markdown ??= "";

@@ -4,10 +4,10 @@ using Ccs.Models;
 using Ccs.Services;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
-using SatelliteSite.IdentityModule.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -92,7 +92,7 @@ namespace SatelliteSite.ContestModule.Controllers
             });
 
             await HttpContext.AuditAsync(
-                Entities.AuditlogType.Attachment,
+                AuditlogType.Printing,
                 Contest.Id, User.GetUserName(),
                 "added", $"{p.Id}",
                 $"from {HttpContext.Connection.RemoteIpAddress}");

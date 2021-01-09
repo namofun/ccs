@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Extensions.DependencyInjection;
-using SatelliteSite.IdentityModule.Services;
 using System.Threading.Tasks;
 
 namespace SatelliteSite.ContestModule.Controllers

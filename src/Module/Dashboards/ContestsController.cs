@@ -1,8 +1,8 @@
 ﻿using Ccs.Entities;
 using Ccs.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using SatelliteSite.IdentityModule.Services;
 using System.Threading.Tasks;
 
 namespace SatelliteSite.ContestModule.Dashboards
@@ -10,7 +10,7 @@ namespace SatelliteSite.ContestModule.Dashboards
     [Area("Dashboard")]
     [Authorize(Roles = "Administrator,Teacher")]
     [Route("[area]/[controller]")]
-    [AuditPoint(Entities.AuditlogType.Contest)]
+    [AuditPoint(AuditlogType.Contest)]
     public class ContestsController : ViewControllerBase
     {
         [HttpGet]

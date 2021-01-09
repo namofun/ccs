@@ -1,8 +1,7 @@
 ﻿using Ccs.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
-using SatelliteSite.IdentityModule.Services;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -36,7 +35,7 @@ namespace SatelliteSite.ContestModule.Controllers
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]
-        [AuditPoint(Entities.AuditlogType.Team)]
+        [AuditPoint(AuditlogType.Team)]
         public async Task<IActionResult> Register()
         {
             if (ViewData.ContainsKey("HasTeam"))
@@ -54,10 +53,9 @@ namespace SatelliteSite.ContestModule.Controllers
             string defaultAff = User.IsInRole("Student") ? "jlu" : "null";
             var affiliations = await Context.FetchAffiliationsAsync(false);
             var aff = affiliations.Values.SingleOrDefault(a => a.Abbreviation == defaultAff);
-            if (aff == null) throw new System.ApplicationException("No default affiliation.");
+            if (aff == null) throw new ApplicationException("No default affiliation.");
 
-            var userManager = HttpContext.RequestServices.GetRequiredService<IUserManager>();
-            var user = await userManager.GetUserAsync(User);
+            var user = await UserManager.GetUserAsync(User);
 
             var team = await Context.CreateTeamAsync(
                 users: new[] { user },
@@ -66,9 +64,9 @@ namespace SatelliteSite.ContestModule.Controllers
                     AffiliationId = aff.Id,
                     ContestId = Contest.Id,
                     CategoryId = Contest.RegisterCategory.Value,
-                    RegisterTime = System.DateTimeOffset.Now,
+                    RegisterTime = DateTimeOffset.Now,
                     Status = 0,
-                    TeamName = User.GetNickName() ?? User.GetUserName(),
+                    TeamName = User.GetNickName(),
                 });
 
             await HttpContext.AuditAsync("added", $"{team.TeamId}");

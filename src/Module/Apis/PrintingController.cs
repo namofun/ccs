@@ -3,9 +3,9 @@ using Ccs.Contexts;
 using Ccs.Entities;
 using Ccs.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using SatelliteSite.ContestModule.Models;
-using SatelliteSite.IdentityModule.Services;
 using System;
 using System.Threading.Tasks;
 

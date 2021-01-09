@@ -23,7 +23,7 @@ namespace SatelliteSite
 
     public class QueryCache : QueryCacheBase<DefaultContext>
     {
-        public override Task<IEnumerable<(int UserId, string UserName, string NickName)>> FetchPermittedUserAsync(DefaultContext context, int probid)
+        public override Task<IEnumerable<(int UserId, string UserName)>> FetchPermittedUserAsync(DefaultContext context, int probid)
         {
             throw new NotImplementedException();
         }

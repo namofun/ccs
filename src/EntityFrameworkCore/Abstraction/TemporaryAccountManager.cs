@@ -1,10 +1,6 @@
-﻿using Ccs.Entities;
-using SatelliteSite.IdentityModule.Services;
+﻿using Microsoft.AspNetCore.Identity;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
-using Tenant.Entities;
 
 namespace Ccs.Services
 {
@@ -22,7 +18,7 @@ namespace Ccs.Services
 
         public static Func<string> CreatePasswordGenerator()
         {
-            const string passwordSource = "abcdefghjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ23456789";
+            const string passwordSource = "abcdefhjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ2345678";
             var rng = new Random(unchecked((int)DateTimeOffset.Now.Ticks));
             return () =>
             {
