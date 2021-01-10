@@ -23,29 +23,28 @@ namespace Ccs.Contexts.Immediate
     {
         private readonly IServiceProvider _services;
         private readonly Contest _contest;
-        private IClarificationStore? _clars;
-        private ITeamStore? _teams;
-        private IProblemsetStore? _probs;
-        private IContestStore? _ctsx;
-        private IJudgingStore? _judgings;
-        private ISubmissionStore? _submits;
-        private IRejudgingStore? _rejudgings;
+        private ICcsFacade? _ccsFacade;
+        private IPolygonFacade? _polygonFacade;
 
         public Contest Contest => _contest;
 
-        public IClarificationStore ClarificationStore => _clars ??= _services.GetRequiredService<IClarificationStore>();
+        public IPolygonFacade Polygon => _polygonFacade ??= _services.GetRequiredService<IPolygonFacade>();
 
-        public ITeamStore TeamStore => _teams ??= _services.GetRequiredService<ITeamStore>();
+        public ICcsFacade Ccs => _ccsFacade ??= _services.GetRequiredService<ICcsFacade>();
 
-        public IProblemsetStore ProblemsetStore => _probs ??= _services.GetRequiredService<IProblemsetStore>();
+        public IClarificationStore ClarificationStore => Ccs.ClarificationStore;
 
-        public IContestStore ContestStore => _ctsx ??= _services.GetRequiredService<IContestStore>();
+        public ITeamStore TeamStore => Ccs.TeamStore;
 
-        public ISubmissionStore SubmissionStore => _submits ??= _services.GetRequiredService<ISubmissionStore>();
+        public IProblemsetStore ProblemsetStore => Ccs.ProblemStore;
 
-        public IJudgingStore JudgingStore => _judgings ??= _services.GetRequiredService<IJudgingStore>();
+        public IContestStore ContestStore => Ccs.ContestStore;
 
-        public IRejudgingStore RejudgingStore => _rejudgings ??= _services.GetRequiredService<IRejudgingStore>();
+        public ISubmissionStore SubmissionStore => Polygon.Submissions;
+
+        public IJudgingStore JudgingStore => Polygon.Judgings;
+
+        public IRejudgingStore RejudgingStore => Polygon.Rejudgings;
 
         public ImmediateContestContext(Contest contest, IServiceProvider serviceProvider)
         {

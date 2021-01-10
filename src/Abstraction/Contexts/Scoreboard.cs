@@ -30,11 +30,13 @@ namespace Ccs.Services
         /// <param name="cid">The contest ID.</param>
         /// <param name="teamid">The team ID.</param>
         /// <param name="probid">The problem ID.</param>
-        /// <param name="expression">The update expression. If this is insert mode, fields from source will be downgraded as default value of that type.</param>
+        /// <param name="insert">The insert expression.</param>
+        /// <param name="update">The update expression.</param>
         /// <returns>The task for updating the score cache.</returns>
         Task ScoreUpsertAsync(
             int cid, int teamid, int probid,
-            Expression<Func<ScoreCache, ScoreCache>> expression);
+            Expression<Func<ScoreCache>> insert,
+            Expression<Func<ScoreCache, ScoreCache>> update);
 
         /// <summary>
         /// Update the score cache value.
@@ -78,11 +80,13 @@ namespace Ccs.Services
         /// <param name="cid">The contest ID.</param>
         /// <param name="teamid">The team ID.</param>
         /// <param name="probid">The problem ID.</param>
-        /// <param name="expression">The update expression linked with score cache.</param>
+        /// <param name="insert">The insert expression linked with score cache.</param>
+        /// <param name="update">The update expression linked with excluded entity.</param>
         /// <returns>The task for updating the rank cache.</returns>
         Task RankUpsertAsync(
             int cid, int teamid, int probid,
-            Expression<Func<RankCache, ScoreCache, RankCache>> expression);
+            Expression<Func<ScoreCache, RankCache>> insert,
+            Expression<Func<RankCache, RankCache, RankCache>> update);
 
         /// <summary>
         /// Fetch the solution information for recalculating scoreboard.

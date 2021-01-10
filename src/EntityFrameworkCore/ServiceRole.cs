@@ -25,7 +25,7 @@ namespace Ccs
             services.AddScoped<IContestRepository>(sp => sp.GetRequiredService<ICcsFacade>().ContestStore);
 
             services.AddScoped<IPrintingService, PrintingService<TUser, TContext>>();
-            services.AddScoped<IScoreboard, ScoreboardStore<TContext>>();
+            services.AddScoped<IScoreboard, Scoreboard<TContext>>();
             services.AddSingleton<IContestContextFactory, CachedContestContextFactory>();
         }
     }

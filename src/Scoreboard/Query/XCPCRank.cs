@@ -85,12 +85,23 @@ namespace Ccs.Scoreboard.Query
                 cid: args.ContestId!.Value,
                 teamid: args.TeamId,
                 probid: args.ProblemId,
-                expression: (r, s) => new RankCache
+
+                insert: s => new RankCache
                 {
-                    PointsRestricted    = r.PointsRestricted + 1,
-                    TotalTimeRestricted = r.TotalTimeRestricted + score + 20 * (s.SubmissionRestricted - 1),
-                    PointsPublic        = showRestricted ? r.PointsPublic    : r.PointsPublic + 1,
-                    TotalTimePublic     = showRestricted ? r.TotalTimePublic : r.TotalTimePublic + score + 20 * (s.SubmissionRestricted - 1),
+                    PointsRestricted    = 1,
+                    TotalTimeRestricted = score + 20 * (s.SubmissionRestricted - 1),
+
+                    PointsPublic    = showRestricted ? 0 : 1,
+                    TotalTimePublic = showRestricted ? 0 : score + 20 * (s.SubmissionRestricted - 1),
+                },
+
+                update: (r, e) => new RankCache
+                {
+                    PointsRestricted    = r.PointsRestricted    + e.PointsRestricted,
+                    TotalTimeRestricted = r.TotalTimeRestricted + e.TotalTimeRestricted,
+
+                    PointsPublic    = r.PointsPublic    + e.PointsPublic,
+                    TotalTimePublic = r.TotalTimePublic + e.TotalTimePublic,
                 });
         }
 
@@ -119,7 +130,14 @@ namespace Ccs.Scoreboard.Query
                 cid: args.Submission.ContestId,
                 teamid: args.Submission.TeamId,
                 probid: args.Submission.ProblemId,
-                expression: s => new ScoreCache
+
+                insert: () => new ScoreCache
+                {
+                    PendingPublic = 1,
+                    PendingRestricted = 1,
+                },
+
+                update: s => new ScoreCache
                 {
                     PendingPublic = s.IsCorrectRestricted ? s.PendingPublic : s.PendingPublic + 1,
                     PendingRestricted = s.IsCorrectRestricted ? s.PendingRestricted : s.PendingRestricted + 1,

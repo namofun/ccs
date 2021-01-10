@@ -66,7 +66,13 @@ namespace Ccs.Scoreboard.Query
                 cid: args.Submission.ContestId,
                 teamid: args.Submission.TeamId,
                 probid: args.Submission.ProblemId,
-                expression: s => new ScoreCache
+
+                insert: () => new ScoreCache
+                {
+                    PendingRestricted = 1,
+                },
+
+                update: s => new ScoreCache
                 {
                     PendingRestricted = s.PendingRestricted + 1,
                 });
@@ -109,11 +115,17 @@ namespace Ccs.Scoreboard.Query
                 cid: args.ContestId!.Value,
                 teamid: args.TeamId,
                 probid: args.ProblemId,
-                expression: (r, s) => new RankCache
+
+                insert: s => new RankCache
                 {
-                    PointsPublic = r.PointsPublic - (s.ScorePublic ?? 0)
-                        + Math.Max(minScore, rateScore - s.SubmissionRestricted * 50),
+                    PointsPublic    = Math.Max(minScore, rateScore - s.SubmissionRestricted * 50) - (s.ScorePublic ?? 0),
                     TotalTimePublic = timee,
+                },
+
+                update: (r, e) => new RankCache
+                {
+                    PointsPublic    = r.PointsPublic + e.PointsPublic,
+                    TotalTimePublic = e.TotalTimePublic,
                 });
 
             await store.ScoreUpdateAsync(

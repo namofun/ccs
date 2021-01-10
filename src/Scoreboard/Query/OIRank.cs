@@ -72,9 +72,16 @@ namespace Ccs.Scoreboard.Query
                 cid: args.Submission.ContestId,
                 teamid: args.Submission.TeamId,
                 probid: args.Submission.ProblemId,
-                expression: s => new ScoreCache
+
+                insert: () => new ScoreCache
                 {
-                    PendingPublic = s.PendingPublic + 1,
+                    PendingPublic     = 1,
+                    PendingRestricted = 1,
+                },
+
+                update: s => new ScoreCache
+                {
+                    PendingPublic     = s.PendingPublic + 1,
                     PendingRestricted = s.PendingRestricted + 1,
                 });
         }
@@ -94,12 +101,22 @@ namespace Ccs.Scoreboard.Query
                 cid: args.ContestId!.Value,
                 teamid: args.TeamId,
                 probid: args.ProblemId,
-                expression: (r, s) => new RankCache
+
+                insert: s => new RankCache
                 {
-                    PointsRestricted    = r.PointsRestricted + score - (s.ScoreRestricted ?? 0),
+                    PointsRestricted    = score - (s.ScoreRestricted ?? 0),
                     TotalTimeRestricted = time2,
 
-                    PointsPublic    = showRestricted ? r.PointsPublic    : r.PointsPublic + score - (s.ScoreRestricted ?? 0),
+                    PointsPublic    = showRestricted ? 0 : score - (s.ScoreRestricted ?? 0),
+                    TotalTimePublic = showRestricted ? 0 : time2,
+                },
+
+                update: (r, s) => new RankCache
+                {
+                    PointsRestricted    = r.PointsRestricted + s.PointsRestricted,
+                    TotalTimeRestricted = s.TotalTimeRestricted,
+
+                    PointsPublic    = r.PointsPublic + s.PointsPublic,
                     TotalTimePublic = showRestricted ? r.TotalTimePublic : time2,
                 });
 
