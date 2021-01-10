@@ -1,13 +1,26 @@
 ﻿@model IPagedList<ContestListModel>
 @{
     ViewData["Title"] = "Contests";
+}
 
+@functions {
     static string ContestState(ContestListModel c)
     {
         if (!c.StartTime.HasValue) return "table-primary";
         if (DateTimeOffset.Now < c.StartTime) return "table-warning";
         if (DateTimeOffset.Now < c.StartTime + c.Duration) return "table-success";
         return "";
+    }
+
+    static string ContestKind(ContestListModel c)
+    {
+        return c.Kind switch
+        {
+            0 => "Contest",
+            1 => "Practice",
+            2 => "Problemset",
+            _ => "Unknown",
+        };
     }
 }
 
@@ -29,6 +42,7 @@
                 <th scope="col" class="sortable searchable">length</th>
                 <th scope="col" class="sortable searchable"># teams</th>
                 <th scope="col" class="sortable searchable"># problems</th>
+                <th scope="col" class="sortable searchable">kind</th>
                 <th scope="col" class="sortable searchable">rule</th>
                 <th></th>
             </tr>
@@ -36,18 +50,19 @@
         <tbody>
             @foreach (var cts in Model)
             {
-                <tr asp-area="Contest" asp-controller="Jury" asp-action="Home" asp-route-cid="@cts.ContestId" role="row" data-target="gotoUrl" class="@ContestState(cts)">
-                    <td use-a>@cts.ContestId</td>
-                    <td use-a>@cts.ShortName</td>
-                    <td use-a><span class="forceWidth" style="max-width:20em">@(string.IsNullOrEmpty(cts.Name) ? "(unnamed)" : cts.Name)</span></td>
-                    <td use-a>@(cts.IsPublic ? "yes" : "no")</td>
-                    <td use-a>@Html.CstTime(cts.StartTime)</td>
-                    <td use-a>@cts.Duration</td>
-                    <td use-a>@cts.TeamCount</td>
-                    <td use-a>@cts.ProblemCount</td>
-                    <td use-a class="rks"><misc-status type="ContestRule" value="cts.RankingStrategy" /></td>
-                    <td><a asp-area="Contest" asp-controller="Jury" asp-action="Edit" asp-route-cid="@cts.ContestId" title="edit this contest"><i class="fas fa-edit"></i></a></td>
-                </tr>
+            <tr asp-area="Contest" asp-controller="Jury" asp-action="Home" asp-route-cid="@cts.ContestId" role="row" data-target="gotoUrl" class="@ContestState(cts)">
+                <td use-a>@cts.ContestId</td>
+                <td use-a>@cts.ShortName</td>
+                <td use-a><span class="forceWidth" style="max-width:20em">@(string.IsNullOrEmpty(cts.Name) ? "(unnamed)" : cts.Name)</span></td>
+                <td use-a>@(cts.IsPublic ? "yes" : "no")</td>
+                <td use-a>@(cts.StartTime.HasValue ? Html.CstTime(cts.StartTime) : "-")</td>
+                <td use-a>@(cts.Duration?.ToString() ?? "-")</td>
+                <td use-a>@cts.TeamCount</td>
+                <td use-a>@cts.ProblemCount</td>
+                <td use-a>@ContestKind(cts)</td>
+                <td use-a class="rks"><misc-status type="ContestRule" value="cts.RankingStrategy" /></td>
+                <td><a asp-area="Contest" asp-controller="Jury" asp-action="Edit" asp-route-cid="@cts.ContestId" title="edit this contest"><i class="fas fa-edit"></i></a></td>
+            </tr>
             }
         </tbody>
     </table>
@@ -76,5 +91,7 @@
 </script>
 
 <p>
-    <a asp-action="Add" class="btn btn-primary" title="Add new contest"><i class="fas fa-plus"></i>&nbsp;Add new contest</a>
+    <a asp-action="Add" asp-route-kind="0" class="btn btn-primary" title="Add new contest"><i class="fas fa-plus"></i>&nbsp;Add new contest</a>
+    <a asp-action="Add" asp-route-kind="1" class="btn btn-success" title="Add new contest"><i class="fas fa-plus"></i>&nbsp;Add new practice</a>
+    <a asp-action="Add" asp-route-kind="2" class="btn btn-secondary" title="Add new contest"><i class="fas fa-plus"></i>&nbsp;Add new problemset</a>
 </p>

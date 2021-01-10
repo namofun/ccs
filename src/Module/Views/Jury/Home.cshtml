@@ -6,6 +6,15 @@
     IReadOnlyList<ProblemModel> probs = ViewBag.Problems;
 }
 
+@functions {
+    static string PassingTime(DateTimeOffset? start, TimeSpan? end)
+    {
+        return end.HasValue && start.HasValue ? (start + end).Value.ToString()
+            : end.HasValue ? end.Value.ToString()
+            : "-";
+    }
+}
+
 <div class="mt-2 mb-2">
     <h1 class="mt-0 d-inline mb-0 mr-1">
         Contest
@@ -34,32 +43,32 @@
                     <table class="table table-hover mb-0">
                         <tbody>
                             <tr>
-                                <td><i class="fas fa-@((int)state >= 2 ? "check" : "")"></i></td>
-                                <td><b>Start time:</b></td>
-                                <td><difftime show-time="ctx.StartTime" null-value="not scheduled" /></td>
-                                <td>
+                                <td class="align-middle"><i class="fas fa-@((int)state >= 2 ? "check" : "")"></i></td>
+                                <td class="align-middle"><b>Start time:</b></td>
+                                <td class="align-middle">@(ctx.StartTime.HasValue ? Html.CstTime(ctx.StartTime) : "not scheduled")</td>
+                                <td class="align-middle">
                                     <button asp-show-if="state == ContestState.ScheduledToStart" asp-action="ChangeState" asp-route-target="startnow" class="btn btn-sm btn-primary">start now</button>
                                     <button asp-show-if="state == ContestState.ScheduledToStart" asp-action="ChangeState" asp-route-target="delay" class="mt-1 mt-md-0 btn btn-sm btn-primary">delay</button>
                                     <button asp-show-if="state == ContestState.NotScheduled" asp-action="ChangeState" asp-route-target="startnow" class="btn btn-sm btn-primary">start now</button>
                                 </td>
                             </tr>
                             <tr>
-                                <td><i class="fas fa-@(ctx.FreezeTime.HasValue && (int)state >= 3 ? "check" : "")"></i></td>
-                                <td><b>Freeze time:</b></td>
-                                <td><difftime show-time="ctx.FreezeTime" /></td>
-                                <td><button asp-show-if="state == ContestState.Started" asp-action="ChangeState" asp-route-target="freeze" class="btn btn-sm btn-primary">freeze now</button></td>
+                                <td class="align-middle"><i class="fas fa-@(ctx.FreezeTime.HasValue && (int)state >= 3 ? "check" : "")"></i></td>
+                                <td class="align-middle"><b>Freeze time:</b></td>
+                                <td class="align-middle">@PassingTime(ctx.StartTime, ctx.FreezeTime)</td>
+                                <td class="align-middle"><button asp-show-if="state == ContestState.Started" asp-action="ChangeState" asp-route-target="freeze" class="btn btn-sm btn-primary">freeze now</button></td>
                             </tr>
                             <tr>
-                                <td class=""><i asp-show-if="ctx.EndTime.HasValue && (int)state >= 4" class="fas fa-check"></i></td>
-                                <td class=""><b>End time:</b></td>
-                                <td><difftime show-time="ctx.EndTime" /></td>
-                                <td><button asp-show-if="state == ContestState.Started || state == ContestState.Frozen" asp-action="ChangeState" asp-route-target="endnow" class="btn btn-sm btn-primary">end now</button></td>
+                                <td class="align-middle"><i asp-show-if="ctx.EndTime.HasValue && (int)state >= 4" class="fas fa-check"></i></td>
+                                <td class="align-middle"><b>End time:</b></td>
+                                <td class="align-middle">@PassingTime(ctx.StartTime, ctx.EndTime)</td>
+                                <td class="align-middle"><button asp-show-if="state == ContestState.Started || state == ContestState.Frozen" asp-action="ChangeState" asp-route-target="endnow" class="btn btn-sm btn-primary">end now</button></td>
                             </tr>
                             <tr>
-                                <td><i class="fas fa-@(ctx.UnfreezeTime.HasValue && (int)state >= 5 ? "check" : "")"></i></td>
-                                <td><b>Unfreeze time:</b></td>
-                                <td><difftime show-time="ctx.UnfreezeTime" /></td>
-                                <td><button asp-show-if="state == ContestState.Ended" asp-action="ChangeState" asp-route-target="unfreeze" class="btn btn-sm btn-primary">unfreeze now</button></td>
+                                <td class="align-middle"><i class="fas fa-@(ctx.UnfreezeTime.HasValue && (int)state >= 5 ? "check" : "")"></i></td>
+                                <td class="align-middle"><b>Unfreeze time:</b></td>
+                                <td class="align-middle">@PassingTime(ctx.StartTime, ctx.UnfreezeTime)</td>
+                                <td class="align-middle"><button asp-show-if="state == ContestState.Ended" asp-action="ChangeState" asp-route-target="unfreeze" class="btn btn-sm btn-primary">unfreeze now</button></td>
                             </tr>
                         </tbody>
                     </table>

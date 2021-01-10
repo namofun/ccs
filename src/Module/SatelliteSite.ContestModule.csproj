@@ -9,6 +9,10 @@
   <Import Project="..\..\build\NugetPackage.props" />
 
   <ItemGroup>
+    <EmbeddedResource Include="olymp.sty" />
+  </ItemGroup>
+
+  <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="SatelliteSite.Substrate" Version="$(SubstrateVersion)" />
     <PackageReference Include="Polygon.TagHelpers" Version="$(PolygonVersion)" />
