@@ -1,9 +1,7 @@
 ﻿#nullable enable
 using Ccs.Entities;
 using Ccs.Models;
-using Ccs.Services;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -52,20 +50,6 @@ namespace Ccs
                 return false;
             var jury = await context.FetchJuryAsync();
             return jury.Contains(uid);
-        }
-
-        /// <summary>
-        /// Create a <see cref="IContestContext"/> via the <see cref="HttpContext"/>.
-        /// </summary>
-        /// <param name="httpContext">The <see cref="HttpContext"/>.</param>
-        /// <param name="contestId">The contest ID.</param>
-        /// <returns>The task for creating context.</returns>
-        public static Task<IContestContext?> CreateContestContextAsync(
-            this HttpContext httpContext, int contestId)
-        {
-            return httpContext.RequestServices
-                .GetRequiredService<ScopedContestContextFactory>()
-                .CreateAsync(contestId);
         }
 
         /// <summary>

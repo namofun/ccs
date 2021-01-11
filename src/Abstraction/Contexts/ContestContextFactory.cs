@@ -18,8 +18,9 @@ namespace Ccs.Services
         /// </summary>
         /// <param name="cid">The contest ID.</param>
         /// <param name="serviceProvider">The scoped service provider. This parameter usually comes from <c>HttpContext.RequestServices</c>.</param>
+        /// <param name="requireProblems">Whether to pre-load the problem list. When preloaded, the real query won't take place.</param>
         /// <returns>The task for creating contest context.</returns>
-        Task<IContestContext?> CreateAsync(int cid, IServiceProvider serviceProvider);
+        Task<IContestContext?> CreateAsync(int cid, IServiceProvider serviceProvider, bool requireProblems = true);
     }
 
     /// <summary>
@@ -49,12 +50,13 @@ namespace Ccs.Services
         /// Creates an <see cref="IContestContext"/> for reading contest informations.
         /// </summary>
         /// <param name="cid">The contest ID.</param>
+        /// <param name="requireProblems">Whether to load the problem list.</param>
         /// <returns>The task for creating contest context.</returns>
-        public Task<IContestContext?> CreateAsync(int cid)
+        public Task<IContestContext?> CreateAsync(int cid, bool requireProblems = true)
         {
             return ServiceProvider
                 .GetRequiredService<IContestContextFactory>()
-                .CreateAsync(cid, ServiceProvider);
+                .CreateAsync(cid, ServiceProvider, requireProblems);
         }
 
         /// <summary>

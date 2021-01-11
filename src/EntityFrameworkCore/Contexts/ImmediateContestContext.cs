@@ -17,9 +17,9 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Tenant.Entities;
 
-namespace Ccs.Contexts.Immediate
+namespace Ccs.Services
 {
-    public class ImmediateContestContext : IContestContext
+    public partial class ImmediateContestContext : IContestContext
     {
         private readonly IServiceProvider _services;
         private readonly Contest _contest;
@@ -65,7 +65,7 @@ namespace Ccs.Contexts.Immediate
             return langs;
         }
 
-        public virtual async Task<IReadOnlyList<ProblemModel>> FetchProblemsAsync()
+        public virtual async Task<IReadOnlyList<ProblemModel>> FetchProblemsAsync(bool nonCached = false)
         {
             var res = await ProblemsetStore.ListAsync(Contest.Id);
             var problems = _services.GetRequiredService<IProblemStore>();
@@ -320,16 +320,6 @@ namespace Ccs.Contexts.Immediate
         }
 
         public Task<Affiliation?> FetchAffiliationAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<List<BalloonModel>> FetchBalloonsAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task SetBalloonDoneAsync(int id)
         {
             throw new NotImplementedException();
         }

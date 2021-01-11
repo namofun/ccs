@@ -14,8 +14,9 @@ namespace Ccs
         /// <summary>
         /// Fetch the contest problems.
         /// </summary>
+        /// <param name="nonCached">Whether to fetch the non-cached result.</param>
         /// <returns>The task for fetching problems.</returns>
-        Task<IReadOnlyList<ProblemModel>> FetchProblemsAsync();
+        Task<IReadOnlyList<ProblemModel>> FetchProblemsAsync(bool nonCached = false);
 
         /// <summary>
         /// Create problems by expression.

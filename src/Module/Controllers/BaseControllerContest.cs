@@ -165,7 +165,8 @@ namespace SatelliteSite.ContestModule.Controllers
             }
 
             // parse the base service
-            _private_context = await HttpContext.CreateContestContextAsync(cid);
+            var factory = HttpContext.RequestServices.GetRequiredService<ScopedContestContextFactory>();
+            _private_context = await factory.CreateAsync(cid);
             if (Context == null)
             {
                 context.Result = NotFound();

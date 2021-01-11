@@ -26,7 +26,7 @@ namespace SatelliteSite
                 .AddModule<IdentityModule.IdentityModule<User, Role, DefaultContext>>()
                 .AddModule<PolygonModule.PolygonModule<Polygon.DefaultRole<DefaultContext, QueryCache>>>()
                 .AddModule<GroupModule.GroupModule<DefaultContext>>()
-                .AddModule<ContestModule.ContestModule<Ccs.EntityFrameworkCoreServiceRole<User, Role, DefaultContext>>>()
+                .AddModule<ContestModule.ContestModule<Ccs.RelationalRole<User, Role, DefaultContext>>>()
                 .AddDatabaseMssql<DefaultContext>("UserDbConnection")//, d => d.UseTableSplittingJoinsRemoval())
                 .ConfigureSubstrateDefaults<DefaultContext>(builder =>
                 {

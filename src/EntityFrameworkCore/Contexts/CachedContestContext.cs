@@ -11,9 +11,9 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Tenant.Entities;
 
-namespace Ccs.Contexts.Cached
+namespace Ccs.Services
 {
-    public class CachedContestContext : Immediate.ImmediateContestContext
+    public class CachedContestContext : ImmediateContestContext
     {
         private readonly IMemoryCache _cache;
         private readonly CachedContestContextIntervalOptions _options;
@@ -96,10 +96,13 @@ namespace Ccs.Contexts.Cached
 
         #region Aggregate Root: Problem
 
-        public override Task<IReadOnlyList<ProblemModel>> FetchProblemsAsync()
+        public override Task<IReadOnlyList<ProblemModel>> FetchProblemsAsync(bool nonCached = false)
         {
+            if (nonCached)
+                return base.FetchProblemsAsync(true);
+
             return CacheAsync("Problems", _options.Problem,
-                async () => await base.FetchProblemsAsync());
+                async () => await base.FetchProblemsAsync(true));
         }
 
         public override async Task UpdateProblemAsync(

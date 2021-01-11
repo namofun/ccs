@@ -36,7 +36,7 @@ namespace SatelliteSite.ContestModule.Apis
         {
             string room, name;
 
-            var ctx = await _factory.CreateAsync(p.ContestId);
+            var ctx = await _factory.CreateAsync(p.ContestId, false);
             var t = await ctx.FindTeamByUserAsync(p.UserId);
             if (t == null)
             {
@@ -68,15 +68,20 @@ namespace SatelliteSite.ContestModule.Apis
         /// <summary>
         /// Get the next printing and mark as processed
         /// </summary>
+        /// <param name="cid">The contest ID</param>
         /// <response code="200">The next printing</response>
         [HttpPost]
-        public async Task<ActionResult<PrintingDocument>> NextPrinting()
+        public async Task<ActionResult<PrintingDocument>> NextPrinting(int? cid)
         {
             Printing print;
 
             using (await _locker.LockAsync())
             {
-                print = await _store.FirstAsync(p => p.Done == null);
+                if (cid.HasValue)
+                    print = await _store.FirstAsync(p => p.Done == null && p.ContestId == cid);
+                else
+                    print = await _store.FirstAsync(p => p.Done == null);
+
                 if (print == null) return new JsonResult("");
                 await _store.SetStateAsync(print, false);
             }

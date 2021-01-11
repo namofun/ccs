@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Ccs.Contexts.Cached
+namespace Ccs.Services
 {
     public class CachedContestContextIntervalOptions
     {

@@ -1,4 +1,5 @@
 ﻿using Ccs;
+using Ccs.Services;
 using MediatR;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
@@ -39,7 +40,8 @@ namespace SatelliteSite.ContestModule.Apis
             if (context.RouteData.Values.TryGetValue("cid", out object __cid)
                 && int.TryParse((string)__cid, out int cid))
             {
-                Context = await HttpContext.CreateContestContextAsync(cid);
+                var factory = HttpContext.RequestServices.GetRequiredService<ScopedContestContextFactory>();
+                Context = await factory.CreateAsync(cid, false);
                 if (Context != null)
                 {
                     HttpContext.Items[nameof(cid)] = cid;
