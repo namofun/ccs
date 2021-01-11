@@ -5,7 +5,7 @@
     ViewData["DisableAjaxRefresh"] = true;
     Contest ctx = ViewBag.Contest;
     var probs = await Context.GetContestContext().FetchProblemsAsync();
-    IReadOnlyDictionary<int, (string, string)> teamNames = ViewBag.TeamNames2;
+    IReadOnlyDictionary<int, Team> teams = ViewBag.Teams;
     var byprob = Model.TeamStatistics.GroupBy(a => a.Key.ProblemId).ToDictionary(k => k.Key, k => (k.Count(), k.Count(a => a.Value.ac > 0)));
     var byteam = Model.TeamStatistics.GroupBy(a => a.Key.TeamId).ToDictionary(k => k.Key, k => (k.Count(), k.Count(a => a.Value.ac > 0), k.Sum(a => a.Value.ac + a.Value.at), k.Sum(a => a.Value.ac)));
 }
@@ -69,12 +69,12 @@
                 @{
                     var account = Model.AcceptedLanguages.Values.Append(0).Sum();
                     var totcount = Model.AttemptedLanguages.Values.Append(0).Sum();
-                    var misery = Model.TotalMinutes - Math.Ceiling(teamNames.Select(k => Model.TeamLastSubmission.GetValueOrDefault(k.Key)).Average());
+                    var misery = Model.TotalMinutes - Math.Ceiling(teams.Keys.Select(k => Model.TeamLastSubmission.GetValueOrDefault(k)).Average());
                 }
                 <abbr data-toggle="popover" data-placement="bottom" title="Misery Index" data-content="This is a measure of how 'bored' contestants are. It is the average number of people-minutes spent fruitlessly trying to solve problems at the end of the contest. <br> Calculated as:<br> average across all teams of [1 person x (number of minutes elapsed - minute last problem solved by team t)]">Misery index</abbr>: @misery minutes<br>
                 # Submissions: @totcount<br>
                 # Accepted Submissions: @account <span class="text-muted">(~@(Math.Floor(account*100.0/totcount))%)</span><br>
-                # of Teams: @teamNames.Count
+                # of Teams: @teams.Count
             </div>
         </div>
     </div>
@@ -165,16 +165,16 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var team in teamNames)
+                        @foreach (var (id, team) in teams)
                         {
-                            var tt = byteam.GetValueOrDefault(team.Key);
-                            <tr asp-action="Detail" asp-controller="Teams" asp-route-teamid="@team.Key">
-                                <th scope="row">@team.Key</th>
-                                <td use-a class="text-variant">@team.Value.Item2</td>
-                                <td use-a class="truncate" style="max-width: 200px">@team.Value.Item1</td>
+                            var tt = byteam.GetValueOrDefault(id);
+                            <tr asp-action="Detail" asp-controller="Teams" asp-route-teamid="@id">
+                                <th scope="row">@id</th>
+                                <td use-a class="text-variant">@team.Affiliation.Abbreviation</td>
+                                <td use-a class="truncate" style="max-width: 200px">@team.TeamName</td>
                                 <td use-a>@tt.Item3 / @tt.Item4</td>
                                 <td use-a>@tt.Item1 / @tt.Item2</td>
-                                <td use-a>@(Model.TotalMinutes - Model.TeamLastSubmission.GetValueOrDefault(team.Key))</td>
+                                <td use-a>@(Model.TotalMinutes - Model.TeamLastSubmission.GetValueOrDefault(id))</td>
                             </tr>
                         }
                     </tbody>

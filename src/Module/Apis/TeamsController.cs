@@ -37,13 +37,15 @@ namespace SatelliteSite.ContestModule.Apis
             [FromQuery] bool @public = false)
         {
             var cond = Expr
-                .Of<Ccs.Entities.Team>(t => t.ContestId == cid && t.Status == 1)
+                .Of<Ccs.Entities.Team>(t => t.Status == 1)
                 .CombineIf(category.HasValue, t => t.CategoryId == category)
                 .CombineIf(ids != null && ids.Length > 0, t => ids.Contains(t.TeamId))
                 .CombineIf(affiliation != null, t => t.Affiliation.Abbreviation == affiliation)
                 .CombineIf(@public, t => t.Category.IsPublic);
 
-            return await Context.ListTeamsAsync(t => new Team(t, t.Affiliation), cond);
+            var teams = await Context.ListTeamsAsync(cond);
+            var affs = await Context.FetchAffiliationsAsync(true);
+            return teams.Select(t => new Team(t, affs[t.AffiliationId])).ToList();
         }
 
 

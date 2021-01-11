@@ -1,88 +1,211 @@
 ﻿using Ccs.Entities;
 using Ccs.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Tenant.Entities;
+using Tenant.Services;
 
 namespace Ccs.Services
 {
     public partial class ImmediateContestContext
     {
-        public Task<List<T>> ListTeamsAsync<T>(Expression<Func<Team, T>> selector, Expression<Func<Team, bool>>? predicate = null) where T : class
+        private static readonly ConcurrentAsyncLock _teamLock = new ConcurrentAsyncLock();
+
+        public Task<List<Team>> ListTeamsAsync(Expression<Func<Team, bool>>? predicate = null)
         {
             int cid = Contest.Id;
-            return TeamStore.ListAsync(selector, predicate.Combine(t => t.ContestId == cid));
+            return Ccs.Teams
+                .Where(t => t.ContestId == cid)
+                .WhereIf(predicate != null, predicate!)
+                .ToListAsync();
         }
 
-        public Task<Affiliation?> FetchAffiliationAsync(int id)
+        public virtual Task<Affiliation?> FetchAffiliationAsync(int id)
         {
-            throw new NotImplementedException();
+            return Get<IAffiliationStore>().FindAsync(id)!;
         }
 
-        public virtual Task<ScoreboardModel> FetchScoreboardAsync()
+        public virtual Task<Team?> FindTeamByIdAsync(int teamid)
         {
-            return TeamStore.LoadScoreboardAsync(Contest.Id);
-        }
-
-        public virtual Task<Team?> FindTeamByIdAsync(int teamId)
-        {
-            return TeamStore.FindByIdAsync(Contest.Id, teamId);
+            int cid = Contest.Id;
+            return Ccs.Teams
+                .Where(t => t.ContestId == cid && t.TeamId == teamid)
+                .SingleOrDefaultAsync()!;
         }
 
         public virtual Task<Member?> FindMemberByUserAsync(int userId)
         {
-            return TeamStore.FindByUserAsync(Contest.Id, userId);
+            int cid = Contest.Id;
+            return Ccs.Members
+                .Where(tu => tu.ContestId == cid && tu.UserId == userId)
+                .SingleOrDefaultAsync()!;
         }
 
-        public virtual Task<IReadOnlyDictionary<int, Affiliation>> FetchAffiliationsAsync(bool contestFiltered)
+        public virtual async Task<IReadOnlyDictionary<int, Affiliation>> FetchAffiliationsAsync(bool contestFiltered)
         {
-            throw new NotImplementedException();
+            List<Affiliation> results;
+
+            if (contestFiltered)
+                results = await Get<IAffiliationStore>().ListAsync(
+                    a => Ccs.Teams.Select(a => a.AffiliationId).Contains(a.Id));
+            else
+                results = await Get<IAffiliationStore>().ListAsync();
+
+            return results.ToDictionary(a => a.Id);
         }
 
-        public virtual Task<IReadOnlyDictionary<int, Category>> FetchCategoriesAsync(bool contestFiltered)
+        public virtual async Task<IReadOnlyDictionary<int, Category>> FetchCategoriesAsync(bool contestFiltered)
         {
-            throw new NotImplementedException();
+            List<Category> results;
+
+            if (contestFiltered)
+                results = await Get<ICategoryStore>().ListAsync(
+                    a => Ccs.Teams.Select(a => a.CategoryId).Contains(a.Id));
+            else
+                results = await Get<ICategoryStore>().ListAsync();
+
+            return results.ToDictionary(a => a.Id);
         }
 
-        public virtual Task UpdateTeamAsync(Team origin, Expression<Func<Team>> expression)
+        public virtual async Task<Team> CreateTeamAsync(Team team, IEnumerable<IUser>? users)
         {
-            return TeamStore.UpdateAsync(origin.ContestId, origin.TeamId, expression);
+            int cid = team.ContestId;
+            using var _lock = await _teamLock.LockAsync(cid);
+
+            team.TeamId = 1 + await Ccs.Teams.CountAsync(tt => tt.ContestId == cid);
+            Ccs.Teams.Add(team);
+
+            if (users != null && users.Any())
+            {
+                foreach (var uid in users)
+                {
+                    Ccs.Members.Add(new Member
+                    {
+                        ContestId = team.ContestId,
+                        TeamId = team.TeamId,
+                        UserId = uid.Id,
+                        Temporary = false
+                    });
+                }
+            }
+
+            await Ccs.SaveChangesAsync();
+            return team;
+        }
+
+        public virtual async Task UpdateTeamAsync(Team origin, Expression<Func<Team, Team>> expression)
+        {
+            var (cid, teamid) = (origin.ContestId, origin.TeamId);
+            var affected = await Ccs.Teams
+                .Where(t => t.ContestId == cid && t.TeamId == teamid)
+                .BatchUpdateAsync(expression);
+
+            if (affected != 1)
+                throw new DbUpdateException();
+        }
+
+        public virtual async Task<IReadOnlyList<Member>> DeleteTeamAsync(Team team)
+        {
+            var (cid, teamid) = (team.ContestId, team.TeamId);
+
+            var affected = await Ccs.Teams
+                .Where(t => t.ContestId == cid && t.TeamId == teamid)
+                .BatchUpdateAsync(_ => new Team { Status = 3 });
+
+            if (affected != 1)
+                throw new DbUpdateException();
+
+            var list = await Ccs.Members
+                .Where(t => t.ContestId == cid && t.TeamId == teamid)
+                .ToListAsync();
+
+            await Ccs.Members
+                .Where(t => t.ContestId == cid && t.TeamId == teamid)
+                .BatchDeleteAsync();
+
+            return list;
         }
 
         public virtual async Task<IReadOnlyDictionary<int, string>> FetchTeamNamesAsync()
         {
-            var list = await TeamStore.ListAsync(t => new { t.TeamId, t.TeamName }, t => t.Status == 1);
-            return list.ToDictionary(k => k.TeamId, k => k.TeamName);
+            int cid = Contest.Id;
+            return await Ccs.Teams
+                .Where(t => t.ContestId == cid && t.Status == 1)
+                .Select(t => new { t.TeamId, t.TeamName })
+                .ToDictionaryAsync(a => a.TeamId, a => a.TeamName);
         }
 
-        public virtual async Task<IReadOnlyDictionary<int, (string Name, string Affiliation)>> FetchPublicTeamNamesWithAffiliationAsync()
+        public virtual async Task<ILookup<int, string>> FetchTeamMembersAsync()
         {
-            var list = await TeamStore.ListAsync(t => new { t.TeamId, t.TeamName, t.Affiliation.Abbreviation }, t => t.Status == 1 && t.Category.IsPublic);
-            return list.ToDictionary(k => k.TeamId, k => (k.TeamName, k.Abbreviation));
+            var cid = Contest.Id;
+            var results = await Ccs.Members
+                .Where(t => t.ContestId == cid)
+                .Join(Ccs.Users, m => m.UserId, u => u.Id, (m, u) => new { m.TeamId, u.UserName })
+                .ToListAsync();
+            return results.ToLookup(a => a.TeamId, a => a.UserName);
         }
 
-        public virtual Task<IReadOnlyList<Member>> DeleteTeamAsync(Team origin)
+        public virtual async Task<IEnumerable<string>> FetchTeamMemberAsync(Team team)
         {
-            return TeamStore.DeleteAsync(origin);
+            var (cid, teamid) = (team.ContestId, team.TeamId);
+            return await Ccs.Members
+                .Where(t => t.ContestId == cid && t.TeamId == teamid)
+                .Join(Ccs.Users, m => m.UserId, u => u.Id, (m, u) => u.UserName)
+                .ToListAsync();
         }
 
-        public virtual Task<ILookup<int, string>> FetchTeamMembersAsync()
+        public virtual async Task<IReadOnlyDictionary<int, Team>> FetchTeamsAsync()
         {
-            return TeamStore.ListMembersAsync(Contest.Id);
+            var cid = Contest.Id;
+            var affs = await FetchAffiliationsAsync(true);
+            var cats = await FetchCategoriesAsync(true);
+
+            return await Ccs.Teams
+                .Where(t => t.ContestId == cid && t.Status == 1)
+                .ToDictionaryAsync(
+                    keySelector: t => t.TeamId,
+                    elementSelector: t =>
+                    {
+                        t.Affiliation = affs[t.AffiliationId];
+                        t.Category = cats[t.CategoryId];
+                        return t;
+                    });
         }
 
-        public virtual Task<IEnumerable<string>> FetchTeamMemberAsync(Team team)
+        public virtual async Task<ScoreboardModel> FetchScoreboardAsync()
         {
-            return TeamStore.ListMembersAsync(team);
-        }
+            int cid = Contest.Id;
+            var value = await Ccs.Teams
+                .Where(t => t.ContestId == cid && t.Status == 1)
+                .Include(t => t.RankCache)
+                .Include(t => t.ScoreCache)
+                .ToDictionaryAsync(a => a.TeamId);
 
-        public virtual Task<Team> CreateTeamAsync(Team team, IEnumerable<IUser>? users)
-        {
-            return TeamStore.CreateAsync(team, users);
+            var result = new ScoreboardModel
+            {
+                //Data = value,
+                //RefreshTime = DateTimeOffset.Now,
+                //Statistics = new Dictionary<int, int>()
+            };
+
+            /*
+            foreach (var (_, item) in value)
+            {
+                foreach (var ot in item.ScoreCache)
+                {
+                    var val = result.Statistics.GetValueOrDefault(ot.ProblemId);
+                    if (ot.IsCorrectRestricted)
+                        result.Statistics[ot.ProblemId] = ++val;
+                }
+            }
+            */
+
+            return result;
         }
     }
 }

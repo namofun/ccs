@@ -4,7 +4,6 @@
     ViewData["Title"] = "Statistics";
     Contest ctx = ViewBag.Contest;
     var probs = await Context.GetContestContext().FetchProblemsAsync();
-    Dictionary<int, (string, string)> teamNames = ViewBag.TeamNames2;
 }
 
 @functions

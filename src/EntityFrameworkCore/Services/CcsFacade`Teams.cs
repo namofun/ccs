@@ -12,8 +12,6 @@ namespace Ccs.Services
 {
     public partial class CcsFacade<TUser, TContext> : ITeamStore
     {
-        private static readonly ConcurrentAsyncLock _teamLock = new ConcurrentAsyncLock();
-
         /*
         public async Task<HashSet<int>> ListRegisteredAsync(int uid)
         {
@@ -85,53 +83,6 @@ namespace Ccs.Services
         }
         */
 
-        Task<Team?> ITeamStore.FindByIdAsync(int cid, int teamid)
-        {
-            return Teams
-                .Where(t => t.ContestId == cid && t.TeamId == teamid)
-                .SingleOrDefaultAsync()!;
-        }
-
-        Task<Member?> ITeamStore.FindByUserAsync(int cid, int uid)
-        {
-            return Members
-                .Where(tu => tu.ContestId == cid && tu.UserId == uid)
-                .SingleOrDefaultAsync()!;
-        }
-
-        Task<ScoreboardModel> ITeamStore.LoadScoreboardAsync(int cid)
-        {
-            return Context.CachedGetAsync($"`c{cid}`scoreboard", TimeSpan.FromSeconds(3),
-            async () =>
-            {
-                var value = await Teams
-                    .Where(t => t.ContestId == cid && t.Status == 1)
-                    .Include(t => t.RankCache)
-                    .Include(t => t.ScoreCache)
-                    .ToDictionaryAsync(a => a.TeamId);
-
-                var result = new ScoreboardModel
-                {
-                    //Data = value,
-                    //RefreshTime = DateTimeOffset.Now,
-                    //Statistics = new Dictionary<int, int>()
-                };
-
-                /*
-                foreach (var (_, item) in value)
-                {
-                    foreach (var ot in item.ScoreCache)
-                    {
-                        var val = result.Statistics.GetValueOrDefault(ot.ProblemId);
-                        if (ot.IsCorrectRestricted)
-                            result.Statistics[ot.ProblemId] = ++val;
-                    }
-                }
-                */
-
-                return result;
-            });
-        }
 
         /*
         public Task<List<Affiliation>> ListAffiliationAsync(int cid, bool filtered = true)
@@ -176,36 +127,6 @@ namespace Ccs.Services
         }
         */
 
-        async Task ITeamStore.UpdateAsync(int cid, int teamid, Expression<Func<Team>> expression)
-        {
-            var affected = await Teams
-                .Where(t => t.ContestId == cid && t.TeamId == teamid)
-                .BatchUpdateAsync(Expression.Lambda<Func<Team, Team>>(expression.Body, Expression.Parameter(typeof(Team), "_")));
-
-            if (affected != 1)
-                throw new DbUpdateException();
-        }
-
-        async Task<IReadOnlyList<Member>> ITeamStore.DeleteAsync(Team team)
-        {
-            var affected = await Teams
-                .Where(t => t.ContestId == team.ContestId && t.TeamId == team.TeamId)
-                .BatchUpdateAsync(_ => new Team { Status = 3 });
-
-            if (affected != 1)
-                throw new DbUpdateException();
-
-            var list = await Members
-                .Where(tu => tu.ContestId == team.ContestId && tu.TeamId == team.TeamId)
-                .ToListAsync();
-
-            await Members
-                .Where(tu => tu.ContestId == team.ContestId && tu.TeamId == team.TeamId)
-                .BatchDeleteAsync();
-
-            return list;
-        }
-
         public async Task<HashSet<int>> ListMemberUidsAsync(int cid)
         {
             var members = Members
@@ -217,64 +138,6 @@ namespace Ccs.Services
             await foreach (var i in members)
                 results.Add(i);
             return results;
-        }
-
-        Task<int> ITeamStore.CountPendingAsync(int cid)
-        {
-            return Teams
-                .Where(t => t.Status == 0 && t.ContestId == cid)
-                .CountAsync();
-        }
-
-        async Task<ILookup<int, string>> ITeamStore.ListMembersAsync(int cid)
-        {
-            var query =
-                from m in Members
-                where m.ContestId == cid
-                join u in Users on m.UserId equals u.Id
-                select new { m.TeamId, u.UserName };
-
-            var results = await query.ToListAsync();
-            return results.ToLookup(a => a.TeamId, a => a.UserName);
-        }
-
-        async Task<Team> ITeamStore.CreateAsync(Team team, IEnumerable<IUser>? users)
-        {
-            int cid = team.ContestId;
-            using var _lock = await _teamLock.LockAsync(cid);
-
-            team.TeamId = 1 + await Teams.CountAsync(tt => tt.ContestId == cid);
-            Teams.Add(team);
-
-            if (users != null)
-            {
-                foreach (var uid in users)
-                {
-                    Members.Add(new Member
-                    {
-                        ContestId = team.ContestId,
-                        TeamId = team.TeamId,
-                        UserId = uid.Id,
-                        Temporary = false
-                    });
-                }
-            }
-
-            await Context.SaveChangesAsync();
-            return team;
-        }
-
-        Task<List<T>> ITeamStore.ListAsync<T>(Expression<Func<Team, T>> selector, Expression<Func<Team, bool>>? predicate) where T : class
-        {
-            return Teams
-                .WhereIf(predicate != null, predicate!)
-                .Select(selector)
-                .ToListAsync();
-        }
-
-        Task<IEnumerable<string>> ITeamStore.ListMembersAsync(Team team)
-        {
-            throw new NotImplementedException();
         }
     }
 }

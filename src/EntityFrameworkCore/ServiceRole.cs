@@ -18,7 +18,6 @@ namespace Ccs
 
             services.AddScoped(sp => sp.GetRequiredService<ICcsFacade>().ContestStore);
             services.AddScoped(sp => sp.GetRequiredService<ICcsFacade>().BalloonStore);
-            services.AddScoped(sp => sp.GetRequiredService<ICcsFacade>().ClarificationStore);
             services.AddScoped(sp => sp.GetRequiredService<ICcsFacade>().ProblemStore);
             services.AddScoped(sp => sp.GetRequiredService<ICcsFacade>().TeamStore);
             services.AddScoped<IContestRepository>(sp => sp.GetRequiredService<ICcsFacade>().ContestStore);

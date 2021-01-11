@@ -8,8 +8,6 @@ namespace SatelliteSite.ContestModule.Models
 
         public string TeamName { get; set; }
 
-        public string UserName { get; set; }
-
         public string Category { get; set; }
 
         public string Affiliation { get; set; }

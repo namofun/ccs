@@ -38,7 +38,7 @@ namespace Ccs.Entities
         /// <summary>
         /// The navigation to affiliation
         /// </summary>
-        public Affiliation Affiliation { get; }
+        public Affiliation Affiliation { get; set; }
 
         /// <summary>
         /// The category ID
@@ -48,7 +48,7 @@ namespace Ccs.Entities
         /// <summary>
         /// The navigation to category
         /// </summary>
-        public Category Category { get; }
+        public Category Category { get; set; }
 
         /// <summary>
         /// The team status

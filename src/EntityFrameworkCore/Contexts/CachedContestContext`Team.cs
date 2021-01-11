@@ -1,4 +1,5 @@
 ﻿using Ccs.Entities;
+using Ccs.Models;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
@@ -58,7 +59,7 @@ namespace Ccs.Services
                 async () => await base.FetchCategoriesAsync(filtered));
         }
 
-        public override async Task UpdateTeamAsync(Team origin, Expression<Func<Team>> expression)
+        public override async Task UpdateTeamAsync(Team origin, Expression<Func<Team, Team>> expression)
         {
             await base.UpdateTeamAsync(origin, expression);
             ExpireTeamThings($"Teams::Id({origin.TeamId})");
@@ -70,10 +71,10 @@ namespace Ccs.Services
                 async () => await base.FetchTeamNamesAsync());
         }
 
-        public override Task<IReadOnlyDictionary<int, (string Name, string Affiliation)>> FetchPublicTeamNamesWithAffiliationAsync()
+        public override Task<IReadOnlyDictionary<int, Team>> FetchTeamsAsync()
         {
             return CacheAsync("Teams::Analysis", TimeSpan.FromMinutes(2),
-                async () => await base.FetchPublicTeamNamesWithAffiliationAsync());
+                async () => await base.FetchTeamsAsync());
         }
 
         public override async Task<Team> CreateTeamAsync(Team team, IEnumerable<IUser>? users)
@@ -96,6 +97,18 @@ namespace Ccs.Services
         public override async Task<IEnumerable<string>> FetchTeamMemberAsync(Team team)
         {
             return (await FetchTeamMembersAsync())[team.TeamId];
+        }
+
+        public override async Task<Affiliation?> FetchAffiliationAsync(int id)
+        {
+            var results = await FetchAffiliationsAsync(true);
+            return results.GetValueOrDefault(id);
+        }
+
+        public override Task<ScoreboardModel> FetchScoreboardAsync()
+        {
+            return CacheAsync("Teams::Scoreboard", _options.Scoreboard,
+                async () => await base.FetchScoreboardAsync());
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Ccs.Entities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Polygon.Storages;
 using System;
@@ -19,8 +20,6 @@ namespace Ccs.Services
 
         public ICcsFacade Ccs => _ccsFacade ??= _services.GetRequiredService<ICcsFacade>();
 
-        public IClarificationStore ClarificationStore => Ccs.ClarificationStore;
-
         public ITeamStore TeamStore => Ccs.TeamStore;
 
         public IContestStore ContestStore => Ccs.ContestStore;
@@ -33,14 +32,15 @@ namespace Ccs.Services
             _services = serviceProvider;
         }
 
+        protected T Get<T>() => _services.GetRequiredService<T>();
+
         public virtual async Task<object> GetUpdatesAsync()
         {
-            return new
-            {
-                clarifications = await ClarificationStore.CountUnansweredAsync(Contest.Id),
-                teams = await TeamStore.CountPendingAsync(Contest.Id),
-                rejudgings = await RejudgingStore.CountUndoneAsync(Contest.Id),
-            };
+            int cid = Contest.Id;
+            var clarifications = Ccs.Clarifications.CountAsync(c => c.ContestId == cid && !c.Answered);
+            var rejudgings = await RejudgingStore.CountUndoneAsync(Contest.Id);
+            var teams = await Ccs.Teams.CountAsync(t => t.ContestId == cid && t.Status == 0);
+            return new { clarifications, teams, rejudgings };
         }
     }
 }

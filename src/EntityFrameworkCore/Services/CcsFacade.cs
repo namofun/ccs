@@ -1,6 +1,9 @@
 ﻿using Ccs.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Polygon.Entities;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Ccs.Services
 {
@@ -11,8 +14,6 @@ namespace Ccs.Services
         public IContestStore ContestStore => this;
 
         public IBalloonStore BalloonStore => this;
-
-        public IClarificationStore ClarificationStore => this;
 
         public IProblemsetStore ProblemStore => this;
 
@@ -42,9 +43,16 @@ namespace Ccs.Services
 
         public DbSet<Event> Events => Context.Set<Event>();
 
+        IQueryable<IUser> ICcsFacade.Users => Users;
+
         public CcsFacade(TContext context)
         {
             Context = context;
+        }
+
+        public Task<int> SaveChangesAsync()
+        {
+            return Context.SaveChangesAsync();
         }
     }
 }

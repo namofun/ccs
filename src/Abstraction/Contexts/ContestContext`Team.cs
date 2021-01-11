@@ -69,7 +69,7 @@ namespace Ccs
         /// Fetch the team names as a lookup dictionary.
         /// </summary>
         /// <returns>The task for getting this dictionary.</returns>
-        Task<IReadOnlyDictionary<int, (string Name, string Affiliation)>> FetchPublicTeamNamesWithAffiliationAsync();
+        Task<IReadOnlyDictionary<int, Team>> FetchTeamsAsync();
 
         /// <summary>
         /// Create team.
@@ -85,7 +85,7 @@ namespace Ccs
         /// <param name="origin">The original team model.</param>
         /// <param name="expression">The expression for updating team.</param>
         /// <returns>The task for updating contest teams.</returns>
-        Task UpdateTeamAsync(Team origin, Expression<Func<Team>> expression);
+        Task UpdateTeamAsync(Team origin, Expression<Func<Team, Team>> expression);
 
         /// <summary>
         /// Delete the team and returns existing members.
@@ -97,13 +97,8 @@ namespace Ccs
         /// <summary>
         /// List the teams with selected conditions.
         /// </summary>
-        /// <typeparam name="T">The selected entity type.</typeparam>
-        /// <param name="selector">The result selector.</param>
         /// <param name="predicate">The conditions to match.</param>
         /// <returns>The task for listing entities.</returns>
-        Task<List<T>> ListTeamsAsync<T>(
-            Expression<Func<Team, T>> selector,
-            Expression<Func<Team, bool>>? predicate = null)
-            where T : class;
+        Task<List<Team>> ListTeamsAsync(Expression<Func<Team, bool>>? predicate = null);
     }
 }

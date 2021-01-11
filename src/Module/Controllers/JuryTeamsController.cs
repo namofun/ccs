@@ -20,16 +20,20 @@ namespace SatelliteSite.ContestModule.Controllers
         [HttpGet]
         public async Task<IActionResult> List()
         {
-            var model = await Context.ListTeamsAsync(
-                t => new JuryListTeamModel
-                {
-                    Status = t.Status,
-                    TeamId = t.TeamId,
-                    TeamName = t.TeamName,
-                    RegisterTime = t.RegisterTime,
-                });
+            var teams = await Context.ListTeamsAsync(t => t.Status != 3);
+            var affs = await Context.FetchAffiliationsAsync();
+            var cats = await Context.FetchCategoriesAsync();
 
-            return View(model);
+            return View(teams.Select(t => new JuryListTeamModel
+            {
+                Status = t.Status,
+                TeamId = t.TeamId,
+                TeamName = t.TeamName,
+                RegisterTime = t.RegisterTime,
+                Category = cats[t.CategoryId].Name,
+                Affiliation = affs[t.AffiliationId].Abbreviation,
+                AffiliationName = affs[t.AffiliationId].Name
+            }));
         }
 
 
@@ -155,7 +159,7 @@ namespace SatelliteSite.ContestModule.Controllers
             if (team == null) return NotFound();
 
             await Context.UpdateTeamAsync(team,
-                () => new Team
+                _ => new Team
                 {
                     TeamName = model.TeamName,
                     AffiliationId = model.AffiliationId,
@@ -176,7 +180,7 @@ namespace SatelliteSite.ContestModule.Controllers
         {
             var team = await Context.FindTeamByIdAsync(teamid);
             if (team == null) return NotFound();
-            await Context.UpdateTeamAsync(team, () => new Team { Status = 1 });
+            await Context.UpdateTeamAsync(team, _ => new Team { Status = 1 });
             await HttpContext.AuditAsync("accepted", $"{teamid}");
 
             return Message(
@@ -191,7 +195,7 @@ namespace SatelliteSite.ContestModule.Controllers
         {
             var team = await Context.FindTeamByIdAsync(teamid);
             if (team == null) return NotFound();
-            await Context.UpdateTeamAsync(team, () => new Team { Status = 2 });
+            await Context.UpdateTeamAsync(team, _ => new Team { Status = 2 });
             await HttpContext.AuditAsync("rejected", $"{teamid}");
 
             return Message(

@@ -15,7 +15,7 @@ namespace SatelliteSite.ContestModule.Controllers
     [Route("[area]/{cid}/jury/[controller]")]
     public class AnalysisController : JuryControllerBase
     {
-        public IReadOnlyDictionary<int, (string Name, string Affiliation)> Teams { get; set; }
+        public IReadOnlyDictionary<int, Team> Teams { get; set; }
 
         private static void Add<T>(Dictionary<T, int> kvp, T key)
         {
@@ -42,7 +42,6 @@ namespace SatelliteSite.ContestModule.Controllers
             };
         }
 
-
         public override async Task OnActionExecutingAsync(ActionExecutingContext context)
         {
             await base.OnActionExecutingAsync(context);
@@ -59,8 +58,8 @@ namespace SatelliteSite.ContestModule.Controllers
                 return;
             }
 
-            Teams = await Context.FetchPublicTeamNamesWithAffiliationAsync();
-            ViewBag.TeamNames2 = Teams;
+            Teams = await Context.FetchTeamsAsync();
+            ViewBag.Teams = Teams;
         }
 
 
@@ -172,7 +171,7 @@ namespace SatelliteSite.ContestModule.Controllers
                     id = a.SubmissionId,
                     label = $"j{a.JudgingId}",
                     value = a.ExecuteTime / 1000.0,
-                    team = Teams[a.TeamId].Name ?? "undefined",
+                    team = Teams[a.TeamId].TeamName ?? "undefined",
                     submittime = a.Time - startTime,
                     color = Colors(a.Status),
                 });

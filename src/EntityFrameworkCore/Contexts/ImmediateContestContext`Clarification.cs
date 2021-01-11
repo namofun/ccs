@@ -1,6 +1,8 @@
 ﻿using Ccs.Entities;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
@@ -10,27 +12,51 @@ namespace Ccs.Services
     {
         public virtual Task<List<Clarification>> ListClarificationsAsync(Expression<Func<Clarification, bool>> predicate)
         {
-            return Ccs.ClarificationStore.ListAsync(Contest.Id, predicate);
+            int cid = Contest.Id;
+            return Ccs.Clarifications
+                .Where(c => c.ContestId == cid)
+                .WhereIf(predicate != null, predicate!)
+                .ToListAsync();
         }
 
         public virtual Task<Clarification> FindClarificationAsync(int id)
         {
-            return Ccs.ClarificationStore.FindAsync(Contest.Id, id);
+            int cid = Contest.Id;
+            return Ccs.Clarifications
+                .Where(c => c.ContestId == cid && c.Id == id)
+                .SingleOrDefaultAsync();
         }
 
-        public virtual Task<Clarification> ClarifyAsync(Clarification clar, Clarification? replyTo = null)
+        public virtual async Task<Clarification> ClarifyAsync(Clarification clar, Clarification? replyTo = null)
         {
-            return Ccs.ClarificationStore.SendAsync(clar, replyTo);
+            var cl = Ccs.Clarifications.Add(clar);
+
+            if (replyTo != null)
+            {
+                replyTo.Answered = true;
+                Ccs.Clarifications.Update(replyTo);
+            }
+
+            await Ccs.SaveChangesAsync();
+            return cl.Entity;
         }
 
-        public virtual Task<bool> SetClarificationAnsweredAsync(int id, bool answered)
+        public virtual async Task<bool> SetClarificationAnsweredAsync(int id, bool answered)
         {
-            return Ccs.ClarificationStore.SetAnsweredAsync(Contest.Id, id, answered);
+            int cid = Contest.Id;
+            return 1 == await Ccs.Clarifications
+                .Where(c => c.ContestId == cid && c.Id == id)
+                .BatchUpdateAsync(c => new Clarification { Answered = answered });
         }
 
-        public virtual Task<bool> ClaimClarificationAsync(int id, string jury, bool claim)
+        public virtual async Task<bool> ClaimClarificationAsync(int id, string jury, bool claim)
         {
-            return Ccs.ClarificationStore.ClaimAsync(Contest.Id, id, jury, claim);
+            int cid = Contest.Id;
+            var (from, to) = claim ? (default(string), jury) : (jury, default(string));
+            return 1 == await Ccs.Clarifications
+                .Where(c => c.ContestId == cid && c.Id == id)
+                .Where(c => c.JuryMember == from)
+                .BatchUpdateAsync(c => new Clarification { JuryMember = to });
         }
     }
 }
