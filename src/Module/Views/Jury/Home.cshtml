@@ -3,7 +3,7 @@
     Contest ctx = ViewBag.Contest;
     var state = ctx.GetState();
     var users = await Context.GetContestContext().FetchJuryAsync();
-    IReadOnlyList<ProblemModel> probs = ViewBag.Problems;
+    ProblemCollection probs = ViewBag.Problems;
 }
 
 @functions {

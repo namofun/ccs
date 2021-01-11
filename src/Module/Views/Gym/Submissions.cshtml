@@ -3,7 +3,7 @@
     ViewData["Title"] = "Status";
     int curPage = ViewBag.Page;
     Contest ctx = ViewBag.Contest;
-    IReadOnlyList<ProblemModel> probs = ViewBag.Problems;
+    ProblemCollection probs = ViewBag.Problems;
     Dictionary<int, string> names = ViewBag.TeamsName;
     var dateFormat = System.Globalization.CultureInfo.GetCultureInfo(1033);
     Dictionary<int, (int ac, int tot)> substat = ViewBag.TeamStatistics;

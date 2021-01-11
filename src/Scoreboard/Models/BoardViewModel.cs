@@ -11,7 +11,7 @@ namespace Ccs.Models
 
         public HashSet<(string, string)> ShowCategory { get; private set; }
 
-        public IReadOnlyList<ProblemModel> Problems { get; set; }
+        public ProblemCollection Problems { get; set; }
 
         protected abstract IEnumerable<SortOrderModel> GetEnumerable();
 

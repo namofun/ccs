@@ -7,7 +7,7 @@
     IEnumerable<(Judging @new, Judging old, int probid, string langid, DateTimeOffset time, int teamid)> js = ViewBag.Judgings;
     Dictionary<int, string> teams = ViewBag.Teams;
     Dictionary<string, Language> langs = ViewBag.Languages;
-    IReadOnlyList<ProblemModel> probs = ViewBag.Problems;
+    ProblemCollection probs = ViewBag.Problems;
     Contest ctx = ViewBag.Contest;
     if (ViewData.ContainsKey("InAjax")) { Layout = null; }
 }

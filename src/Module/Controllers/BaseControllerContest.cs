@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -24,7 +23,7 @@ namespace SatelliteSite.ContestModule.Controllers
         private IMediator _lazy_mediator;
         private IContestContext _private_context;
         private Team _private_team;
-        private IReadOnlyList<ProblemModel> _private_problems;
+        private ProblemCollection _private_problems;
 
         /// <summary>
         /// Context for contest controlling
@@ -54,7 +53,7 @@ namespace SatelliteSite.ContestModule.Controllers
         /// <summary>
         /// The problem list
         /// </summary>
-        protected IReadOnlyList<ProblemModel> Problems => _private_problems;
+        protected ProblemCollection Problems => _private_problems;
 
         /// <summary>
         /// Presents a view for printing codes.

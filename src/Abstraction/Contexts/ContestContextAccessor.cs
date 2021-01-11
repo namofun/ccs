@@ -10,7 +10,7 @@ namespace Ccs
 
         Contest? Contest { get; }
 
-        IReadOnlyList<ProblemModel>? Problems { get; }
+        ProblemCollection? Problems { get; }
 
         Team? Team { get; }
     }

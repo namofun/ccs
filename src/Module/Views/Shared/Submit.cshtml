@@ -1,7 +1,7 @@
 ﻿@model TeamCodeSubmitModel
 @{
     Layout = null;
-    var prv = (IReadOnlyList<ProblemModel>)ViewData["Problems"];
+    var prv = (ProblemCollection)ViewData["Problems"];
     var prb_sel = prv.Select(cp => new SelectListItem($"{cp.ShortName} - {cp.Title}", cp.ShortName));
     var lang = (Dictionary<string,Polygon.Entities.Language>)ViewData["Languages"];
     var lang_sel = lang.Where(l => l.Value.AllowSubmit).Select(l => new SelectListItem(l.Value.Name, l.Key));

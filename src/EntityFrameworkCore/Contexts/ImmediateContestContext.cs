@@ -65,19 +65,6 @@ namespace Ccs.Services
             return langs;
         }
 
-        public virtual async Task<IReadOnlyList<ProblemModel>> FetchProblemsAsync(bool nonCached = false)
-        {
-            var res = await ProblemsetStore.ListAsync(Contest.Id);
-            var problems = _services.GetRequiredService<IProblemStore>();
-
-            for (int i = 0; i < res.Count; i++)
-            {
-                res[i].Statement = await problems.ReadCompiledHtmlAsync(res[i].ProblemId);
-            }
-
-            return res;
-        }
-
         public virtual Task<ScoreboardModel> FetchScoreboardAsync()
         {
             return TeamStore.LoadScoreboardAsync(Contest.Id);
@@ -132,11 +119,6 @@ namespace Ccs.Services
             throw new NotImplementedException();
         }
 
-        public virtual Task UpdateProblemAsync(ProblemModel origin, Expression<Func<ContestProblem>> expression)
-        {
-            return ProblemsetStore.UpdateAsync(origin.ContestId, origin.ProblemId, expression);
-        }
-
         public virtual Task<HashSet<int>> FetchJuryAsync()
         {
             return ContestStore.ListJuryAsync(Contest.Id);
@@ -155,16 +137,6 @@ namespace Ccs.Services
         public virtual Task UpdateTeamAsync(Team origin, Expression<Func<Team>> expression)
         {
             return TeamStore.UpdateAsync(origin.ContestId, origin.TeamId, expression);
-        }
-
-        public virtual Task CreateProblemAsync(Expression<Func<ContestProblem>> expression)
-        {
-            return ProblemsetStore.CreateAsync(expression.Compile().Invoke());
-        }
-
-        public virtual Task DeleteProblemAsync(ProblemModel problem)
-        {
-            return ProblemsetStore.DeleteAsync(problem.ContestId, problem.ProblemId);
         }
 
         public virtual async Task<IReadOnlyDictionary<int, string>> FetchTeamNamesAsync()
@@ -197,21 +169,6 @@ namespace Ccs.Services
         public virtual Task<Team> CreateTeamAsync(Team team, IEnumerable<IUser>? users)
         {
             return TeamStore.CreateAsync(team, users);
-        }
-
-        public Task<List<Clarification>> ListClarificationsAsync(Expression<Func<Clarification, bool>> predicate)
-        {
-            return ClarificationStore.ListAsync(Contest.Id, predicate);
-        }
-
-        public Task<Clarification> FindClarificationAsync(int id)
-        {
-            return ClarificationStore.FindAsync(Contest.Id, id);
-        }
-
-        public Task<Clarification> ClarifyAsync(Clarification clar, Clarification? replyTo = null)
-        {
-            return ClarificationStore.SendAsync(clar, replyTo);
         }
 
         public virtual Task<string> GetReadmeAsync(bool source)
@@ -324,36 +281,9 @@ namespace Ccs.Services
             throw new NotImplementedException();
         }
 
-        public Task<bool> SetClarificationAnsweredAsync(int id, bool answered)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<bool> ClaimClarificationAsync(int id, string jury, bool claim)
-        {
-            throw new NotImplementedException();
-        }
-
         public Task<(bool Available, string Message)> CheckProblemAvailabilityAsync(int probId, ClaimsPrincipal user)
         {
             throw new NotImplementedException();
-        }
-
-        public async Task<List<Statement>> FetchRawStatementsAsync()
-        {
-            var problems = await FetchProblemsAsync();
-            var provider = _services.GetRequiredService<Polygon.Packaging.IStatementProvider>();
-            var raw = await ProblemsetStore.RawProblemsAsync(Contest.Id);
-            var stmts = new List<Statement>();
-            foreach (var prob in raw)
-            {
-                var stmt = await provider.ReadAsync(prob);
-                stmts.Add(new Statement(prob,
-                    stmt.Description, stmt.Input, stmt.Output, stmt.Hint, stmt.Interaction,
-                    problems.FirstOrDefault(p => p.ProblemId == prob.Id).ShortName, stmt.Samples));
-            }
-
-            return stmts;
         }
 
         public Task<IEnumerable<(JudgingRun, Testcase)>> FetchDetailsAsync(int problemId, int judgingId)
@@ -362,61 +292,6 @@ namespace Ccs.Services
         }
 
         public Task<IEnumerable<T>> FetchDetailsAsync<T>(Expression<Func<Testcase, JudgingRun, T>> selector, Expression<Func<Testcase, JudgingRun, bool>>? predicate = null, int? limit = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<Rejudging> CreateRejudgingAsync(Rejudging entity)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task UpdateRejudgingAsync(Rejudging entity)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task UpdateRejudgingAsync(int id, Expression<Func<Rejudging, Rejudging>> expression)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task DeleteRejudgingAsync(Rejudging entity)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<Rejudging> FindRejudgingAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<List<Rejudging>> FetchRejudgingsAsync(bool includeStat = true)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<List<Judgehost>> FetchJudgehostsAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<RejudgingDifference>> ViewRejudgingAsync(Rejudging rejudge, Expression<Func<Judging, Judging, Submission, bool>>? filter = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<int> BatchRejudgeAsync(Expression<Func<Submission, Judging, bool>> predicate, Rejudging? rejudge = null, bool fullTest = false)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task CancelRejudgingAsync(Rejudging rejudge, int uid)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task ApplyRejudgingAsync(Rejudging rejudge, int uid)
         {
             throw new NotImplementedException();
         }

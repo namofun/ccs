@@ -16,28 +16,6 @@ namespace Ccs
     public static class ContestContextExtensions
     {
         /// <summary>
-        /// Find the contest problem with corresponding problem ID.
-        /// </summary>
-        /// <param name="problems">The contest problems.</param>
-        /// <param name="probid">The problem ID.</param>
-        /// <returns>The problem model or <c>null</c>.</returns>
-        public static ProblemModel? Find(this IReadOnlyList<ProblemModel> problems, int probid)
-        {
-            return problems.FirstOrDefault(p => p.ProblemId == probid);
-        }
-
-        /// <summary>
-        /// Find the contest problem with corresponding problem short name.
-        /// </summary>
-        /// <param name="problems">The contest problems.</param>
-        /// <param name="shortName">The problem short name.</param>
-        /// <returns>The problem model or <c>null</c>.</returns>
-        public static ProblemModel? Find(this IReadOnlyList<ProblemModel> problems, string shortName)
-        {
-            return problems.FirstOrDefault(p => p.ShortName == shortName);
-        }
-
-        /// <summary>
         /// Validate whether this user has permission to the contest jury part.
         /// </summary>
         /// <param name="context">The contest context.</param>

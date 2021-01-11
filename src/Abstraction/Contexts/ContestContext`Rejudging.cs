@@ -17,21 +17,6 @@ namespace Ccs
         Task<Rejudging> CreateRejudgingAsync(Rejudging entity);
 
         /// <summary>
-        /// Update the instance of entity.
-        /// </summary>
-        /// <param name="entity">The entity.</param>
-        /// <returns>The update task.</returns>
-        Task UpdateRejudgingAsync(Rejudging entity);
-
-        /// <summary>
-        /// Update the instance of entity.
-        /// </summary>
-        /// <param name="id">The entity id.</param>
-        /// <param name="expression">The update expression.</param>
-        /// <returns>The update task.</returns>
-        Task UpdateRejudgingAsync(int id, Expression<Func<Rejudging, Rejudging>> expression);
-
-        /// <summary>
         /// Delete the instance of entity.
         /// </summary>
         /// <param name="entity">The entity.</param>

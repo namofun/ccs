@@ -15,9 +15,10 @@ namespace Ccs.Services
         private static readonly ParameterExpression _oldcp
             = Expression.Parameter(typeof(ContestProblem), "oldcp");
 
-        async Task<IReadOnlyList<ProblemModel>> IProblemsetStore.ListAsync(int cid)
+        Task<List<ProblemModel>> IProblemsetStore.ListModelsAsync(int cid)
         {
-            var query =
+            return
+            (
                 from cp in ContestProblems
                 where cp.ContestId == cid
                 join p in Problems on cp.ProblemId equals p.Id
@@ -33,33 +34,22 @@ namespace Ccs.Services
                     p.TimeLimit,
                     p.MemoryLimit,
                     p.CombinedRunCompare,
-                    p.Shared);
+                    p.Shared)
+            )
+            .ToListAsync();
+        }
 
-            var result = await query.ToListAsync();
-
-            var query2 =
+        Task<Dictionary<int, (int, int)>> IProblemsetStore.ListTestcaseAndScore(int cid)
+        {
+            return
+            (
                 from cp in ContestProblems
                 where cp.ContestId == cid
                 join t in Context.Set<Testcase>() on cp.ProblemId equals t.ProblemId
                 group t by cp.ProblemId into g
-                select new { g.Key, Count = g.Count(), Score = g.Sum(t => t.Point) };
-
-            var result2 = await query2.ToDictionaryAsync(a => a.Key);
-
-            foreach (var item in result)
-            {
-                if (result2.TryGetValue(item.ProblemId, out var res))
-                {
-                    item.TestcaseCount = res.Count;
-                    if (item.Score == 0) item.Score = res.Score;
-                }
-            }
-
-            result.Sort((a, b) => a.ShortName.CompareTo(b.ShortName));
-            for (int i = 0; i < result.Count; i++)
-                result[i].Rank = i + 1;
-
-            return result;
+                select new { g.Key, Count = g.Count(), Score = g.Sum(t => t.Point) }
+            )
+            .ToDictionaryAsync(a => a.Key, a => (a.Count, a.Score));
         }
 
         async Task<CheckResult> IProblemsetStore.CheckAvailabilityAsync(int cid, int probid, int? user)
@@ -103,7 +93,7 @@ namespace Ccs.Services
                 .BatchUpdateAsync(Expression.Lambda<Func<ContestProblem, ContestProblem>>(change.Body, _oldcp));
         }
 
-        async Task<IReadOnlyList<ProblemModel>> IProblemsetStore.ListByProblemAsync(int probid)
+        Task<List<ProblemModel>> IProblemsetStore.ListByProblemAsync(int probid)
         {
             var query =
                 from cp in ContestProblems
@@ -120,7 +110,7 @@ namespace Ccs.Services
                     c.Kind,
                     c.RankingStrategy);
 
-            return await query.ToListAsync();
+            return query.ToListAsync();
         }
 
         Task<List<Problem>> IProblemsetStore.RawProblemsAsync(int cid)

@@ -25,7 +25,7 @@
                         <select asp-for="Type" class="form-control custom-select form-control">
                             <option value="general">General issue</option>
                             <option value="tech">Technical issue</option>
-                            @foreach (var prob in (IReadOnlyList<ProblemModel>)ViewData["Problems"])
+                            @foreach (var prob in (ProblemCollection)ViewData["Problems"])
                             {
                                 <option value="prob-@prob.ShortName">@prob.ShortName - @prob.Title</option>
                             }

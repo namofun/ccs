@@ -16,14 +16,14 @@ namespace Ccs
         /// </summary>
         /// <param name="nonCached">Whether to fetch the non-cached result.</param>
         /// <returns>The task for fetching problems.</returns>
-        Task<IReadOnlyList<ProblemModel>> FetchProblemsAsync(bool nonCached = false);
+        Task<ProblemCollection> FetchProblemsAsync(bool nonCached = false);
 
         /// <summary>
         /// Create problems by expression.
         /// </summary>
-        /// <param name="expression">The expression for creating contest problem.</param>
+        /// <param name="entity">The contest problem to create.</param>
         /// <returns>The task for creating contest problems.</returns>
-        Task CreateProblemAsync(Expression<Func<ContestProblem>> expression);
+        Task CreateProblemAsync(ContestProblem entity);
 
         /// <summary>
         /// Update problems by expression.

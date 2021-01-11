@@ -37,7 +37,7 @@
 
     string loopProb(IReadOnlyDictionary<int, int> stat)
     {
-        ContestProblem[] probs = ViewBag.Problems;
+        ProblemCollection probs = ViewBag.Problems;
         WriteLiteral("[");
         foreach (var prob in probs)
         {

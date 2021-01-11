@@ -6,13 +6,13 @@ namespace Ccs.Services
 {
     public partial class ImmediateContestContext
     {
-        public async Task<List<BalloonModel>> FetchBalloonsAsync()
+        public virtual async Task<List<BalloonModel>> FetchBalloonsAsync()
         {
             var problems = await FetchProblemsAsync();
             return await Ccs.BalloonStore.ListAsync(Contest, problems);
         }
 
-        public Task SetBalloonDoneAsync(int id)
+        public virtual Task SetBalloonDoneAsync(int id)
         {
             return Ccs.BalloonStore.SetDoneAsync(Contest, id);
         }

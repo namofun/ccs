@@ -96,7 +96,7 @@ namespace Ccs.Services
 
         #region Aggregate Root: Problem
 
-        public override Task<IReadOnlyList<ProblemModel>> FetchProblemsAsync(bool nonCached = false)
+        public override Task<ProblemCollection> FetchProblemsAsync(bool nonCached = false)
         {
             if (nonCached)
                 return base.FetchProblemsAsync(true);
@@ -113,9 +113,9 @@ namespace Ccs.Services
             Expire("Problems");
         }
 
-        public override async Task CreateProblemAsync(Expression<Func<ContestProblem>> expression)
+        public override async Task CreateProblemAsync(ContestProblem entity)
         {
-            await base.CreateProblemAsync(expression);
+            await base.CreateProblemAsync(entity);
             Expire("Problems");
         }
 

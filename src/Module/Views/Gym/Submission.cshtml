@@ -7,7 +7,7 @@
                       : Model.Verdict == Polygon.Entities.Verdict.CompileError ? "danger" : "success";
     var compile_result = Model.CompilerOutput is null ? "waiting"
                       : Model.Verdict == Polygon.Entities.Verdict.CompileError ? "failed" : "successful";
-    IReadOnlyList<ProblemModel> problems = ViewBag.Problems;
+    ProblemCollection problems = ViewBag.Problems;
     var p = problems.Find(Model.Problem);
     Polygon.Entities.Language l = null;
 }

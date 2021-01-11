@@ -53,7 +53,7 @@ namespace SatelliteSite.ContestModule.Controllers
             model.ContestId = Contest.Id;
 
             await Context.CreateProblemAsync(
-                () => new ContestProblem
+                new ContestProblem
                 {
                     AllowSubmit = model.AllowSubmit,
                     Color = model.Color,

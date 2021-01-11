@@ -5,7 +5,7 @@
     Contest ctx = ViewBag.Contest;
     Dictionary<int, int> stats = ViewBag.Statistics;
     Dictionary<int, (int ac, int tot)> substat = ViewBag.TeamStatistics;
-    IReadOnlyList<ProblemModel> probs = ViewBag.Problems;
+    ProblemCollection probs = ViewBag.Problems;
     IEnumerable<Clarification> clars = ViewBag.Clarifications;
 }
 

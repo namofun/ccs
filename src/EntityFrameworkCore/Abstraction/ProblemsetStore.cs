@@ -43,14 +43,21 @@ namespace Ccs.Services
         /// </summary>
         /// <param name="cid">The contest ID.</param>
         /// <returns>The task for listing problems.</returns>
-        Task<IReadOnlyList<ProblemModel>> ListAsync(int cid);
+        Task<List<ProblemModel>> ListModelsAsync(int cid);
+
+        /// <summary>
+        /// List the contest problem detail.
+        /// </summary>
+        /// <param name="cid">The contest ID.</param>
+        /// <returns>The task for listing problems.</returns>
+        Task<Dictionary<int, (int, int)>> ListTestcaseAndScore(int cid);
 
         /// <summary>
         /// List contest problems by problem view.
         /// </summary>
         /// <param name="probid">The problem ID.</param>
         /// <returns>The contest problems.</returns>
-        Task<IReadOnlyList<ProblemModel>> ListByProblemAsync(int probid);
+        Task<List<ProblemModel>> ListByProblemAsync(int probid);
 
         /// <summary>
         /// Get all statements from problems.
