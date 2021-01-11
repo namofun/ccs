@@ -46,7 +46,7 @@ namespace Ccs
         /// <param name="probId">The problem ID.</param>
         /// <param name="user">The current user.</param>
         /// <returns>The task for getting availability.</returns>
-        Task<(bool Available, string Message)> CheckProblemAvailabilityAsync(int probId, ClaimsPrincipal user);
+        Task<CheckResult> CheckProblemAvailabilityAsync(int probId, ClaimsPrincipal user);
 
         /// <summary>
         /// Fetch the raw statements of current contest.

@@ -1,4 +1,5 @@
-﻿using Ccs.Models;
+﻿using Ccs.Entities;
+using Ccs.Models;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,7 +41,10 @@ namespace Ccs
         /// <returns>The problem model or <c>null</c>.</returns>
         public ProblemModel? Find(int probid)
         {
-            return _problems.FirstOrDefault(p => p.ProblemId == probid);
+            for (int i = 0; i < _problems.Count; i++)
+                if (_problems[i].ProblemId == probid)
+                    return _problems[i];
+            return null;
         }
 
         /// <summary>
@@ -50,11 +54,22 @@ namespace Ccs
         /// <returns>The problem model or <c>null</c>.</returns>
         public ProblemModel? Find(string shortName)
         {
-            return _problems.FirstOrDefault(p => p.ShortName == shortName);
+            for (int i = 0; i < _problems.Count; i++)
+                if (_problems[i].ShortName == shortName)
+                    return _problems[i];
+            return null;
         }
 
         /// <inheritdoc />
         public ProblemModel this[int index] => _problems[index];
+
+        /// <summary>
+        /// Find the contest problem with corresponding problem short name.
+        /// </summary>
+        /// <param name="shortName">The problem short name.</param>
+        /// <returns>The problem model or <c>null</c>.</returns>
+        public ProblemModel this[string shortName]
+            => Find(shortName) ?? throw new KeyNotFoundException();
 
         /// <inheritdoc />
         public int Count => _problems.Count;
@@ -64,5 +79,15 @@ namespace Ccs
 
         /// <inheritdoc />
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+        /// <summary>
+        /// Gets the clarification categories from contest problems.
+        /// </summary>
+        /// <returns>The enumerable for tuple (CategoryName, CategoryEnum, ProblemId).</returns>
+        public IEnumerable<(string, ClarificationCategory, int?)> ClarificationCategories
+            => _problems
+                .Select(cp => ($"prob-{cp.ShortName}", ClarificationCategory.Problem, (int?) cp.ProblemId))
+                .Prepend(("tech", ClarificationCategory.Technical, null))
+                .Prepend(("general", ClarificationCategory.General, null));
     }
 }

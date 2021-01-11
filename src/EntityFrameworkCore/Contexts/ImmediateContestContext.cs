@@ -1,21 +1,8 @@
 ﻿using Ccs.Entities;
-using Ccs.Models;
-using Ccs.Services;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
-using Polygon.Entities;
-using Polygon.Models;
 using Polygon.Storages;
-using SatelliteSite.Entities;
-using SatelliteSite.Services;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Net;
-using System.Security.Claims;
 using System.Threading.Tasks;
-using Tenant.Entities;
 
 namespace Ccs.Services
 {
@@ -36,13 +23,7 @@ namespace Ccs.Services
 
         public ITeamStore TeamStore => Ccs.TeamStore;
 
-        public IProblemsetStore ProblemsetStore => Ccs.ProblemStore;
-
         public IContestStore ContestStore => Ccs.ContestStore;
-
-        public ISubmissionStore SubmissionStore => Polygon.Submissions;
-
-        public IJudgingStore JudgingStore => Polygon.Judgings;
 
         public IRejudgingStore RejudgingStore => Polygon.Rejudgings;
 
@@ -50,135 +31,6 @@ namespace Ccs.Services
         {
             _contest = contest;
             _services = serviceProvider;
-        }
-
-        public virtual async Task<IReadOnlyList<Language>> FetchLanguagesAsync()
-        {
-            var store = _services.GetRequiredService<ILanguageStore>();
-            IReadOnlyList<Language> langs = await store.ListAsync(true);
-            if (!string.IsNullOrEmpty(Contest.Languages))
-            {
-                var available = Contest.Languages!.AsJson<string[]>() ?? Array.Empty<string>();
-                langs = langs.Where(l => available.Contains(l.Id)).ToList();
-            }
-
-            return langs;
-        }
-
-        public virtual Task<ScoreboardModel> FetchScoreboardAsync()
-        {
-            return TeamStore.LoadScoreboardAsync(Contest.Id);
-        }
-
-        public virtual Task<Submission> SubmitAsync(
-            string code,
-            Language language,
-            ContestProblem problem,
-            Team team,
-            IPAddress ipAddr,
-            string via,
-            string username,
-            DateTimeOffset? time)
-        {
-            return SubmissionStore.CreateAsync(
-                code: code,
-                language: language.Id,
-                problemId: problem.ProblemId,
-                contestId: Contest.Id,
-                teamId: team.TeamId,
-                ipAddr: ipAddr,
-                via: via,
-                username: username,
-                time: time,
-                fullJudge: Contest.RankingStrategy == 1);
-        }
-
-        public virtual Task<Team?> FindTeamByIdAsync(int teamId)
-        {
-            return TeamStore.FindByIdAsync(Contest.Id, teamId);
-        }
-
-        public virtual Task<Member?> FindMemberByUserAsync(int userId)
-        {
-            return TeamStore.FindByUserAsync(Contest.Id, userId);
-        }
-
-        public virtual async Task<Contest> UpdateContestAsync(Expression<Func<Contest, Contest>> updateExpression)
-        {
-            await ContestStore.UpdateAsync(Contest.Id, updateExpression);
-            return await ContestStore.FindAsync(Contest.Id);
-        }
-
-        public virtual Task<IReadOnlyDictionary<int, Affiliation>> FetchAffiliationsAsync(bool contestFiltered)
-        {
-            throw new NotImplementedException();
-        }
-
-        public virtual Task<IReadOnlyDictionary<int, Category>> FetchCategoriesAsync(bool contestFiltered)
-        {
-            throw new NotImplementedException();
-        }
-
-        public virtual Task<HashSet<int>> FetchJuryAsync()
-        {
-            return ContestStore.ListJuryAsync(Contest.Id);
-        }
-
-        public virtual Task AssignJuryAsync(IUser user)
-        {
-            return ContestStore.AssignJuryAsync(Contest.Id, user.Id);
-        }
-
-        public virtual Task UnassignJuryAsync(IUser user)
-        {
-            return ContestStore.UnassignJuryAsync(Contest.Id, user.Id);
-        }
-
-        public virtual Task UpdateTeamAsync(Team origin, Expression<Func<Team>> expression)
-        {
-            return TeamStore.UpdateAsync(origin.ContestId, origin.TeamId, expression);
-        }
-
-        public virtual async Task<IReadOnlyDictionary<int, string>> FetchTeamNamesAsync()
-        {
-            var list = await TeamStore.ListAsync(t => new { t.TeamId, t.TeamName }, t => t.Status == 1);
-            return list.ToDictionary(k => k.TeamId, k => k.TeamName);
-        }
-
-        public virtual async Task<IReadOnlyDictionary<int, (string Name, string Affiliation)>> FetchPublicTeamNamesWithAffiliationAsync()
-        {
-            var list = await TeamStore.ListAsync(t => new { t.TeamId, t.TeamName, t.Affiliation.Abbreviation }, t => t.Status == 1 && t.Category.IsPublic);
-            return list.ToDictionary(k => k.TeamId, k => (k.TeamName, k.Abbreviation));
-        }
-
-        public virtual Task<IReadOnlyList<Member>> DeleteTeamAsync(Team origin)
-        {
-            return TeamStore.DeleteAsync(origin);
-        }
-
-        public virtual Task<ILookup<int, string>> FetchTeamMembersAsync()
-        {
-            return TeamStore.ListMembersAsync(Contest.Id);
-        }
-
-        public virtual Task<IEnumerable<string>> FetchTeamMemberAsync(Team team)
-        {
-            return TeamStore.ListMembersAsync(team);
-        }
-
-        public virtual Task<Team> CreateTeamAsync(Team team, IEnumerable<IUser>? users)
-        {
-            return TeamStore.CreateAsync(team, users);
-        }
-
-        public virtual Task<string> GetReadmeAsync(bool source)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<IPagedList<Auditlog>> ViewLogsAsync(int page, int pageCount)
-        {
-            return await _services.GetRequiredService<IAuditlogger>().ViewLogsAsync(Contest.Id, page, pageCount);
         }
 
         public virtual async Task<object> GetUpdatesAsync()
@@ -189,136 +41,6 @@ namespace Ccs.Services
                 teams = await TeamStore.CountPendingAsync(Contest.Id),
                 rejudgings = await RejudgingStore.CountUndoneAsync(Contest.Id),
             };
-        }
-
-        public virtual Task SetReadmeAsync(string source)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<List<Event>> FetchEventAsync(string[]? type, int after)
-        {
-            return ContestStore.FetchEventAsync(Contest.Id, type, after);
-        }
-
-        public Task<int> MaxEventIdAsync()
-        {
-            return ContestStore.MaxEventIdAsync(Contest.Id);
-        }
-
-        public Task<List<T>> ListTeamsAsync<T>(Expression<Func<Team, T>> selector, Expression<Func<Team, bool>>? predicate = null) where T : class
-        {
-            int cid = Contest.Id;
-            return TeamStore.ListAsync(selector, predicate.Combine(t => t.ContestId == cid));
-        }
-
-        public async Task<ServerStatus> GetJudgeQueueAsync()
-        {
-            var lists = await JudgingStore.GetJudgeQueueAsync(Contest.Id);
-            return lists.SingleOrDefault() ?? new ServerStatus { ContestId = Contest.Id };
-        }
-
-        public async Task<Submission?> FindSubmissionAsync(int submissionId, bool includeJudgings = false)
-        {
-            var result = await SubmissionStore.FindAsync(submissionId, includeJudgings);
-            return result?.ContestId == Contest.Id ? result : null;
-        }
-
-        public Task<List<T>> ListSubmissionsAsync<T>(Expression<Func<Submission, T>> projection, Expression<Func<Submission, bool>>? predicate = null)
-        {
-            int cid = Contest.Id;
-            return SubmissionStore.ListAsync(projection, predicate.Combine(s => s.ContestId == cid));
-        }
-
-        public Task<List<Solution>> FetchSolutionsAsync(int? probid = null, string? langid = null, int? teamid = null, bool all = false)
-        {
-            int cid = Contest.Id;
-            Expression<Func<Submission, bool>> cond = s => s.ContestId == cid;
-            if (probid.HasValue) cond = cond.Combine(s => s.ProblemId == probid);
-            if (teamid.HasValue) cond = cond.Combine(s => s.TeamId == teamid);
-            if (!string.IsNullOrEmpty(langid)) cond = cond.Combine(s => s.Language == langid);
-            int? limit = all ? default(int?) : 75;
-
-            return SubmissionStore.ListWithJudgingAsync(cond, true, limit);
-        }
-
-        public Task<IPagedList<Solution>> FetchSolutionsAsync(int page, int perPage)
-        {
-            int cid = Contest.Id;
-            return SubmissionStore.ListWithJudgingAsync((page, perPage), s => s.ContestId == cid);
-        }
-
-        public async Task<Solution> FetchSolutionAsync(int submitid)
-        {
-            int cid = Contest.Id;
-            var res = await SubmissionStore.ListWithJudgingAsync(s => s.ContestId == cid && s.Id == submitid, true, 1);
-            return res.FirstOrDefault();
-        }
-
-        public Task<List<TSolution>> FetchSolutionsAsync<TSolution>(
-            Expression<Func<Submission, Judging, TSolution>> selector,
-            int? probid = null,
-            string? langid = null,
-            int? teamid = null)
-        {
-            int cid = Contest.Id;
-            Expression<Func<Submission, bool>> cond = s => s.ContestId == cid;
-            if (probid.HasValue) cond = cond.Combine(s => s.ProblemId == probid);
-            if (teamid.HasValue) cond = cond.Combine(s => s.TeamId == teamid);
-            if (!string.IsNullOrEmpty(langid)) cond = cond.Combine(s => s.Language == langid);
-            return SubmissionStore.ListWithJudgingAsync(selector, cond);
-        }
-
-        public async Task<TSolution> FetchSolutionAsync<TSolution>(int submitid, Expression<Func<Submission, Judging, TSolution>> selector)
-        {
-            int cid = Contest.Id;
-            var res = await SubmissionStore.ListWithJudgingAsync(selector, s => s.ContestId == cid && s.Id == submitid, 1);
-            return res.FirstOrDefault();
-        }
-
-        public Task<Affiliation?> FetchAffiliationAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<(bool Available, string Message)> CheckProblemAvailabilityAsync(int probId, ClaimsPrincipal user)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<(JudgingRun, Testcase)>> FetchDetailsAsync(int problemId, int judgingId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<T>> FetchDetailsAsync<T>(Expression<Func<Testcase, JudgingRun, T>> selector, Expression<Func<Testcase, JudgingRun, bool>>? predicate = null, int? limit = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<int> CountJudgingAsync(Expression<Func<Judging, bool>> predicate)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<Judging> FindJudgingAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<List<Judging>> FetchJudgingsAsync(Expression<Func<Judging, bool>> predicate, int topCount)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<SubmissionSource> FetchSourceAsync(Expression<Func<Submission, bool>> predicate)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<List<T>> FetchSolutionsAsync<T>(Expression<Func<Submission, Judging, T>> selector, Expression<Func<Submission, bool>>? predicate = null, int? limits = null)
-        {
-            throw new NotImplementedException();
         }
     }
 }

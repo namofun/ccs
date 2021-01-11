@@ -43,19 +43,6 @@ namespace Ccs
         }
 
         /// <summary>
-        /// Get the clarification categories from contest problems.
-        /// </summary>
-        /// <param name="problems">The contest problems.</param>
-        /// <returns>The enumerable for tuple (CategoryName, CategoryEnum, ProblemId).</returns>
-        public static IEnumerable<(string, ClarificationCategory, int?)> GetClarificationCategories(this IReadOnlyList<ProblemModel> problems)
-        {
-            return problems
-                .Select(cp => ($"prob-{cp.ShortName}", ClarificationCategory.Problem, (int?)cp.ProblemId))
-                .Prepend(("tech", ClarificationCategory.Technical, null))
-                .Prepend(("general", ClarificationCategory.General, null));
-        }
-
-        /// <summary>
         /// Find team by user ID.
         /// </summary>
         /// <param name="context">The contest context.</param>

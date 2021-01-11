@@ -5,6 +5,7 @@ using Polygon.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Ccs.Services
@@ -43,7 +44,7 @@ namespace Ccs.Services
             return Ccs.ProblemStore.DeleteAsync(problem.ContestId, problem.ProblemId);
         }
 
-        public async Task<List<Statement>> FetchRawStatementsAsync()
+        public virtual async Task<List<Statement>> FetchRawStatementsAsync()
         {
             var problems = await FetchProblemsAsync();
             var provider = _services.GetRequiredService<Polygon.Packaging.IStatementProvider>();
@@ -58,6 +59,12 @@ namespace Ccs.Services
             }
 
             return stmts;
+        }
+
+        public Task<CheckResult> CheckProblemAvailabilityAsync(int probId, ClaimsPrincipal user)
+        {
+            int? userId = user.IsInRole("Administrator") ? default(int?) : int.Parse(user.GetUserId()!);
+            return Ccs.ProblemStore.CheckAvailabilityAsync(Contest.Id, probId, userId);
         }
     }
 }

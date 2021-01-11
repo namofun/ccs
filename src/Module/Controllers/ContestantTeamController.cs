@@ -174,7 +174,7 @@ namespace SatelliteSite.ContestModule.Controllers
             if (string.IsNullOrWhiteSpace(model.Body))
                 ModelState.AddModelError("xys::empty", "No empty clarification");
 
-            var usage = Problems.GetClarificationCategories().SingleOrDefault(cp => model.Type == cp.Item1);
+            var usage = Problems.ClarificationCategories.SingleOrDefault(cp => model.Type == cp.Item1);
             if (usage.Item1 == null)
                 ModelState.AddModelError("xys::error_cate", "The category specified is wrong.");
 

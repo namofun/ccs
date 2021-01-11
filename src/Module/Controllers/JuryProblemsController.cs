@@ -1,5 +1,4 @@
-﻿using Ccs;
-using Ccs.Entities;
+﻿using Ccs.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Polygon.Packaging;
 using System;
@@ -45,7 +44,7 @@ namespace SatelliteSite.ContestModule.Controllers
                 ModelState.AddModelError("xys::duplicate", "Duplicate short name for problem.");
 
             var probDetect = await Context.CheckProblemAvailabilityAsync(model.ProblemId, User);
-            if (!probDetect.Available)
+            if (!probDetect.Success)
                 ModelState.AddModelError("xys::prob", probDetect.Message);
 
             if (!ModelState.IsValid) return Window(model);
@@ -72,8 +71,8 @@ namespace SatelliteSite.ContestModule.Controllers
         [HttpGet("[action]/{pid}")]
         public async Task<IActionResult> Find(int pid)
         {
-            var (_, msg) = await Context.CheckProblemAvailabilityAsync(pid, User);
-            return Content(msg);
+            var result = await Context.CheckProblemAvailabilityAsync(pid, User);
+            return Content(result.Message);
         }
 
 
