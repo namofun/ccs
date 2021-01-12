@@ -1,9 +1,7 @@
 ﻿using Ccs.Entities;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.EntityFrameworkCore;
 using Polygon.Entities;
-using SatelliteSite.Entities;
-using SatelliteSite.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +14,7 @@ namespace Ccs.Services
     {
         public virtual async Task<IReadOnlyList<Language>> FetchLanguagesAsync()
         {
-            IReadOnlyList<Language> langs = await Polygon.Languages.ListAsync(true);
+            var langs = await Polygon.Languages.ListAsync(true);
             if (!string.IsNullOrEmpty(Contest.Languages))
             {
                 var available = Contest.Languages!.AsJson<string[]>() ?? Array.Empty<string>();
@@ -28,38 +26,54 @@ namespace Ccs.Services
 
         public virtual async Task<Contest> UpdateContestAsync(Expression<Func<Contest, Contest>> updateExpression)
         {
-            await Ccs.ContestStore.UpdateAsync(Contest.Id, updateExpression);
-            return await Ccs.ContestStore.FindAsync(Contest.Id);
+            await Ccs.UpdateAsync(Contest.Id, updateExpression);
+            return await Ccs.FindAsync(Contest.Id);
         }
 
-        public virtual Task<HashSet<int>> FetchJuryAsync()
+        public virtual async Task<HashSet<int>> FetchJuryAsync()
         {
-            return Ccs.ContestStore.ListJuryAsync(Contest.Id);
+            int cid = Contest.Id;
+            var result = new HashSet<int>();
+            var query = await Db.ContestJuries
+                .Where(j => j.ContestId == cid)
+                .Select(j => j.UserId)
+                .ToListAsync();
+            return new HashSet<int>(query);
         }
 
         public virtual Task AssignJuryAsync(IUser user)
         {
-            return Ccs.ContestStore.AssignJuryAsync(Contest.Id, user.Id);
+            int cid = Contest.Id, userid = user.Id;
+            return Db.ContestJuries.UpsertAsync(
+                new { cid, userid },
+                s => new Jury { ContestId = cid, UserId = userid });
         }
 
         public virtual Task UnassignJuryAsync(IUser user)
         {
-            return Ccs.ContestStore.UnassignJuryAsync(Contest.Id, user.Id);
+            int cid = Contest.Id, userid = user.Id;
+            return Db.ContestJuries
+                .Where(j => j.ContestId == cid && j.UserId == userid)
+                .BatchDeleteAsync();
         }
 
         public virtual Task<List<Event>> FetchEventAsync(string[]? type, int after)
         {
-            return Ccs.ContestStore.FetchEventAsync(Contest.Id, type, after);
+            int cid = Contest.Id;
+            return Db.ContestEvents
+                .Where(e => e.ContestId == cid && e.Id > after)
+                .WhereIf(type != null, e => type.Contains(e.EndpointType))
+                .ToListAsync();
         }
 
         public virtual Task<int> MaxEventIdAsync()
         {
-            return Ccs.ContestStore.MaxEventIdAsync(Contest.Id);
-        }
-
-        public async Task<IPagedList<Auditlog>> ViewLogsAsync(int page, int pageCount)
-        {
-            return await _services.GetRequiredService<IAuditlogger>().ViewLogsAsync(Contest.Id, page, pageCount);
+            int cid = Contest.Id;
+            return Db.ContestEvents
+                .Where(e => e.ContestId == cid)
+                .OrderByDescending(e => e.Id)
+                .Select(e => e.Id)
+                .FirstOrDefaultAsync(); ;
         }
 
         public virtual Task<string> GetReadmeAsync(bool source)

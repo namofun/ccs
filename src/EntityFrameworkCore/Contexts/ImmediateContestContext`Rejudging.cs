@@ -34,12 +34,16 @@ namespace Ccs.Services
             return Polygon.Judgehosts.ListAsync();
         }
 
-        public virtual Task<IEnumerable<RejudgingDifference>> ViewRejudgingAsync(Rejudging rejudge, Expression<Func<Judging, Judging, Submission, bool>>? filter = null)
+        public virtual Task<IEnumerable<RejudgingDifference>> ViewRejudgingAsync(
+            Rejudging rejudge,
+            Expression<Func<Judging, Judging, Submission, bool>>? filter = null)
         {
             return Polygon.Rejudgings.ViewAsync(rejudge, filter);
         }
 
-        public virtual Task<int> BatchRejudgeAsync(Expression<Func<Submission, Judging, bool>> predicate, Rejudging? rejudge = null, bool fullTest = false)
+        public virtual Task<int> BatchRejudgeAsync(
+            Expression<Func<Submission, Judging, bool>> predicate,
+            Rejudging? rejudge = null, bool fullTest = false)
         {
             return Polygon.Rejudgings.BatchRejudgeAsync(predicate, rejudge, fullTest);
         }

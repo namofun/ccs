@@ -19,7 +19,7 @@ namespace Ccs.Services
         public Task<List<Team>> ListTeamsAsync(Expression<Func<Team, bool>>? predicate = null)
         {
             int cid = Contest.Id;
-            return Ccs.Teams
+            return Db.Teams
                 .Where(t => t.ContestId == cid)
                 .WhereIf(predicate != null, predicate!)
                 .ToListAsync();
@@ -33,7 +33,7 @@ namespace Ccs.Services
         public virtual Task<Team?> FindTeamByIdAsync(int teamid)
         {
             int cid = Contest.Id;
-            return Ccs.Teams
+            return Db.Teams
                 .Where(t => t.ContestId == cid && t.TeamId == teamid)
                 .SingleOrDefaultAsync()!;
         }
@@ -41,7 +41,7 @@ namespace Ccs.Services
         public virtual Task<Member?> FindMemberByUserAsync(int userId)
         {
             int cid = Contest.Id;
-            return Ccs.Members
+            return Db.TeamMembers
                 .Where(tu => tu.ContestId == cid && tu.UserId == userId)
                 .SingleOrDefaultAsync()!;
         }
@@ -52,7 +52,7 @@ namespace Ccs.Services
 
             if (contestFiltered)
                 results = await Get<IAffiliationStore>().ListAsync(
-                    a => Ccs.Teams.Select(a => a.AffiliationId).Contains(a.Id));
+                    a => Db.Teams.Select(a => a.AffiliationId).Contains(a.Id));
             else
                 results = await Get<IAffiliationStore>().ListAsync();
 
@@ -65,7 +65,7 @@ namespace Ccs.Services
 
             if (contestFiltered)
                 results = await Get<ICategoryStore>().ListAsync(
-                    a => Ccs.Teams.Select(a => a.CategoryId).Contains(a.Id));
+                    a => Db.Teams.Select(a => a.CategoryId).Contains(a.Id));
             else
                 results = await Get<ICategoryStore>().ListAsync();
 
@@ -77,14 +77,14 @@ namespace Ccs.Services
             int cid = team.ContestId;
             using var _lock = await _teamLock.LockAsync(cid);
 
-            team.TeamId = 1 + await Ccs.Teams.CountAsync(tt => tt.ContestId == cid);
-            Ccs.Teams.Add(team);
+            team.TeamId = 1 + await Db.Teams.CountAsync(tt => tt.ContestId == cid);
+            Db.Teams.Add(team);
 
             if (users != null && users.Any())
             {
                 foreach (var uid in users)
                 {
-                    Ccs.Members.Add(new Member
+                    Db.TeamMembers.Add(new Member
                     {
                         ContestId = team.ContestId,
                         TeamId = team.TeamId,
@@ -94,14 +94,14 @@ namespace Ccs.Services
                 }
             }
 
-            await Ccs.SaveChangesAsync();
+            await Db.SaveChangesAsync();
             return team;
         }
 
         public virtual async Task UpdateTeamAsync(Team origin, Expression<Func<Team, Team>> expression)
         {
             var (cid, teamid) = (origin.ContestId, origin.TeamId);
-            var affected = await Ccs.Teams
+            var affected = await Db.Teams
                 .Where(t => t.ContestId == cid && t.TeamId == teamid)
                 .BatchUpdateAsync(expression);
 
@@ -113,18 +113,18 @@ namespace Ccs.Services
         {
             var (cid, teamid) = (team.ContestId, team.TeamId);
 
-            var affected = await Ccs.Teams
+            var affected = await Db.Teams
                 .Where(t => t.ContestId == cid && t.TeamId == teamid)
                 .BatchUpdateAsync(_ => new Team { Status = 3 });
 
             if (affected != 1)
                 throw new DbUpdateException();
 
-            var list = await Ccs.Members
+            var list = await Db.TeamMembers
                 .Where(t => t.ContestId == cid && t.TeamId == teamid)
                 .ToListAsync();
 
-            await Ccs.Members
+            await Db.TeamMembers
                 .Where(t => t.ContestId == cid && t.TeamId == teamid)
                 .BatchDeleteAsync();
 
@@ -134,7 +134,7 @@ namespace Ccs.Services
         public virtual async Task<IReadOnlyDictionary<int, string>> FetchTeamNamesAsync()
         {
             int cid = Contest.Id;
-            return await Ccs.Teams
+            return await Db.Teams
                 .Where(t => t.ContestId == cid && t.Status == 1)
                 .Select(t => new { t.TeamId, t.TeamName })
                 .ToDictionaryAsync(a => a.TeamId, a => a.TeamName);
@@ -143,9 +143,9 @@ namespace Ccs.Services
         public virtual async Task<ILookup<int, string>> FetchTeamMembersAsync()
         {
             var cid = Contest.Id;
-            var results = await Ccs.Members
+            var results = await Db.TeamMembers
                 .Where(t => t.ContestId == cid)
-                .Join(Ccs.Users, m => m.UserId, u => u.Id, (m, u) => new { m.TeamId, u.UserName })
+                .Join(Db.Users, m => m.UserId, u => u.Id, (m, u) => new { m.TeamId, u.UserName })
                 .ToListAsync();
             return results.ToLookup(a => a.TeamId, a => a.UserName);
         }
@@ -153,9 +153,9 @@ namespace Ccs.Services
         public virtual async Task<IEnumerable<string>> FetchTeamMemberAsync(Team team)
         {
             var (cid, teamid) = (team.ContestId, team.TeamId);
-            return await Ccs.Members
+            return await Db.TeamMembers
                 .Where(t => t.ContestId == cid && t.TeamId == teamid)
-                .Join(Ccs.Users, m => m.UserId, u => u.Id, (m, u) => u.UserName)
+                .Join(Db.Users, m => m.UserId, u => u.Id, (m, u) => u.UserName)
                 .ToListAsync();
         }
 
@@ -165,7 +165,7 @@ namespace Ccs.Services
             var affs = await FetchAffiliationsAsync(true);
             var cats = await FetchCategoriesAsync(true);
 
-            return await Ccs.Teams
+            return await Db.Teams
                 .Where(t => t.ContestId == cid && t.Status == 1)
                 .ToDictionaryAsync(
                     keySelector: t => t.TeamId,
@@ -180,7 +180,7 @@ namespace Ccs.Services
         public virtual async Task<ScoreboardModel> FetchScoreboardAsync()
         {
             int cid = Contest.Id;
-            var value = await Ccs.Teams
+            var value = await Db.Teams
                 .Where(t => t.ContestId == cid && t.Status == 1)
                 .Include(t => t.RankCache)
                 .Include(t => t.ScoreCache)

@@ -13,7 +13,7 @@ namespace Ccs.Services
         public virtual Task<List<Clarification>> ListClarificationsAsync(Expression<Func<Clarification, bool>> predicate)
         {
             int cid = Contest.Id;
-            return Ccs.Clarifications
+            return Db.Clarifications
                 .Where(c => c.ContestId == cid)
                 .WhereIf(predicate != null, predicate!)
                 .ToListAsync();
@@ -22,29 +22,29 @@ namespace Ccs.Services
         public virtual Task<Clarification> FindClarificationAsync(int id)
         {
             int cid = Contest.Id;
-            return Ccs.Clarifications
+            return Db.Clarifications
                 .Where(c => c.ContestId == cid && c.Id == id)
                 .SingleOrDefaultAsync();
         }
 
         public virtual async Task<Clarification> ClarifyAsync(Clarification clar, Clarification? replyTo = null)
         {
-            var cl = Ccs.Clarifications.Add(clar);
+            var cl = Db.Clarifications.Add(clar);
 
             if (replyTo != null)
             {
                 replyTo.Answered = true;
-                Ccs.Clarifications.Update(replyTo);
+                Db.Clarifications.Update(replyTo);
             }
 
-            await Ccs.SaveChangesAsync();
+            await Db.SaveChangesAsync();
             return cl.Entity;
         }
 
         public virtual async Task<bool> SetClarificationAnsweredAsync(int id, bool answered)
         {
             int cid = Contest.Id;
-            return 1 == await Ccs.Clarifications
+            return 1 == await Db.Clarifications
                 .Where(c => c.ContestId == cid && c.Id == id)
                 .BatchUpdateAsync(c => new Clarification { Answered = answered });
         }
@@ -53,7 +53,7 @@ namespace Ccs.Services
         {
             int cid = Contest.Id;
             var (from, to) = claim ? (default(string), jury) : (jury, default(string));
-            return 1 == await Ccs.Clarifications
+            return 1 == await Db.Clarifications
                 .Where(c => c.ContestId == cid && c.Id == id)
                 .Where(c => c.JuryMember == from)
                 .BatchUpdateAsync(c => new Clarification { JuryMember = to });

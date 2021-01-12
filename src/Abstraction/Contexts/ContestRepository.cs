@@ -1,6 +1,8 @@
 ﻿using Ccs.Entities;
 using Ccs.Models;
+using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -12,6 +14,21 @@ namespace Ccs.Services
     /// <remarks>Note that the implementation for this interface shouldn't cache the result.</remarks>
     public interface IContestRepository
     {
+        /// <summary>
+        /// Find the instance of entity.
+        /// </summary>
+        /// <param name="cid">The contest ID.</param>
+        /// <returns>The task for fetching entity.</returns>
+        Task<Contest> FindAsync(int cid);
+
+        /// <summary>
+        /// Update the instance of entity.
+        /// </summary>
+        /// <param name="cid">The contest ID.</param>
+        /// <param name="expression">The updating expression.</param>
+        /// <returns>The task for updating.</returns>
+        Task UpdateAsync(int cid, Expression<Func<Contest, Contest>> expression);
+
         /// <summary>
         /// Create an instance of entity.
         /// </summary>

@@ -11,10 +11,10 @@ using System.Threading.Tasks;
 
 namespace Ccs.Services
 {
-    public class Scoreboard<TContext> : IScoreboard
+    public class Scoreboard<TContext> : IScoreboard, ISupportDbContext
         where TContext : DbContext, IContestDbContext
     {
-        public TContext Db { get; }
+        public IContestDbContext Db { get; }
 
         public Scoreboard(TContext context)
             => Db = context;
@@ -158,6 +158,12 @@ namespace Ccs.Services
         public Task CreateBalloonAsync(int id)
         {
             Db.Balloons.Add(new Balloon { SubmissionId = id });
+            return Db.SaveChangesAsync();
+        }
+
+        public Task EmitEventAsync(Event @event)
+        {
+            Db.ContestEvents.Add(@event);
             return Db.SaveChangesAsync();
         }
 

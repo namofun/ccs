@@ -2,25 +2,28 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Polygon.Storages;
+using SatelliteSite.Entities;
+using SatelliteSite.Services;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Ccs.Services
 {
-    public partial class ImmediateContestContext : IContestContext
+    public partial class ImmediateContestContext : IContestContext, ISupportDbContext
     {
         private readonly IServiceProvider _services;
         private readonly Contest _contest;
-        private ICcsFacade? _ccsFacade;
+        private IContestRepository? _ccsFacade;
         private IPolygonFacade? _polygonFacade;
 
         public Contest Contest => _contest;
 
-        public IPolygonFacade Polygon => _polygonFacade ??= _services.GetRequiredService<IPolygonFacade>();
+        public IPolygonFacade Polygon => _polygonFacade ??= Get<IPolygonFacade>();
 
-        public ICcsFacade Ccs => _ccsFacade ??= _services.GetRequiredService<ICcsFacade>();
+        public IContestRepository Ccs => _ccsFacade ??= Get<IContestRepository>();
 
-        public IContestStore ContestStore => Ccs.ContestStore;
+        public IContestDbContext Db => ((ISupportDbContext)Ccs).Db;
 
         public ImmediateContestContext(Contest contest, IServiceProvider serviceProvider)
         {
@@ -30,12 +33,17 @@ namespace Ccs.Services
 
         protected T Get<T>() => _services.GetRequiredService<T>();
 
+        public Task<IPagedList<Auditlog>> ViewLogsAsync(int page, int pageCount)
+        {
+            return Get<IAuditlogger>().ViewLogsAsync(Contest.Id, page, pageCount);
+        }
+
         public virtual async Task<object> GetUpdatesAsync()
         {
             int cid = Contest.Id;
-            var clarifications = Ccs.Clarifications.CountAsync(c => c.ContestId == cid && !c.Answered);
+            var clarifications = Db.Clarifications.CountAsync(c => c.ContestId == cid && !c.Answered);
             var rejudgings = await Polygon.Rejudgings.CountUndoneAsync(Contest.Id);
-            var teams = await Ccs.Teams.CountAsync(t => t.ContestId == cid && t.Status == 0);
+            var teams = await Db.Teams.CountAsync(t => t.ContestId == cid && t.Status == 0);
             return new { clarifications, teams, rejudgings };
         }
     }

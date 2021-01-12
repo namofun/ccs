@@ -109,5 +109,12 @@ namespace Ccs.Services
         /// <param name="cid">The contest ID.</param>
         /// <returns>The task for recalculating.</returns>
         Task RebuildPartialScoreAsync(int cid);
+
+        /// <summary>
+        /// Emit an event.
+        /// </summary>
+        /// <param name="event">The new event entity.</param>
+        /// <returns>The task for emitting.</returns>
+        Task EmitEventAsync(Event @event);
     }
 }

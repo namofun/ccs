@@ -140,7 +140,7 @@ namespace Ccs.Services
         public Task<SubmissionSource> FetchSourceAsync(Expression<Func<Submission, bool>> predicate)
         {
             var cid = Contest.Id;
-            return Ccs.Submissions
+            return Db.Submissions
                 .Where(s => s.ContestId == cid)
                 .Where(predicate)
                 .OrderByDescending(s => s.Id)

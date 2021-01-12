@@ -24,7 +24,7 @@ namespace Ccs.Services
                 $"Contest({cid})::Core",
                 async entry =>
                 {
-                    var cst = await serviceProvider.GetRequiredService<IContestStore>().FindAsync(cid);
+                    var cst = await serviceProvider.GetRequiredService<IContestRepository>().FindAsync(cid);
                     entry.AbsoluteExpirationRelativeToNow = _options.Value.Contest;
                     return cst;
                 });

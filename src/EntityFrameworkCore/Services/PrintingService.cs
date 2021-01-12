@@ -9,28 +9,23 @@ using System.Threading.Tasks;
 
 namespace Ccs.Services
 {
-    public class PrintingService<TUser, TContext> : IPrintingService
-        where TUser : SatelliteSite.IdentityModule.Entities.User
-        where TContext : DbContext
+    public class PrintingService<TContext> : IPrintingService, ISupportDbContext
+        where TContext : DbContext, IContestDbContext
     {
-        public TContext Context { get; }
-
-        DbSet<Printing> Printings => Context.Set<Printing>();
+        public IContestDbContext Db { get; }
 
         public PrintingService(TContext context)
-        {
-            Context = context;
-        }
+            => Db = context;
 
         public Task<List<PrintingTask>> ListAsync(int contestId, int limit)
         {
             var query =
-                from p in Printings
+                from p in Db.Printings
                 where p.ContestId == contestId
                 orderby p.Id descending
-                join u in Context.Set<TUser>() on p.UserId equals u.Id
+                join u in Db.Users on p.UserId equals u.Id
                 into uu from u in uu.DefaultIfEmpty()
-                join tu in Context.Set<Member>() on new { p.ContestId, p.UserId } equals new { tu.ContestId, tu.UserId }
+                join tu in Db.TeamMembers on new { p.ContestId, p.UserId } equals new { tu.ContestId, tu.UserId }
                 into tuu from tu in tuu.DefaultIfEmpty()
                 select new PrintingTask
                 {
@@ -50,22 +45,22 @@ namespace Ccs.Services
 
         public async Task<Printing> CreateAsync(Printing entity)
         {
-            var e = Printings.Add(entity);
-            await Context.SaveChangesAsync();
+            var e = Db.Printings.Add(entity);
+            await Db.SaveChangesAsync();
             return e.Entity;
         }
 
         public async Task<bool> SetStateAsync(Printing entity, bool? done)
         {
             int id = entity.Id;
-            return 1 == await Printings
+            return 1 == await Db.Printings
                 .Where(p => p.Id == id)
                 .BatchUpdateAsync(p => new Printing { Done = done });
         }
 
         public Task<Printing?> FindAsync(int id, bool full)
         {
-            var query = Printings.Where(p => p.Id == id);
+            var query = Db.Printings.Where(p => p.Id == id);
 
             if (!full)
             {
@@ -86,7 +81,7 @@ namespace Ccs.Services
 
         public Task<Printing?> FirstAsync(Expression<Func<Printing, bool>> condition)
         {
-            return Printings
+            return Db.Printings
                 .Where(condition)
                 .FirstOrDefaultAsync()!;
         }

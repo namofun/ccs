@@ -14,11 +14,11 @@ namespace Ccs.Services
             var problems = await FetchProblemsAsync();
             int cid = Contest.Id;
             var balloonQuery =
-                from b in Ccs.Balloons
-                join s in Ccs.Submissions on b.SubmissionId equals s.Id
+                from b in Db.Balloons
+                join s in Db.Submissions on b.SubmissionId equals s.Id
                 where s.ContestId == cid
                 orderby s.Time
-                join t in Ccs.Teams
+                join t in Db.Teams
                     on new { s.ContestId, s.TeamId }
                     equals new { t.ContestId, t.TeamId }
                 select new BalloonModel(
@@ -50,8 +50,8 @@ namespace Ccs.Services
         public virtual Task SetBalloonDoneAsync(int id)
         {
             int cid = Contest.Id;
-            return Ccs.Balloons.BatchUpdateJoinAsync(
-                inner: Ccs.Submissions,
+            return Db.Balloons.BatchUpdateJoinAsync(
+                inner: Db.Submissions,
                 outerKeySelector: b => b.SubmissionId,
                 innerKeySelector: s => s.Id,
                 updateSelector: (b, _) => new Balloon { Done = true },

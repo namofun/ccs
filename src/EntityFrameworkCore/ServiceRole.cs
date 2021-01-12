@@ -14,13 +14,11 @@ namespace Ccs
         public void Configure(IServiceCollection services)
         {
             services.AddDbModelSupplier<TContext, ContestEntityConfiguration<TUser, TRole, TContext>>();
-            services.AddScoped<ICcsFacade, CcsFacade<TUser, TContext>>();
 
-            services.AddScoped(sp => sp.GetRequiredService<ICcsFacade>().ContestStore);
-            services.AddScoped<IContestRepository>(sp => sp.GetRequiredService<ICcsFacade>().ContestStore);
-
-            services.AddScoped<IPrintingService, PrintingService<TUser, TContext>>();
+            services.AddScoped<IContestRepository, ContestRepository<TContext>>();
+            services.AddScoped<IPrintingService, PrintingService<TContext>>();
             services.AddScoped<IScoreboard, Scoreboard<TContext>>();
+
             services.AddSingleton<IContestContextFactory, CachedContestContextFactory>();
         }
     }

@@ -18,9 +18,9 @@ namespace Ccs.Services
         private ProblemCollection? _readed_problem_collection;
 
         private IQueryable<ProblemModel> QueryProblems(int cid)
-            => from cp in Ccs.ContestProblems
+            => from cp in Db.ContestProblems
                where cp.ContestId == cid
-               join p in Ccs.Problems on cp.ProblemId equals p.Id
+               join p in Db.Problems on cp.ProblemId equals p.Id
                select new ProblemModel(
                    cp.ContestId, cp.ProblemId, cp.ShortName,
                    cp.AllowSubmit, p.AllowJudge,
@@ -28,9 +28,9 @@ namespace Ccs.Services
                    p.Title, p.TimeLimit, p.MemoryLimit, p.CombinedRunCompare, p.Shared);
 
         private IQueryable<PartialScore> QueryScores(int cid)
-            => from cp in Ccs.ContestProblems
+            => from cp in Db.ContestProblems
                where cp.ContestId == cid
-               join t in Ccs.Testcases on cp.ProblemId equals t.ProblemId
+               join t in Db.Testcases on cp.ProblemId equals t.ProblemId
                group t by cp.ProblemId into g
                select new PartialScore { Id = g.Key, Count = g.Count(), Score = g.Sum(t => t.Point) };
 
@@ -54,21 +54,21 @@ namespace Ccs.Services
             Expression<Func<ContestProblem, ContestProblem>> expression)
         {
             int cid = origin.ContestId, probid = origin.ProblemId;
-            return Ccs.ContestProblems
+            return Db.ContestProblems
                 .Where(oldcp => oldcp.ContestId == cid && oldcp.ProblemId == probid)
                 .BatchUpdateAsync(expression);
         }
 
         public virtual Task CreateProblemAsync(ContestProblem entity)
         {
-            Ccs.ContestProblems.Add(entity);
-            return Ccs.SaveChangesAsync();
+            Db.ContestProblems.Add(entity);
+            return Db.SaveChangesAsync();
         }
 
         public virtual Task DeleteProblemAsync(ProblemModel problem)
         {
             int cid = problem.ContestId, probid = problem.ProblemId;
-            return Ccs.ContestProblems
+            return Db.ContestProblems
                 .Where(cp => cp.ContestId == cid && cp.ProblemId == probid)
                 .BatchDeleteAsync();
         }
@@ -78,7 +78,7 @@ namespace Ccs.Services
             int cid = Contest.Id;
             var problems = await FetchProblemsAsync();
 
-            var raw = await Ccs.ContestProblems
+            var raw = await Db.ContestProblems
                 .Where(cp => cp.ContestId == cid)
                 .OrderBy(cp => cp.ShortName)
                 .Select(cp => cp.Problem)
@@ -103,17 +103,17 @@ namespace Ccs.Services
             int cid = Contest.Id;
             int? userId = user.IsInRole("Administrator") ? default(int?) : int.Parse(user.GetUserId()!);
 
-            if (await Ccs.ContestProblems.Where(cp => cp.ContestId == cid && cp.ProblemId == probid).AnyAsync())
+            if (await Db.ContestProblems.Where(cp => cp.ContestId == cid && cp.ProblemId == probid).AnyAsync())
                 return CheckResult.Fail("Problem has been added.");
 
             IQueryable<Problem> query;
             if (user == null)
-                query = Ccs.Problems
+                query = Db.Problems
                     .Where(p => p.Id == probid);
             else
-                query = Ccs.ProblemAuthors
+                query = Db.ProblemAuthors
                     .Where(pa => pa.ProblemId == probid && pa.UserId == userId)
-                    .Join(Ccs.Problems, pa => pa.ProblemId, p => p.Id, (pa, p) => p);
+                    .Join(Db.Problems, pa => pa.ProblemId, p => p.Id, (pa, p) => p);
 
             var prob = await query.FirstOrDefaultAsync();
             if (prob == null)

@@ -8,7 +8,7 @@ namespace Ccs.Services
     {
         public async Task<IContestContext?> CreateAsync(int cid, IServiceProvider serviceProvider, bool requireProblems = true)
         {
-            var cst = await serviceProvider.GetRequiredService<IContestStore>().FindAsync(cid);
+            var cst = await serviceProvider.GetRequiredService<IContestRepository>().FindAsync(cid);
             if (cst == null) return null;
             return new ImmediateContestContext(cst, serviceProvider);
         }
