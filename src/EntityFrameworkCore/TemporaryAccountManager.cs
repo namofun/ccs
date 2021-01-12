@@ -8,12 +8,9 @@ namespace Ccs.Services
     {
         public IUserManager UserManager { get; }
 
-        public ITeamStore TeamStore { get; }
-
-        public TemporaryAccountManager(IUserManager userManager, ITeamStore teamStore)
+        public TemporaryAccountManager(IUserManager userManager)
         {
             UserManager = userManager;
-            TeamStore = teamStore;
         }
 
         public static Func<string> CreatePasswordGenerator()

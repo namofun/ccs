@@ -1,6 +1,7 @@
 ﻿using Ccs.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Polygon.Entities;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -10,13 +11,13 @@ namespace Ccs.Services
     {
         IContestStore ContestStore { get; }
 
-        IBalloonStore BalloonStore { get; }
-
         DbSet<Clarification> Clarifications { get; }
 
         DbSet<Team> Teams { get; }
 
         DbSet<Member> Members { get; }
+
+        DbSet<Balloon> Balloons { get; }
 
         IQueryable<IUser> Users { get; }
 
@@ -24,6 +25,6 @@ namespace Ccs.Services
 
         IProblemsetStore ProblemStore { get; }
 
-        ITeamStore TeamStore { get; }
+        DbSet<Submission> Submissions { get; }
     }
 }

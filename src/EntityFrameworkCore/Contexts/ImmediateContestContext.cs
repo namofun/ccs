@@ -20,11 +20,7 @@ namespace Ccs.Services
 
         public ICcsFacade Ccs => _ccsFacade ??= _services.GetRequiredService<ICcsFacade>();
 
-        public ITeamStore TeamStore => Ccs.TeamStore;
-
         public IContestStore ContestStore => Ccs.ContestStore;
-
-        public IRejudgingStore RejudgingStore => Polygon.Rejudgings;
 
         public ImmediateContestContext(Contest contest, IServiceProvider serviceProvider)
         {
@@ -38,7 +34,7 @@ namespace Ccs.Services
         {
             int cid = Contest.Id;
             var clarifications = Ccs.Clarifications.CountAsync(c => c.ContestId == cid && !c.Answered);
-            var rejudgings = await RejudgingStore.CountUndoneAsync(Contest.Id);
+            var rejudgings = await Polygon.Rejudgings.CountUndoneAsync(Contest.Id);
             var teams = await Ccs.Teams.CountAsync(t => t.ContestId == cid && t.Status == 0);
             return new { clarifications, teams, rejudgings };
         }

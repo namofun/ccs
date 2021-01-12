@@ -13,11 +13,7 @@ namespace Ccs.Services
     {
         public IContestStore ContestStore => this;
 
-        public IBalloonStore BalloonStore => this;
-
         public IProblemsetStore ProblemStore => this;
-
-        public ITeamStore TeamStore => this;
 
         public TContext Context { get; }
 

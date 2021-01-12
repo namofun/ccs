@@ -13,6 +13,13 @@ namespace Ccs.Services
     public interface IScoreboard
     {
         /// <summary>
+        /// Creates a balloon for the submission.
+        /// </summary>
+        /// <param name="id">The submission ID.</param>
+        /// <returns>The task for creating balloon.</returns>
+        Task CreateBalloonAsync(int id);
+
+        /// <summary>
         /// Remove all caches from the contest and set up the new ranks and scores.
         /// </summary>
         /// <param name="cid">The contest ID.</param>

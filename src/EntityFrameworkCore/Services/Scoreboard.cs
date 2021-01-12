@@ -155,6 +155,12 @@ namespace Ccs.Services
             return Db.ScoreCache.UpsertAsync(entry, ins2, upd2);
         }
 
+        public Task CreateBalloonAsync(int id)
+        {
+            Db.Balloons.Add(new Balloon { SubmissionId = id });
+            return Db.SaveChangesAsync();
+        }
+
         private static readonly PropertyInfo RankCache_ContestId = typeof(RankCache).GetProperty(nameof(RankCache.ContestId))!;
         private static readonly PropertyInfo RankCache_TeamId = typeof(RankCache).GetProperty(nameof(RankCache.TeamId))!;
         private static readonly PropertyInfo ScoreCache_ContestId = typeof(ScoreCache).GetProperty(nameof(ScoreCache.ContestId))!;

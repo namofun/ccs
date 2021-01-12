@@ -1,5 +1,6 @@
 ﻿using Ccs.Entities;
 using Ccs.Models;
+using Microsoft.EntityFrameworkCore;
 using Polygon.Entities;
 using Polygon.Models;
 using Polygon.Storages;
@@ -107,39 +108,52 @@ namespace Ccs.Services
                 fullJudge: Contest.RankingStrategy == 1);
         }
 
-        public Task<IEnumerable<(JudgingRun, Testcase)>> FetchDetailsAsync(int problemId, int judgingId)
+        public Task<IEnumerable<(JudgingRun?, Testcase)>> FetchDetailsAsync(int problemId, int judgingId)
         {
-            throw new NotImplementedException();
+            return Polygon.Judgings.GetDetailsAsync(problemId, judgingId);
         }
 
-        public Task<IEnumerable<T>> FetchDetailsAsync<T>(Expression<Func<Testcase, JudgingRun, T>> selector, Expression<Func<Testcase, JudgingRun, bool>>? predicate = null, int? limit = null)
+        public Task<IEnumerable<T>> FetchDetailsAsync<T>(
+            Expression<Func<Testcase, JudgingRun, T>> selector,
+            Expression<Func<Testcase, JudgingRun, bool>>? predicate = null,
+            int? limit = null)
         {
-            throw new NotImplementedException();
+            return Polygon.Judgings.GetDetailsAsync(selector, predicate, limit);
         }
 
         public Task<int> CountJudgingAsync(Expression<Func<Judging, bool>> predicate)
         {
-            throw new NotImplementedException();
+            return Polygon.Judgings.CountAsync(predicate);
         }
 
         public Task<Judging> FindJudgingAsync(int id)
         {
-            throw new NotImplementedException();
+            var cid = Contest.Id;
+            return Polygon.Judgings.FindAsync(j => j.Id == id && j.s.ContestId == cid, j => j);
         }
 
         public Task<List<Judging>> FetchJudgingsAsync(Expression<Func<Judging, bool>> predicate, int topCount)
         {
-            throw new NotImplementedException();
+            return Polygon.Judgings.ListAsync(predicate, topCount);
         }
 
         public Task<SubmissionSource> FetchSourceAsync(Expression<Func<Submission, bool>> predicate)
         {
-            throw new NotImplementedException();
+            var cid = Contest.Id;
+            return Ccs.Submissions
+                .Where(s => s.ContestId == cid)
+                .Where(predicate)
+                .OrderByDescending(s => s.Id)
+                .Select(s => new SubmissionSource(s.Id, s.ContestId, s.TeamId, s.ProblemId, s.Language, s.SourceCode))
+                .FirstOrDefaultAsync();
         }
 
-        public Task<List<T>> FetchSolutionsAsync<T>(Expression<Func<Submission, Judging, T>> selector, Expression<Func<Submission, bool>>? predicate = null, int? limits = null)
+        public Task<List<T>> FetchSolutionsAsync<T>(
+            Expression<Func<Submission, Judging, T>> selector,
+            Expression<Func<Submission, bool>>? predicate = null,
+            int? limits = null)
         {
-            throw new NotImplementedException();
+            return Polygon.Submissions.ListWithJudgingAsync(selector, predicate, limits);
         }
     }
 }

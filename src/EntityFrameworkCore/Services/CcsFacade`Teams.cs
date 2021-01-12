@@ -10,8 +10,8 @@ using System.Threading.Tasks;
 
 namespace Ccs.Services
 {
-    public partial class CcsFacade<TUser, TContext> : ITeamStore
-    {
+    //public partial class CcsFacade<TUser, TContext>
+    //{
         /*
         public async Task<HashSet<int>> ListRegisteredAsync(int uid)
         {
@@ -126,18 +126,5 @@ namespace Ccs.Services
             }
         }
         */
-
-        public async Task<HashSet<int>> ListMemberUidsAsync(int cid)
-        {
-            var members = Members
-                .Where(m => m.ContestId == cid)
-                .Select(m => m.UserId)
-                .AsAsyncEnumerable();
-
-            var results = new HashSet<int>();
-            await foreach (var i in members)
-                results.Add(i);
-            return results;
-        }
-    }
+    //}
 }

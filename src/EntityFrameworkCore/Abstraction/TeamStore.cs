@@ -9,12 +9,12 @@ using System.Threading.Tasks;
 
 namespace Ccs.Services
 {
-    /// <summary>
-    /// The storage interface for <see cref="Team"/> and <see cref="Member"/>.
-    /// </summary>
-    /// <remarks>Note that all store interfaces shouldn't cache the result.</remarks>
-    public interface ITeamStore
-    {
+    //// <summary>
+    //// The storage interface for <see cref="Team"/> and <see cref="Member"/>.
+    //// </summary>
+    //// <remarks>Note that all store interfaces shouldn't cache the result.</remarks>
+    //public interface ITeamStore
+    //{
         /*
 
         [Obsolete]
@@ -43,5 +43,5 @@ namespace Ccs.Services
         Task<Dictionary<int, (int ac, int tot)>> StatisticsSubmissionAsync(int cid, int teamid);
 
         */
-    }
+    //}
 }

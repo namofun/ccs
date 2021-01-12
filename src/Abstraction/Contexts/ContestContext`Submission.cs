@@ -106,7 +106,7 @@ namespace Ccs
         /// <param name="problemId">The problem ID.</param>
         /// <param name="judgingId">The judging ID.</param>
         /// <returns>The task for fetching judging runs.</returns>
-        Task<IEnumerable<(JudgingRun, Testcase)>> FetchDetailsAsync(int problemId, int judgingId);
+        Task<IEnumerable<(JudgingRun?, Testcase)>> FetchDetailsAsync(int problemId, int judgingId);
 
         /// <summary>
         /// Fetch the details DTO.
