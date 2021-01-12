@@ -13,8 +13,6 @@ namespace Ccs.Services
     {
         public IContestStore ContestStore => this;
 
-        public IProblemsetStore ProblemStore => this;
-
         public TContext Context { get; }
 
         public DbSet<Balloon> Balloons => Context.Set<Balloon>();
@@ -35,11 +33,15 @@ namespace Ccs.Services
 
         public DbSet<Jury> Juries => Context.Set<Jury>();
 
+        public DbSet<Testcase> Testcases => Context.Set<Testcase>();
+
         public DbSet<TUser> Users => Context.Set<TUser>();
 
         public DbSet<Event> Events => Context.Set<Event>();
 
         IQueryable<IUser> ICcsFacade.Users => Users;
+
+        public DbSet<ProblemAuthor> ProblemAuthors => Context.Set<ProblemAuthor>();
 
         public CcsFacade(TContext context)
         {

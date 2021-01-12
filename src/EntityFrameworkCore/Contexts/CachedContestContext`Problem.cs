@@ -19,7 +19,7 @@ namespace Ccs.Services
 
         public override async Task UpdateProblemAsync(
             ProblemModel origin,
-            Expression<Func<ContestProblem>> expression)
+            Expression<Func<ContestProblem, ContestProblem>> expression)
         {
             await base.UpdateProblemAsync(origin, expression);
             Expire("Problems");

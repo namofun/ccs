@@ -97,5 +97,25 @@ namespace Ccs.Services
 
             return e.Entity;
         }
+
+        Task<List<Problem2Model>> IContestRepository.FindProblemUsageAsync(int probid)
+        {
+            var query =
+                from cp in ContestProblems
+                where cp.ProblemId == probid
+                join c in Contests on cp.ContestId equals c.Id
+                select new Problem2Model(
+                    cp.ContestId,
+                    cp.ProblemId,
+                    cp.ShortName,
+                    cp.AllowSubmit,
+                    cp.Color,
+                    cp.Score,
+                    c.Name,
+                    c.Kind,
+                    c.RankingStrategy);
+
+            return query.ToListAsync();
+        }
     }
 }

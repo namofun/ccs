@@ -11,6 +11,16 @@ namespace Ccs.Services
     {
         IContestStore ContestStore { get; }
 
+        DbSet<Contest> Contests { get; }
+
+        DbSet<ContestProblem> ContestProblems { get; }
+
+        DbSet<Problem> Problems { get; }
+
+        DbSet<ProblemAuthor> ProblemAuthors { get; }
+
+        DbSet<Testcase> Testcases { get; }
+
         DbSet<Clarification> Clarifications { get; }
 
         DbSet<Team> Teams { get; }
@@ -22,8 +32,6 @@ namespace Ccs.Services
         IQueryable<IUser> Users { get; }
 
         Task<int> SaveChangesAsync();
-
-        IProblemsetStore ProblemStore { get; }
 
         DbSet<Submission> Submissions { get; }
     }

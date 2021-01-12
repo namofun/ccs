@@ -1,9 +1,12 @@
 ﻿using Ccs.Entities;
 using Ccs.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Polygon.Entities;
 using Polygon.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -14,14 +17,31 @@ namespace Ccs.Services
     {
         private ProblemCollection? _readed_problem_collection;
 
+        private IQueryable<ProblemModel> QueryProblems(int cid)
+            => from cp in Ccs.ContestProblems
+               where cp.ContestId == cid
+               join p in Ccs.Problems on cp.ProblemId equals p.Id
+               select new ProblemModel(
+                   cp.ContestId, cp.ProblemId, cp.ShortName,
+                   cp.AllowSubmit, p.AllowJudge,
+                   cp.Color, cp.Score,
+                   p.Title, p.TimeLimit, p.MemoryLimit, p.CombinedRunCompare, p.Shared);
+
+        private IQueryable<PartialScore> QueryScores(int cid)
+            => from cp in Ccs.ContestProblems
+               where cp.ContestId == cid
+               join t in Ccs.Testcases on cp.ProblemId equals t.ProblemId
+               group t by cp.ProblemId into g
+               select new PartialScore { Id = g.Key, Count = g.Count(), Score = g.Sum(t => t.Point) };
+
         public virtual async Task<ProblemCollection> FetchProblemsAsync(bool nonCached = false)
         {
             if (_readed_problem_collection != null && !nonCached)
                 return _readed_problem_collection;
 
             var res = new ProblemCollection(
-                await Ccs.ProblemStore.ListModelsAsync(Contest.Id),
-                await Ccs.ProblemStore.ListTestcaseAndScore(Contest.Id));
+                await QueryProblems(Contest.Id).ToListAsync(),
+                await QueryScores(Contest.Id).ToDictionaryAsync(k => k.Id, e => (e.Count, e.Score)));
 
             for (int i = 0; i < res.Count; i++)
                 res[i].Statement = await Polygon.Problems.ReadCompiledHtmlAsync(res[i].ProblemId);
@@ -29,26 +49,43 @@ namespace Ccs.Services
             return _readed_problem_collection = res;
         }
 
-        public virtual Task UpdateProblemAsync(ProblemModel origin, Expression<Func<ContestProblem>> expression)
+        public virtual Task UpdateProblemAsync(
+            ProblemModel origin,
+            Expression<Func<ContestProblem, ContestProblem>> expression)
         {
-            return Ccs.ProblemStore.UpdateAsync(origin.ContestId, origin.ProblemId, expression);
+            int cid = origin.ContestId, probid = origin.ProblemId;
+            return Ccs.ContestProblems
+                .Where(oldcp => oldcp.ContestId == cid && oldcp.ProblemId == probid)
+                .BatchUpdateAsync(expression);
         }
 
         public virtual Task CreateProblemAsync(ContestProblem entity)
         {
-            return Ccs.ProblemStore.CreateAsync(entity);
+            Ccs.ContestProblems.Add(entity);
+            return Ccs.SaveChangesAsync();
         }
 
         public virtual Task DeleteProblemAsync(ProblemModel problem)
         {
-            return Ccs.ProblemStore.DeleteAsync(problem.ContestId, problem.ProblemId);
+            int cid = problem.ContestId, probid = problem.ProblemId;
+            return Ccs.ContestProblems
+                .Where(cp => cp.ContestId == cid && cp.ProblemId == probid)
+                .BatchDeleteAsync();
         }
 
         public virtual async Task<List<Statement>> FetchRawStatementsAsync()
         {
+            int cid = Contest.Id;
             var problems = await FetchProblemsAsync();
+
+            var raw = await Ccs.ContestProblems
+                .Where(cp => cp.ContestId == cid)
+                .OrderBy(cp => cp.ShortName)
+                .Select(cp => cp.Problem)
+                .ToListAsync();
+
             var provider = _services.GetRequiredService<Polygon.Packaging.IStatementProvider>();
-            var raw = await Ccs.ProblemStore.RawProblemsAsync(Contest.Id);
+
             var stmts = new List<Statement>();
             foreach (var prob in raw)
             {
@@ -61,10 +98,28 @@ namespace Ccs.Services
             return stmts;
         }
 
-        public Task<CheckResult> CheckProblemAvailabilityAsync(int probId, ClaimsPrincipal user)
+        public async Task<CheckResult> CheckProblemAvailabilityAsync(int probid, ClaimsPrincipal user)
         {
+            int cid = Contest.Id;
             int? userId = user.IsInRole("Administrator") ? default(int?) : int.Parse(user.GetUserId()!);
-            return Ccs.ProblemStore.CheckAvailabilityAsync(Contest.Id, probId, userId);
+
+            if (await Ccs.ContestProblems.Where(cp => cp.ContestId == cid && cp.ProblemId == probid).AnyAsync())
+                return CheckResult.Fail("Problem has been added.");
+
+            IQueryable<Problem> query;
+            if (user == null)
+                query = Ccs.Problems
+                    .Where(p => p.Id == probid);
+            else
+                query = Ccs.ProblemAuthors
+                    .Where(pa => pa.ProblemId == probid && pa.UserId == userId)
+                    .Join(Ccs.Problems, pa => pa.ProblemId, p => p.Id, (pa, p) => p);
+
+            var prob = await query.FirstOrDefaultAsync();
+            if (prob == null)
+                return CheckResult.Fail("Problem not found or access denined.");
+
+            return CheckResult.Succeed(prob.Title);
         }
     }
 }

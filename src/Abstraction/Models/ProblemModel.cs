@@ -79,21 +79,5 @@ namespace Ccs.Models
             ShortName = shortName;
             Title = title;
         }
-
-        /// <summary>
-        /// Instantiate a model for contest problem.
-        /// </summary>
-        public ProblemModel(int cid, int probid, string shortName, bool allowSubmit, string color, int codeforcesScore, string name, int kind, int rankStrategy)
-        {
-            AllowSubmit = allowSubmit;
-            Color = color;
-            ContestId = cid;
-            TimeLimit = kind;
-            MemoryLimit = rankStrategy;
-            ProblemId = probid;
-            Score = codeforcesScore;
-            ShortName = shortName;
-            Title = name;
-        }
     }
 }

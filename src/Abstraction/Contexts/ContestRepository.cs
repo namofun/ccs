@@ -37,5 +37,12 @@ namespace Ccs.Services
         /// <param name="limit">The count per page.</param>
         /// <returns>The task for fetching paged lists.</returns>
         Task<IPagedList<ContestListModel>> ListAsync(int page = 1, int limit = 100);
+
+        /// <summary>
+        /// Finds the usage of some problem.
+        /// </summary>
+        /// <param name="probid">The problem ID.</param>
+        /// <returns>The problem model.</returns>
+        Task<List<Problem2Model>> FindProblemUsageAsync(int probid);
     }
 }

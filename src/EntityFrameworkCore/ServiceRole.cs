@@ -17,7 +17,6 @@ namespace Ccs
             services.AddScoped<ICcsFacade, CcsFacade<TUser, TContext>>();
 
             services.AddScoped(sp => sp.GetRequiredService<ICcsFacade>().ContestStore);
-            services.AddScoped(sp => sp.GetRequiredService<ICcsFacade>().ProblemStore);
             services.AddScoped<IContestRepository>(sp => sp.GetRequiredService<ICcsFacade>().ContestStore);
 
             services.AddScoped<IPrintingService, PrintingService<TUser, TContext>>();

@@ -99,7 +99,7 @@ namespace SatelliteSite.ContestModule.Controllers
 
             model.Color = "#" + model.Color.TrimStart('#');
             await Context.UpdateProblemAsync(origin,
-                () => new ContestProblem
+                _ => new ContestProblem
                 {
                     Color = model.Color,
                     AllowSubmit = model.AllowSubmit,

@@ -31,7 +31,7 @@ namespace Ccs
         /// <param name="origin">The original problem model.</param>
         /// <param name="expression">The expression for updating contest problem.</param>
         /// <returns>The task for updating contest problems.</returns>
-        Task UpdateProblemAsync(ProblemModel origin, Expression<Func<ContestProblem>> expression);
+        Task UpdateProblemAsync(ProblemModel origin, Expression<Func<ContestProblem, ContestProblem>> expression);
 
         /// <summary>
         /// Delete such problem from contest.
