@@ -14,7 +14,7 @@
              ? "general"
              : Model.Main.Category == ClarificationCategory.Technical
              ? "tech"
-             : "prob-" + probs.First(cp => cp.ProblemId == Model.Main.ProblemId).ShortName,
+             : "prob-" + probs.Find(Model.Main.ProblemId.Value).ShortName,
     };
 
     ViewData["ReplyTo"] = Model.Main.Id;

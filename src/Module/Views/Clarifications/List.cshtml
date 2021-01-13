@@ -39,7 +39,7 @@
                     <td use-a><i class="fas fa-@(clar.JuryMember == null ? "times" : "user-lock")"></i></td>
                     <td style="@(!toClaim ? "padding:1px" : "")">
                         <span asp-show-if="toClaim">@clar.JuryMember</span>
-                        <a asp-show-if="!toClaim" asp-action="Claim" asp-route-clarid="@clar.Id" asp-route-claim="@(clar.JuryMember == null)" data-toggle="ajaxWindow" data-target="claimClaris" class="btn d-block btn-sm btn-outline-success">@(clar.JuryMember == null ? "claim" : "unclaim")</a>
+                        <a asp-show-if="!toClaim" asp-action="Claim" asp-route-clarid="@clar.Id" asp-route-claim="@(clar.JuryMember == null)" data-toggle="ajaxWindow" data-target="claimClaris" class="btn d-block btn-sm btn-outline-success p-0">@(clar.JuryMember == null ? "claim" : "unclaim")</a>
                     </td>
                 </tr>
             }

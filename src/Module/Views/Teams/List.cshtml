@@ -30,7 +30,7 @@
                     <td use-a class="force-width">@team.TeamName</td>
                     <td use-a>@team.Category</td>
                     <td use-a class="text-variant" title="@team.AffiliationName">@team.Affiliation</td>
-                    <td use-a><verdict0 type="TeamStatus" value="@team.Status" /></td>
+                    <td use-a><misc-status type="TeamStatus" value="@team.Status" /></td>
                     <td use-a>@Html.CstTime(team.RegisterTime)</td>
                     <td><a asp-route-teamid="@team.TeamId" asp-action="Edit" data-toggle="ajaxWindow" data-target="editTeam" title="edit this team"><i class="fas fa-edit"></i></a></td>
                     <td><a asp-route-teamid="@team.TeamId" asp-action="Delete" data-toggle="ajaxWindow" data-target="deleteTeam" title="delete this team"><i class="fas fa-trash-alt"></i></a></td>

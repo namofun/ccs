@@ -10,6 +10,7 @@ namespace Ccs.Services
 {
     public partial class ImmediateContestContext
     {
+        [Checked]
         public virtual Task<List<Clarification>> ListClarificationsAsync(Expression<Func<Clarification, bool>> predicate)
         {
             int cid = Contest.Id;
@@ -19,6 +20,7 @@ namespace Ccs.Services
                 .ToListAsync();
         }
 
+        [Checked]
         public virtual Task<Clarification> FindClarificationAsync(int id)
         {
             int cid = Contest.Id;
@@ -27,6 +29,7 @@ namespace Ccs.Services
                 .SingleOrDefaultAsync();
         }
 
+        [Checked]
         public virtual async Task<Clarification> ClarifyAsync(Clarification clar, Clarification? replyTo = null)
         {
             var cl = Db.Clarifications.Add(clar);
@@ -41,6 +44,7 @@ namespace Ccs.Services
             return cl.Entity;
         }
 
+        [Checked]
         public virtual async Task<bool> SetClarificationAnsweredAsync(int id, bool answered)
         {
             int cid = Contest.Id;
@@ -49,6 +53,7 @@ namespace Ccs.Services
                 .BatchUpdateAsync(c => new Clarification { Answered = answered });
         }
 
+        [Checked]
         public virtual async Task<bool> ClaimClarificationAsync(int id, string jury, bool claim)
         {
             int cid = Contest.Id;

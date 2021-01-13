@@ -72,6 +72,7 @@ namespace Ccs.Services
             return results.ToDictionary(a => a.Id);
         }
 
+        [Checked]
         public virtual async Task<Team> CreateTeamAsync(Team team, IEnumerable<IUser>? users)
         {
             int cid = team.ContestId;
@@ -98,6 +99,7 @@ namespace Ccs.Services
             return team;
         }
 
+        [Checked]
         public virtual async Task UpdateTeamAsync(Team origin, Expression<Func<Team, Team>> expression)
         {
             var (cid, teamid) = (origin.ContestId, origin.TeamId);
@@ -159,6 +161,7 @@ namespace Ccs.Services
                 .ToListAsync();
         }
 
+        [Checked]
         public virtual async Task<IReadOnlyDictionary<int, Team>> FetchTeamsAsync()
         {
             var cid = Contest.Id;
@@ -184,28 +187,8 @@ namespace Ccs.Services
                 .Where(t => t.ContestId == cid && t.Status == 1)
                 .Include(t => t.RankCache)
                 .Include(t => t.ScoreCache)
-                .ToDictionaryAsync(a => a.TeamId);
-
-            var result = new ScoreboardModel
-            {
-                //Data = value,
-                //RefreshTime = DateTimeOffset.Now,
-                //Statistics = new Dictionary<int, int>()
-            };
-
-            /*
-            foreach (var (_, item) in value)
-            {
-                foreach (var ot in item.ScoreCache)
-                {
-                    var val = result.Statistics.GetValueOrDefault(ot.ProblemId);
-                    if (ot.IsCorrectRestricted)
-                        result.Statistics[ot.ProblemId] = ++val;
-                }
-            }
-            */
-
-            return result;
+                .ToDictionaryAsync(t => t.TeamId, t => (IScoreboardRow)t);
+            return new ScoreboardModel(value);
         }
     }
 }

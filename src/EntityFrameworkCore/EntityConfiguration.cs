@@ -221,6 +221,10 @@ namespace Ccs.Entities
                 .HasForeignKey<RankCache>(rc => new { rc.ContestId, rc.TeamId })
                 .OnDelete(DeleteBehavior.Cascade);
 
+            entity.Property(e => e.Location)
+                .HasMaxLength(16)
+                .IsRequired(false);
+
             entity.HasIndex(e => new { e.ContestId, e.Status });
         }
 

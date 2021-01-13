@@ -1,7 +1,5 @@
-﻿using Ccs.Entities;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Ccs.Models
 {
@@ -10,5 +8,11 @@ namespace Ccs.Models
         public IReadOnlyDictionary<int, IScoreboardRow> Data { get; }
 
         public DateTimeOffset RefreshTime { get; }
+
+        public ScoreboardModel(IReadOnlyDictionary<int, IScoreboardRow> data)
+        {
+            Data = data;
+            RefreshTime = DateTimeOffset.Now;
+        }
     }
 }

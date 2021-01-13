@@ -51,5 +51,18 @@ namespace Ccs.Services
             return CacheAsync("Jury", _options.Contest,
                 async () => await base.FetchJuryAsync());
         }
+
+        public override Task<string> GetReadmeAsync(bool source)
+        {
+            if (source) return base.GetReadmeAsync(true);
+            return CacheAsync("Readme", _options.Contest,
+                async () => await base.GetReadmeAsync(false));
+        }
+
+        public override async Task SetReadmeAsync(string source)
+        {
+            await base.SetReadmeAsync(source);
+            Expire("Readme");
+        }
     }
 }

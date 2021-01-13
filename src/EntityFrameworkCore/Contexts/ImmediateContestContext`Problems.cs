@@ -34,6 +34,7 @@ namespace Ccs.Services
                group t by cp.ProblemId into g
                select new PartialScore { Id = g.Key, Count = g.Count(), Score = g.Sum(t => t.Point) };
 
+        [Checked]
         public virtual async Task<ProblemCollection> FetchProblemsAsync(bool nonCached = false)
         {
             if (_readed_problem_collection != null && !nonCached)
@@ -49,6 +50,7 @@ namespace Ccs.Services
             return _readed_problem_collection = res;
         }
 
+        [Checked]
         public virtual Task UpdateProblemAsync(
             ProblemModel origin,
             Expression<Func<ContestProblem, ContestProblem>> expression)
@@ -59,12 +61,14 @@ namespace Ccs.Services
                 .BatchUpdateAsync(expression);
         }
 
+        [Checked]
         public virtual Task CreateProblemAsync(ContestProblem entity)
         {
             Db.ContestProblems.Add(entity);
             return Db.SaveChangesAsync();
         }
 
+        [Checked]
         public virtual Task DeleteProblemAsync(ProblemModel problem)
         {
             int cid = problem.ContestId, probid = problem.ProblemId;
@@ -73,6 +77,7 @@ namespace Ccs.Services
                 .BatchDeleteAsync();
         }
 
+        [Checked]
         public virtual async Task<List<Statement>> FetchRawStatementsAsync()
         {
             int cid = Contest.Id;

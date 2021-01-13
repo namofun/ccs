@@ -84,7 +84,7 @@ namespace SatelliteSite.ContestModule.Controllers
 
             if (!ModelState.IsValid) return Window(model);
 
-            var teamid = await Context.CreateTeamAsync(
+            var team = await Context.CreateTeamAsync(
                 users: users.Count > 0 ? users : null,
                 team: new Team
                 {
@@ -95,10 +95,10 @@ namespace SatelliteSite.ContestModule.Controllers
                     TeamName = model.TeamName,
                 });
 
-            await HttpContext.AuditAsync("added", $"{teamid}");
+            await HttpContext.AuditAsync("added", $"{team.TeamId}");
             return Message(
                 title: "Add team",
-                message: $"Team {model.TeamName} (t{teamid}) added.",
+                message: $"Team {model.TeamName} (t{team.TeamId}) added.",
                 type: BootstrapColor.success);
         }
 
