@@ -81,7 +81,7 @@ namespace Ccs.Services
             var raw = await Db.ContestProblems
                 .Where(cp => cp.ContestId == cid)
                 .OrderBy(cp => cp.ShortName)
-                .Select(cp => cp.Problem)
+                .Join(Db.Problems, cp => cp.ProblemId, p => p.Id, (cp, p) => p)
                 .ToListAsync();
 
             var provider = _services.GetRequiredService<Polygon.Packaging.IStatementProvider>();

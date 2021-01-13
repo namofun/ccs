@@ -11,19 +11,9 @@
         public int ContestId { get; set; }
 
         /// <summary>
-        /// The navigation to contest
-        /// </summary>
-        public Contest Contest { get; set; }
-
-        /// <summary>
         /// The problem ID
         /// </summary>
         public int ProblemId { get; set; }
-
-        /// <summary>
-        /// The navigation to problem
-        /// </summary>
-        public Polygon.Entities.Problem Problem { get; set; }
 
         /// <summary>
         /// The short name

@@ -33,7 +33,7 @@ namespace Ccs.Services
             Problems = (ProblemCollection)viewContext.ViewData[nameof(Problems)];
             Team = (Team)viewContext.ViewData[nameof(Team)];
             IsJury = (bool)viewContext.ViewData[nameof(IsJury)];
-            InJury = (bool)viewContext.ViewData[nameof(InJury)];
+            InJury = viewContext.ViewData.ContainsKey(nameof(InJury)) && (bool)viewContext.ViewData[nameof(InJury)];
             HasTeam = Team != null;
         }
 

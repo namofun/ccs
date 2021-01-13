@@ -1,7 +1,4 @@
-﻿using System;
-using System.ComponentModel;
-
-namespace Ccs.Models
+﻿namespace Ccs.Models
 {
     /// <summary>
     /// The model class for contest problems.
@@ -52,14 +49,6 @@ namespace Ccs.Models
         /// The problem statement
         /// </summary>
         public string? Statement { get; set; }
-
-        /// <summary></summary>
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public new MediatR.Unit Problem => throw new InvalidOperationException();
-
-        /// <summary></summary>
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public new MediatR.Unit Contest => throw new InvalidOperationException();
 
         /// <summary>
         /// Instantiate a model for contest problem.

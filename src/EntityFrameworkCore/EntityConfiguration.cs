@@ -263,12 +263,12 @@ namespace Ccs.Entities
 
             entity.HasKey(e => new { e.ContestId, e.ProblemId });
 
-            entity.HasOne<Contest>(e => e.Contest)
+            entity.HasOne<Contest>()
                 .WithMany()
                 .HasForeignKey(e => e.ContestId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            entity.HasOne<Problem>(e => e.Problem)
+            entity.HasOne<Problem>()
                 .WithMany()
                 .HasForeignKey(e => e.ProblemId)
                 .OnDelete(DeleteBehavior.Restrict);
