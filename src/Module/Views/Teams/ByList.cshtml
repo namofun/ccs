@@ -1,9 +1,8 @@
 ﻿@model AddTeamByListModel
 @{
     Layout = "_WindowLayout";
-    var ctx = Context.GetContestContext();
-    var affs = await ctx.FetchAffiliationsAsync(false);
-    var cats = await ctx.FetchCategoriesAsync(false);
+    var affs = await Contest.Context.FetchAffiliationsAsync(false);
+    var cats = await Contest.Context.FetchCategoriesAsync(false);
     ViewData["Title"] = "Batch team register";
 }
 

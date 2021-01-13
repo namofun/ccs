@@ -1,4 +1,5 @@
-﻿using Ccs.Services;
+﻿using Ccs;
+using Ccs.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,7 +8,7 @@ using System;
 namespace SatelliteSite.ContestModule
 {
     public class ContestModule<TRole> : AbstractModule
-        where TRole : class, Ccs.IServiceRole, new()
+        where TRole : class, IServiceRole, new()
     {
         public override string Area => "Contest";
 
@@ -52,6 +53,8 @@ namespace SatelliteSite.ContestModule
             EnsureRegistered<IScoreboard>(services);
             EnsureRegistered<IPrintingService>(services);
             EnsureRegistered<IContestRepository>(services);
+
+            services.AddTransient<IContestContextAccessor, ContestContextAccessor>();
         }
 
         public override void RegisterMenu(IMenuContributor menus)

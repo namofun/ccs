@@ -1,10 +1,8 @@
-﻿@using Polygon.Entities 
+﻿@using Polygon.Entities
 @model AddRejudgingModel
 @{
     ViewData["Title"] = "Add rejudging";
-    var context = Context.GetContestContext();
-    var cps = await context.FetchProblemsAsync();
-    var langs = await context.FetchLanguagesAsync();
+    var langs = await Contest.Context.FetchLanguagesAsync();
     IReadOnlyDictionary<int, string> teams = ViewBag.Teams;
     IReadOnlyList<Judgehost> hosts = ViewBag.Judgehosts;
 }
@@ -22,7 +20,7 @@
         </div>
         <div class="form-group">
             <label asp-for="Problems">Problem</label>
-            <select asp-for="Problems" class="form-control custom-select form-control" multiple asp-items="@(cps.Select(cp => new SelectListItem($"{cp.ShortName} - {cp.Title}", $"{cp.ProblemId}")))"></select>
+            <select asp-for="Problems" class="form-control custom-select form-control" multiple asp-items="@(Contest.Problems.Select(cp => new SelectListItem($"{cp.ShortName} - {cp.Title}", $"{cp.ProblemId}")))"></select>
         </div>
         <div class="form-group">
             <label asp-for="Languages">Language</label>

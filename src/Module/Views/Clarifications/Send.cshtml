@@ -1,9 +1,7 @@
 ﻿@model AddClarificationModel
 @{
     ViewData["Title"] = "Send clarification";
-    var context = Context.GetContestContext();
-    var teams = await context.FetchTeamNamesAsync();
-    var probs = await context.FetchProblemsAsync();
+    var teams = await Contest.Context.FetchTeamNamesAsync();
     Model.Body = !string.IsNullOrWhiteSpace(Model.Body) ? string.Join('\n', Model.Body.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).Select(c => "> " + c)) + '\n' : "";
     bool useCanned = ViewData.ContainsKey("UseCanned");
 }
@@ -27,9 +25,7 @@
 
     <div class="form-group">
         <label asp-for="Type"></label>
-        <select asp-for="Type" class="custom-select" asp-items="@probs.Select(cp => new SelectListItem($"{cp.ShortName} - {cp.Title}", $"prob-{cp.ShortName}"))">
-            <option value="general">General issue</option>
-            <option value="tech">Technical issue</option>
+        <select asp-for="Type" class="custom-select" asp-items="@Contest.Problems.ClarificationCategories.Select(cp => new SelectListItem(cp.Item4, cp.Item1))">
         </select>
     </div>
 

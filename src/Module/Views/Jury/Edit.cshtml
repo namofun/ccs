@@ -46,7 +46,7 @@
                 <label asp-for="RankingStrategy"></label>
                 <select class="form-control" asp-for="RankingStrategy">
                     <option value="0">XCPC style</option>
-                    <option value="1">OI style</option>
+                    <option value="1">IOI style</option>
                     <option value="2">Codeforces style</option>
                 </select>
                 <span asp-validation-for="RankingStrategy" class="text-danger"></span>
@@ -76,7 +76,7 @@
                 </select>
                 <span asp-validation-for="DefaultCategory" class="text-danger"></span>
             </div>
-            <div class="form-group" asp-show-if="ViewBag.Contest.Gym">
+            <div class="form-group">
                 <label asp-for="StatusAvailable"></label>
                 <select class="form-control" asp-for="StatusAvailable">
                     <option value="0">Users can see only his submissions</option>
@@ -97,15 +97,15 @@
             Relative time format: <b><tt>+[HHH]H:MM:SS</tt></b><br /><br /><br />
 
             <b>Specification of ranking strategy:</b><br />
-            If the ICPC-style is chosen, any rejected solutions before accepted
+            If the XCPC-style is chosen, any rejected solutions before accepted
             solutions excluding compiler-error will be 20 minutes penalty. Ranking
             will take the count of solved problems and total penalty into
             consideration.<br />
+            If the IOI-style is chosen, ranking will take the points from each
+            testcase into total.<br />
             If the Codeforces-style is chosen, points gained from solving problems
             will be calculated with the submitting time. Each re-submission will
             cause 50 points decrease.<br />
-            If the NOI-style is chosen, ranking will take the points from each
-            testcase into total.<br />
         </div>
     </div>
 

@@ -1,13 +1,10 @@
-﻿@using Polygon.Entities 
+﻿@using Polygon.Entities
 @{
     SingleBoardViewModel scoreboard = ViewBag.Scoreboard;
     Team team = ViewBag.ShowTeam;
     IEnumerable<Polygon.Models.Solution> submissions = ViewBag.Submissions;
     ViewData["Title"] = "Team " + team.TeamId;
     IEnumerable<string> members = ViewBag.Member;
-    var ctx = Context.GetContestContext();
-    var cts = ctx.Contest;
-    var cps = await ctx.FetchProblemsAsync();
     var aff = scoreboard.Affiliation;
     int correct = 0, total = 0;
 }
@@ -83,9 +80,9 @@
     <tbody>
         @foreach (var sub in submissions)
         {
-            var tooLate = ((cts.StartTime + cts.EndTime) ?? DateTimeOffset.MaxValue) < sub.Time;
+            var tooLate = ((Contest.StartTime + Contest.EndTime) ?? DateTimeOffset.MaxValue) < sub.Time;
             if (sub.Verdict == Verdict.Accepted) { correct++; }
-            var prob = cps.FirstOrDefault(cp => cp.ProblemId == sub.ProblemId);
+            var prob = Contest.Problems.Find(sub.ProblemId);
             total++;
             <tr asp-controller="Submissions" asp-action="Detail" asp-route-sid="@sub.SubmissionId"
                 data-toggle="gotoUrl"
@@ -98,7 +95,7 @@
                 <td use-a class="probid">@prob?.ShortName</td>
                 <td use-a class="langid">@sub.Language</td>
                 <td use-a>
-                    <span asp-show-if="cts.RankingStrategy == 1">@(sub.TotalScore ?? 0) - </span>
+                    <span asp-show-if="Contest.RankingStrategy == 1">@(sub.TotalScore ?? 0) - </span>
                     <verdict skipped="@sub.Skipped" value="@sub.Verdict" too-late="tooLate" />
                     <razor asp-show-if="tooLate && !sub.Skipped"> (<verdict value="@sub.Verdict" />)</razor>
                 </td>

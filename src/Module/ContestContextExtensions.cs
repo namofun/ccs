@@ -1,10 +1,8 @@
 ﻿#nullable enable
 using Ccs.Entities;
 using Ccs.Models;
-using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -28,18 +26,6 @@ namespace Ccs
                 return false;
             var jury = await context.FetchJuryAsync();
             return jury.ContainsKey(uid);
-        }
-
-        /// <summary>
-        /// Get the linked contest context.
-        /// </summary>
-        /// <param name="httpContext">The http context.</param>
-        /// <returns>The contest context, or throwing an exception.</returns>
-        /// <exception cref="InvalidOperationException">Occurs when no <see cref="IContestContext"/> was linked.</exception>
-        public static IContestContext GetContestContext(this HttpContext httpContext)
-        {
-            return httpContext.Features.Get<IContestContext>()
-                ?? throw new InvalidOperationException("No contest context is linked with this http context.");
         }
 
         /// <summary>

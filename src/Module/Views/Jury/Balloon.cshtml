@@ -2,15 +2,14 @@
 @{
     ViewData["Title"] = "Balloons";
     ViewData["RefreshSpan"] = 30;
-    Contest ctx = ViewBag.Contest;
     if (ViewData.ContainsKey("InAjax")) { Layout = null; }
 }
 
 <h2 class="mt-2">@ViewData["Title"]</h2>
 
-<div class="alert alert-info" asp-show-if="ctx.GetState() >= ContestState.Frozen">
+<div class="alert alert-info" asp-show-if="Contest.GetState() >= ContestState.Frozen">
     <i class="fas fa-snowflake"></i>
-    Scoreboard of c@(ctx.Id) (@ctx.ShortName) is now frozen.
+    Scoreboard of c@(Contest.Id) (@Contest.ShortName) is now frozen.
 </div>
 
 <div class="table-wrapper">

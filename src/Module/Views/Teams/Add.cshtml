@@ -1,11 +1,10 @@
 ﻿@model JuryAddTeamModel
 @{
     Layout = "_WindowLayout";
-    var ctx = Context.GetContestContext();
     ViewData["Title"] = "Add team";
     ViewData["FormAjaxUpload"] = Url.Action("Add");
-    var affs = await ctx.FetchAffiliationsAsync(false);
-    var cats = await ctx.FetchCategoriesAsync(false);
+    var affs = await Contest.Context.FetchAffiliationsAsync(false);
+    var cats = await Contest.Context.FetchCategoriesAsync(false);
 }
 
 <input type="hidden" asp-for="TeamId" />

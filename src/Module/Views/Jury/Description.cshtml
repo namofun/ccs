@@ -4,7 +4,7 @@
     ViewData["DisableAjaxRefresh"] = true;
 }
 
-<h2 class="mt-2">Edit description for c@(ViewBag.ContestId)</h2>
+<h2 class="mt-2">Edit description for c@(Contest.Id)</h2>
 
 <link rel="stylesheet" href="~/lib/editor-md/css/editormd.css" />
 <script src="~/lib/editor-md/editormd.js"></script>
@@ -22,7 +22,7 @@
                 tex: true,
                 imageUpload: true,
                 imageFormats: ["jpg", "jpeg", "gif", "png", "svg", "pdf"],
-                imageUploadURL: "/api/static/images-upload?type=c&id=@(ViewBag.ContestId)",
+                imageUploadURL: "/api/static/images-upload?type=c&id=@(Contest.Id)",
             });
             editormd.katexURL = {
                 js: "/lib/katex/katex.min",

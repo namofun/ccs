@@ -1,4 +1,4 @@
-﻿@using Polygon.Entities 
+﻿@using Polygon.Entities
 @model Rejudging
 @{
     ViewData["Title"] = $"Rejudging {Model.Id}";
@@ -7,8 +7,6 @@
     IEnumerable<(Judging @new, Judging old, int probid, string langid, DateTimeOffset time, int teamid)> js = ViewBag.Judgings;
     Dictionary<int, string> teams = ViewBag.Teams;
     Dictionary<string, Language> langs = ViewBag.Languages;
-    ProblemCollection probs = ViewBag.Problems;
-    Contest ctx = ViewBag.Contest;
     if (ViewData.ContainsKey("InAjax")) { Layout = null; }
 }
 
@@ -201,10 +199,10 @@
                     <td use-a>s@(s.old.SubmissionId)</td>
                     <td use-a>@s.time</td>
                     <td use-a>@teams.GetValueOrDefault(s.teamid) (t@(s.teamid))</td>
-                    <td use-a class="probid">@probs.FirstOrDefault(ss => ss.ProblemId == s.probid)?.ShortName</td>
+                    <td use-a class="probid">@Contest.Problems.Find(s.probid)?.ShortName</td>
                     <td use-a class="langid">@s.langid</td>
-                    <td use-a><span asp-show-if="ctx.RankingStrategy == 2">@(s.@new.TotalScore ?? 0) - </span><verdict3 value="@(s.@new.Status)" /></td>
-                    <td use-a><span asp-show-if="ctx.RankingStrategy == 2">@(s.old.TotalScore ?? 0) - </span><verdict3 value="@s.old.Status" /></td>
+                    <td use-a><span asp-show-if="Contest.RankingStrategy == 1">@(s.@new.TotalScore ?? 0) - </span><verdict value="@(s.@new.Status)" /></td>
+                    <td use-a><span asp-show-if="Contest.RankingStrategy == 1">@(s.old.TotalScore ?? 0) - </span><verdict value="@s.old.Status" /></td>
                 </tr>
             }
 

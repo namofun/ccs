@@ -1,7 +1,6 @@
 ﻿@model ProblemModel
 @{
     Layout = "_WindowLayout";
-    Contest ctx = ViewBag.Contest;
     ViewData["Title"] = "Edit problem";
     ViewData["FormAjaxUpload"] = Url.Action("Edit");
 }
@@ -18,7 +17,7 @@
     <label asp-for="ShortName">Short name</label>
     <input asp-for="ShortName" class="form-control" required />
 </div>
-<div class="form-group" asp-show-if="ctx.RankingStrategy == 1">
+<div class="form-group" asp-show-if="Contest.RankingStrategy == 1">
     <label asp-for="Score">CF Mode Score</label>
     <input asp-for="Score" class="form-control" />
 </div>

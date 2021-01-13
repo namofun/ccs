@@ -3,8 +3,6 @@
 @{
     ViewData["Title"] = "Statistics";
     ViewData["DisableAjaxRefresh"] = true;
-    Contest ctx = ViewBag.Contest;
-    var probs = await Context.GetContestContext().FetchProblemsAsync();
     IReadOnlyDictionary<int, Team> teams = ViewBag.Teams;
     var byprob = Model.TeamStatistics.GroupBy(a => a.Key.ProblemId).ToDictionary(k => k.Key, k => (k.Count(), k.Count(a => a.Value.ac > 0)));
     var byteam = Model.TeamStatistics.GroupBy(a => a.Key.TeamId).ToDictionary(k => k.Key, k => (k.Count(), k.Count(a => a.Value.ac > 0), k.Sum(a => a.Value.ac + a.Value.at), k.Sum(a => a.Value.ac)));
@@ -37,9 +35,8 @@
 
     string loopProb(IReadOnlyDictionary<int, int> stat)
     {
-        ProblemCollection probs = ViewBag.Problems;
         WriteLiteral("[");
-        foreach (var prob in probs)
+        foreach (var prob in Contest.Problems)
         {
             WriteLiteral($"{{\"label\":\"{prob.ShortName}\",\"value\":{stat.GetValueOrDefault(prob.ProblemId)}}},");
         }
@@ -129,7 +126,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var item in probs)
+                        @foreach (var item in Contest.Problems)
                         {
                             var pt = byprob.GetValueOrDefault(item.ProblemId);
                             <tr asp-action="Problem" asp-route-pid="@item.ProblemId">

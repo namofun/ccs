@@ -5,7 +5,6 @@
     var prob = Model.Problem;
     var lang = Model.Language;
     var team = Model.Team;
-    Contest ctx = ViewBag.Contest;
 
     ViewData["Title"] = "Submission s" + submit.Id;
 }
@@ -31,7 +30,7 @@
     <span>
         <i class="fas fa-clock" title="Submittime:"></i>
         <span title="@submit.Time">
-            @((submit.Time - ctx.StartTime).GetValueOrDefault().ToDeltaString())
+            @((submit.Time - Contest.StartTime).GetValueOrDefault().ToDeltaString())
         </span>
     </span>
     <span>

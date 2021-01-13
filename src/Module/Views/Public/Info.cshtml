@@ -1,35 +1,30 @@
 ﻿@{
     ViewData["Title"] = "About this contest";
-    Contest ctx = ViewBag.Contest;
-    Team team = ViewBag.Team;
     IReadOnlyDictionary<int, Tenant.Entities.Category> cats = ViewBag.Categories;
     IReadOnlyDictionary<int, Tenant.Entities.Affiliation> affs = ViewBag.Affiliations;
 }
 
 <hgroup class="mb-3">
     <h1 class="mt-2">
-        Contest
-        <span style="font-variant:small-caps;">
-            @ctx.ShortName
-        </span>
+        Contest <span>@Contest.ShortName</span>
     </h1>
-    <h4 class="text-left">@ctx.Name</h4>
+    <h4 class="text-left">@Contest.Name</h4>
 </hgroup>
 
 <div class="row">
     <div class="col-lg-7">
         <p>
-            <span class="sol">Registration</span> <misc-status type="RegistrationStatus" value="ctx.RegisterCategory ?? 0" /><br />
-            <span class="sol">Rule</span> <misc-status type="ContestRule" value="ctx.RankingStrategy" />
+            <span class="sol">Registration</span> <misc-status type="RegistrationStatus" value="Contest.RegisterCategory ?? 0" /><br />
+            <span class="sol">Rule</span> <misc-status type="ContestRule" value="Contest.RankingStrategy" />
         </p>
         @Html.Raw(ViewBag.Markdown)
     </div>
     <div class="col-lg-4">
         <h3 class="mt-4">Team info</h3>
-        @if (team == null)
+        @if (Contest.Team == null)
         {
             <p>You didn't register for this contest.</p>
-            @if (ctx.RegisterCategory.HasValue)
+            @if (Contest.RegisterCategory.HasValue)
             {
                 <form method="post" asp-action="Register">
                     <button class="btn btn-primary" type="submit">Register</button>
@@ -41,15 +36,15 @@
             <table class="table table-sm table-striped">
                 <tr>
                     <th>Name</th>
-                    <td>@team.TeamName</td>
+                    <td>@Contest.Team.TeamName</td>
                 </tr>
                 <tr>
                     <th>Category</th>
-                    <td>@(cats.GetValueOrDefault(team.CategoryId)?.Name)</td>
+                    <td>@(cats.GetValueOrDefault(Contest.Team.CategoryId)?.Name)</td>
                 </tr>
                 <tr>
                     <th>Affiliation</th>
-                    <td>@(affs.GetValueOrDefault(team.AffiliationId)?.Name ?? "none")</td>
+                    <td>@(affs.GetValueOrDefault(Contest.Team.AffiliationId)?.Name ?? "none")</td>
                 </tr>
                 <tr>
                     <th>Status</th>

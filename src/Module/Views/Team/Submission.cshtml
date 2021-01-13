@@ -1,7 +1,6 @@
 ﻿@model SubmissionViewModel
 @{
     Layout = null;
-    Contest ctx = ViewBag.Contest;
     var time = Model.Time;
     var compile_badge = Model.CompilerOutput is null ? "secondary"
                       : Model.Verdict == Polygon.Entities.Verdict.CompileError ? "danger" : "success";
@@ -33,19 +32,19 @@
                         <div class="p-2">
                             Run result: <verdict3 value="@Model.Verdict" />
                         </div>
-                        <div asp-show-if="ctx.RankingStrategy == 1" class="p-2">
+                        <div asp-show-if="Contest.RankingStrategy == 1" class="p-2">
                             Score: <b>@Model.Points</b>
                         </div>
                     </div>
-                    
+
                     <hr />
                     <h4 class="text-center">Compilation output</h4>
                     <snippet class="pre-scrollable" base64="@Model.CompilerOutput" nodata="There were no compiler errors or warnings." />
-                    
+
                     <hr />
                     <h4 class="text-center">Source code</h4>
-                    <p asp-show-if="ctx.GetState() != ContestState.Finalized" class="nodata">Source code will be available when contest is finalized.</p>
-                    <ace asp-show-if="ctx.GetState() == ContestState.Finalized" value="@Model.SourceCode.UnBase64()" file="Main.@l.FileExtension" />
+                    <p asp-show-if="Contest.GetState() != ContestState.Finalized" class="nodata">Source code will be available when contest is finalized.</p>
+                    <ace asp-show-if="Contest.GetState() == ContestState.Finalized" value="@Model.SourceCode.UnBase64()" file="Main.@l.FileExtension" />
                 </div>
             </div>
             <div class="modal-footer">

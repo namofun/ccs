@@ -84,10 +84,10 @@ namespace Ccs
         /// Gets the clarification categories from contest problems.
         /// </summary>
         /// <returns>The enumerable for tuple (CategoryName, CategoryEnum, ProblemId).</returns>
-        public IEnumerable<(string, ClarificationCategory, int?)> ClarificationCategories
+        public IEnumerable<(string, ClarificationCategory, int?, string)> ClarificationCategories
             => _problems
-                .Select(cp => ($"prob-{cp.ShortName}", ClarificationCategory.Problem, (int?) cp.ProblemId))
-                .Prepend(("tech", ClarificationCategory.Technical, null))
-                .Prepend(("general", ClarificationCategory.General, null));
+                .Select(cp => ($"prob-{cp.ShortName}", ClarificationCategory.Problem, (int?) cp.ProblemId, $"{cp.ShortName} - {cp.Title}"))
+                .Prepend(("tech", ClarificationCategory.Technical, null, "Technical issue"))
+                .Prepend(("general", ClarificationCategory.General, null, "General issue"));
     }
 }
