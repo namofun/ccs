@@ -35,7 +35,7 @@ namespace Ccs
         /// </summary>
         /// <returns>The task for fetching jury list.</returns>
         /// <remarks>Implementation should take a <see cref="HashSet{T}"/> as resulting type.</remarks>
-        Task<HashSet<int>> FetchJuryAsync();
+        Task<Dictionary<int, string>> FetchJuryAsync();
 
         /// <summary>
         /// Assign jury user to contest.

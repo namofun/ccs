@@ -2,6 +2,7 @@
 using Ccs.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Polygon.Storages;
 using SatelliteSite.IdentityModule.Entities;
 
 namespace Ccs
@@ -9,7 +10,7 @@ namespace Ccs
     public class RelationalRole<TUser, TRole, TContext> : IServiceRole
         where TUser : User, new()
         where TRole : Role, new()
-        where TContext : DbContext, IContestDbContext
+        where TContext : DbContext, IContestDbContext, IPolygonDbContext
     {
         public void Configure(IServiceCollection services)
         {

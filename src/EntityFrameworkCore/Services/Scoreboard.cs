@@ -2,6 +2,7 @@
 using Ccs.Models;
 using Microsoft.EntityFrameworkCore;
 using Polygon.Entities;
+using Polygon.Storages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,7 @@ using System.Threading.Tasks;
 namespace Ccs.Services
 {
     public class Scoreboard<TContext> : IScoreboard, ISupportDbContext
-        where TContext : DbContext, IContestDbContext
+        where TContext : DbContext, IContestDbContext, IPolygonDbContext
     {
         public IContestDbContext Db { get; }
 
@@ -72,7 +73,7 @@ namespace Ccs.Services
             => FirstBloodQuery(cid, probid, SortOrderQuery(cid, teamid)).AnyAsync();
 
         public Task RebuildPartialScoreAsync(int cid)
-            => Db.Judgings.BatchUpdateJoinAsync(
+            => ((IPolygonDbContext)Db).Judgings.BatchUpdateJoinAsync(
                 RealScoreQuery(cid), j => j.Id, p => p.Id,
                 (j, p) => new Judging { TotalScore = p.Score });
 

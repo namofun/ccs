@@ -98,16 +98,17 @@ namespace Ccs.Services
             return stmts;
         }
 
+        [Checked]
         public async Task<CheckResult> CheckProblemAvailabilityAsync(int probid, ClaimsPrincipal user)
         {
             int cid = Contest.Id;
-            int? userId = user.IsInRole("Administrator") ? default(int?) : int.Parse(user.GetUserId()!);
+            int? userId = user.IsInRole("Administrator") ? default(int?) : int.Parse(user.GetUserId() ?? "-110");
 
             if (await Db.ContestProblems.Where(cp => cp.ContestId == cid && cp.ProblemId == probid).AnyAsync())
                 return CheckResult.Fail("Problem has been added.");
 
             IQueryable<Problem> query;
-            if (user == null)
+            if (userId == null)
                 query = Db.Problems
                     .Where(p => p.Id == probid);
             else

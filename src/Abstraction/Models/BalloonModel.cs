@@ -91,7 +91,7 @@ namespace Ccs.Models
         /// <param name="sortOrder">The sort order.</param>
         public BalloonModel(
             int bid, int submitid, bool done,
-            int probid, int teamid, string teamName, string teamLoc,
+            int probid, int teamid, string teamName, string? teamLoc,
             DateTimeOffset time, string catName, int sortOrder)
         {
             Id = bid;
@@ -101,7 +101,7 @@ namespace Ccs.Models
             CategoryName = catName;
             Time = time;
             ProblemId = probid;
-            Location = teamLoc;
+            Location = teamLoc ?? string.Empty;
             SortOrder = sortOrder;
         }
     }

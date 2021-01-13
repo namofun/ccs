@@ -75,7 +75,7 @@ namespace Ccs.Entities
         /// <summary>
         /// The location of team
         /// </summary>
-        public string Location { get; set; }
+        public string? Location { get; set; }
 
         /// <summary>
         /// The navigation to rank cache

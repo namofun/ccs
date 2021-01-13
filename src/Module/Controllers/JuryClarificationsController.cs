@@ -49,7 +49,7 @@ namespace SatelliteSite.ContestModule.Controllers
                 ModelState.AddModelError("xys::error_cate", "The category specified is wrong.");
 
             if (!ModelState.IsValid) return View(model);
-            var clarId = await Context.ClarifyAsync(
+            var clar = await Context.ClarifyAsync(
                 replyTo: replyTo,
                 clar: new Clarification
                 {
@@ -65,9 +65,9 @@ namespace SatelliteSite.ContestModule.Controllers
                     Category = usage.Item2,
                 });
 
-            await HttpContext.AuditAsync("added", $"{clarId}");
-            StatusMessage = $"Clarification {clarId} has been sent.";
-            return RedirectToAction(nameof(Detail), new { clarid = clarId });
+            await HttpContext.AuditAsync("added", $"{clar.Id}");
+            StatusMessage = $"Clarification {clar.Id} has been sent.";
+            return RedirectToAction(nameof(Detail), new { clarid = clar.Id });
         }
 
 

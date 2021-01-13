@@ -262,7 +262,7 @@ namespace SatelliteSite.ContestModule.Controllers
             DateTimeOffset? startTime = null;
             TimeSpan? endTime = null, freezeTime = null, unfreezeTime = null;
 
-            if (string.IsNullOrEmpty(model.StartTime))
+            if (!string.IsNullOrEmpty(model.StartTime))
                 startTime = DateTimeOffset.Parse(model.StartTime);
 
             if (!string.IsNullOrWhiteSpace(model.StopTime))

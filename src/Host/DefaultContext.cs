@@ -55,6 +55,13 @@ namespace SatelliteSite
         public virtual DbSet<ProblemAuthor> ProblemAuthors { get; set; }
 
         IQueryable<IUser> IContestDbContext.Users => Users;
+        IQueryable<Submission> IContestDbContext.Submissions => Submissions;
+        IQueryable<Problem> IContestDbContext.Problems => Problems;
+        IQueryable<ProblemAuthor> IContestDbContext.ProblemAuthors => ProblemAuthors;
+        IQueryable<Judging> IContestDbContext.Judgings => Judgings;
+        IQueryable<JudgingRun> IContestDbContext.JudgingRuns => JudgingRuns;
+        IQueryable<Testcase> IContestDbContext.Testcases => Testcases;
+        IQueryable<Category> IContestDbContext.Categories => Categories;
     }
 
     public class QueryCache : QueryCacheBase<DefaultContext>

@@ -27,7 +27,7 @@ namespace Ccs
             if (!int.TryParse(user.GetUserId(), out var uid))
                 return false;
             var jury = await context.FetchJuryAsync();
-            return jury.Contains(uid);
+            return jury.ContainsKey(uid);
         }
 
         /// <summary>

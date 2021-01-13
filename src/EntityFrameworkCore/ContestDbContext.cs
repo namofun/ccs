@@ -70,39 +70,39 @@ namespace Ccs.Services
         DbSet<ScoreCache> ScoreCache { get; set; }
 
         /// <summary>
-        /// Gets the database set for <see cref="Submission"/>.
+        /// Gets the queryable for <see cref="Submission"/>.
         /// </summary>
-        DbSet<Submission> Submissions { get; set; }
+        IQueryable<Submission> Submissions { get; }
 
         /// <summary>
-        /// Gets the database set for <see cref="Problem"/>.
+        /// Gets the queryable for <see cref="Problem"/>.
         /// </summary>
-        DbSet<Problem> Problems { get; set; }
+        IQueryable<Problem> Problems { get; }
 
         /// <summary>
-        /// Gets the database set for <see cref="ProblemAuthor"/>.
+        /// Gets the queryable for <see cref="ProblemAuthor"/>.
         /// </summary>
-        DbSet<ProblemAuthor> ProblemAuthors { get; set; }
+        IQueryable<ProblemAuthor> ProblemAuthors { get; }
 
         /// <summary>
-        /// Gets the database set for <see cref="Judging"/>.
+        /// Gets the queryable for <see cref="Judging"/>.
         /// </summary>
-        DbSet<Judging> Judgings { get; set; }
+        IQueryable<Judging> Judgings { get; }
 
         /// <summary>
-        /// Gets the database set for <see cref="JudgingRun"/>.
+        /// Gets the queryable for <see cref="JudgingRun"/>.
         /// </summary>
-        DbSet<JudgingRun> JudgingRuns { get; set; }
+        IQueryable<JudgingRun> JudgingRuns { get; }
 
         /// <summary>
-        /// Gets the database set for <see cref="Testcase"/>.
+        /// Gets the queryable for <see cref="Testcase"/>.
         /// </summary>
-        DbSet<Testcase> Testcases { get; set; }
+        IQueryable<Testcase> Testcases { get; }
 
         /// <summary>
-        /// Gets the database set for <see cref="Category"/>.
+        /// Gets the queryable for <see cref="Category"/>.
         /// </summary>
-        DbSet<Category> Categories { get; set; }
+        IQueryable<Category> Categories { get; }
 
         /// <summary>
         /// Gets the queryable for <see cref="IUser"/>.

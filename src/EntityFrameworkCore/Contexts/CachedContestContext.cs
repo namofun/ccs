@@ -24,7 +24,7 @@ namespace Ccs.Services
 
         private Task<TValue> CacheAsync<TValue>(string t, TimeSpan? s, Func<Task<TValue>> f)
         {
-            return _cache.GetOrCreateAsync($"Context({Contest.Id})::{t}", async entry =>
+            return _cache.GetOrCreateAsync($"Contest({Contest.Id})::{t}", async entry =>
             {
                 var value = await f();
                 entry.AbsoluteExpirationRelativeToNow = s;
@@ -34,7 +34,7 @@ namespace Ccs.Services
 
         private void Expire(string tag)
         {
-            _cache.Remove($"Context({Contest.Id})::{tag}");
+            _cache.Remove($"Contest({Contest.Id})::{tag}");
         }
     }
 }

@@ -46,7 +46,7 @@ namespace Ccs.Services
             Expire("Jury");
         }
 
-        public override Task<HashSet<int>> FetchJuryAsync()
+        public override Task<Dictionary<int, string>> FetchJuryAsync()
         {
             return CacheAsync("Jury", _options.Contest,
                 async () => await base.FetchJuryAsync());

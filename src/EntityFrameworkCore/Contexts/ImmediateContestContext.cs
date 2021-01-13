@@ -38,10 +38,11 @@ namespace Ccs.Services
             return Get<IAuditlogger>().ViewLogsAsync(Contest.Id, page, pageCount);
         }
 
+        [Checked]
         public virtual async Task<object> GetUpdatesAsync()
         {
             int cid = Contest.Id;
-            var clarifications = Db.Clarifications.CountAsync(c => c.ContestId == cid && !c.Answered);
+            var clarifications = await Db.Clarifications.CountAsync(c => c.ContestId == cid && !c.Answered);
             var rejudgings = await Polygon.Rejudgings.CountUndoneAsync(Contest.Id);
             var teams = await Db.Teams.CountAsync(t => t.ContestId == cid && t.Status == 0);
             return new { clarifications, teams, rejudgings };

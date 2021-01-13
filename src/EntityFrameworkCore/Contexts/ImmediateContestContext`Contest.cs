@@ -24,31 +24,32 @@ namespace Ccs.Services
             return langs;
         }
 
+        [Checked]
         public virtual async Task<Contest> UpdateContestAsync(Expression<Func<Contest, Contest>> updateExpression)
         {
             await Ccs.UpdateAsync(Contest.Id, updateExpression);
             return await Ccs.FindAsync(Contest.Id);
         }
 
-        public virtual async Task<HashSet<int>> FetchJuryAsync()
+        [Checked]
+        public virtual Task<Dictionary<int, string>> FetchJuryAsync()
         {
             int cid = Contest.Id;
-            var result = new HashSet<int>();
-            var query = await Db.ContestJuries
+            return Db.ContestJuries
                 .Where(j => j.ContestId == cid)
-                .Select(j => j.UserId)
-                .ToListAsync();
-            return new HashSet<int>(query);
+                .Join(Db.Users, j => j.UserId, u => u.Id, (j, u) => new { u.Id, u.UserName })
+                .ToDictionaryAsync(k => k.Id, v => v.UserName);
         }
 
+        [Checked]
         public virtual Task AssignJuryAsync(IUser user)
         {
-            int cid = Contest.Id, userid = user.Id;
             return Db.ContestJuries.UpsertAsync(
-                new { cid, userid },
-                s => new Jury { ContestId = cid, UserId = userid });
+                new { cid = Contest.Id, userid = user.Id },
+                s => new Jury { ContestId = s.cid, UserId = s.userid });
         }
 
+        [Checked]
         public virtual Task UnassignJuryAsync(IUser user)
         {
             int cid = Contest.Id, userid = user.Id;
