@@ -1,6 +1,7 @@
 using Markdig;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Polygon.FakeJudgehost;
@@ -33,6 +34,9 @@ namespace SatelliteSite
                     builder.ConfigureServices((context, services) =>
                     {
                         services.AddMarkdown();
+
+                        services.AddDbModelSupplier<DefaultContext, Polygon.Storages.PolygonIdentityEntityConfiguration<User, DefaultContext>>();
+
                         services.Configure<Polygon.PolygonPhysicalOptions>(options =>
                         {
                             options.JudgingDirectory = Path.Combine(context.HostingEnvironment.ContentRootPath, "Runs");

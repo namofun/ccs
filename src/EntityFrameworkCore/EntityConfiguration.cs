@@ -18,6 +18,7 @@ namespace Ccs.Entities
         IEntityTypeConfiguration<Contest>,
         IEntityTypeConfiguration<Member>,
         IEntityTypeConfiguration<ContestProblem>,
+        IEntityTypeConfiguration<Rejudging>,
         IEntityTypeConfiguration<Jury>
         where TUser : User
         where TRole : Role
@@ -298,6 +299,14 @@ namespace Ccs.Entities
             entity.HasOne<TUser>()
                 .WithMany()
                 .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+        }
+
+        public void Configure(EntityTypeBuilder<Rejudging> entity)
+        {
+            entity.HasOne<Contest>()
+                .WithMany()
+                .HasForeignKey(e => e.ContestId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

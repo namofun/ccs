@@ -1,5 +1,6 @@
 ﻿using Ccs.Entities;
 using Ccs.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Polygon.Entities;
@@ -29,12 +30,12 @@ namespace SatelliteSite
 
         public virtual DbSet<Contest> Contests { get; set; }
         public virtual DbSet<ContestProblem> ContestProblems { get; set; }
-        public virtual DbSet<Jury> Juries { get; set; }
+        public virtual DbSet<Jury> ContestJuries { get; set; }
         public virtual DbSet<Team> Teams { get; set; }
         public virtual DbSet<Member> TeamMembers { get; set; }
         public virtual DbSet<Clarification> Clarifications { get; set; }
         public virtual DbSet<Balloon> Balloons { get; set; }
-        public virtual DbSet<Event> Events { get; set; }
+        public virtual DbSet<Event> ContestEvents { get; set; }
         public virtual DbSet<Printing> Printings { get; set; }
         public virtual DbSet<RankCache> RankCache { get; set; }
         public virtual DbSet<ScoreCache> ScoreCache { get; set; }
@@ -52,7 +53,8 @@ namespace SatelliteSite
         public virtual DbSet<Rejudging> Rejudgings { get; set; }
         public virtual DbSet<SubmissionStatistics> SubmissionStatistics { get; set; }
         public virtual DbSet<ProblemAuthor> ProblemAuthors { get; set; }
-        DbSet<Testcase> IPolygonDbContext.ProblemAuthors { get; set; }
+
+        IQueryable<IUser> IContestDbContext.Users => Users;
     }
 
     public class QueryCache : QueryCacheBase<DefaultContext>

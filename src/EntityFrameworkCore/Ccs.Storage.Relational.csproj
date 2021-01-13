@@ -5,7 +5,7 @@
     <Nullable>enable</Nullable>
     <RootNamespace>Ccs</RootNamespace>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <DescriptionAttach>The infrastructure abstraction</DescriptionAttach>
+    <DescriptionAttach>The relational storage role</DescriptionAttach>
   </PropertyGroup>
 
   <Import Project="..\..\build\NugetPackage.Backend.props" />

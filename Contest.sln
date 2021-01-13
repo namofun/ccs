@@ -19,7 +19,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SatelliteSite.Host", "src\H
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ccs.Abstraction", "src\Abstraction\Ccs.Abstraction.csproj", "{5EA301D9-E49C-4AA9-B545-DB5751E97287}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ccs.Storage.EntityFrameworkCore", "src\EntityFrameworkCore\Ccs.Storage.EntityFrameworkCore.csproj", "{9D66850C-F2C9-465E-8C82-FE7C7CFA41B4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ccs.Storage.Relational", "src\EntityFrameworkCore\Ccs.Storage.Relational.csproj", "{9D66850C-F2C9-465E-8C82-FE7C7CFA41B4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ccs.Scoreboard", "src\Scoreboard\Ccs.Scoreboard.csproj", "{9D6E0EDA-7E4F-4634-B6F3-7BB20A4DB2E1}"
 EndProject
