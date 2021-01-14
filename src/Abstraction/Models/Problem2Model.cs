@@ -6,9 +6,14 @@
     public class Problem2Model : Entities.ContestProblem
     {
         /// <summary>
-        /// The problem title
+        /// The contest name
         /// </summary>
         public string Title { get; }
+
+        /// <summary>
+        /// The contest big title
+        /// </summary>
+        public string BigTitle { get; }
 
         /// <inheritdoc cref="Ccs.Entities.Contest.Kind"/>
         public int Kind { get; }
@@ -19,7 +24,7 @@
         /// <summary>
         /// Instantiate a model for contest problem.
         /// </summary>
-        public Problem2Model(int cid, int probid, string shortName, bool allowSubmit, string color, int codeforcesScore, string name, int kind, int rankStrategy)
+        public Problem2Model(int cid, int probid, string shortName, bool allowSubmit, string color, int codeforcesScore, string name, string bigTitle, int kind, int rankStrategy)
         {
             AllowSubmit = allowSubmit;
             Color = color;
@@ -30,6 +35,7 @@
             Score = codeforcesScore;
             ShortName = shortName;
             Title = name;
+            BigTitle = bigTitle;
         }
     }
 }

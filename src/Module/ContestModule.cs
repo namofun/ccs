@@ -2,6 +2,7 @@
 using Ccs.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 
@@ -80,6 +81,47 @@ namespace SatelliteSite.ContestModule
                     .HasTitle(string.Empty, "ICPC Contest API")
                     .HasLink("/api/doc/ccsapi");
             });
+
+            menus.Menu(CcsDefaults.JuryNavbar, menu =>
+            {
+                menu.HasEntry(100)
+                    .HasLink("Contest", "Teams", "List")
+                    .HasTitle("fas fa-address-book", "Teams")
+                    .HasIdentifier("menu_teams")
+                    .HasBadge("teams", BootstrapColor.warning)
+                    .ActiveWhenController("Teams");
+
+                menu.HasEntry(200)
+                    .HasLink("Contest", "Clarifications", "List")
+                    .HasTitle("fas fa-comments", "Clarifications")
+                    .HasIdentifier("menu_clarifications")
+                    .HasBadge("clarifications", BootstrapColor.info)
+                    .ActiveWhenController("Clarifications");
+
+                menu.HasEntry(300)
+                    .HasLink("Contest", "Submissions", "List")
+                    .HasTitle("fas fa-file-code", "Submissions")
+                    .ActiveWhenController("Submissions");
+
+                menu.HasEntry(400)
+                    .HasLink("Contest", "Rejudgings", "List")
+                    .HasTitle("fas fa-sync-alt", "Rejudgings")
+                    .HasIdentifier("menu_rejudgings")
+                    .HasBadge("rejudgings", BootstrapColor.info)
+                    .ActiveWhenController("Rejudgings");
+
+                menu.HasEntry(500)
+                    .HasLink("Contest", "Jury", "Scoreboard")
+                    .HasTitle("fas fa-list-ol", "Scoreboard")
+                    .ActiveWhenAction("Scoreboard")
+                    .RequireThat(ctx => Contest(ctx).Kind == 0);
+            });
+
+            menus.Component(Polygon.ResourceDictionary.ComponentProblemOverview)
+                .HasComponent<Components.ProblemUsage.ProblemUsageViewComponent>(10);
         }
+
+        private static Ccs.Entities.Contest Contest(ViewContext ctx)
+            => ctx.HttpContext.Features.Get<IContestContext>().Contest;
     }
 }

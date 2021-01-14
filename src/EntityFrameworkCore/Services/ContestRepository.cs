@@ -35,7 +35,7 @@ namespace Ccs.Services
                select new Problem2Model(
                    cp.ContestId, cp.ProblemId, cp.ShortName,
                    cp.AllowSubmit, cp.Color, cp.Score,
-                   c.Name, c.Kind, c.RankingStrategy);
+                   c.Name, c.ShortName, c.Kind, c.RankingStrategy);
 
         public Task<List<Problem2Model>> FindProblemUsageAsync(int probid)
             => QueryProblemsUsage(probid).ToListAsync();
