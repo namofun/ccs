@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Runtime.CompilerServices;
 
 namespace SatelliteSite.ContestModule
 {
@@ -114,14 +115,112 @@ namespace SatelliteSite.ContestModule
                     .HasLink("Contest", "Jury", "Scoreboard")
                     .HasTitle("fas fa-list-ol", "Scoreboard")
                     .ActiveWhenAction("Scoreboard")
-                    .RequireThat(ctx => Contest(ctx).Kind == 0);
+                    .RequireThat(ctx => ContestKind(ctx, 0));
+
+                menu.HasEntry(600)
+                    .HasLink("Contest", "Team", "Home")
+                    .HasTitle("fas fa-arrow-right", "Team")
+                    .RequireThat(ctx => ContestKind(ctx, 0) && HasTeam(ctx));
+
+                menu.HasEntry(601)
+                    .HasLink("Contest", "Gym", "Home")
+                    .HasTitle("fas fa-arrow-right", "Gym")
+                    .RequireThat(ctx => ContestKind(ctx, 1));
+            });
+
+            menus.Menu(CcsDefaults.GymNavbar, menu =>
+            {
+                menu.HasEntry(100)
+                    .HasLink("Contest", "Gym", "Home")
+                    .HasTitle("fas fa-book-open", "Problems")
+                    .ActiveWhenAction("Home,ProblemView");
+
+                menu.HasEntry(200)
+                    .HasLink("Contest", "Gym", "Submissions")
+                    .HasTitle("fas fa-file-code", "Status")
+                    .ActiveWhenAction("Submissions");
+
+                menu.HasEntry(500)
+                    .HasLink("Contest", "Gym", "Scoreboard")
+                    .HasTitle("fas fa-list-ol", "Standings")
+                    .ActiveWhenAction("Scoreboard");
+
+                menu.HasEntry(600)
+                    .HasLink("Contest", "Jury", "Home")
+                    .HasTitle("fas fa-arrow-right", "Team")
+                    .RequireThat(ctx => IsJury(ctx));
+            });
+
+            menus.Menu(CcsDefaults.PublicNavbar, menu =>
+            {
+                menu.HasEntry(100)
+                    .HasLink("Contest", "Public", "Info")
+                    .HasTitle("fas fa-home", "About")
+                    .ActiveWhenAction("Info");
+
+                menu.HasEntry(200)
+                    .HasLink("Contest", "Public", "Scoreboard")
+                    .HasTitle("fas fa-list-ol", "Scoreboard")
+                    .ActiveWhenAction("Scoreboard");
+
+                menu.HasEntry(600)
+                    .HasLink("Contest", "Jury", "Home")
+                    .HasTitle("fas fa-arrow-right", "Jury")
+                    .RequireThat(ctx => IsJury(ctx));
+
+                menu.HasEntry(601)
+                    .HasLink("Contest", "Team", "Home")
+                    .HasTitle("fas fa-arrow-right", "Team")
+                    .RequireThat(ctx => HasTeam(ctx));
+            });
+
+            menus.Menu(CcsDefaults.TeamNavbar, menu =>
+            {
+                menu.HasEntry(100)
+                    .HasLink("Contest", "Team", "Home")
+                    .HasTitle("fas fa-home", "Home")
+                    .ActiveWhenAction("Home");
+
+                menu.HasEntry(200)
+                    .HasLink("Contest", "Team", "Problemset")
+                    .HasTitle("fas fa-book-open", "Problemset")
+                    .ActiveWhenAction("Problemset");
+
+                menu.HasEntry(400)
+                    .HasLink("Contest", "Team", "Print")
+                    .HasTitle("fas fa-file-alt", "Print")
+                    .ActiveWhenAction("Print")
+                    .RequireThat(ctx => PrintingAvailable(ctx));
+
+                menu.HasEntry(500)
+                    .HasLink("Contest", "Team", "Scoreboard")
+                    .HasTitle("fas fa-list-ol", "Scoreboard")
+                    .ActiveWhenAction("Scoreboard");
+
+                menu.HasEntry(600)
+                    .HasLink("Contest", "Jury", "Home")
+                    .HasTitle("fas fa-arrow-right", "Jury")
+                    .RequireThat(ctx => IsJury(ctx));
             });
 
             menus.Component(Polygon.ResourceDictionary.ComponentProblemOverview)
                 .HasComponent<Components.ProblemUsage.ProblemUsageViewComponent>(10);
         }
 
-        private static Ccs.Entities.Contest Contest(ViewContext ctx)
-            => ctx.HttpContext.Features.Get<IContestContext>().Contest;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool ContestKind(ViewContext ctx, int kind)
+            => ctx.HttpContext.Features.Get<IContestContext>().Contest.Kind == kind;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool PrintingAvailable(ViewContext ctx)
+            => ctx.HttpContext.Features.Get<IContestContext>().Contest.PrintingAvailable;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool HasTeam(ViewContext ctx)
+            => ctx.ViewData["Team"] is Ccs.Entities.Team;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool IsJury(ViewContext ctx)
+            => ctx.ViewData["IsJury"] is bool isJury && isJury;
     }
 }

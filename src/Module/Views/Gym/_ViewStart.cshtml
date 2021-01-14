@@ -1,6 +1,7 @@
 ﻿@{
-    Contest ctx = ViewBag.Contest;
+    ViewData["NavbarName"] = CcsDefaults.JuryNavbar;
+    ViewData["BigUrl"] = Url.Action("Home", "Gym");
     ViewData["UseLightTheme"] = true;
-    ViewData["BigTitle"] = ctx.ShortName;
+    ViewData["BigTitle"] = Contest.ShortName;
     Layout = "/Views/Shared/_Layout.cshtml";
 }

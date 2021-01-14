@@ -1,12 +1,12 @@
 ﻿@using Polygon.Entities
+@using Polygon.Models 
 @model Rejudging
 @{
     ViewData["Title"] = $"Rejudging {Model.Id}";
     ViewData["RefreshAfter"] = "updateMatrix";
     ViewData["RefreshSpan"] = 15;
-    IEnumerable<(Judging @new, Judging old, int probid, string langid, DateTimeOffset time, int teamid)> js = ViewBag.Judgings;
+    IEnumerable<RejudgingDifference> js = ViewBag.Judgings;
     Dictionary<int, string> teams = ViewBag.Teams;
-    Dictionary<string, Language> langs = ViewBag.Languages;
     if (ViewData.ContainsKey("InAjax")) { Layout = null; }
 }
 
@@ -93,7 +93,7 @@
 }
 
 <span class="d-none" data-new-todo>
-    @{ var cntsss = js.Count(s => s.@new.Status == Verdict.Pending || s.@new.Status == Verdict.Running); }
+    @{ var cntsss = js.Count(s => s.NewJudging.Status == Verdict.Pending || s.NewJudging.Status == Verdict.Running); }
     @cntsss
 </span>
 
@@ -122,9 +122,9 @@
 
     @{
         var optts = js
-            .Where(s => s.@new.Status != Verdict.Pending && s.@new.Status != Verdict.Running);
+            .Where(s => s.NewJudging.Status != Verdict.Pending && s.NewJudging.Status != Verdict.Running);
 
-        var usedVerdicts = Enumerable.Concat(optts.Select(s => s.old.Status), optts.Select(s => s.@new.Status))
+        var usedVerdicts = Enumerable.Concat(optts.Select(s => s.OldJudging.Status), optts.Select(s => s.NewJudging.Status))
             .Distinct()
             .OrderBy(v => v)
             .ToArray();
@@ -134,9 +134,9 @@
         for (int i = 0; i < usedVerdicts.Length; i++) { rev[(int)usedVerdicts[i]] = i; }
         foreach (var s in js)
         {
-            if (s.@new.Status != Verdict.Pending && s.@new.Status != Verdict.Running)
+            if (s.NewJudging.Status != Verdict.Pending && s.NewJudging.Status != Verdict.Running)
             {
-                its[rev[(int)s.old.Status], rev[(int)s.@new.Status]]++;
+                its[rev[(int)s.OldJudging.Status], rev[(int)s.NewJudging.Status]]++;
             }
         }
     }
@@ -185,27 +185,26 @@
         <tbody>
             @foreach (var s in js)
             {
-                if (s.@new.Status == Verdict.Accepted) { correct++; }
+                if (s.NewJudging.Status == Verdict.Accepted) { correct++; }
                 total++;
                 <tr asp-controller="Submissions"
                     asp-action="Detail"
-                    asp-route-sid="@s.old.SubmissionId"
-                    asp-route-jid="@(s.@new.Id)"
+                    asp-route-sid="@s.SubmissionId"
+                    asp-route-jid="@(s.NewJudging.Id)"
                     class=""
-                    data-problem-id="@s.probid"
-                    data-team-id="@s.teamid"
-                    data-language-id="@s.langid"
-                    data-submission-id="@s.old.SubmissionId">
-                    <td use-a>s@(s.old.SubmissionId)</td>
-                    <td use-a>@s.time</td>
-                    <td use-a>@teams.GetValueOrDefault(s.teamid) (t@(s.teamid))</td>
-                    <td use-a class="probid">@Contest.Problems.Find(s.probid)?.ShortName</td>
-                    <td use-a class="langid">@s.langid</td>
-                    <td use-a><span asp-show-if="Contest.RankingStrategy == 1">@(s.@new.TotalScore ?? 0) - </span><verdict value="@(s.@new.Status)" /></td>
-                    <td use-a><span asp-show-if="Contest.RankingStrategy == 1">@(s.old.TotalScore ?? 0) - </span><verdict value="@s.old.Status" /></td>
+                    data-problem-id="@s.ProblemId"
+                    data-team-id="@s.TeamId"
+                    data-language-id="@s.Language"
+                    data-submission-id="@s.SubmissionId">
+                    <td use-a>s@(s.OldJudging.SubmissionId)</td>
+                    <td use-a>@s.SubmitTime</td>
+                    <td use-a>@teams.GetValueOrDefault(s.TeamId) (t@(s.TeamId))</td>
+                    <td use-a class="probid">@Contest.Problems.Find(s.ProblemId)?.ShortName</td>
+                    <td use-a class="langid">@s.Language</td>
+                    <td use-a><span asp-show-if="Contest.RankingStrategy == 1">@(s.NewJudging.TotalScore ?? 0) - </span><verdict value="@(s.NewJudging.Status)" /></td>
+                    <td use-a><span asp-show-if="Contest.RankingStrategy == 1">@(s.OldJudging.TotalScore ?? 0) - </span><verdict value="@s.OldJudging.Status" /></td>
                 </tr>
             }
-
         </tbody>
     </table>
 
