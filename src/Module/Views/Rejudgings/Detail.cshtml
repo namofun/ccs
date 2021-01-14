@@ -1,12 +1,8 @@
-﻿@using Polygon.Entities
-@using Polygon.Models 
-@model Rejudging
+﻿@model JuryViewRejudgingModel
 @{
     ViewData["Title"] = $"Rejudging {Model.Id}";
     ViewData["RefreshAfter"] = "updateMatrix";
     ViewData["RefreshSpan"] = 15;
-    IEnumerable<RejudgingDifference> js = ViewBag.Judgings;
-    Dictionary<int, string> teams = ViewBag.Teams;
     if (ViewData.ContainsKey("InAjax")) { Layout = null; }
 }
 
@@ -49,16 +45,16 @@
                 <tr>
                     <th>Issued by</th>
                     <td>
-                        <a asp-area="Account" asp-controller="Profile" asp-action="Show" asp-route-username="@ViewBag.Issuer">
-                            @ViewBag.Issuer
+                        <a asp-area="Account" asp-controller="Profile" asp-action="Show" asp-route-username="@Model.IssuedBy">
+                            @Model.IssuedBy
                         </a>
                     </td>
                 </tr>
-                <tr asp-show-if="Model.OperatedBy.HasValue">
+                <tr asp-show-if="Model.OperatedBy != null">
                     <th>@(Model.Applied.Value ? "Accepted" : "Cancelled") by</th>
                     <td>
-                        <a asp-area="Account" asp-controller="Profile" asp-action="Show" asp-route-username="@ViewBag.Operator">
-                            @ViewBag.Operator
+                        <a asp-area="Account" asp-controller="Profile" asp-action="Show" asp-route-username="@Model.OperatedBy">
+                            @Model.OperatedBy
                         </a>
                     </td>
                 </tr>
@@ -93,17 +89,16 @@
 }
 
 <span class="d-none" data-new-todo>
-    @{ var cntsss = js.Count(s => s.NewJudging.Status == Verdict.Pending || s.NewJudging.Status == Verdict.Running); }
-    @cntsss
+    @Model.UndoneCount
 </span>
 
 <div class="d-none" data-new-rejudging-buttons>
-    <p asp-show-if="Model.OperatedBy.HasValue">
+    <p asp-show-if="Model.OperatedBy != null">
         <a asp-action="Repeat" class="btn btn-primary" data-toggle="ajaxWindow" data-target="repeat">
             <i class="fas fa-sync"></i> Repeat rejudging
         </a>
     </p>
-    <form asp-show-if="!Model.OperatedBy.HasValue && cntsss <= 0" method="post">
+    <form asp-show-if="Model.OperatedBy == null && Model.UndoneCount <= 0" method="post">
         <button asp-action="Cancel" type="submit" class="btn btn-danger">
             <i class="fas fa-times"></i> Cancel rejudging
         </button>
@@ -111,7 +106,7 @@
             <i class="fas fa-check"></i> Apply rejudging
         </button>
     </form>
-    <form asp-show-if="!Model.OperatedBy.HasValue && cntsss > 0" asp-action="Cancel" method="post">
+    <form asp-show-if="Model.OperatedBy == null && Model.UndoneCount > 0" asp-action="Cancel" method="post">
         <button type="submit" class="btn btn-danger">
             <i class="fas fa-times"></i> Cancel rejudging
         </button>
@@ -119,28 +114,7 @@
 </div>
 
 <div class="d-none" data-new-rejudging-matrix>
-
-    @{
-        var optts = js
-            .Where(s => s.NewJudging.Status != Verdict.Pending && s.NewJudging.Status != Verdict.Running);
-
-        var usedVerdicts = Enumerable.Concat(optts.Select(s => s.OldJudging.Status), optts.Select(s => s.NewJudging.Status))
-            .Distinct()
-            .OrderBy(v => v)
-            .ToArray();
-
-        var its = new int[usedVerdicts.Length, usedVerdicts.Length];
-        var rev = new int[13];
-        for (int i = 0; i < usedVerdicts.Length; i++) { rev[(int)usedVerdicts[i]] = i; }
-        foreach (var s in js)
-        {
-            if (s.NewJudging.Status != Verdict.Pending && s.NewJudging.Status != Verdict.Running)
-            {
-                its[rev[(int)s.OldJudging.Status], rev[(int)s.NewJudging.Status]]++;
-            }
-        }
-    }
-
+    @{ Model.GetMatrix(out var usedVerdicts, out var its); }
     <div class="mt-3">
         <h3>Overview of changes</h3>
 
@@ -166,7 +140,7 @@
     </div>
 </div>
 
-@if (js.Any())
+@if (Model.Differences.Any())
 {
     int total = 0, correct = 0;
 
@@ -183,7 +157,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var s in js)
+            @foreach (var s in Model.Differences)
             {
                 if (s.NewJudging.Status == Verdict.Accepted) { correct++; }
                 total++;
@@ -198,11 +172,11 @@
                     data-submission-id="@s.SubmissionId">
                     <td use-a>s@(s.OldJudging.SubmissionId)</td>
                     <td use-a>@s.SubmitTime</td>
-                    <td use-a>@teams.GetValueOrDefault(s.TeamId) (t@(s.TeamId))</td>
+                    <td use-a>@Model.TeamNames.GetValueOrDefault(s.TeamId) (t@(s.TeamId))</td>
                     <td use-a class="probid">@Contest.Problems.Find(s.ProblemId)?.ShortName</td>
                     <td use-a class="langid">@s.Language</td>
-                    <td use-a><span asp-show-if="Contest.RankingStrategy == 1">@(s.NewJudging.TotalScore ?? 0) - </span><verdict value="@(s.NewJudging.Status)" /></td>
-                    <td use-a><span asp-show-if="Contest.RankingStrategy == 1">@(s.OldJudging.TotalScore ?? 0) - </span><verdict value="@s.OldJudging.Status" /></td>
+                    <td use-a>@(s.NewJudging.TotalScore ?? 0) - <verdict value="@(s.NewJudging.Status)" /></td>
+                    <td use-a>@(s.OldJudging.TotalScore ?? 0) - <verdict value="@s.OldJudging.Status" /></td>
                 </tr>
             }
         </tbody>

@@ -2,6 +2,7 @@
 using Polygon.Entities;
 using SatelliteSite.ContestModule.Models;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -17,7 +18,9 @@ namespace SatelliteSite.ContestModule.Controllers
         public async Task<IActionResult> List()
         {
             var model = await Context.FetchRejudgingsAsync();
-            return View(model);
+            var uids = model.SelectTwo(r => r.OperatedBy, r => r.IssuedBy).NotNulls().Distinct();
+            var userNames = await UserManager.FindUserNamesAsync(uids);
+            return View(new ContextedList<Rejudging>(model) { UserNames = userNames });
         }
 
 
@@ -26,18 +29,31 @@ namespace SatelliteSite.ContestModule.Controllers
         {
             var model = await Context.FindRejudgingAsync(rid);
             if (model == null) return NotFound();
-            ViewBag.Teams = await Context.FetchTeamNamesAsync();
-            ViewBag.Judgings = await Context.ViewRejudgingAsync(model);
-            return View(model);
+
+            var uids = new[] { model.OperatedBy, model.IssuedBy }.NotNulls().Distinct();
+            var userNames = await UserManager.FindUserNamesAsync(uids);
+            var teamNames = await Context.FetchTeamNamesAsync();
+            var difference = await Context.ViewRejudgingAsync(model);
+
+            return View(new JuryViewRejudgingModel
+            {
+                TeamNames = teamNames,
+                Differences = difference,
+                Reason = model.Reason,
+                Applied = model.Applied,
+                EndTime = model.EndTime,
+                Id = model.Id,
+                StartTime = model.StartTime,
+                IssuedBy = userNames.GetValueOrDefault(model.IssuedBy ?? -110),
+                OperatedBy = userNames.GetValueOrDefault(model.OperatedBy ?? -110),
+            });
         }
 
 
         [HttpGet("[action]")]
         public async Task<IActionResult> Add()
         {
-            ViewBag.Teams = await Context.FetchTeamNamesAsync();
-            ViewBag.Judgehosts = await Context.FetchJudgehostsAsync();
-            return View(new AddRejudgingModel());
+            return View(await new AddRejudgingModel().LoadAsync(Context));
         }
 
 
@@ -45,7 +61,7 @@ namespace SatelliteSite.ContestModule.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Add(AddRejudgingModel model)
         {
-            if (!ModelState.IsValid) return View(model);
+            if (!ModelState.IsValid) return View(await model.LoadAsync(Context));
 
             var r = await Context.CreateRejudgingAsync(new Rejudging
             {

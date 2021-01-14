@@ -1,5 +1,4 @@
-﻿@using Polygon.Entities 
-@model IEnumerable<Rejudging>
+﻿@model ContextedList<Rejudging>
 @{
     ViewData["Title"] = "Rejudgings";
     ViewData["RefreshSpan"] = 15;
@@ -24,25 +23,25 @@
         <tbody>
             @foreach (var rej in Model)
             {
-                <tr asp-action="Detail" asp-route-rid="@rej.Id" class="@(rej.OperatedBy.HasValue ? "disabled" : "")">
-                    <td use-a>@rej.Id</td>
-                    <td use-a>@rej.Reason</td>
-                    <td use-a>@@rej.Issuer</td>
-                    <td use-a>@@(rej.Operator ?? "-")</td>
-                    <td use-a>@rej.StartTime?.ToString("HH:mm")</td>
-                    <td use-a>@(rej.EndTime?.ToString("HH:mm") ?? "-")</td>
-                    <td use-a>
-                        <span asp-show-if="rej.Applied.HasValue">
-                            @(rej.Applied.Value ? "applied" : "cancelled")
-                        </span>
-                        <b asp-show-if="!rej.Applied.HasValue && rej.Ready.Item2 == 0">
-                            ready
-                        </b>
-                        <span asp-show-if="!rej.Applied.HasValue && rej.Ready.Item2 != 0">
-                            not ready @($"{(100 - 100.0 * rej.Ready.Item2 / rej.Ready.Item1):f0}")%
-                        </span>
-                    </td>
-                </tr>
+            <tr asp-action="Detail" asp-route-rid="@rej.Id" class="@(rej.OperatedBy.HasValue ? "disabled" : "")">
+                <td use-a>@rej.Id</td>
+                <td use-a>@rej.Reason</td>
+                <td use-a>@(Model.UserNames.GetValueOrDefault(@rej.IssuedBy ?? -110) ?? "-")</td>
+                <td use-a>@(Model.UserNames.GetValueOrDefault(@rej.OperatedBy ?? -110) ?? "-")</td>
+                <td use-a>@rej.StartTime?.ToString("HH:mm")</td>
+                <td use-a>@(rej.EndTime?.ToString("HH:mm") ?? "-")</td>
+                <td use-a>
+                    <span asp-show-if="rej.Applied.HasValue">
+                        @(rej.Applied.Value ? "applied" : "cancelled")
+                    </span>
+                    <b asp-show-if="!rej.Applied.HasValue && rej.Ready.Item2 == 0">
+                        ready
+                    </b>
+                    <span asp-show-if="!rej.Applied.HasValue && rej.Ready.Item2 != 0">
+                        not ready @($"{(100 - 100.0 * rej.Ready.Item2 / rej.Ready.Item1):f0}")%
+                    </span>
+                </td>
+            </tr>
             }
         </tbody>
     </table>

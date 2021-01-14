@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Ccs.Entities;
+using System.Collections.Generic;
 
 namespace SatelliteSite.ContestModule.Models
 {
@@ -21,6 +22,8 @@ namespace SatelliteSite.ContestModule.Models
         public int TotalSubmissions { get; set; }
 
         public int[,] VerdictStatistics { get; }
+
+        public IReadOnlyDictionary<int, Team> Teams { get; set; }
 
         public AnalysisOneModel(int time)
         {

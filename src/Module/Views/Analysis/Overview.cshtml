@@ -1,9 +1,7 @@
-﻿@using Polygon.Entities
-@model AnalysisOneModel
+﻿@model AnalysisOneModel
 @{
     ViewData["Title"] = "Statistics";
     ViewData["DisableAjaxRefresh"] = true;
-    IReadOnlyDictionary<int, Team> teams = ViewBag.Teams;
     var byprob = Model.TeamStatistics.GroupBy(a => a.Key.ProblemId).ToDictionary(k => k.Key, k => (k.Count(), k.Count(a => a.Value.ac > 0)));
     var byteam = Model.TeamStatistics.GroupBy(a => a.Key.TeamId).ToDictionary(k => k.Key, k => (k.Count(), k.Count(a => a.Value.ac > 0), k.Sum(a => a.Value.ac + a.Value.at), k.Sum(a => a.Value.ac)));
 }
@@ -66,12 +64,12 @@
                 @{
                     var account = Model.AcceptedLanguages.Values.Append(0).Sum();
                     var totcount = Model.AttemptedLanguages.Values.Append(0).Sum();
-                    var misery = Model.TotalMinutes - Math.Ceiling(teams.Keys.Select(k => Model.TeamLastSubmission.GetValueOrDefault(k)).Average());
+                    var misery = Model.TotalMinutes - Math.Ceiling(Model.Teams.Keys.Select(k => Model.TeamLastSubmission.GetValueOrDefault(k)).Average());
                 }
                 <abbr data-toggle="popover" data-placement="bottom" title="Misery Index" data-content="This is a measure of how 'bored' contestants are. It is the average number of people-minutes spent fruitlessly trying to solve problems at the end of the contest. <br> Calculated as:<br> average across all teams of [1 person x (number of minutes elapsed - minute last problem solved by team t)]">Misery index</abbr>: @misery minutes<br>
                 # Submissions: @totcount<br>
                 # Accepted Submissions: @account <span class="text-muted">(~@(Math.Floor(account*100.0/totcount))%)</span><br>
-                # of Teams: @teams.Count
+                # of Teams: @Model.Teams.Count
             </div>
         </div>
     </div>
@@ -162,7 +160,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var (id, team) in teams)
+                        @foreach (var (id, team) in Model.Teams)
                         {
                             var tt = byteam.GetValueOrDefault(id);
                             <tr asp-action="Detail" asp-controller="Teams" asp-route-teamid="@id">

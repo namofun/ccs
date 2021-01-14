@@ -59,7 +59,6 @@ namespace SatelliteSite.ContestModule.Controllers
             }
 
             Teams = await Context.FetchTeamsAsync();
-            ViewBag.Teams = Teams;
         }
 
 
@@ -114,6 +113,7 @@ namespace SatelliteSite.ContestModule.Controllers
                     dbl[i, j] += dbl[i, j - 1];
 
             model.TotalSubmissions = toc;
+            model.Teams = Teams;
             return View(model);
         }
 

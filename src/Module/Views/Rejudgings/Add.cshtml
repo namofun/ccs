@@ -1,10 +1,6 @@
-﻿@using Polygon.Entities
-@model AddRejudgingModel
+﻿@model AddRejudgingModel
 @{
     ViewData["Title"] = "Add rejudging";
-    var langs = await Contest.Context.FetchLanguagesAsync();
-    IReadOnlyDictionary<int, string> teams = ViewBag.Teams;
-    IReadOnlyList<Judgehost> hosts = ViewBag.Judgehosts;
 }
 
 <h2 class="mt-2">Add rejudging</h2>
@@ -24,15 +20,15 @@
         </div>
         <div class="form-group">
             <label asp-for="Languages">Language</label>
-            <select asp-for="Languages" class="form-control custom-select form-control" multiple asp-items="@(langs.Select(l => new SelectListItem(l.Name, l.Id)))"></select>
+            <select asp-for="Languages" class="form-control custom-select form-control" multiple asp-items="@(Model.AllowedLanguages.Select(l => new SelectListItem(l.Name, l.Id)))"></select>
         </div>
         <div class="form-group">
             <label asp-for="Teams">Team</label>
-            <select asp-for="Teams" class="form-control custom-select form-control" multiple asp-items="@(teams.Select(t => new SelectListItem($"{t.Value} (t{t.Key})", $"{t.Key}")))"></select>
+            <select asp-for="Teams" class="form-control custom-select form-control" multiple asp-items="@(Model.AllowedTeamNames.Select(t => new SelectListItem($"{t.Value} (t{t.Key})", $"{t.Key}")))"></select>
         </div>
         <div class="form-group">
             <label asp-for="Judgehosts">Judgehost</label>
-            <select asp-for="Judgehosts" class="form-control custom-select form-control" multiple asp-items="@(hosts.Select(h => new SelectListItem(h.ServerName, h.ServerName)))"></select>
+            <select asp-for="Judgehosts" class="form-control custom-select form-control" multiple asp-items="@(Model.AllowedJudgehosts.Select(h => new SelectListItem(h.ServerName, h.ServerName)))"></select>
         </div>
         <div class="form-group">
             <label asp-for="Verdicts">Verdict</label>

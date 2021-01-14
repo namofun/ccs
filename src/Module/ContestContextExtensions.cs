@@ -1,12 +1,14 @@
 ﻿#nullable enable
+using Ccs;
 using Ccs.Entities;
 using Ccs.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace Ccs
+namespace SatelliteSite.ContestModule
 {
     /// <summary>
     /// Extensions for contest context.
@@ -26,6 +28,38 @@ namespace Ccs
                 return false;
             var jury = await context.FetchJuryAsync();
             return jury.ContainsKey(uid);
+        }
+
+        /// <summary>
+        /// Select two same property from the source enumerable.
+        /// </summary>
+        /// <typeparam name="TSource">The source type.</typeparam>
+        /// <typeparam name="TResult">The result type.</typeparam>
+        /// <param name="sources">The sources.</param>
+        /// <param name="result1">The result1 selector.</param>
+        /// <param name="result2">The result2 selector.</param>
+        /// <returns>The enumerable for results.</returns>
+        public static IEnumerable<TResult> SelectTwo<TSource, TResult>(
+            this IEnumerable<TSource> sources,
+            Func<TSource, TResult> result1,
+            Func<TSource, TResult> result2)
+        {
+            foreach (var item in sources)
+            {
+                yield return result1(item);
+                yield return result2(item);
+            }
+        }
+
+        /// <summary>
+        /// Figure out not null values.
+        /// </summary>
+        /// <typeparam name="T">The source type.</typeparam>
+        /// <param name="sources">The sources.</param>
+        /// <returns>The values.</returns>
+        public static IEnumerable<T> NotNulls<T>(this IEnumerable<T?> sources) where T : struct
+        {
+            return sources.Where(a => a.HasValue).Select(a => a!.Value);
         }
 
         /// <summary>
