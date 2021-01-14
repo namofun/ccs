@@ -1,51 +1,45 @@
-﻿@using Polygon.Entities
+﻿@model JuryViewTeamModel
 @{
-    SingleBoardViewModel scoreboard = ViewBag.Scoreboard;
-    Team team = ViewBag.ShowTeam;
-    IEnumerable<Polygon.Models.Solution> submissions = ViewBag.Submissions;
-    ViewData["Title"] = "Team " + team.TeamId;
-    IEnumerable<string> members = ViewBag.Member;
-    var aff = scoreboard.Affiliation;
+    ViewData["Title"] = "Team " + Model.TeamId;
     int correct = 0, total = 0;
 }
 
-<h2 class="mt-2">Team @team.TeamName</h2>
+<h2 class="mt-2">Team @Model.TeamName</h2>
 
 <div class="row">
     <div class="col-lg-4">
         <table class="table table-sm table-striped">
             <tr>
                 <th>ID</th>
-                <td>@team.TeamId</td>
+                <td>@Model.TeamId</td>
             </tr>
             <tr>
                 <th>Name</th>
-                <td>@team.TeamName</td>
+                <td>@Model.TeamName</td>
             </tr>
             <tr>
                 <th>Category</th>
                 <td>
-                    @scoreboard.Category.Name
+                    @Model.Category.Name
                 </td>
             </tr>
             <tr>
                 <th>Affiliation</th>
                 <td>
-                    <img src="~/images/affiliations/@(aff.Abbreviation).png"
-                         title="@aff.Abbreviation" class="affiliation-logo" />
-                    @aff.Name
+                    <img src="~/images/affiliations/@(Model.Affiliation.Abbreviation).png" title="@Model.Affiliation.Abbreviation" class="affiliation-logo" />
+                    @Model.Affiliation.Name
                 </td>
             </tr>
             <tr>
                 <th>Status</th>
-                <td><misc-status type="TeamStatus" value="@team.Status" /></td>
+                <td><misc-status type="TeamStatus" value="@Model.Status" /></td>
             </tr>
-            <tr asp-show-if="members.Any()">
+            <tr asp-show-if="Model.Members.Any()">
                 <th>User</th>
                 <td>
-                    @foreach (var item in members)
+                    @foreach (var item in Model.Members)
                     {
-                        <a asp-area="Account" asp-controller="Profile" asp-action="Show" asp-route-username="@item">@item</a>
+                    <a asp-area="Account" asp-controller="Profile" asp-action="Show" asp-route-username="@item">@item</a>
                     }
                 </td>
             </tr>
@@ -54,14 +48,14 @@
 </div>
 
 <p>
-    <a asp-action="Edit" asp-route-teamid="@team.TeamId" data-toggle="ajaxWindow" data-target="editTeam" class="btn btn-primary" title="Edit"><i class="fas fa-edit"></i>&nbsp;Edit</a>
-    <a asp-action="Delete" asp-route-teamid="@team.TeamId" data-toggle="ajaxWindow" data-target="deleteTeam" class="btn btn-danger" title="Delete"><i class="fas fa-trash-alt"></i>&nbsp;Delete</a>
-    <a asp-controller="Clarifications" asp-action="Send" asp-route-teamto="@team.TeamId" class="btn btn-secondary" title="Send message"><i class="fas fa-envelope"></i>&nbsp;Send message</a>
+    <a asp-action="Edit" asp-route-teamid="@Model.TeamId" data-toggle="ajaxWindow" data-target="editTeam" class="btn btn-primary" title="Edit"><i class="fas fa-edit"></i>&nbsp;Edit</a>
+    <a asp-action="Delete" asp-route-teamid="@Model.TeamId" data-toggle="ajaxWindow" data-target="deleteTeam" class="btn btn-danger" title="Delete"><i class="fas fa-trash-alt"></i>&nbsp;Delete</a>
+    <a asp-controller="Clarifications" asp-action="Send" asp-route-teamto="@Model.TeamId" class="btn btn-secondary" title="Send message"><i class="fas fa-envelope"></i>&nbsp;Send message</a>
 </p>
 
-<razor asp-show-if="scoreboard != null">
+<razor asp-show-if="Model.Status == 1">
     <h3>Score</h3>
-    @Html.ContestScoreboard(scoreboard, false, false)
+    @Html.ContestScoreboard(Model, false, false)
 </razor>
 
 <h3 class="mt-3">Submissions</h3>
@@ -78,7 +72,7 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var sub in submissions)
+        @foreach (var sub in Model.Solutions)
         {
             var tooLate = ((Contest.StartTime + Contest.EndTime) ?? DateTimeOffset.MaxValue) < sub.Time;
             if (sub.Verdict == Verdict.Accepted) { correct++; }

@@ -20,7 +20,7 @@ namespace SatelliteSite.ContestModule.Controllers
             var model = await Context.FetchRejudgingsAsync();
             var uids = model.SelectTwo(r => r.OperatedBy, r => r.IssuedBy).NotNulls().Distinct();
             var userNames = await UserManager.FindUserNamesAsync(uids);
-            return View(new ContextedList<Rejudging>(model) { UserNames = userNames });
+            return View(new JuryListRejudgingModel(model) { UserNames = userNames });
         }
 
 

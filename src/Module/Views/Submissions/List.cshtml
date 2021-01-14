@@ -1,12 +1,9 @@
-﻿@using Polygon.Models
-@using Polygon.Entities
-@model IEnumerable<Solution>
+﻿@model IReadOnlyList<Solution>
 @{
     ViewData["Title"] = "Submission";
     ViewData["RefreshSpan"] = 30;
     if (ViewData.ContainsKey("InAjax")) { Layout = null; }
     int correct = 0, total = 0;
-    var tn = await Contest.Context.FetchTeamNamesAsync();
 }
 
 @section Header {
@@ -47,7 +44,7 @@
                 data-submission-id="@sub.SubmissionId">
                 <td use-a>s@(sub.SubmissionId)</td>
                 <td use-a title="@sub.Time">@((sub.Time - Contest.StartTime).GetValueOrDefault().ToDeltaString())</td>
-                <td use-a>@tn.GetValueOrDefault(sub.TeamId) (t@(sub.TeamId))</td>
+                <td use-a>@sub.AuthorName (t@(sub.TeamId))</td>
                 <td use-a class="probid">@prob.ShortName</td>
                 <td use-a class="langid">@sub.Language</td>
                 <td use-a>

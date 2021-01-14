@@ -24,14 +24,12 @@ namespace Ccs.Services
             return langs;
         }
 
-        [Checked]
         public virtual async Task<Contest> UpdateContestAsync(Expression<Func<Contest, Contest>> updateExpression)
         {
             await Ccs.UpdateAsync(Contest.Id, updateExpression);
             return await Ccs.FindAsync(Contest.Id);
         }
 
-        [Checked]
         public virtual Task<Dictionary<int, string>> FetchJuryAsync()
         {
             int cid = Contest.Id;
@@ -41,7 +39,6 @@ namespace Ccs.Services
                 .ToDictionaryAsync(k => k.Id, v => v.UserName);
         }
 
-        [Checked]
         public virtual Task AssignJuryAsync(IUser user)
         {
             return Db.ContestJuries.UpsertAsync(
@@ -49,7 +46,6 @@ namespace Ccs.Services
                 s => new Jury { ContestId = s.cid, UserId = s.userid });
         }
 
-        [Checked]
         public virtual Task UnassignJuryAsync(IUser user)
         {
             int cid = Contest.Id, userid = user.Id;

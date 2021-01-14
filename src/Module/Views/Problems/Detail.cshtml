@@ -1,11 +1,7 @@
-﻿@using Polygon.Models
-@using Polygon.Entities
-@model ProblemModel
+﻿@model JuryViewProblemModel
 @{
-    IEnumerable<Solution> submissions = ViewBag.Submissions;
     ViewData["Title"] = "Problem " + Model.Title;
     int correct = 0, total = 0;
-    var tn = await Contest.Context.FetchTeamNamesAsync();
 }
 
 <h2 class="mt-2">Problem @Model.Title</h2>
@@ -29,7 +25,7 @@
                 <th>Testcases</th>
                 <td>
                     @Model.TestcaseCount
-                    <a href="/polygon/@Model.ProblemId/testcases">details / edit</a>
+                    <a asp-area="Polygon" asp-route-pid="@Model.ProblemId" asp-controller="Testcases" asp-action="Testcases">details / edit</a>
                 </td>
             </tr>
             <tr>
@@ -47,9 +43,8 @@
             <tr>
                 <th>Problem text</th>
                 <td>
-                    <a href="/polygon/@Model.ProblemId/description/preview">
-                        <i title="view problem description"
-                           class="fas fa-file-pdf"></i>
+                    <a asp-area="Polygon" asp-route-pid="@Model.ProblemId" asp-controller="Description" asp-action="Preview">
+                        <i title="view problem description" class="fas fa-file-pdf"></i>
                     </a>
                 </td>
             </tr>
@@ -84,7 +79,7 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var sub in submissions)
+        @foreach (var sub in Model)
         {
             var tooLate = ((Contest.StartTime + Contest.EndTime) ?? DateTimeOffset.MaxValue) < sub.Time;
             if (sub.Verdict == Verdict.Accepted) { correct++; }
@@ -96,7 +91,7 @@
                 data-submission-id="@sub.SubmissionId">
                 <td use-a>s@(sub.SubmissionId)</td>
                 <td use-a>@sub.Time.ToString("HH:mm")</td>
-                <td use-a>@tn.GetValueOrDefault(sub.TeamId) (t@(sub.TeamId))</td>
+                <td use-a>@sub.AuthorName (t@(sub.TeamId))</td>
                 <td use-a class="langid">@sub.Language</td>
                 <td use-a>
                     <span asp-show-if="Contest.RankingStrategy == 1">@(sub.TotalScore ?? 0) - </span>

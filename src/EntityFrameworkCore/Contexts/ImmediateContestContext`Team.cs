@@ -72,7 +72,6 @@ namespace Ccs.Services
             return results.ToDictionary(a => a.Id);
         }
 
-        [Checked]
         public virtual async Task<Team> CreateTeamAsync(Team team, IEnumerable<IUser>? users)
         {
             int cid = team.ContestId;
@@ -99,7 +98,6 @@ namespace Ccs.Services
             return team;
         }
 
-        [Checked]
         public virtual async Task UpdateTeamAsync(Team origin, Expression<Func<Team, Team>> expression)
         {
             var (cid, teamid) = (origin.ContestId, origin.TeamId);
@@ -161,7 +159,6 @@ namespace Ccs.Services
                 .ToListAsync();
         }
 
-        [Checked]
         public virtual async Task<IReadOnlyDictionary<int, Team>> FetchTeamsAsync()
         {
             var cid = Contest.Id;

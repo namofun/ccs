@@ -1,7 +1,9 @@
 ﻿using Ccs.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Polygon.Packaging;
+using SatelliteSite.ContestModule.Models;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.IO.Compression;
@@ -31,8 +33,10 @@ namespace SatelliteSite.ContestModule.Controllers
         {
             var prob = Problems.Find(pid);
             if (prob == null) return NotFound();
-            ViewBag.Submissions = await Context.FetchSolutionsAsync(probid: pid, all: all);            
-            return View(prob);
+            var sols = await Context.FetchSolutionsAsync(probid: pid, all: all);
+            var tn = await Context.FetchTeamNamesAsync();
+            sols.ForEach(a => a.AuthorName = tn.GetValueOrDefault(a.TeamId));
+            return View(new JuryViewProblemModel(sols, prob));
         }
 
 

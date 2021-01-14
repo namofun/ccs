@@ -1,7 +1,7 @@
-﻿using Ccs;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Polygon.Entities;
 using SatelliteSite.ContestModule.Models;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -16,6 +16,8 @@ namespace SatelliteSite.ContestModule.Controllers
         public async Task<IActionResult> List(bool all = false)
         {
             var model = await Context.FetchSolutionsAsync(all: all);
+            var teamNames = await Context.FetchTeamNamesAsync();
+            model.ForEach(a => a.AuthorName = teamNames.GetValueOrDefault(a.TeamId));
             return View(model);
         }
 

@@ -38,7 +38,6 @@ namespace Ccs.Services
             return Get<IAuditlogger>().ViewLogsAsync(Contest.Id, page, pageCount);
         }
 
-        [Checked]
         public virtual async Task<object> GetUpdatesAsync()
         {
             int cid = Contest.Id;

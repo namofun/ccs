@@ -1,5 +1,4 @@
-﻿using Ccs;
-using Ccs.Entities;
+﻿using Ccs.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -43,11 +42,27 @@ namespace SatelliteSite.ContestModule.Controllers
             var team = await Context.FindTeamByIdAsync(teamid);
             if (team == null) return NotFound();
 
-            ViewBag.ShowTeam = team;
-            ViewBag.Scoreboard = await Context.SingleBoardAsync(teamid);
-            ViewBag.Submissions = await Context.FetchSolutionsAsync(teamid: teamid, all: all_submissions);
-            ViewBag.Member = await Context.FetchTeamMemberAsync(team);
-            return View();
+            var scb = await Context.FetchScoreboardAsync();
+            var bq = scb.Data.GetValueOrDefault(teamid);
+            var cats = await Context.FetchCategoriesAsync();
+            var affs = await Context.FetchAffiliationsAsync();
+            var sols = await Context.FetchSolutionsAsync(teamid: teamid, all: all_submissions);
+            var members = await Context.FetchTeamMemberAsync(team);
+
+            return View(new JuryViewTeamModel
+            {
+                Contest = Contest,
+                Problems = Problems,
+                Affiliation = affs[team.AffiliationId],
+                Category = cats[team.CategoryId],
+                Solutions = sols,
+                Members = members,
+                TeamId = team.TeamId,
+                TeamName = team.TeamName,
+                Status = team.Status,
+                ScoreCache = bq?.ScoreCache,
+                RankCache = bq?.RankCache,
+            });
         }
 
 
