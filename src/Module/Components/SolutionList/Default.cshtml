@@ -1,0 +1,185 @@
+﻿@namespace SatelliteSite.ContestModule.Components.SolutionList
+@using Polygon.Entities
+@model SolutionListViewModel
+@inject Ccs.IContestContextAccessor Contest
+@functions
+{
+    int total, correct;
+    string currentUrl = null;
+
+    static readonly (string, string, string, string)[] verdIcons = new[]
+    {
+        ("secondary", "?", "unknown", "queued"), // 0
+        ("danger", "t", "timelimit", "incorrect"),
+        ("danger", "m", "memory-limit", "incorrect"),
+        ("danger", "r", "run-error", "incorrect"),
+        ("danger", "o", "output-limit", "incorrect"),
+        ("danger", "w", "wrong-answer", "incorrect"), // 5
+        ("secondary", "c", "compiler-error", "incorrect"),
+        ("danger", "w", "wrong-answer", "incorrect"),
+        ("secondary", "?", "queued", "queued"),
+        ("info", "?", "running", "queued"),
+        ("warning", "?", "undefined", "incorrect"), // 10
+        ("success", "✓", "correct", "correct"),
+    };
+
+    void WriteCell(string body, string title = null, string _class = null, bool write = true)
+    {
+        if (!write) return;
+        WriteLiteral("<td");
+        if (title != null)
+        {
+            WriteLiteral(" title=\"");
+            Write(title);
+            WriteLiteral("\"");
+        }
+        if (_class != null)
+        {
+            WriteLiteral(" class=\"");
+            Write(_class);
+            WriteLiteral("\"");
+        }
+        WriteLiteral("><a href=\"");
+        WriteLiteral(currentUrl);
+        WriteLiteral("\">");
+        Write(body);
+        WriteLiteral("</a></td>");
+    }
+
+    void WriteVerdict(Verdict value, bool tooLate, bool skipped)
+    {
+        var v = (int)value;
+        var tp1 = tooLate || skipped ? "queued" : verdIcons[v].Item4;
+        var tp2 = tooLate ? "too-late" : skipped ? "skipped" : verdIcons[v].Item3;
+        WriteLiteral("<span class=\"sol sol_");
+        WriteLiteral(tp1);
+        WriteLiteral("\">");
+        WriteLiteral(tp2);
+        WriteLiteral("</span>");
+    }
+
+    void WriteVerdictLine(Polygon.Models.Solution sub)
+    {
+        bool tooLate = ((Contest.StartTime + Contest.EndTime) ?? DateTimeOffset.MaxValue) < sub.Time;
+        WriteLiteral("<td><a href=\"");
+        WriteLiteral(currentUrl);
+        WriteLiteral("\">");
+        if (Contest.RankingStrategy == 1)
+        {
+            WriteLiteral("<span>");
+            WriteLiteral(sub.TotalScore?.ToString() ?? "n/a");
+            WriteLiteral(" - </span>");
+        }
+        WriteVerdict(sub.Verdict, tooLate, sub.Skipped);
+        if (tooLate && !sub.Skipped)
+        {
+            WriteLiteral(" (");
+            WriteVerdict(sub.Verdict, false, false);
+            WriteLiteral(")");
+        }
+        WriteLiteral("</a></td>");
+    }
+
+    void WriteStatusLine(Polygon.Models.Solution sub, int tc)
+    {
+        WriteLiteral("<td class=\"testcase-results\">");
+        int t = 0;
+        bool judgingPending = sub.Verdict == Verdict.Pending || sub.Verdict == Verdict.Running;
+        foreach (var item in sub.Details)
+        {
+            t++;
+            WriteLiteral("<span class=\"verdict-sm badge badge-");
+            WriteLiteral(verdIcons[(int)item.Status].Item1);
+            WriteLiteral("\">");
+            WriteLiteral(verdIcons[(int)item.Status].Item2);
+            WriteLiteral("</span>");
+        }
+        for (; t < tc; t++)
+        {
+            WriteLiteral(judgingPending
+                ? "<span class=\"verdict-sm badge badge-primary\">?</span>"
+                : "<span class=\"verdict-sm badge badge-secondary\">?</span>");
+        }
+        WriteLiteral("</td>");
+    }
+}
+@{ total = correct = 0; }
+
+<table class="data-table table table-hover table-striped table-sm submissions-table">
+    <thead class="thead-light">
+        <tr>
+            <th scope="col">ID</th>
+            <th scope="col">time</th>
+@if (Model.ShowTeams) {<th scope="col">team</th>}
+@if (Model.ShowProblems) {<th scope="col">problem</th>}
+            <th scope="col">lang</th>
+            <th scope="col">result</th>
+            <th scope="col" class="not-sortable not-searchable">test results</th>
+@if (Model.ShowIp) {<th scope="col">ip</th>}
+        </tr>
+    </thead>
+    <tbody class="submissions-tbody">
+        @foreach (var sub in Model)
+        {
+            if (sub.Verdict == Verdict.Accepted) { correct++; }
+            var prob = Contest.Problems.Find(sub.ProblemId);
+            currentUrl = Url.Action("Detail", "Submissions", new { area = "Contest", sid = sub.SubmissionId });
+            total++;
+            WriteLiteral("<tr data-problem-id=\"");
+            WriteLiteral(sub.ProblemId);
+            WriteLiteral("\" data-team-id=\"");
+            WriteLiteral(sub.TeamId);
+            WriteLiteral("\" data-language-id=\"");
+            WriteLiteral(sub.Language);
+            WriteLiteral("\" data-submission-id=\"");
+            WriteLiteral(sub.SubmissionId);
+            WriteLiteral("\">");
+            WriteCell($"s{sub.SubmissionId}");
+            WriteCell((sub.Time - Contest.StartTime).GetValueOrDefault().ToDeltaString(), title: sub.Time.ToString());
+            WriteCell($"{sub.AuthorName} (t{sub.TeamId})", write: Model.ShowTeams);
+            WriteCell(prob?.ShortName ?? string.Empty, _class: "probid", write: Model.ShowProblems);
+            WriteCell(sub.Language, _class: "langid");
+            WriteVerdictLine(sub);
+            WriteStatusLine(sub, prob?.TestcaseCount ?? 1);
+            WriteCell(sub.Ip, write: Model.ShowIp);
+            WriteLiteral("</tr>\r\n");
+        }
+        @if (Model.Count == 0)
+        {
+            <tr><td class="text-center pt-1 pb-1" colspan="@(5 + (Model.ShowIp ? 1 : 0) + (Model.ShowProblems ? 1 : 0) + (Model.ShowTeams ? 1 : 0))">No submissions</td></tr>
+        }
+    </tbody>
+</table>
+
+<p>
+    Total correct: @correct, submitted: @total.
+</p>
+
+<style>
+    .data-table td a, .data-table td a:hover {
+        display: block;
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .data-table th {
+        white-space: nowrap;
+    }
+
+    .data-table td {
+        white-space: nowrap;
+    }
+
+    .dataTables_filter {
+        text-align: inherit;
+    }
+
+    .table-wrapper {
+        display: inline-block;
+    }
+
+    .submissions-tbody > tr > td > a {
+        color: inherit !important;
+        text-decoration: none !important;
+    }
+</style>
