@@ -38,7 +38,7 @@
 else
 {
     <div id="teamscoresummary">
-        <scoreboard model="Model" />
+        <domjudge-scoreboard model="Model" />
     </div>
 
     <div class="mt-4" data-flash-messages>
@@ -67,7 +67,7 @@ else
                     <tbody>
                         @foreach (var submit in submits)
                         {
-                            ProblemModel p = null;
+                            ProblemModel p = Contest.Problems.Find(submit.Problem);
                             var t = submit.Time;
                             var b = !Model.Contest.EndTime.HasValue || t < (Model.Contest.StartTime + Model.Contest.EndTime).Value;
                             <tr asp-action="Submission" asp-route-sid="@submit.SubmissionId" data-toggle="ajaxWindow" data-target="submission" class="unseen" id="submit_@submit.SubmissionId">

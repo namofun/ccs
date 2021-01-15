@@ -1,102 +1,83 @@
 ﻿@model IEnumerable<Clarification>
 @{
-    Layout = null;
-    var prv = (ProblemCollection)ViewData["Problems"];
-    ContestProblem prob = null;
+    ViewData["Title"] = "Clarification Request";
+    Layout = "_WindowLayout";
+    ViewData["MaxWidth"] = "800px";
+    ViewData["HandleKey"] ??= "view_clarification";
+    Clarification main = null;
 }
 
-<div class="modal fade" id="modal-@ViewData["HandleKey"]" tabindex="-1" role="dialog" aria-labelledby="modal-@ViewData["HandleKey"]-label" aria-hidden="true">
-    <div class="modal-dialog" style="max-width:800px" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modal-@ViewData["HandleKey"]-label">
-                    Clarification Request
-                </h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+<div class="@(ViewData.ContainsKey("InAjax") ? "container" : "") clarificationform">
+@foreach (var item in Model)
+{
+    main = item;
+    var prob = Contest.Problems.Find(item.ProblemId ?? 0);
+<div class="card mb-3">
+    <div class="card-header">
+        <div class="row">
+            <div class="col-sm">
+                Subject:
+                @item.Category @prob?.ShortName issue
             </div>
-            <div class="modal-body">
-                <div class="container clarificationform">
-                    @{ Clarification main = null; }
-                    @foreach (var item in Model)
-                    {
-                        main = item;
-                        prob = prv.FirstOrDefault(c => c.ProblemId == item.ProblemId);
-                        <div class="card mb-3">
-                            <div class="card-header">
-                                <div class="row">
-                                    <div class="col-sm">
-                                        Subject:
-                                        @item.Category @prob?.ShortName issue
-                                    </div>
-                                    <div class="col-sm text-muted text-right">
-                                        <span title="@item.SubmitTime.ToString("yyyy-MM-dd HH:mm") (CST)">
-                                            @item.SubmitTime.ToString("HH:mm")
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-body">
-                                <div class="card-title">
-                                    <div class="row">
-                                        <div class="col-sm">
-                                            From:
-                                            @(item.Sender.HasValue ? "Team t" + item.Sender : "Jury")
-                                        </div>
-                                        <div class="col-sm">
-                                            To:
-                                            @if (item.Recipient.HasValue)
-                                            {
-                                                @ViewData["TeamName"]
-                                            }
-                                            else if (item.Sender.HasValue)
-                                            {
-                                                @("Jury")
-                                            }
-                                            else
-                                            {
-                                                <strong>All</strong>
-                                            }
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="card-text">
-                                    <pre class="output-text bg-light p-3">@item.Body</pre>
-                                </div>
-                            </div>
-                        </div>
-                    }
-                </div>
-                @{
-                    ViewData["ClarId"] = main.Id;
-                    var replyModel = new AddClarificationModel
-                    {
-                        Body = string.Join("", main.Body.Split('\n').Select(s => "> " + s)) + "\n",
-                        Type = main.Category == ClarificationCategory.General
-                             ? "general"
-                             : main.Category == ClarificationCategory.Technical
-                             ? "tech"
-                             : "prob-" + (prob?.ShortName ?? "")
-                    };
-                }
-                <partial name="ReplyClarification" model="replyModel" />
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" data-toggle="collapse" data-target="#collapsereplyform"
-                        aria-expanded="false" aria-controls="collapsereplyform">
-                    <i class="fa fa-reply"></i> reply to this clarification
-                </button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">
-                    Close
-                </button>
+            <div class="col-sm text-muted text-right">
+                <span title="@item.SubmitTime.ToString("yyyy-MM-dd HH:mm") (CST)">
+                    @item.SubmitTime.ToString("HH:mm")
+                </span>
             </div>
         </div>
     </div>
+    <div class="card-body">
+        <div class="card-title">
+            <div class="row">
+                <div class="col-sm">
+                    From:
+                    @(item.Sender.HasValue ? "Team t" + item.Sender : "Jury")
+                </div>
+                <div class="col-sm">
+                    To:
+                    @if (item.Recipient.HasValue)
+                    {
+                        @ViewData["TeamName"]
+                    }
+                    else if (item.Sender.HasValue)
+                    {
+                        @("Jury")
+                    }
+                    else
+                    {
+                        <strong>All</strong>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="card-text">
+            <pre class="output-text bg-light p-3">@item.Body</pre>
+        </div>
+    </div>
 </div>
+}
+</div>
+@{
+    ViewData["ClarId"] = main.Id;
+    var replyModel = new AddClarificationModel
+    {
+        Body = string.Join("", main.Body.Split('\n').Select(s => "> " + s)) + "\n",
+        Type = Contest.Problems.ClarificationCategories.Where(a => a.Item2 == main.Category && a.Item3 == main.ProblemId).Select(a => a.Item1).FirstOrDefault() ?? "general"
+    };
+}
+<partial name="ReplyClarification" model="replyModel" />
 
-<script>
-    $(function () {
-        setSeenClar(@main.Id);
-    });
-</script>
+@section Footer {
+    <button class="btn btn-secondary" data-toggle="collapse" data-target="#collapsereplyform"
+            aria-expanded="false" aria-controls="collapsereplyform">
+        <i class="fa fa-reply"></i> reply to this clarification
+    </button>
+}
+
+@section Scripts {
+    <script>
+        $(function () {
+            setSeenClar(@main.Id);
+        });
+    </script>
+}

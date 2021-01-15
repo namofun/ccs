@@ -1,0 +1,58 @@
+﻿@{
+    Layout = ViewData.ContainsKey("InAjax") ? null : "_Layout";
+    var (styleAjax, stylePlain) = ViewData.ContainsKey("MaxWidth")
+        ? ($"max-width:{ViewData["MaxWidth"]}", $"max-width:{ViewData["MaxWidth"]}")
+        : ("", "max-width:35rem");
+    var cancelText = (ViewData["CancelText"] as string) ?? "Cancel";
+    // If you want to change form-action, please set ViewData["FormAjaxUpload"] = "Your URL";
+}
+
+@if (ViewData.ContainsKey("InAjax"))
+{
+<form bs-form-check-ajaxupload="1" action="javascript:;" id="form-@ViewData["HandleKey"]" method="post">
+    @Html.AntiForgeryToken()
+    <div class="modal fade" bs-modal-static-backdrop="@ViewData.ContainsKey("StaticBackdrop")" id="modal-@ViewData["HandleKey"]" tabindex="-1" role="dialog" aria-labelledby="modal-@ViewData["HandleKey"]-label" aria-hidden="true">
+        <div class="modal-dialog" style="@styleAjax" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modal-@ViewData["HandleKey"]-label">@ViewData["Title"]</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    @RenderBody()
+                </div>
+                <div class="modal-footer">
+                    <button asp-no-viewdata-key="IgnoreCancelButton" type="button" class="btn btn-secondary" data-dismiss="modal">@cancelText</button>
+                    @RenderSection("Footer", required: false)
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+@RenderSection("Scripts", required: false)
+}
+else
+{
+    <div class="window-card container-fluid pt-4" style="@stylePlain">
+        <h1 class="text-center mb-3">@ViewData["Title"]</h1>
+
+        <form bs-form-check-ajaxupload="1" action="javascript:;" id="form-@ViewData["HandleKey"]" method="post">
+            @Html.AntiForgeryToken()
+            @RenderBody()
+
+            @if (IsSectionDefined("Footer"))
+            {
+                <div class="mt-3">
+                    @RenderSection("Footer")
+                </div>
+            }
+        </form>
+    </div>
+
+    @section Scripts {
+        @RenderSection("Scripts", required: false)
+    }
+}

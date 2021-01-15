@@ -6,8 +6,6 @@
     var startTime = Contest.StartTime?.ToUnixTimeSeconds() ?? -1;
     var endTime = (Contest.StartTime + Contest.EndTime)?.ToUnixTimeSeconds() ?? -1;
     if (ViewData.ContainsKey("InJury")) { ViewData["AjaxUpdateUrl"] = Url.Action("Updates", "Jury"); }
-    var prog = startTime == -1 || initial / 1000 < startTime ? 0
-        : now >= endTime ? 100 : (now - startTime) * 100.0 / (endTime - startTime);
 }
 
 @section Clocking {
@@ -31,17 +29,7 @@
 }
 
 @section Banner {
-<razor asp-show-if="@(prog > 0 && prog < 100)">
-    <div class="progress" style="margin-top:-9px; height: 10px; margin-bottom: 9px" data-progress-bar>
-        <div class="progress-bar" role="progressbar" style="width: @(prog)%;"
-                aria-valuenow="@prog" aria-valuemin="0" aria-valuemax="100"></div>
-    </div>
-    <style type="text/css" asp-show-if="@((string)ViewContext.RouteData.Values["controller"] == "Team")">
-        @@media(min-width: 768px) {
-            body { padding-top: 4.066666rem; }
-        }
-    </style>
-</razor>
+    <partial name="_Progress" />
 }
 
 @section Header {
