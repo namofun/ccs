@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace SatelliteSite.ContestModule.Models
 {
-    public class JuryViewRejudgingModel
+    public class JuryViewRejudgingModel : IEnumerable<RejudgingDifference>
     {
         private int? _undoneCountLazy;
 
@@ -33,6 +33,10 @@ namespace SatelliteSite.ContestModule.Models
                 .Select(a => a.NewJudging)
                 .Where(a => a.Status == Verdict.Pending || a.Status == Verdict.Running)
                 .Count();
+
+        public IEnumerator<RejudgingDifference> GetEnumerator() => Differences.GetEnumerator();
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => GetEnumerator();
 
         public void GetMatrix(out Verdict[] usedVerdicts, out int[,] matrix)
         {

@@ -28,6 +28,7 @@ namespace Ccs.Services
         IQueryable<ScoreCalculateModel> SolutionQuery(int cid, DateTimeOffset deadline)
             => from s in Db.Submissions
                where s.ContestId == cid && !s.Ignored && s.Time < deadline
+               orderby s.Time ascending
                join j in Db.Judgings on new { SubmissionId = s.Id, Active = true } equals new { j.SubmissionId, j.Active }
                join t in Db.Teams on new { s.ContestId, s.TeamId } equals new { t.ContestId, t.TeamId }
                join c in Db.Categories on t.CategoryId equals c.Id

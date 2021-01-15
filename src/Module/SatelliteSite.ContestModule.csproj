@@ -16,7 +16,6 @@
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="SatelliteSite.Substrate" Version="$(SubstrateVersion)" />
     <PackageReference Include="Polygon.TagHelpers" Version="$(PolygonVersion)" />
-    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerEndpoint" Version="5.1.9" />
   </ItemGroup>
 
   <ItemGroup>

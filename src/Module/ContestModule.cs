@@ -57,6 +57,7 @@ namespace SatelliteSite.ContestModule
             EnsureRegistered<IContestRepository>(services);
 
             services.AddTransient<IContestContextAccessor, ContestContextAccessor>();
+            services.AddMediatRAssembly(typeof(Ccs.Scoreboard.RankingSolver).Assembly);
         }
 
         public override void RegisterMenu(IMenuContributor menus)

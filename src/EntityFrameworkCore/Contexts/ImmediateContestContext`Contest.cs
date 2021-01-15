@@ -1,7 +1,10 @@
 ﻿using Ccs.Entities;
+using Markdig;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Polygon.Entities;
+using Polygon.Storages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -73,14 +76,22 @@ namespace Ccs.Services
                 .FirstOrDefaultAsync(); ;
         }
 
-        public virtual Task<string> GetReadmeAsync(bool source)
+        public virtual async Task<string> GetReadmeAsync(bool source)
         {
-            throw new NotImplementedException();
+            string fileName = source ? $"c{Contest.Id}/readme.md" : $"c{Contest.Id}/readme.html";
+            var fileInfo = await Get<IProblemFileProvider>().GetFileInfoAsync(fileName);
+            return await fileInfo.ReadAsync() ?? string.Empty;
         }
 
-        public virtual Task SetReadmeAsync(string source)
+        public virtual async Task SetReadmeAsync(string source)
         {
-            throw new NotImplementedException();
+            source ??= "";
+            var io = Get<IProblemFileProvider>();
+            var md = Get<IMarkdownService>();
+            var document = md.Parse(source);
+
+            await io.WriteStringAsync($"c{Contest.Id}/readme.md", source);
+            await io.WriteStringAsync($"c{Contest.Id}/readme.html", md.RenderAsHtml(document));
         }
     }
 }
