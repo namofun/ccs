@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace SatelliteSite.ContestModule.Controllers
 {
     [Area("Contest")]
-    [Route("[area]/{cid}/jury/[controller]")]
+    [Route("[area]/{cid:c}/jury/[controller]")]
     public class SubmissionsController : JuryControllerBase
     {
         [HttpGet]

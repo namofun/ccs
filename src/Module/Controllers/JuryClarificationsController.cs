@@ -1,5 +1,4 @@
-﻿using Ccs;
-using Ccs.Entities;
+﻿using Ccs.Entities;
 using Microsoft.AspNetCore.Mvc;
 using SatelliteSite.ContestModule.Models;
 using System;
@@ -9,7 +8,7 @@ using System.Threading.Tasks;
 namespace SatelliteSite.ContestModule.Controllers
 {
     [Area("Contest")]
-    [Route("[area]/{cid}/jury/[controller]")]
+    [Route("[area]/{cid:c}/jury/[controller]")]
     [AuditPoint(AuditlogType.Clarification)]
     public class ClarificationsController : JuryControllerBase
     {

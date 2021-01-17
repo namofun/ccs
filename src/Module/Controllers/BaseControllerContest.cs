@@ -155,30 +155,15 @@ namespace SatelliteSite.ContestModule.Controllers
         public override async Task OnActionExecutionAsync(
             ActionExecutingContext context, ActionExecutionDelegate next)
         {
-            // check the contest info
-            if (!context.RouteData.Values.TryGetValue("cid", out var __cid) ||
-                !int.TryParse(__cid.ToString(), out int cid))
-            {
-                context.Result = NotFound();
-                return;
-            }
-
             // parse the base service
-            var factory = HttpContext.RequestServices.GetRequiredService<ScopedContestContextFactory>();
-            _private_context = await factory.CreateAsync(cid);
-            if (Context == null)
-            {
-                context.Result = NotFound();
-                return;
-            }
-            else
-            {
-                _private_problems = await Context.FetchProblemsAsync();
-                HttpContext.Items[nameof(cid)] = cid;
-                HttpContext.Features.Set(Context);
-                ViewBag.Contest = Contest;
-                ViewBag.Problems = Problems;
-            }
+            var feature = HttpContext.Features.Get<IContestFeature>();
+            _private_context = feature.Context;
+            _private_problems = await Context.FetchProblemsAsync();
+            int cid = Context.Contest.Id;
+            HttpContext.Items[nameof(cid)] = cid;
+            HttpContext.Features.Set(Context);
+            ViewBag.Contest = Contest;
+            ViewBag.Problems = Problems;
 
             // the event of contest state change
             /*

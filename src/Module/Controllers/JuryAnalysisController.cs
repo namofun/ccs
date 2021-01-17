@@ -1,5 +1,4 @@
-﻿using Ccs;
-using Ccs.Entities;
+﻿using Ccs.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Polygon.Entities;
@@ -12,7 +11,7 @@ using System.Threading.Tasks;
 namespace SatelliteSite.ContestModule.Controllers
 {
     [Area("Contest")]
-    [Route("[area]/{cid}/jury/[controller]")]
+    [Route("[area]/{cid:c}/jury/[controller]")]
     public class AnalysisController : JuryControllerBase
     {
         public IReadOnlyDictionary<int, Team> Teams { get; set; }

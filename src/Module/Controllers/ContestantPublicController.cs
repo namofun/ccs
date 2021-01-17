@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace SatelliteSite.ContestModule.Controllers
 {
     [Area("Contest")]
-    [Route("[area]/{cid}/[action]")]
+    [Route("[area]/{cid:c(1)}/[action]")]
     public class PublicController : ContestControllerBase
     {
         [HttpGet]
@@ -21,8 +21,7 @@ namespace SatelliteSite.ContestModule.Controllers
                 isJury: false, clear == "clear", affiliations, categories);
 
 
-        [HttpGet]
-        [Route("/[area]/{cid}")]
+        [HttpGet("/[area]/{cid:c(1)}")]
         public async Task<IActionResult> Info()
         {
             ViewBag.Affiliations = await Context.FetchAffiliationsAsync();

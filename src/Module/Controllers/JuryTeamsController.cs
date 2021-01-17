@@ -12,7 +12,7 @@ namespace SatelliteSite.ContestModule.Controllers
 {
     [Area("Contest")]
     [Authorize]
-    [Route("[area]/{cid}/jury/[controller]")]
+    [Route("[area]/{cid:c}/jury/[controller]")]
     [AuditPoint(AuditlogType.Team)]
     public partial class TeamsController : JuryControllerBase
     {

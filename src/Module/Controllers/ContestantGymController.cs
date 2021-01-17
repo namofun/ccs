@@ -1,5 +1,4 @@
-﻿using Ccs;
-using Ccs.Entities;
+﻿using Ccs.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -14,7 +13,7 @@ namespace SatelliteSite.ContestModule.Controllers
 {
     [Area("Contest")]
     [Authorize]
-    [Route("[controller]/{cid}")]
+    [Route("[controller]/{cid:c(2)}")]
     public class GymController : ContestControllerBase
     {
         public bool TooEarly => Contest.GetState() < ContestState.Started;

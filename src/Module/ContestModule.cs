@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.DependencyInjection;
+using SatelliteSite.ContestModule.Routing;
 using System;
 using System.Runtime.CompilerServices;
 
@@ -58,6 +59,17 @@ namespace SatelliteSite.ContestModule
 
             services.AddTransient<IContestContextAccessor, ContestContextAccessor>();
             services.AddMediatRAssembly(typeof(Ccs.Scoreboard.RankingSolver).Assembly);
+
+            services.ConfigureApplicationBuilder(options =>
+            {
+                options.Point2.Add(app => app.UseMiddleware<InitializeContestMiddleware>());
+                options.Point3.Add(app => app.UseMiddleware<InitializeTeamMiddleware>());
+            });
+
+            services.ConfigureRouting(options =>
+            {
+                options.ConstraintMap.Add("c", typeof(ContestRouteConstraint));
+            });
         }
 
         public override void RegisterMenu(IMenuContributor menus)
