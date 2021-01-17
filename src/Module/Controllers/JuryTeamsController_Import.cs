@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SatelliteSite.ContestModule.Controllers
 {
-    public partial class TeamsController : JuryControllerBase
+    public partial class JuryTeamsController : JuryControllerBase
     {
         /*
         [HttpGet("[action]")]
@@ -79,7 +79,7 @@ namespace SatelliteSite.ContestModule.Controllers
             return AskPost(
                 title: "Lockout temporary users",
                 message: "Are you sure to lockout temporary users? You should only proceed this after the whole contest is over.",
-                area: "Contest", controller: "Teams", action: nameof(LockoutTemporaryConfirmation), new { cid = Contest.Id },
+                area: "Contest", controller: "JuryTeams", action: nameof(LockoutTemporaryConfirmation), new { cid = Contest.Id },
                 type: BootstrapColor.warning);
         }
 

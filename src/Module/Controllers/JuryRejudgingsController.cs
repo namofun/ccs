@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 namespace SatelliteSite.ContestModule.Controllers
 {
     [Area("Contest")]
-    [Route("[area]/{cid:c}/jury/[controller]")]
+    [Route("[area]/{cid:c(7)}/jury/rejudgings")]
     [AuditPoint(AuditlogType.Rejudging)]
-    public class RejudgingsController : JuryControllerBase
+    public class JuryRejudgingsController : JuryControllerBase
     {
         [HttpGet]
         public async Task<IActionResult> List()
@@ -116,7 +116,7 @@ namespace SatelliteSite.ContestModule.Controllers
             return AskPost(
                 title: "Repeat rejudging",
                 message: "This will create a new rejudging with the same submissions as this rejudging.",
-                area: "Contest", controller: "Rejudgings", action: "Repeat",
+                area: "Contest", controller: "JuryRejudgings", action: "Repeat",
                 type: BootstrapColor.primary);
         }
 

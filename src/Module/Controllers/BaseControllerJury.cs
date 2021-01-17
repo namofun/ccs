@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using System.Threading.Tasks;
 
 namespace SatelliteSite.ContestModule.Controllers
 {
@@ -9,22 +8,16 @@ namespace SatelliteSite.ContestModule.Controllers
     /// Base controller for jury related things.
     /// </summary>
     [Authorize]
+    [Authorize(Policy = "ContestIsJury")]
     public abstract class JuryControllerBase : ContestControllerBase
     {
         /// <inheritdoc />
-        public override Task OnActionExecutingAsync(ActionExecutingContext context)
+        public override void OnActionExecuting(ActionExecutingContext context)
         {
-            // check the permission
-            if (!ViewData.ContainsKey("IsJury"))
-            {
-                context.Result = Forbid();
-                return Task.CompletedTask;
-            }
-
             ViewData["InJury"] = true;
             ViewData["NavbarName"] = Ccs.CcsDefaults.JuryNavbar;
             ViewData["BigUrl"] = Url.Action("Home", "Jury");
-            return base.OnActionExecutingAsync(context);
+            base.OnActionExecuting(context);
         }
 
         /// <summary>

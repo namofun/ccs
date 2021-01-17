@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 namespace SatelliteSite.ContestModule.Controllers
 {
     [Area("Contest")]
-    [Route("[area]/{cid:c}/jury/[controller]")]
-    public class PrintingsController : JuryControllerBase
+    [Route("[area]/{cid:c(7)}/jury/printings")]
+    public class JuryPrintingsController : JuryControllerBase
     {
         IPrintingService Store { get; }
 
-        public PrintingsController(IPrintingService store) => Store = store;
+        public JuryPrintingsController(IPrintingService store) => Store = store;
 
         public override void OnActionExecuting(ActionExecutingContext context)
         {

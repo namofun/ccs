@@ -11,8 +11,8 @@ using System.Threading.Tasks;
 namespace SatelliteSite.ContestModule.Controllers
 {
     [Area("Contest")]
-    [Route("[area]/{cid:c}/jury/[controller]")]
-    public class AnalysisController : JuryControllerBase
+    [Route("[area]/{cid:c(7)}/jury/analysis")]
+    public class JuryAnalysisController : JuryControllerBase
     {
         public IReadOnlyDictionary<int, Team> Teams { get; set; }
 

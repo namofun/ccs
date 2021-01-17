@@ -1,5 +1,8 @@
 ﻿using Ccs.Models;
 using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace SatelliteSite.ContestModule.Components.ContestScoreboard
@@ -20,11 +23,23 @@ namespace SatelliteSite.ContestModule.Components.ContestScoreboard
         [HtmlAttributeName("in-jury")]
         public bool InJury { get; set; }
 
+        [HtmlAttributeNotBound]
+        [ViewContext]
+        public ViewContext ViewContext { get; set; }
+
+        private IUrlHelperFactory UrlHelperFactory { get; }
+
+        public ScoreboardTagHelper(IUrlHelperFactory urlHelperFactory)
+        {
+            UrlHelperFactory = urlHelperFactory;
+        }
+
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
             base.Process(context, output);
             output.TagName = null;
-            output.Content.SetHtmlContent(new BoardView(Model, UseFooter, InJury));
+            var urlHelper = UrlHelperFactory.GetUrlHelper(ViewContext);
+            output.Content.SetHtmlContent(new BoardView(Model, UseFooter, InJury, urlHelper));
         }
     }
 }

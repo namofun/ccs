@@ -161,7 +161,7 @@
             {
                 if (s.NewJudging.Status == Verdict.Accepted) { correct++; }
                 total++;
-                <tr asp-controller="Submissions"
+                <tr asp-controller="JurySubmissions"
                     asp-action="Detail"
                     asp-route-sid="@s.SubmissionId"
                     asp-route-jid="@(s.NewJudging.Id)"

@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 namespace SatelliteSite.ContestModule.Controllers
 {
     [Area("Contest")]
-    [Route("[area]/{cid:c}/jury/[controller]")]
+    [Route("[area]/{cid:c(7)}/jury/clarifications")]
     [AuditPoint(AuditlogType.Clarification)]
-    public class ClarificationsController : JuryControllerBase
+    public class JuryClarificationsController : JuryControllerBase
     {
         [HttpGet]
         public async Task<IActionResult> List()
@@ -83,9 +83,9 @@ namespace SatelliteSite.ContestModule.Controllers
             var result = await Context.SetClarificationAnsweredAsync(clarid, answered);
 
             if (result && answered)
-                return GoBackHome($"Clarification #{clarid} is now answered.", "List", "Clarifications");
+                return GoBackHome($"Clarification #{clarid} is now answered.", "List", "JuryClarifications");
             else if (result)
-                return GoBackHome($"Clarification #{clarid} is now unanswered.", "Detail", "Clarifications");
+                return GoBackHome($"Clarification #{clarid} is now unanswered.", "Detail", "JuryClarifications");
             else
                 return Message("Set clarification", "Unknown error.", BootstrapColor.danger);
         }
@@ -131,7 +131,7 @@ namespace SatelliteSite.ContestModule.Controllers
             else if (result)
                 return RedirectToAction(nameof(List));
             else
-                return GoBackHome($"Clarification has been claimed before.", "List", "Clarifications");
+                return GoBackHome($"Clarification has been claimed before.", "List", "JuryClarifications");
         }
     }
 }

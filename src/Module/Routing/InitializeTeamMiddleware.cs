@@ -20,8 +20,13 @@ namespace SatelliteSite.ContestModule.Routing
         {
             var feature = context.Features.Get<IContestFeature>();
 
-            if (feature?.Context == null || feature.Authenticated || !context.User.IsSignedIn())
+            if (feature?.Context == null || feature.Authenticated)
             {
+                return _next(context);
+            }
+            else if (!context.User.IsSignedIn())
+            {
+                feature.Authenticate(null, false);
                 return _next(context);
             }
             else
@@ -33,7 +38,7 @@ namespace SatelliteSite.ContestModule.Routing
         private async Task TeamAsync(HttpContext context, IContestFeature feature)
         {
             Team? team = null;
-            if (int.TryParse(context.User.GetUserId() ?? "-110", out int uid))
+            if (int.TryParse(context.User.GetUserId(), out int uid))
                 team = await feature.Context!.FindTeamByUserAsync(uid);
 
             bool isJury = context.User.IsInRole("Administrator") ||

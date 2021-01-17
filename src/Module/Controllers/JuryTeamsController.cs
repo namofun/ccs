@@ -12,9 +12,9 @@ namespace SatelliteSite.ContestModule.Controllers
 {
     [Area("Contest")]
     [Authorize]
-    [Route("[area]/{cid:c}/jury/[controller]")]
+    [Route("[area]/{cid:c(7)}/jury/teams")]
     [AuditPoint(AuditlogType.Team)]
-    public partial class TeamsController : JuryControllerBase
+    public partial class JuryTeamsController : JuryControllerBase
     {
         [HttpGet]
         public async Task<IActionResult> List()
@@ -127,7 +127,7 @@ namespace SatelliteSite.ContestModule.Controllers
             return AskPost(
                 title: $"Delete team t{team.TeamId}",
                 message: $"You are about to delete {team.TeamName} (t{team.TeamId}). Are you sure?",
-                area: "Contest", controller: "Teams", action: "DeleteConfirmed", routeValues: new { cid = Contest.Id, teamid },
+                area: "Contest", controller: "JuryTeams", action: "DeleteConfirmed", routeValues: new { cid = Contest.Id, teamid },
                 type: BootstrapColor.danger);
         }
 

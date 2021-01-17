@@ -1,5 +1,6 @@
 ﻿using Ccs;
 using Ccs.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -7,10 +8,11 @@ using Microsoft.Extensions.DependencyInjection;
 using SatelliteSite.ContestModule.Routing;
 using System;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 
 namespace SatelliteSite.ContestModule
 {
-    public class ContestModule<TRole> : AbstractModule
+    public class ContestModule<TRole> : AbstractModule, IAuthorizationPolicyRegistry
         where TRole : class, IServiceRole, new()
     {
         public override string Area => "Contest";
@@ -28,6 +30,9 @@ namespace SatelliteSite.ContestModule
                 title: "Contest Module",
                 description: "ICPC Contest API (compatible as CCS)",
                 version: "2020");
+
+            endpoints.WithErrorHandler("Contest", "Team")
+                .MapStatusCode("/contest/{cid:c(1)}/{**slug}");
         }
 
         private static void EnsureRegistered<TService>(IServiceCollection services, ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
@@ -61,6 +66,8 @@ namespace SatelliteSite.ContestModule
             services.AddScoped<IContestContextAccessor>(sp => sp.GetRequiredService<ContestFeature>());
             services.AddScoped<IContestFeature>(sp => sp.GetRequiredService<ContestFeature>());
 
+            services.AddSingleton<IAuthorizationHandler, ContestAuthorizationHandler>();
+
             services.AddMediatRAssembly(typeof(Ccs.Scoreboard.RankingSolver).Assembly);
 
             services.ConfigureApplicationBuilder(options =>
@@ -72,6 +79,19 @@ namespace SatelliteSite.ContestModule
             services.ConfigureRouting(options =>
             {
                 options.ConstraintMap.Add("c", typeof(ContestRouteConstraint));
+            });
+
+            services.ConfigureApplicationCookie(options =>
+            {
+                var original = options.Events.OnRedirectToAccessDenied;
+                options.Events.OnRedirectToAccessDenied = context =>
+                {
+                    var feature = context.HttpContext.Features.Get<IContestFeature>();
+                    if (feature?.Context == null || !(feature.HasTeam || feature.IsJury || feature.IsPublic))
+                        return original(context);
+                    context.Response.StatusCode = 403;
+                    return Task.CompletedTask;
+                };
             });
         }
 
@@ -102,30 +122,30 @@ namespace SatelliteSite.ContestModule
             menus.Menu(CcsDefaults.JuryNavbar, menu =>
             {
                 menu.HasEntry(100)
-                    .HasLink("Contest", "Teams", "List")
+                    .HasLink("Contest", "JuryTeams", "List")
                     .HasTitle("fas fa-address-book", "Teams")
                     .HasIdentifier("menu_teams")
                     .HasBadge("teams", BootstrapColor.warning)
-                    .ActiveWhenController("Teams");
+                    .ActiveWhenController("JuryTeams");
 
                 menu.HasEntry(200)
-                    .HasLink("Contest", "Clarifications", "List")
+                    .HasLink("Contest", "JuryClarifications", "List")
                     .HasTitle("fas fa-comments", "Clarifications")
                     .HasIdentifier("menu_clarifications")
                     .HasBadge("clarifications", BootstrapColor.info)
-                    .ActiveWhenController("Clarifications");
+                    .ActiveWhenController("JuryClarifications");
 
                 menu.HasEntry(300)
-                    .HasLink("Contest", "Submissions", "List")
+                    .HasLink("Contest", "JurySubmissions", "List")
                     .HasTitle("fas fa-file-code", "Submissions")
-                    .ActiveWhenController("Submissions");
+                    .ActiveWhenController("JurySubmissions");
 
                 menu.HasEntry(400)
-                    .HasLink("Contest", "Rejudgings", "List")
+                    .HasLink("Contest", "JuryRejudgings", "List")
                     .HasTitle("fas fa-sync-alt", "Rejudgings")
                     .HasIdentifier("menu_rejudgings")
                     .HasBadge("rejudgings", BootstrapColor.info)
-                    .ActiveWhenController("Rejudgings");
+                    .ActiveWhenController("JuryRejudgings");
 
                 menu.HasEntry(500)
                     .HasLink("Contest", "Jury", "Scoreboard")
@@ -221,6 +241,17 @@ namespace SatelliteSite.ContestModule
 
             menus.Component(Polygon.ResourceDictionary.ComponentProblemOverview)
                 .HasComponent<Components.ProblemUsage.ProblemUsageViewComponent>(10);
+        }
+
+        public void RegisterPolicies(IAuthorizationPolicyContainer container)
+        {
+            var jury = new ContestJuryRequirement();
+            var team = new ContestTeamRequirement();
+            var visible = new ContestVisibleRequirement();
+
+            container.AddPolicy("ContestIsJury", b => b.AddRequirements(jury));
+            container.AddPolicy("ContestVisible", b => b.AddRequirements(visible));
+            container.AddPolicy("ContestHasTeam", b => b.AddRequirements(team));
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -1,5 +1,6 @@
 ﻿using Ccs.Models;
 using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Mvc;
 using System.IO;
 using System.Text.Encodings.Web;
 
@@ -9,12 +10,13 @@ namespace SatelliteSite.ContestModule.Components.ContestScoreboard
     {
         private readonly TeamModel _model;
         private readonly bool _inJury;
+        private readonly IUrlHelper _urlHelper;
 
-        public TeamRow(TeamModel model, bool inJury) => (_model, _inJury) = (model, inJury);
+        public TeamRow(TeamModel model, bool inJury, IUrlHelper urlHelper) => (_model, _inJury, _urlHelper) = (model, inJury, urlHelper);
 
-        public void WriteTo(TextWriter writer, HtmlEncoder encoder) => WriteTo(_model, writer, encoder, _inJury);
+        public void WriteTo(TextWriter writer, HtmlEncoder encoder) => WriteTo(_model, writer, encoder, _inJury, _urlHelper);
 
-        public static void WriteTo(TeamModel model, TextWriter writer, HtmlEncoder encoder, bool inJury)
+        public static void WriteTo(TeamModel model, TextWriter writer, HtmlEncoder encoder, bool inJury, IUrlHelper urlHelper)
         {
             writer.Write("<tr class=\"\" id=\"team:");
             writer.Write(model.TeamId);
@@ -46,8 +48,14 @@ namespace SatelliteSite.ContestModule.Components.ContestScoreboard
             var teamName = encoder.Encode(model.TeamName);
             writer.Write(teamName);
             writer.Write("\"><a");
+
             if (inJury)
-                writer.Write($" href=\"/contest/{model.ContestId}/jury/teams/{model.TeamId}\"");
+            {
+                writer.Write(" href=\"");
+                writer.Write(urlHelper.Action("Detail", "JuryTeams", new { teamid = model.TeamId }));
+                writer.Write("\"");
+            }
+
             writer.Write("><span class=\"forceWidth\">");
             writer.Write(teamName);
             writer.Write("</span><span class=\"univ forceWidth\">");

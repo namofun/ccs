@@ -13,9 +13,9 @@ using System.Threading.Tasks;
 namespace SatelliteSite.ContestModule.Controllers
 {
     [Area("Contest")]
-    [Route("[area]/{cid:c}/jury/[controller]")]
+    [Route("[area]/{cid:c(7)}/jury/problems")]
     [AuditPoint(AuditlogType.Problem)]
-    public class ProblemsController : JuryControllerBase
+    public class JuryProblemsController : JuryControllerBase
     {
         [HttpGet("[action]")]
         public IActionResult Add()
@@ -125,7 +125,7 @@ namespace SatelliteSite.ContestModule.Controllers
             return AskPost(
                 title: "Delete contest problem",
                 message: $"Are you sure to delete problem {prob.ShortName}?",
-                area: "Contest", controller: "Problems", action: "Delete",
+                area: "Contest", controller: "JuryProblems", action: "Delete",
                 routeValues: new { cid = Contest.Id, pid },
                 type: BootstrapColor.danger);
         }

@@ -163,7 +163,7 @@
                         @foreach (var (id, team) in Model.Teams)
                         {
                             var tt = byteam.GetValueOrDefault(id);
-                            <tr asp-action="Detail" asp-controller="Teams" asp-route-teamid="@id">
+                            <tr asp-action="Detail" asp-controller="JuryTeams" asp-route-teamid="@id">
                                 <th scope="row">@id</th>
                                 <td use-a class="text-variant">@team.Affiliation.Abbreviation</td>
                                 <td use-a class="truncate" style="max-width: 200px">@team.TeamName</td>

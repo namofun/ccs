@@ -9,8 +9,8 @@ using System.Threading.Tasks;
 namespace SatelliteSite.ContestModule.Controllers
 {
     [Area("Contest")]
-    [Route("[area]/{cid:c}/jury/[controller]")]
-    public class SubmissionsController : JuryControllerBase
+    [Route("[area]/{cid:c(7)}/jury/submissions")]
+    public class JurySubmissionsController : JuryControllerBase
     {
         [HttpGet]
         public async Task<IActionResult> List(bool all = false)
@@ -22,7 +22,7 @@ namespace SatelliteSite.ContestModule.Controllers
         }
 
 
-        [HttpGet("{sid}/{jid?}")]
+        [HttpGet("{sid}")]
         public async Task<IActionResult> Detail(int sid, int? jid)
         {
             var submit = await Context.FindSubmissionAsync(sid, true);
@@ -88,7 +88,9 @@ namespace SatelliteSite.ContestModule.Controllers
             if (sub == null) return NotFound();
 
             if (sub.RejudgingId != null)
-                return RedirectToAction("Detail", "Rejudgings", new { rid = sub.RejudgingId });
+            {
+                return RedirectToAction("Detail", "JuryRejudgings", new { rid = sub.RejudgingId });
+            }
 
             return Window(new AddRejudgingModel
             {

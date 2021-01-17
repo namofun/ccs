@@ -1,5 +1,6 @@
 ﻿using Ccs.Models;
 using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Mvc;
 using System.IO;
 using System.Text.Encodings.Web;
 
@@ -9,12 +10,14 @@ namespace SatelliteSite.ContestModule.Components.ContestScoreboard
     {
         private readonly BoardViewModel _model;
         private readonly bool _usefoot, _inJury;
+        private readonly IUrlHelper _urlHelper;
 
-        public BoardView(BoardViewModel model, bool useFoot, bool inJury)
+        public BoardView(BoardViewModel model, bool useFoot, bool inJury, IUrlHelper urlHelper)
         {
             _model = model;
             _usefoot = useFoot;
             _inJury = inJury;
+            _urlHelper = urlHelper;
         }
 
         public void WriteTo(TextWriter writer, HtmlEncoder encoder)
@@ -41,10 +44,8 @@ namespace SatelliteSite.ContestModule.Components.ContestScoreboard
 
                 if (_inJury)
                 {
-                    writer.Write("<a href=\"/contest/");
-                    writer.Write(prob.ContestId);
-                    writer.Write("/jury/problems/");
-                    writer.Write(prob.ProblemId);
+                    writer.Write("<a href=\"");
+                    writer.Write(_urlHelper.Action("Detail", "JuryProblems", new { pid = prob.ProblemId }));
                     writer.Write("\">");
                 }
                 else
@@ -68,7 +69,7 @@ namespace SatelliteSite.ContestModule.Components.ContestScoreboard
                 foreach (var team in sortOrder)
                 {
                     totalPoints += team.Points;
-                    TeamRow.WriteTo(team, writer, encoder, _inJury);
+                    TeamRow.WriteTo(team, writer, encoder, _inJury, _urlHelper);
                     if (team.Category != null)
                         _model.ShowCategory.Add((team.CategoryColor, team.Category));
                 }

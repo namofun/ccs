@@ -15,6 +15,7 @@
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="SatelliteSite.Substrate" Version="$(SubstrateVersion)" />
+    <PackageReference Include="SatelliteSite.IdentityModule" Version="$(SubstrateVersion)" />
     <PackageReference Include="Polygon.TagHelpers" Version="$(PolygonVersion)" />
   </ItemGroup>
 

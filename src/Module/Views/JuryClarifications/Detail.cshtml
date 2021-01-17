@@ -51,7 +51,7 @@
                             From:
                             @if (item.Sender.HasValue)
                             {
-                                <a asp-controller="Teams" asp-action="Detail" asp-route-teamid="@item.Sender">@teams.GetValueOrDefault(item.Sender.Value) (t@(item.Sender))</a>
+                                <a asp-controller="JuryTeams" asp-action="Detail" asp-route-teamid="@item.Sender">@teams.GetValueOrDefault(item.Sender.Value) (t@(item.Sender))</a>
                             }
                             else
                             {
@@ -72,7 +72,7 @@
                             To:
                             @if (item.Recipient.HasValue)
                             {
-                                <a asp-controller="Teams" asp-action="Detail" asp-route-teamid="@item.Recipient">@teams.GetValueOrDefault(item.Recipient.Value) (t@(item.Recipient))</a>
+                                <a asp-controller="JuryTeams" asp-action="Detail" asp-route-teamid="@item.Recipient">@teams.GetValueOrDefault(item.Recipient.Value) (t@(item.Recipient))</a>
                             }
                             else if (item.Sender.HasValue)
                             {
