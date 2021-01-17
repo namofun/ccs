@@ -1,5 +1,6 @@
 ﻿using Ccs.Services;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Threading.Tasks;
 
@@ -46,8 +47,11 @@ namespace SatelliteSite.ContestModule.Routing
 
         private async Task ContestAsync(HttpContext context, int cid)
         {
+            var feature = context.RequestServices.GetRequiredService<IContestFeature>();
             var ctx = await _factory.CreateAsync(cid, context.RequestServices);
-            context.Features.Set<IContestFeature>(new ContestFeature(ctx));
+            feature.Contextualize(ctx);
+            context.Features.Set<IContestFeature>(feature);
+            if (feature.Context != null) context.Items[nameof(cid)] = cid;
             await _next(context);
         }
     }

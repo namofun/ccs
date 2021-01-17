@@ -6,13 +6,19 @@ namespace Ccs
     /// <summary>
     /// The accessor to contest informations.
     /// </summary>
-    public interface IContestContextAccessor
+    public interface IContestContextAccessor : IContestContextBase
+    {
+        /// <summary>The problem collection</summary>
+        ProblemCollection Problems { get; }
+    }
+
+    /// <summary>
+    /// The contest information basis.
+    /// </summary>
+    public interface IContestContextBase
     {
         /// <summary>The context service</summary>
         IContestContext Context { get; }
-
-        /// <summary>The problem collection</summary>
-        ProblemCollection Problems { get; }
 
         /// <summary>The current team</summary>
         Team? Team { get; }

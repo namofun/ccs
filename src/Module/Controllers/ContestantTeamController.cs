@@ -12,10 +12,16 @@ namespace SatelliteSite.ContestModule.Controllers
 {
     [Area("Contest")]
     [Authorize]
-    [Route("[area]/{cid:c(1)}/[controller]")]
+    [Route("[area]/{cid:c(1)}")]
     public partial class TeamController : ContestControllerBase
     {
         public bool TooEarly => Contest.GetState() < ContestState.Started;
+
+        protected IActionResult GoBackHome(string message)
+        {
+            StatusMessage = message;
+            return Home();
+        }
 
         public override Task OnActionExecutingAsync(ActionExecutingContext context)
         {
@@ -28,7 +34,72 @@ namespace SatelliteSite.ContestModule.Controllers
                     : View("AccessDenied");
             }
 
+            ViewData["NavbarName"] = Ccs.CcsDefaults.TeamNavbar;
+            ViewData["BigUrl"] = Url.Action("Home", "Team");
+            ViewData["ExtraMenu"] = "_NavButton";
             return base.OnActionExecutingAsync(context);
+        }
+
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult Home()
+        {
+            if (Team == null) return RedirectToAction("Public");
+            return RedirectToAction("Team");
+        }
+
+
+        [HttpGet("[action]")]
+        [AllowAnonymous]
+        public async Task<IActionResult> Public()
+        {
+            ViewBag.Affiliations = await Context.FetchAffiliationsAsync();
+            ViewBag.Categories = await Context.FetchCategoriesAsync();
+            ViewBag.Markdown = await Context.GetReadmeAsync();
+            return View();
+        }
+
+
+        [HttpPost("[action]")]
+        [ValidateAntiForgeryToken]
+        [AuditPoint(AuditlogType.Team)]
+        public async Task<IActionResult> Register()
+        {
+            if (ViewData.ContainsKey("HasTeam"))
+            {
+                StatusMessage = "Already registered";
+                return RedirectToAction(nameof(Public));
+            }
+
+            if (!Contest.RegisterCategory.HasValue || User.IsInRole("Blocked"))
+            {
+                StatusMessage = "Error registration closed.";
+                return RedirectToAction(nameof(Public));
+            }
+
+            string defaultAff = User.IsInRole("Student") ? "jlu" : "null";
+            var affiliations = await Context.FetchAffiliationsAsync(false);
+            var aff = affiliations.Values.SingleOrDefault(a => a.Abbreviation == defaultAff);
+            if (aff == null) throw new ApplicationException("No default affiliation.");
+
+            var user = await UserManager.GetUserAsync(User);
+
+            var team = await Context.CreateTeamAsync(
+                users: new[] { user },
+                team: new Team
+                {
+                    AffiliationId = aff.Id,
+                    ContestId = Contest.Id,
+                    CategoryId = Contest.RegisterCategory.Value,
+                    RegisterTime = DateTimeOffset.Now,
+                    Status = 0,
+                    TeamName = User.GetNickName(),
+                });
+
+            await HttpContext.AuditAsync("added", $"{team.TeamId}");
+            StatusMessage = "Registration succeeded.";
+            return RedirectToAction(nameof(Public));
         }
 
 
@@ -53,8 +124,9 @@ namespace SatelliteSite.ContestModule.Controllers
                 isJury: false, clear == "clear", affiliations, categories);
 
 
-        [HttpGet]
-        public async Task<IActionResult> Home()
+        [HttpGet("[action]")]
+        [ActionName("Team")]
+        public async Task<IActionResult> TeamHome()
         {
             int teamid = Team.TeamId;
             var board = await Context.SingleBoardAsync(teamid);
@@ -201,7 +273,7 @@ namespace SatelliteSite.ContestModule.Controllers
                 StatusMessage = "Clarification sent to the jury.";
             }
 
-            return RedirectToAction(nameof(Home));
+            return RedirectToAction(nameof(Team));
         }
 
 
@@ -221,14 +293,14 @@ namespace SatelliteSite.ContestModule.Controllers
             if (TooEarly && !ViewData.ContainsKey("IsJury"))
             {
                 StatusMessage = "Contest not started.";
-                return RedirectToAction(nameof(Home));
+                return RedirectToAction(nameof(Team));
             }
 
             var prob = Problems.Find(model.Problem);
             if (prob is null || !prob.AllowSubmit)
             {
                 StatusMessage = "Error problem not found.";
-                return RedirectToAction(nameof(Home));
+                return RedirectToAction(nameof(Team));
             }
 
             var langs = await Context.FetchLanguagesAsync();
@@ -236,7 +308,7 @@ namespace SatelliteSite.ContestModule.Controllers
             if (lang == null)
             {
                 StatusMessage = "Error language not found.";
-                return RedirectToAction(nameof(Home));
+                return RedirectToAction(nameof(Team));
             }
 
             var s = await Context.SubmitAsync(
@@ -249,7 +321,7 @@ namespace SatelliteSite.ContestModule.Controllers
                 username: User.GetUserName());
 
             StatusMessage = "Submission done! Watch for the verdict in the list below.";
-            return RedirectToAction(nameof(Home));
+            return RedirectToAction(nameof(Team));
         }
     }
 }

@@ -22,6 +22,8 @@ namespace SatelliteSite.ContestModule.Controllers
             }
 
             ViewData["InJury"] = true;
+            ViewData["NavbarName"] = Ccs.CcsDefaults.JuryNavbar;
+            ViewData["BigUrl"] = Url.Action("Home", "Jury");
             return base.OnActionExecutingAsync(context);
         }
 

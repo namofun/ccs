@@ -1,0 +1,13 @@
+﻿@{
+    bool disabled_ = Contest.GetState() < ContestState.Started || Contest.Team == null || Contest.Team.Status != 1;
+    disabled_ = disabled_ && ViewData.ContainsKey("IsJury");
+    string disableClass = disabled_ ? "disabled" : "";
+}
+
+<div id="submitbut">
+    <a class="nav-link justify-content-center @disableClass" data-toggle="ajaxWindow" data-target="submit" asp-controller="Team" asp-action="Submit">
+        <button type="button" class="btn btn-success btn-sm @disableClass">
+            <i class="fas fa-cloud-upload-alt"></i> Submit
+        </button>
+    </a>
+</div>

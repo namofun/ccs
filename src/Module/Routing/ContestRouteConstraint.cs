@@ -20,7 +20,7 @@ namespace SatelliteSite.ContestModule.Routing
         {
             if (routeDirection == RouteDirection.UrlGeneration) return true;
             var feature = httpContext.Features.Get<IContestFeature>();
-            if (feature == null) return false;
+            if (feature?.Context == null) return false;
             return (_allowdMask & (1 << feature.Context.Contest.Kind)) != 0;
         }
     }

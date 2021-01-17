@@ -21,14 +21,12 @@ namespace SatelliteSite.ContestModule.Controllers
     {
         private IUserManager _lazy_userManager;
         private IMediator _lazy_mediator;
-        private IContestContext _private_context;
-        private Team _private_team;
-        private ProblemCollection _private_problems;
+        private IContestContextAccessor _accessor;
 
         /// <summary>
         /// Context for contest controlling
         /// </summary>
-        protected IContestContext Context => _private_context;
+        protected IContestContext Context => _accessor.Context;
 
         /// <summary>
         /// The contest entity
@@ -48,12 +46,12 @@ namespace SatelliteSite.ContestModule.Controllers
         /// <summary>
         /// The team entity for current user
         /// </summary>
-        protected Team Team => _private_team;
+        protected Team Team => _accessor.Team;
 
         /// <summary>
         /// The problem list
         /// </summary>
-        protected ProblemCollection Problems => _private_problems;
+        protected ProblemCollection Problems => _accessor.Problems;
 
         /// <summary>
         /// Presents a view for printing codes.
@@ -155,15 +153,17 @@ namespace SatelliteSite.ContestModule.Controllers
         public override async Task OnActionExecutionAsync(
             ActionExecutingContext context, ActionExecutionDelegate next)
         {
-            // parse the base service
             var feature = HttpContext.Features.Get<IContestFeature>();
-            _private_context = feature.Context;
-            _private_problems = await Context.FetchProblemsAsync();
-            int cid = Context.Contest.Id;
-            HttpContext.Items[nameof(cid)] = cid;
-            HttpContext.Features.Set(Context);
-            ViewBag.Contest = Contest;
-            ViewBag.Problems = Problems;
+            if (!feature.ProblemInitialized)
+                feature.ProblemInitialize(await feature.Context.FetchProblemsAsync());
+
+            _accessor = HttpContext.RequestServices.GetRequiredService<IContestContextAccessor>();
+
+            ViewData["Contest"] = Contest;
+            ViewData["Problems"] = Problems;
+            ViewData["Team"] = Team;
+            if (_accessor.Team != null) ViewData["HasTeam"] = true;
+            ViewData["IsJury"] = _accessor.IsJury;
 
             // the event of contest state change
             /*
@@ -182,25 +182,16 @@ namespace SatelliteSite.ContestModule.Controllers
             }
             */
 
-            // check the permission
-            ViewData["IsJury"] = await Context.ValidateAsync(User);
-
-            if (int.TryParse(User.GetUserId() ?? "-1", out int uid) && uid > 0)
-            {
-                ViewBag.Team = _private_team = await Context.FindTeamByUserAsync(uid);
-                if (Team != null) ViewData["HasTeam"] = true;
-            }
-
             if (!Contest.IsPublic &&
-                !ViewData.ContainsKey("IsJury") &&
-                !ViewData.ContainsKey("HasTeam"))
+                !_accessor.IsJury &&
+                !_accessor.HasTeam)
             {
                 context.Result = NotFound();
                 return;
             }
 
             await OnActionExecutingAsync(context);
-            ViewData["ContestId"] = cid;
+            ViewData["ContestId"] = Contest.Id;
 
             if (context.Result == null)
                 await OnActionExecutedAsync(await next());

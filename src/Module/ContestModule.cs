@@ -57,13 +57,16 @@ namespace SatelliteSite.ContestModule
             EnsureRegistered<IPrintingService>(services);
             EnsureRegistered<IContestRepository>(services);
 
-            services.AddTransient<IContestContextAccessor, ContestContextAccessor>();
+            services.AddScoped<ContestFeature>();
+            services.AddScoped<IContestContextAccessor>(sp => sp.GetRequiredService<ContestFeature>());
+            services.AddScoped<IContestFeature>(sp => sp.GetRequiredService<ContestFeature>());
+
             services.AddMediatRAssembly(typeof(Ccs.Scoreboard.RankingSolver).Assembly);
 
             services.ConfigureApplicationBuilder(options =>
             {
-                options.Point2.Add(app => app.UseMiddleware<InitializeContestMiddleware>());
-                options.Point3.Add(app => app.UseMiddleware<InitializeTeamMiddleware>());
+                options.PointBeforeRouting.Add(app => app.UseMiddleware<InitializeContestMiddleware>());
+                options.PointBetweenAuth.Add(app => app.UseMiddleware<InitializeTeamMiddleware>());
             });
 
             services.ConfigureRouting(options =>
@@ -128,17 +131,17 @@ namespace SatelliteSite.ContestModule
                     .HasLink("Contest", "Jury", "Scoreboard")
                     .HasTitle("fas fa-list-ol", "Scoreboard")
                     .ActiveWhenAction("Scoreboard")
-                    .RequireThat(ctx => ContestKind(ctx, 0));
+                    .RequireThat(ctx => Feature(ctx).Kind == 0);
 
                 menu.HasEntry(600)
                     .HasLink("Contest", "Team", "Home")
                     .HasTitle("fas fa-arrow-right", "Team")
-                    .RequireThat(ctx => ContestKind(ctx, 0) && HasTeam(ctx));
+                    .RequireThat(ctx => Feature(ctx).Kind == 0 && Feature(ctx).HasTeam);
 
                 menu.HasEntry(601)
                     .HasLink("Contest", "Gym", "Home")
                     .HasTitle("fas fa-arrow-right", "Gym")
-                    .RequireThat(ctx => ContestKind(ctx, 1));
+                    .RequireThat(ctx => Feature(ctx).Kind == 1);
             });
 
             menus.Menu(CcsDefaults.GymNavbar, menu =>
@@ -160,8 +163,8 @@ namespace SatelliteSite.ContestModule
 
                 menu.HasEntry(600)
                     .HasLink("Contest", "Jury", "Home")
-                    .HasTitle("fas fa-arrow-right", "Team")
-                    .RequireThat(ctx => IsJury(ctx));
+                    .HasTitle("fas fa-arrow-right", "Jury")
+                    .RequireThat(ctx => Feature(ctx).IsJury);
             });
 
             menus.Menu(CcsDefaults.PublicNavbar, menu =>
@@ -179,12 +182,12 @@ namespace SatelliteSite.ContestModule
                 menu.HasEntry(600)
                     .HasLink("Contest", "Jury", "Home")
                     .HasTitle("fas fa-arrow-right", "Jury")
-                    .RequireThat(ctx => IsJury(ctx));
+                    .RequireThat(ctx => Feature(ctx).IsJury);
 
                 menu.HasEntry(601)
                     .HasLink("Contest", "Team", "Home")
                     .HasTitle("fas fa-arrow-right", "Team")
-                    .RequireThat(ctx => HasTeam(ctx));
+                    .RequireThat(ctx => Feature(ctx).HasTeam);
             });
 
             menus.Menu(CcsDefaults.TeamNavbar, menu =>
@@ -203,7 +206,7 @@ namespace SatelliteSite.ContestModule
                     .HasLink("Contest", "Team", "Print")
                     .HasTitle("fas fa-file-alt", "Print")
                     .ActiveWhenAction("Print")
-                    .RequireThat(ctx => PrintingAvailable(ctx));
+                    .RequireThat(ctx => Feature(ctx).PrintingAvailable);
 
                 menu.HasEntry(500)
                     .HasLink("Contest", "Team", "Scoreboard")
@@ -213,7 +216,7 @@ namespace SatelliteSite.ContestModule
                 menu.HasEntry(600)
                     .HasLink("Contest", "Jury", "Home")
                     .HasTitle("fas fa-arrow-right", "Jury")
-                    .RequireThat(ctx => IsJury(ctx));
+                    .RequireThat(ctx => Feature(ctx).IsJury);
             });
 
             menus.Component(Polygon.ResourceDictionary.ComponentProblemOverview)
@@ -221,19 +224,7 @@ namespace SatelliteSite.ContestModule
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool ContestKind(ViewContext ctx, int kind)
-            => ctx.HttpContext.Features.Get<IContestContext>().Contest.Kind == kind;
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool PrintingAvailable(ViewContext ctx)
-            => ctx.HttpContext.Features.Get<IContestContext>().Contest.PrintingAvailable;
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool HasTeam(ViewContext ctx)
-            => ctx.ViewData["Team"] is Ccs.Entities.Team;
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool IsJury(ViewContext ctx)
-            => ctx.ViewData["IsJury"] is bool isJury && isJury;
+        private static IContestFeature Feature(ViewContext ctx)
+            => ctx.HttpContext.Features.Get<IContestFeature>();
     }
 }
