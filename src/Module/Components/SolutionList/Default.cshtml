@@ -123,7 +123,7 @@
         {
             if (sub.Verdict == Verdict.Accepted) { correct++; }
             var prob = Contest.Problems.Find(sub.ProblemId);
-            currentUrl = Url.Action("Detail", "Submissions", new { area = "Contest", sid = sub.SubmissionId });
+            currentUrl = Url.Action("Detail", "JurySubmissions", new { area = "Contest", submitid = sub.SubmissionId });
             total++;
             WriteLiteral("<tr data-problem-id=\"");
             WriteLiteral(sub.ProblemId);

@@ -37,7 +37,7 @@ else
                                         <h5 class="card-subtitle mb-2 text-muted">Limits: @(prob.TimeLimit)ms / @(prob.MemoryLimit / 1024)MB</h5>
 
                                         <div class="text-center">
-                                            <a class="btn btn-secondary" role="button" asp-route-prob="@prob.ShortName">
+                                            <a class="btn btn-secondary" role="button" asp-action="ProblemView" asp-route-prob="@prob.ShortName">
                                                 <i class="fas fa-file-pdf"></i>
                                                 problem text
                                             </a>

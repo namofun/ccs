@@ -65,7 +65,7 @@
         Type = Contest.Problems.ClarificationCategories.Where(a => a.Item2 == main.Category && a.Item3 == main.ProblemId).Select(a => a.Item1).FirstOrDefault() ?? "general"
     };
 }
-<partial name="ReplyClarification" model="replyModel" />
+<partial name="ClarificationReply" model="replyModel" />
 
 @section Footer {
     <button class="btn btn-secondary" data-toggle="collapse" data-target="#collapsereplyform"

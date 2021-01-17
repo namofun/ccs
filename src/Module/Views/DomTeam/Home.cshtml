@@ -70,7 +70,7 @@ else
                             ProblemModel p = Contest.Problems.Find(submit.Problem);
                             var t = submit.Time;
                             var b = !Model.Contest.EndTime.HasValue || t < (Model.Contest.StartTime + Model.Contest.EndTime).Value;
-                            <tr asp-action="Submission" asp-route-sid="@submit.SubmissionId" data-toggle="ajaxWindow" data-target="submission" class="unseen" id="submit_@submit.SubmissionId">
+                            <tr asp-action="Submission" asp-route-submitid="@submit.SubmissionId" data-toggle="ajaxWindow" data-target="submission" class="unseen" id="submit_@submit.SubmissionId">
                                 <td use-a>@t.ToString("HH:mm")</td>
                                 <td use-a class="probid" title="@p.TimeLimit">@p.ShortName</td>
                                 <td use-a class="langid">@submit.Language</td>
@@ -104,7 +104,7 @@ else
                             @foreach (var clar in received)
                             {
                                 var prob = Model.Problems.FirstOrDefault(c => c.ProblemId == clar.ProblemId);
-                                <tr asp-action="Clarification" asp-route-op="@clar.Id" data-toggle="ajaxWindow" data-target="recv-clar" class="unseen" id="clar_@clar.Id">
+                                <tr asp-action="ClarificationView" asp-route-clarid="@clar.Id" data-toggle="ajaxWindow" data-target="recv-clar" class="unseen" id="clar_@clar.Id">
                                     <td use-a>@clar.SubmitTime.ToString("HH:mm")</td>
                                     <td use-a>Jury</td>
                                     <td use-a>@(clar.Recipient.HasValue ? team.TeamName : "All")</td>
@@ -139,7 +139,7 @@ else
                             @foreach (var clar in sent)
                             {
                                 var prob = Model.Problems.FirstOrDefault(c => c.ProblemId == clar.ProblemId);
-                                <tr asp-action="Clarification" asp-route-op="@clar.Id" data-toggle="ajaxWindow" data-target="sent-clar">
+                                <tr asp-action="ClarificationView" asp-route-clarid="@clar.Id" data-toggle="ajaxWindow" data-target="sent-clar">
                                     <td use-a>@clar.SubmitTime.ToString("HH:mm")</td>
                                     <td use-a>@team.TeamName</td>
                                     <td use-a>Jury</td>
@@ -157,7 +157,7 @@ else
             }
 
             <div class="m-1">
-                <a asp-action="Clarification" asp-route-op="add" class="btn btn-secondary btn-sm" data-toggle="ajaxWindow" data-target="submission">
+                <a asp-action="ClarificationAdd" class="btn btn-secondary btn-sm" data-toggle="ajaxWindow" data-target="submission">
                     request clarification
                 </a>
             </div>

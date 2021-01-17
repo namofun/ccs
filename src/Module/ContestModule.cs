@@ -31,7 +31,7 @@ namespace SatelliteSite.ContestModule
                 description: "ICPC Contest API (compatible as CCS)",
                 version: "2020");
 
-            endpoints.WithErrorHandler("Contest", "Team")
+            endpoints.WithErrorHandler("Contest", "DomPublic")
                 .MapStatusCode("/contest/{cid:c(1)}/{**slug}");
         }
 
@@ -154,7 +154,7 @@ namespace SatelliteSite.ContestModule
                     .RequireThat(ctx => Feature(ctx).Kind == 0);
 
                 menu.HasEntry(600)
-                    .HasLink("Contest", "Team", "Home")
+                    .HasLink("Contest", "DomTeam", "Home")
                     .HasTitle("fas fa-arrow-right", "Team")
                     .RequireThat(ctx => Feature(ctx).Kind == 0 && Feature(ctx).HasTeam);
 
@@ -190,12 +190,12 @@ namespace SatelliteSite.ContestModule
             menus.Menu(CcsDefaults.PublicNavbar, menu =>
             {
                 menu.HasEntry(100)
-                    .HasLink("Contest", "Public", "Info")
+                    .HasLink("Contest", "DomPublic", "Info")
                     .HasTitle("fas fa-home", "About")
                     .ActiveWhenAction("Info");
 
                 menu.HasEntry(200)
-                    .HasLink("Contest", "Public", "Scoreboard")
+                    .HasLink("Contest", "DomPublic", "Scoreboard")
                     .HasTitle("fas fa-list-ol", "Scoreboard")
                     .ActiveWhenAction("Scoreboard");
 
@@ -205,7 +205,7 @@ namespace SatelliteSite.ContestModule
                     .RequireThat(ctx => Feature(ctx).IsJury);
 
                 menu.HasEntry(601)
-                    .HasLink("Contest", "Team", "Home")
+                    .HasLink("Contest", "DomTeam", "Home")
                     .HasTitle("fas fa-arrow-right", "Team")
                     .RequireThat(ctx => Feature(ctx).HasTeam);
             });
@@ -213,23 +213,23 @@ namespace SatelliteSite.ContestModule
             menus.Menu(CcsDefaults.TeamNavbar, menu =>
             {
                 menu.HasEntry(100)
-                    .HasLink("Contest", "Team", "Home")
+                    .HasLink("Contest", "DomTeam", "Home")
                     .HasTitle("fas fa-home", "Home")
                     .ActiveWhenAction("Home");
 
                 menu.HasEntry(200)
-                    .HasLink("Contest", "Team", "Problemset")
+                    .HasLink("Contest", "DomTeam", "ProblemList")
                     .HasTitle("fas fa-book-open", "Problemset")
-                    .ActiveWhenAction("Problemset");
+                    .ActiveWhenAction("ProblemList,ProblemView");
 
                 menu.HasEntry(400)
-                    .HasLink("Contest", "Team", "Print")
+                    .HasLink("Contest", "DomTeam", "Print")
                     .HasTitle("fas fa-file-alt", "Print")
                     .ActiveWhenAction("Print")
                     .RequireThat(ctx => Feature(ctx).PrintingAvailable);
 
                 menu.HasEntry(500)
-                    .HasLink("Contest", "Team", "Scoreboard")
+                    .HasLink("Contest", "DomTeam", "Scoreboard")
                     .HasTitle("fas fa-list-ol", "Scoreboard")
                     .ActiveWhenAction("Scoreboard");
 

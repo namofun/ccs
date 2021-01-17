@@ -11,21 +11,16 @@ using System.Threading.Tasks;
 namespace SatelliteSite.ContestModule.Controllers
 {
     [Area("Contest")]
+    [Route("[area]/{cid:c(1)}/team")]
     [Authorize]
-    [Route("[area]/{cid:c(1)}")]
-    public partial class TeamController : ContestControllerBase
+    [Authorize(Policy = "ContestHasTeam")]
+    public class DomTeamController : ContestControllerBase
     {
         public bool TooEarly => Contest.GetState() < ContestState.Started;
 
-        protected IActionResult GoBackHome(string message)
+        public override void OnActionExecuting(ActionExecutingContext context)
         {
-            StatusMessage = message;
-            return Home();
-        }
-
-        public override Task OnActionExecutingAsync(ActionExecutingContext context)
-        {
-            if (Team == null || Team.Status != 1)
+            if (Team.Status != 1)
             {
                 context.Result = IsWindowAjax
                     ? Message("401 Unauthorized",
@@ -35,83 +30,10 @@ namespace SatelliteSite.ContestModule.Controllers
             }
 
             ViewData["NavbarName"] = Ccs.CcsDefaults.TeamNavbar;
-            ViewData["BigUrl"] = Url.Action("Home", "Team");
+            ViewData["BigUrl"] = Url.Action("Home", "DomTeam");
             ViewData["ExtraMenu"] = "_NavButton";
-            return base.OnActionExecutingAsync(context);
+            base.OnActionExecuting(context);
         }
-
-
-        [HttpGet]
-        [AllowAnonymous]
-        public IActionResult Home()
-        {
-            if (Team == null) return RedirectToAction("Public");
-            return RedirectToAction("Team");
-        }
-
-
-        [HttpGet("[action]")]
-        [AllowAnonymous]
-        public async Task<IActionResult> Public()
-        {
-            ViewBag.Affiliations = await Context.FetchAffiliationsAsync();
-            ViewBag.Categories = await Context.FetchCategoriesAsync();
-            ViewBag.Markdown = await Context.GetReadmeAsync();
-            return View();
-        }
-
-
-        [HttpPost("[action]")]
-        [ValidateAntiForgeryToken]
-        [AuditPoint(AuditlogType.Team)]
-        public async Task<IActionResult> Register()
-        {
-            if (ViewData.ContainsKey("HasTeam"))
-            {
-                StatusMessage = "Already registered";
-                return RedirectToAction(nameof(Public));
-            }
-
-            if (!Contest.RegisterCategory.HasValue || User.IsInRole("Blocked"))
-            {
-                StatusMessage = "Error registration closed.";
-                return RedirectToAction(nameof(Public));
-            }
-
-            string defaultAff = User.IsInRole("Student") ? "jlu" : "null";
-            var affiliations = await Context.FetchAffiliationsAsync(false);
-            var aff = affiliations.Values.SingleOrDefault(a => a.Abbreviation == defaultAff);
-            if (aff == null) throw new ApplicationException("No default affiliation.");
-
-            var user = await UserManager.GetUserAsync(User);
-
-            var team = await Context.CreateTeamAsync(
-                users: new[] { user },
-                team: new Team
-                {
-                    AffiliationId = aff.Id,
-                    ContestId = Contest.Id,
-                    CategoryId = Contest.RegisterCategory.Value,
-                    RegisterTime = DateTimeOffset.Now,
-                    Status = 0,
-                    TeamName = User.GetNickName(),
-                });
-
-            await HttpContext.AuditAsync("added", $"{team.TeamId}");
-            StatusMessage = "Registration succeeded.";
-            return RedirectToAction(nameof(Public));
-        }
-
-
-        [HttpGet("[action]")]
-        public new IActionResult Print()
-            => base.Print();
-
-
-        [HttpPost("[action]")]
-        [AuditPoint(AuditlogType.Printing)]
-        public new Task<IActionResult> Print(AddPrintModel model)
-            => base.Print(model);
 
 
         [HttpGet("[action]")]
@@ -125,8 +47,18 @@ namespace SatelliteSite.ContestModule.Controllers
 
 
         [HttpGet("[action]")]
-        [ActionName("Team")]
-        public async Task<IActionResult> TeamHome()
+        public new IActionResult Print()
+            => base.Print();
+
+
+        [HttpPost("[action]")]
+        [AuditPoint(AuditlogType.Printing)]
+        public new Task<IActionResult> Print(AddPrintModel model)
+            => base.Print(model);
+
+
+        [HttpGet]
+        public async Task<IActionResult> Home()
         {
             int teamid = Team.TeamId;
             var board = await Context.SingleBoardAsync(teamid);
@@ -151,38 +83,15 @@ namespace SatelliteSite.ContestModule.Controllers
         }
 
 
-        [HttpGet("[action]")]
-        public IActionResult Problemset()
+        [HttpGet("problems")]
+        public IActionResult ProblemList()
         {
             return View(Problems);
         }
 
 
-        [HttpGet("[action]/{sid}")]
-        public async Task<IActionResult> Submission(int sid)
-        {
-            int teamid = Team.TeamId;
-
-            var model = await Context.FetchSolutionAsync(
-                sid, (s, j) => new SubmissionViewModel
-                {
-                    SubmissionId = s.Id,
-                    Points = j.TotalScore ?? 0,
-                    Language = s.Language,
-                    Time = s.Time,
-                    Verdict = j.Status,
-                    Problem = s.ProblemId,
-                    CompilerOutput = j.CompileError,
-                    SourceCode = s.SourceCode,
-                });
-
-            if (model == null) return NotFound();
-            return Window(model);
-        }
-
-
         [HttpGet("problems/{prob}")]
-        public IActionResult Problemset(string prob)
+        public IActionResult ProblemView(string prob)
         {
             if (TooEarly && !ViewData.ContainsKey("IsJury")) return NotFound();
             var problem = Problems.Find(prob);
@@ -192,12 +101,12 @@ namespace SatelliteSite.ContestModule.Controllers
             if (string.IsNullOrEmpty(view)) return NotFound();
 
             ViewData["Content"] = view;
-            return View("ProblemView");
+            return View();
         }
 
 
         [HttpGet("clarifications/add")]
-        public IActionResult AddClarification()
+        public IActionResult ClarificationAdd()
         {
             if (TooEarly) return Message("Clarification", "Contest has not started.");
             return Window(new AddClarificationModel());
@@ -205,7 +114,7 @@ namespace SatelliteSite.ContestModule.Controllers
 
 
         [HttpGet("clarifications/{clarid}")]
-        public async Task<IActionResult> Clarification(int clarid, bool needMore = true)
+        public async Task<IActionResult> ClarificationView(int clarid, bool needMore = true)
         {
             var toSee = await Context.FindClarificationAsync(clarid);
             var clars = Enumerable.Empty<Clarification>();
@@ -228,19 +137,23 @@ namespace SatelliteSite.ContestModule.Controllers
         }
 
 
-        [HttpPost("clarifications/{op}")]
+        [HttpPost("clarifications/add")]
+        [HttpPost("clarifications/{clarid}/reply")]
         [ValidateAntiForgeryToken]
         [AuditPoint(AuditlogType.Clarification)]
-        public async Task<IActionResult> Clarification(
-            string op, AddClarificationModel model)
+        public async Task<IActionResult> ClarificationReply(int? clarid, AddClarificationModel model)
         {
             var (cid, teamid) = (Contest.Id, Team.TeamId);
-            int repl = 0;
-            if (op != "add" && !int.TryParse(op, out repl)) return NotFound();
 
-            var replit = await Context.FindClarificationAsync(repl);
-            if (repl != 0 && replit == null)
-                ModelState.AddModelError("xys::replyto", "The clarification replied to is not found.");
+            Clarification replit = null;
+            if (clarid.HasValue)
+            {
+                replit = await Context.FindClarificationAsync(clarid.Value);
+                if (replit == null)
+                {
+                    ModelState.AddModelError("xys::replyto", "The clarification replied to is not found.");
+                }
+            }
 
             if (string.IsNullOrWhiteSpace(model.Body))
                 ModelState.AddModelError("xys::empty", "No empty clarification");
@@ -273,7 +186,7 @@ namespace SatelliteSite.ContestModule.Controllers
                 StatusMessage = "Clarification sent to the jury.";
             }
 
-            return RedirectToAction(nameof(Team));
+            return RedirectToAction(nameof(Home));
         }
 
 
@@ -293,14 +206,14 @@ namespace SatelliteSite.ContestModule.Controllers
             if (TooEarly && !ViewData.ContainsKey("IsJury"))
             {
                 StatusMessage = "Contest not started.";
-                return RedirectToAction(nameof(Team));
+                return RedirectToAction(nameof(Home));
             }
 
             var prob = Problems.Find(model.Problem);
             if (prob is null || !prob.AllowSubmit)
             {
                 StatusMessage = "Error problem not found.";
-                return RedirectToAction(nameof(Team));
+                return RedirectToAction(nameof(Home));
             }
 
             var langs = await Context.FetchLanguagesAsync();
@@ -308,7 +221,7 @@ namespace SatelliteSite.ContestModule.Controllers
             if (lang == null)
             {
                 StatusMessage = "Error language not found.";
-                return RedirectToAction(nameof(Team));
+                return RedirectToAction(nameof(Home));
             }
 
             var s = await Context.SubmitAsync(
@@ -321,7 +234,30 @@ namespace SatelliteSite.ContestModule.Controllers
                 username: User.GetUserName());
 
             StatusMessage = "Submission done! Watch for the verdict in the list below.";
-            return RedirectToAction(nameof(Team));
+            return RedirectToAction(nameof(Home));
+        }
+
+
+        [HttpGet("[action]/{submitid}")]
+        public async Task<IActionResult> Submission(int submitid)
+        {
+            int teamid = Team.TeamId;
+
+            var model = await Context.FetchSolutionAsync(
+                submitid, (s, j) => new SubmissionViewModel
+                {
+                    SubmissionId = s.Id,
+                    Points = j.TotalScore ?? 0,
+                    Language = s.Language,
+                    Time = s.Time,
+                    Verdict = j.Status,
+                    Problem = s.ProblemId,
+                    CompilerOutput = j.CompileError,
+                    SourceCode = s.SourceCode,
+                });
+
+            if (model == null) return NotFound();
+            return Window(model);
         }
     }
 }

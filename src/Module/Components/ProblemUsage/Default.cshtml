@@ -22,7 +22,7 @@
             <tbody>
                 @foreach (var prob in Model)
                 {
-                    <tr asp-action="Detail" asp-controller="Problems" asp-area="Contest" asp-route-cid="@prob.ContestId" asp-route-pid="@prob.ProblemId">
+                    <tr asp-action="Detail" asp-controller="JuryProblems" asp-area="Contest" asp-route-cid="@prob.ContestId" asp-route-probid="@prob.ProblemId">
                         <td use-a>c@(prob.ContestId)</td>
                         <td use-a>@prob.BigTitle</td>
                         <td use-a>@prob.Title</td>
