@@ -23,7 +23,7 @@
         <tbody>
             @foreach (var rej in Model)
             {
-            <tr asp-action="Detail" asp-route-rid="@rej.Id" class="@(rej.OperatedBy.HasValue ? "disabled" : "")">
+            <tr asp-action="Detail" asp-route-rejudgingid="@rej.Id" class="@(rej.OperatedBy.HasValue ? "disabled" : "")">
                 <td use-a>@rej.Id</td>
                 <td use-a>@rej.Reason</td>
                 <td use-a>@(Model.UserNames.GetValueOrDefault(@rej.IssuedBy ?? -110) ?? "-")</td>

@@ -127,7 +127,7 @@
                         @foreach (var item in Contest.Problems)
                         {
                             var pt = byprob.GetValueOrDefault(item.ProblemId);
-                            <tr asp-action="Problem" asp-route-pid="@item.ProblemId">
+                            <tr asp-action="Problem" asp-route-probid="@item.ProblemId">
                                 <th scope="row">@item.ProblemId</th>
                                 <td use-a>@item.ShortName - @item.Title</td>
                                 <td use-a>@(item.TimeLimit / 1000.0)</td>

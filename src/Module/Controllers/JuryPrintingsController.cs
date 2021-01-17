@@ -28,10 +28,10 @@ namespace SatelliteSite.ContestModule.Controllers
         }
 
 
-        [HttpGet("{fid}/[action]")]
-        public async Task<IActionResult> Done(int cid, int fid)
+        [HttpGet("{printid}/[action]")]
+        public async Task<IActionResult> Done(int cid, int printid)
         {
-            var entity = await Store.FindAsync(fid);
+            var entity = await Store.FindAsync(printid);
             if (entity == null || entity.ContestId != cid) return NotFound();
 
             bool result = await Store.SetStateAsync(entity, true);
@@ -40,10 +40,10 @@ namespace SatelliteSite.ContestModule.Controllers
         }
 
 
-        [HttpGet("{fid}/[action]")]
-        public async Task<IActionResult> Undone(int cid, int fid)
+        [HttpGet("{printid}/[action]")]
+        public async Task<IActionResult> Undone(int cid, int printid)
         {
-            var entity = await Store.FindAsync(fid);
+            var entity = await Store.FindAsync(printid);
             if (entity == null || entity.ContestId != cid) return NotFound();
 
             bool result = await Store.SetStateAsync(entity, null);
@@ -52,10 +52,10 @@ namespace SatelliteSite.ContestModule.Controllers
         }
 
 
-        [HttpGet("{fid}/[action]")]
-        public async Task<IActionResult> Download(int cid, int fid)
+        [HttpGet("{printid}/[action]")]
+        public async Task<IActionResult> Download(int cid, int printid)
         {
-            var entity = await Store.FindAsync(fid, true);
+            var entity = await Store.FindAsync(printid, true);
             if (entity == null || entity.ContestId != cid) return NotFound();
             return File(entity.SourceCode, "text/plain", entity.FileName);
         }

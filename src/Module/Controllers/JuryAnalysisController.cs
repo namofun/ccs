@@ -117,10 +117,10 @@ namespace SatelliteSite.ContestModule.Controllers
         }
 
 
-        [HttpGet("[action]/{pid}")]
-        public async Task<IActionResult> Problem(int pid)
+        [HttpGet("[action]/{probid}")]
+        public async Task<IActionResult> Problem(int probid)
         {
-            var prob = Problems.Find(pid);
+            var prob = Problems.Find(probid);
             if (prob == null) return NotFound();
 
             int cid = Contest.Id;
@@ -128,7 +128,7 @@ namespace SatelliteSite.ContestModule.Controllers
             var endTime = startTime + Contest.EndTime.Value;
 
             var result = await Context.FetchSolutionsAsync(
-                predicate: s => s.ContestId == cid && s.Time >= startTime && s.Time <= endTime && s.ProblemId == pid,
+                predicate: s => s.ContestId == cid && s.Time >= startTime && s.Time <= endTime && s.ProblemId == probid,
                 selector: (s, j) => new { s.Time, SubmissionId = s.Id, j.Status, s.TeamId, s.Language, JudgingId = j.Id, j.ExecuteTime });
 
             var tof = (int)Math.Ceiling((endTime - startTime).TotalMinutes);

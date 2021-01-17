@@ -163,8 +163,8 @@
                 total++;
                 <tr asp-controller="JurySubmissions"
                     asp-action="Detail"
-                    asp-route-sid="@s.SubmissionId"
-                    asp-route-jid="@(s.NewJudging.Id)"
+                    asp-route-submitid="@s.SubmissionId"
+                    asp-route-judgingid="@(s.NewJudging.Id)"
                     class=""
                     data-problem-id="@s.ProblemId"
                     data-team-id="@s.TeamId"

@@ -117,7 +117,7 @@
 
         // Clicking on one of the bars takes you to the judgment
         chart.discretebar.dispatch.on('elementClick', function (e) {
-            window.location = "@Url.Action("Detail", "JurySubmissions", new { sid = "_SUBMIT_ID_" })".replace('_SUBMIT_ID_', e.data.id);
+            window.location = "@Url.Action("Detail", "JurySubmissions", new { submitid = "_SUBMIT_ID_" })".replace('_SUBMIT_ID_', e.data.id);
         });
 
         // More useful tooltip

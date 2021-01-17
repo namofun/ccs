@@ -28,12 +28,12 @@ namespace SatelliteSite.ContestModule.Controllers
         }
 
 
-        [HttpGet("{pid}")]
-        public async Task<IActionResult> Detail(int pid, bool all = false)
+        [HttpGet("{probid}")]
+        public async Task<IActionResult> Detail(int probid, bool all = false)
         {
-            var prob = Problems.Find(pid);
+            var prob = Problems.Find(probid);
             if (prob == null) return NotFound();
-            var sols = await Context.FetchSolutionsAsync(probid: pid, all: all);
+            var sols = await Context.FetchSolutionsAsync(probid: probid, all: all);
             var tn = await Context.FetchTeamNamesAsync();
             sols.ForEach(a => a.AuthorName = tn.GetValueOrDefault(a.TeamId));
             return View(new JuryViewProblemModel(sols, prob));
@@ -72,31 +72,31 @@ namespace SatelliteSite.ContestModule.Controllers
         }
 
 
-        [HttpGet("[action]/{pid}")]
-        public async Task<IActionResult> Find(int pid)
+        [HttpGet("[action]/{probid}")]
+        public async Task<IActionResult> Find(int probid)
         {
-            var result = await Context.CheckProblemAvailabilityAsync(pid, User);
+            var result = await Context.CheckProblemAvailabilityAsync(probid, User);
             return Content(result.Message);
         }
 
 
-        [HttpGet("{pid}/[action]")]
-        public IActionResult Edit(int pid)
+        [HttpGet("{probid}/[action]")]
+        public IActionResult Edit(int probid)
         {
-            var prob = Problems.Find(pid);
+            var prob = Problems.Find(probid);
             if (prob == null) return NotFound();
             return Window(prob);
         }
 
 
-        [HttpPost("{pid}/[action]")]
+        [HttpPost("{probid}/[action]")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int pid, ContestProblem model)
+        public async Task<IActionResult> Edit(int probid, ContestProblem model)
         {
-            var origin = Problems.Find(pid);
+            var origin = Problems.Find(probid);
             if (origin == null) return NotFound();
 
-            if (Problems.Any(cp => cp.ShortName == model.ShortName && cp.ProblemId != pid))
+            if (Problems.Any(cp => cp.ShortName == model.ShortName && cp.ProblemId != probid))
                 ModelState.AddModelError("xys::duplicate", "Duplicate short name for problem.");
             if (!ModelState.IsValid)
                 return Window(model);
@@ -111,34 +111,34 @@ namespace SatelliteSite.ContestModule.Controllers
                     Score = model.Score,
                 });
 
-            await HttpContext.AuditAsync("updated", $"{pid}");
+            await HttpContext.AuditAsync("updated", $"{probid}");
             return GoBackHome($"Problem {model.ShortName} saved.");
         }
 
 
-        [HttpGet("{pid}/[action]")]
-        public IActionResult Delete(int pid)
+        [HttpGet("{probid}/[action]")]
+        public IActionResult Delete(int probid)
         {
-            var prob = Problems.Find(pid);
+            var prob = Problems.Find(probid);
             if (prob == null) return NotFound();
 
             return AskPost(
                 title: "Delete contest problem",
                 message: $"Are you sure to delete problem {prob.ShortName}?",
                 area: "Contest", controller: "JuryProblems", action: "Delete",
-                routeValues: new { cid = Contest.Id, pid },
+                routeValues: new { cid = Contest.Id, probid },
                 type: BootstrapColor.danger);
         }
 
 
-        [HttpPost("{pid}/[action]")]
-        public async Task<IActionResult> Delete(int pid, bool _ = true)
+        [HttpPost("{probid}/[action]")]
+        public async Task<IActionResult> Delete(int probid, bool _ = true)
         {
-            var prob = Problems.Find(pid);
+            var prob = Problems.Find(probid);
             if (prob == null) return NotFound();
 
             await Context.DeleteProblemAsync(prob);
-            await HttpContext.AuditAsync("detached", $"{pid}");
+            await HttpContext.AuditAsync("detached", $"{probid}");
 
             StatusMessage = $"Contest problem {prob.ShortName} has been deleted.";
             return RedirectToAction("Home", "Jury");

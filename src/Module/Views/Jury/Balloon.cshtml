@@ -39,7 +39,7 @@
                     <td>@ball.Location</td>
                     <td>@ball.CategoryName</td>
                     <td><razor asp-show-if="ball.FirstToSolve">first to solve</razor></td>
-                    <td><a asp-show-if="!ball.Done" asp-action="BalloonSetDone" asp-route-bid="@ball.Id"><i class="fas fa-running"></i></a></td>
+                    <td><a asp-show-if="!ball.Done" asp-action="BalloonSetDone" asp-route-id="@ball.Id"><i class="fas fa-running"></i></a></td>
                 </tr>
             }
         </tbody>

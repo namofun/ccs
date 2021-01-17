@@ -22,18 +22,18 @@ namespace SatelliteSite.ContestModule.Controllers
         }
 
 
-        [HttpGet("{sid}")]
-        public async Task<IActionResult> Detail(int sid, int? jid)
+        [HttpGet("{submitid}")]
+        public async Task<IActionResult> Detail(int submitid, int? judgingid)
         {
-            var submit = await Context.FindSubmissionAsync(sid, true);
+            var submit = await Context.FindSubmissionAsync(submitid, true);
             if (submit == null) return NotFound();
             var judgings = submit.Judgings;
 
             var prob = Problems.Find(submit.ProblemId);
             if (prob == null) return NotFound(); // the problem is deleted later
 
-            var judging = jid.HasValue
-                ? judgings.SingleOrDefault(j => j.Id == jid.Value)
+            var judging = judgingid.HasValue
+                ? judgings.SingleOrDefault(j => j.Id == judgingid.Value)
                 : judgings.SingleOrDefault(j => j.Active);
             if (judging == null) return NotFound();
 
@@ -51,18 +51,18 @@ namespace SatelliteSite.ContestModule.Controllers
         }
 
 
-        [HttpGet("{sid}/[action]")]
-        public async Task<IActionResult> Source(int sid, int? last = null)
+        [HttpGet("{submitid}/[action]")]
+        public async Task<IActionResult> Source(int submitid, int? last = null)
         {
             int cid = Contest.Id;
-            var submit = await Context.FetchSourceAsync(s => s.ContestId == cid && s.Id == sid);
+            var submit = await Context.FetchSourceAsync(s => s.ContestId == cid && s.Id == submitid);
             if (submit == null) return NotFound();
 
             var cond = Expr
                 .Of<Submission>(s => s.ContestId == cid)
                 .Combine(s => s.TeamId == submit.TeamId && s.ProblemId == submit.ProblemId)
                 .CombineIf(last.HasValue, s => s.Id == last)
-                .CombineIf(!last.HasValue, s => s.Id < sid);
+                .CombineIf(!last.HasValue, s => s.Id < submitid);
 
             var lastSubmit = await Context.FetchSourceAsync(cond);
             var langs = await Context.FetchLanguagesAsync();
@@ -81,21 +81,21 @@ namespace SatelliteSite.ContestModule.Controllers
         }
 
 
-        [HttpGet("{sid}/[action]")]
-        public async Task<IActionResult> Rejudge(int sid)
+        [HttpGet("{submitid}/[action]")]
+        public async Task<IActionResult> Rejudge(int submitid)
         {
-            var sub = await Context.FindSubmissionAsync(sid);
+            var sub = await Context.FindSubmissionAsync(submitid);
             if (sub == null) return NotFound();
 
             if (sub.RejudgingId != null)
             {
-                return RedirectToAction("Detail", "JuryRejudgings", new { rid = sub.RejudgingId });
+                return RedirectToAction("Detail", "JuryRejudgings", new { rejudgingid = sub.RejudgingId });
             }
 
             return Window(new AddRejudgingModel
             {
-                Submission = sid,
-                Reason = $"submission: {sid}",
+                Submission = submitid,
+                Reason = $"submission: {submitid}",
             });
         }
     }

@@ -45,7 +45,7 @@ namespace SatelliteSite.ContestModule.Components.ContestScoreboard
                 if (_inJury)
                 {
                     writer.Write("<a href=\"");
-                    writer.Write(_urlHelper.Action("Detail", "JuryProblems", new { pid = prob.ProblemId }));
+                    writer.Write(_urlHelper.Action("Detail", "JuryProblems", new { probid = prob.ProblemId }));
                     writer.Write("\">");
                 }
                 else

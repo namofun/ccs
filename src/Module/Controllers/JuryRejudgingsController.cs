@@ -24,10 +24,10 @@ namespace SatelliteSite.ContestModule.Controllers
         }
 
 
-        [HttpGet("{rid}")]
-        public async Task<IActionResult> Detail(int rid)
+        [HttpGet("{rejudgingid}")]
+        public async Task<IActionResult> Detail(int rejudgingid)
         {
-            var model = await Context.FindRejudgingAsync(rid);
+            var model = await Context.FindRejudgingAsync(rejudgingid);
             if (model == null) return NotFound();
 
             var uids = new[] { model.OperatedBy, model.IssuedBy }.NotNulls().Distinct();
@@ -105,12 +105,12 @@ namespace SatelliteSite.ContestModule.Controllers
             {
                 StatusMessage = $"{tok} submissions will be rejudged.";
                 await HttpContext.AuditAsync("added", $"{r.Id}", $"with {tok} submissions");
-                return RedirectToAction(nameof(Detail), new { rid = r.Id });
+                return RedirectToAction(nameof(Detail), new { rejudgingid = r.Id });
             }
         }
 
 
-        [HttpGet("{rid}/[action]")]
+        [HttpGet("{rejudgingid}/[action]")]
         public IActionResult Repeat()
         {
             return AskPost(
@@ -121,11 +121,11 @@ namespace SatelliteSite.ContestModule.Controllers
         }
 
 
-        [HttpPost("{rid}/[action]")]
+        [HttpPost("{rejudgingid}/[action]")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Repeat(int rid)
+        public async Task<IActionResult> Repeat(int rejudgingid)
         {
-            var rej = await Context.FindRejudgingAsync(rid);
+            var rej = await Context.FindRejudgingAsync(rejudgingid);
             if (rej == null) return NotFound();
 
             if (rej.OperatedBy == null)
@@ -143,7 +143,7 @@ namespace SatelliteSite.ContestModule.Controllers
             });
 
             int tok = await Context.BatchRejudgeAsync(
-                predicate: (s, j) => j.RejudgingId == rid,
+                predicate: (s, j) => j.RejudgingId == rejudgingid,
                 rejudge: r2e);
 
             if (tok == 0)
@@ -156,32 +156,32 @@ namespace SatelliteSite.ContestModule.Controllers
             {
                 StatusMessage = $"{tok} submissions will be rejudged.";
                 await HttpContext.AuditAsync("added", $"{r2e.Id}", $"with {tok} submissions");
-                return RedirectToAction(nameof(Detail), new { rid = r2e.Id });
+                return RedirectToAction(nameof(Detail), new { rejudgingid = r2e.Id });
             }
         }
 
 
-        [HttpPost("{rid}/[action]")]
+        [HttpPost("{rejudgingid}/[action]")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Cancel(int rid)
+        public async Task<IActionResult> Cancel(int rejudgingid)
         {
-            var rej = await Context.FindRejudgingAsync(rid);
+            var rej = await Context.FindRejudgingAsync(rejudgingid);
             if (rej == null || rej.EndTime != null) return NotFound();
             await Context.CancelRejudgingAsync(rej, int.Parse(User.GetUserId()));
-            await HttpContext.AuditAsync("cancelled", $"{rid}");
+            await HttpContext.AuditAsync("cancelled", $"{rejudgingid}");
             return RedirectToAction(nameof(Detail));
         }
 
 
-        [HttpPost("{rid}/[action]")]
+        [HttpPost("{rejudgingid}/[action]")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Apply(int rid)
+        public async Task<IActionResult> Apply(int rejudgingid)
         {
-            var rej = await Context.FindRejudgingAsync(rid);
+            var rej = await Context.FindRejudgingAsync(rejudgingid);
             if (rej == null || rej.EndTime != null) return NotFound();
 
             var pending = await Context.CountJudgingAsync(
-                j => j.RejudgingId == rid && (j.Status == Verdict.Pending || j.Status == Verdict.Running));
+                j => j.RejudgingId == rejudgingid && (j.Status == Verdict.Pending || j.Status == Verdict.Running));
 
             if (pending > 0)
             {
@@ -190,7 +190,7 @@ namespace SatelliteSite.ContestModule.Controllers
             }
 
             await Context.ApplyRejudgingAsync(rej, int.Parse(User.GetUserId()));
-            await HttpContext.AuditAsync("applied", $"{rid}");
+            await HttpContext.AuditAsync("applied", $"{rejudgingid}");
             await Mediator.Publish(new Ccs.Events.ScoreboardRefreshEvent(Contest, Problems));
             StatusMessage = "Rejudging applied. Scoreboard cache will be refreshed.";
             return RedirectToAction(nameof(Detail));

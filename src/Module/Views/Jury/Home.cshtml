@@ -125,13 +125,13 @@
                     <tbody>
                         @foreach (var prob in Contest.Problems)
                         {
-                            <tr asp-controller="JuryProblems" asp-action="Detail" asp-route-pid="@prob.ProblemId" data-toggle="gotoUrl">
+                            <tr asp-controller="JuryProblems" asp-action="Detail" asp-route-probid="@prob.ProblemId" data-toggle="gotoUrl">
                                 <td use-a>p@(prob.ProblemId)</td>
                                 <td use-a><div class="circle" style="background-color: @prob.Color"></div> <span class="text-monospace">@prob.ShortName</span> - @prob.Title</td>
                                 <td use-a>@(prob.AllowSubmit ? "Yes" : "No")</td>
                                 <td use-a>@(prob.AllowJudge ? "Yes" : "No")</td>
-                                <td><a asp-controller="JuryProblems" asp-action="Edit" asp-route-pid="@prob.ProblemId" data-toggle="ajaxWindow" data-target="editProb"><i class="fas fa-edit"></i></a></td>
-                                <td><a asp-controller="JuryProblems" asp-action="Delete" asp-route-pid="@prob.ProblemId" data-toggle="ajaxWindow" data-target="deleteProb"><i class="fas fa-trash-alt"></i></a></td>
+                                <td><a asp-controller="JuryProblems" asp-action="Edit" asp-route-probid="@prob.ProblemId" data-toggle="ajaxWindow" data-target="editProb"><i class="fas fa-edit"></i></a></td>
+                                <td><a asp-controller="JuryProblems" asp-action="Delete" asp-route-probid="@prob.ProblemId" data-toggle="ajaxWindow" data-target="deleteProb"><i class="fas fa-trash-alt"></i></a></td>
                             </tr>
                         }
                     </tbody>
@@ -157,7 +157,7 @@
                             <tr asp-area="Account" asp-controller="Profile" asp-action="Show" asp-route-username="@u.Value" data-toggle="gotoUrl">
                                 <td use-a>u@(u.Key)</td>
                                 <td use-a>@u.Value</td>
-                                <td><a asp-in-roles="Administrator" asp-action="Unassign" asp-route-uid="@u.Key" data-toggle="ajaxWindow" data-target="unassign"><i class="fas fa-trash-alt"></i></a></td>
+                                <td><a asp-in-roles="Administrator" asp-action="Unassign" asp-route-userid="@u.Key" data-toggle="ajaxWindow" data-target="unassign"><i class="fas fa-trash-alt"></i></a></td>
                             </tr>
                         }
                     </tbody>

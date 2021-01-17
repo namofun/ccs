@@ -149,11 +149,11 @@ namespace SatelliteSite.ContestModule.Controllers
         }
 
 
-        [HttpGet("balloon/{bid}/set-done")]
-        public async Task<IActionResult> BalloonSetDone(int bid)
+        [HttpGet("balloon/{id}/set-done")]
+        public async Task<IActionResult> BalloonSetDone(int id)
         {
             if (!Contest.BalloonAvailable) return NotFound();
-            await Context.SetBalloonDoneAsync(bid);
+            await Context.SetBalloonDoneAsync(id);
             return RedirectToAction(nameof(Balloon));
         }
 
@@ -186,34 +186,34 @@ namespace SatelliteSite.ContestModule.Controllers
         }
 
 
-        [HttpGet("[action]/{uid}")]
+        [HttpGet("[action]/{userid}")]
         [Authorize(Roles = "Administrator")]
-        public async Task<IActionResult> Unassign(int uid)
+        public async Task<IActionResult> Unassign(int userid)
         {
-            var user = await UserManager.FindByIdAsync(uid);
+            var user = await UserManager.FindByIdAsync(userid);
             if (user == null) return NotFound();
 
             return AskPost(
                 title: "Unassign jury",
-                message: $"Do you want to unassign jury {user.UserName} (u{uid})?",
+                message: $"Do you want to unassign jury {user.UserName} (u{userid})?",
                 area: "Contest", controller: "Jury", action: "Unassign",
-                routeValues: new { uid, cid = Contest.Id },
+                routeValues: new { userid, cid = Contest.Id },
                 type: BootstrapColor.danger);
         }
 
 
-        [HttpPost("[action]/{uid}")]
+        [HttpPost("[action]/{userid}")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrator")]
         [AuditPoint(AuditlogType.User)]
         [ActionName("Unassign")]
-        public async Task<IActionResult> UnassignConfirmation(int uid)
+        public async Task<IActionResult> UnassignConfirmation(int userid)
         {
-            var user = await UserManager.FindByIdAsync(uid);
+            var user = await UserManager.FindByIdAsync(userid);
             if (user == null) return NotFound();
             await Context.UnassignJuryAsync(user);
             StatusMessage = $"Jury role of user {user.UserName} unassigned.";
-            await HttpContext.AuditAsync("unassigned jury", $"{uid}");
+            await HttpContext.AuditAsync("unassigned jury", $"{userid}");
             return RedirectToAction(nameof(Home));
         }
 
