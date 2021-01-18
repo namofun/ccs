@@ -1,4 +1,5 @@
 using Markdig;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -41,6 +42,11 @@ namespace SatelliteSite
                         {
                             options.JudgingDirectory = Path.Combine(context.HostingEnvironment.ContentRootPath, "Runs");
                             options.ProblemDirectory = Path.Combine(context.HostingEnvironment.ContentRootPath, "Problems");
+                        });
+
+                        services.ConfigureApplicationBuilder(options =>
+                        {
+                            options.PointBeforeUrlRewriting.Add(app => app.UseMiddleware<Test46160Middleware>());
                         });
 
                         services.AddFakeJudgehost()

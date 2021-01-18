@@ -10,7 +10,7 @@
 
 <div class="form-group">
     <label asp-for="ProblemId">Problem ID</label>
-    <input asp-for="ProblemId" type="number" onblur="ajaxget('/contest/@ViewData["ContestId"]/jury/problems/find/' + $(this).val(),'#tryUser')" class="form-control" required />
+    <input asp-for="ProblemId" type="number" onblur="ajaxget('@Url.Action("Find", new { probid = "_PROB_ID_" })'.replace('_PROB_ID_', $(this).val()),'#tryUser')" class="form-control" required />
     <small id="tryUser" class="text-danger"></small>
 </div>
 <div class="form-group">

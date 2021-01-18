@@ -6,7 +6,7 @@
 
 <div class="form-group">
     <label asp-for="UserName"></label>
-    <input asp-for="UserName" onblur="ajaxget('jury/test-user/' + $(this).val(),'#tryUser')" class="form-control" required />
+    <input asp-for="UserName" onblur="ajaxget('@Url.Action("TestUser", new { userName = "_USER_NAME_" })'.replace('_USER_NAME_', $(this).val()),'#tryUser')" class="form-control" required />
     <small id="tryUser" class="text-danger"></small>
 </div>
 

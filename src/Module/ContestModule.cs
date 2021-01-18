@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using SatelliteSite.ContestModule.Routing;
 using System;
@@ -67,7 +68,7 @@ namespace SatelliteSite.ContestModule
             services.AddScoped<IContestFeature>(sp => sp.GetRequiredService<ContestFeature>());
 
             services.AddSingleton<IAuthorizationHandler, ContestAuthorizationHandler>();
-
+            services.AddSingleton<IRewriteRule, ContestOnlyRewriteRule>();
             services.AddMediatRAssembly(typeof(Ccs.Scoreboard.RankingSolver).Assembly);
 
             services.ConfigureApplicationBuilder(options =>
