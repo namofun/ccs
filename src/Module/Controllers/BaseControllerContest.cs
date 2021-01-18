@@ -17,7 +17,7 @@ namespace SatelliteSite.ContestModule.Controllers
     /// <summary>
     /// Base controller for contest related things.
     /// </summary>
-    public class ContestControllerBase : ViewControllerBase
+    public abstract class ContestControllerBase : ViewControllerBase
     {
         private IUserManager _lazy_userManager;
         private IMediator _lazy_mediator;
