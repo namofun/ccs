@@ -75,6 +75,11 @@ namespace Ccs.Services
         IQueryable<Submission> Submissions { get; }
 
         /// <summary>
+        /// Gets the queryable for <see cref="Polygon.Entities.SubmissionStatistics"/>.
+        /// </summary>
+        IQueryable<SubmissionStatistics> SubmissionStatistics { get; }
+
+        /// <summary>
         /// Gets the queryable for <see cref="Problem"/>.
         /// </summary>
         IQueryable<Problem> Problems { get; }

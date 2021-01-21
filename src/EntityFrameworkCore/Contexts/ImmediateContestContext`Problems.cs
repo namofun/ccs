@@ -2,6 +2,7 @@
 using Ccs.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Polygon.Entities;
 using Polygon.Models;
 using System;
@@ -120,6 +121,13 @@ namespace Ccs.Services
                 return CheckResult.Fail("Problem not found or access denined.");
 
             return CheckResult.Succeed(prob.Title);
+        }
+
+        public virtual async Task<IFileInfo?> FetchTestcaseAsync(ProblemModel problem, int testcaseId, string filetype)
+        {
+            var testcase = await Polygon.Testcases.FindAsync(testcaseId, problem.ProblemId);
+            if (testcase == null || (!problem.Shared && testcase.IsSecret)) return null;
+            return await Polygon.Testcases.GetFileAsync(testcase, filetype);
         }
     }
 }

@@ -15,5 +15,7 @@ namespace Ccs.Services
         public TimeSpan Teams { get; set; } = TimeSpan.FromSeconds(10);
 
         public TimeSpan Scoreboard { get; set; } = TimeSpan.FromSeconds(3);
+
+        public TimeSpan Statistics { get; set; } = TimeSpan.FromSeconds(30);
     }
 }

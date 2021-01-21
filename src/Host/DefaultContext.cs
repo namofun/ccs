@@ -62,6 +62,7 @@ namespace SatelliteSite
         IQueryable<JudgingRun> IContestDbContext.JudgingRuns => JudgingRuns;
         IQueryable<Testcase> IContestDbContext.Testcases => Testcases;
         IQueryable<Category> IContestDbContext.Categories => Categories;
+        IQueryable<SubmissionStatistics> IContestDbContext.SubmissionStatistics => SubmissionStatistics;
     }
 
     public class QueryCache : QueryCacheBase<DefaultContext>

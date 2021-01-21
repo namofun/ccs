@@ -11,7 +11,7 @@ namespace SatelliteSite.ContestModule.Controllers
 {
     [Area("Contest")]
     [Route("[area]/{cid:c(1)}")]
-    [Authorize("ContestVisible")]
+    [Authorize(Policy = "ContestVisible")]
     [SupportStatusCodePage]
     public class DomPublicController : ContestControllerBase
     {

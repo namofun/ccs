@@ -76,11 +76,11 @@ namespace SatelliteSite.ContestModule.Controllers
                 selector: (s, j) => new SubmissionViewModel
                 {
                     Points = j.TotalScore ?? 0,
-                    Language = s.Language,
+                    LanguageId = s.Language,
                     SubmissionId = s.Id,
                     Time = s.Time,
                     Verdict = j.Status,
-                    Problem = s.ProblemId,
+                    ProblemId = s.ProblemId,
                 });
 
             return View(new TeamHomeViewModel
@@ -265,15 +265,20 @@ namespace SatelliteSite.ContestModule.Controllers
                 {
                     SubmissionId = s.Id,
                     Points = j.TotalScore ?? 0,
-                    Language = s.Language,
+                    LanguageId = s.Language,
                     Time = s.Time,
                     Verdict = j.Status,
-                    Problem = s.ProblemId,
+                    ProblemId = s.ProblemId,
                     CompilerOutput = j.CompileError,
                     SourceCode = s.SourceCode,
                 });
 
             if (model == null) return NotFound();
+
+            var langs = await Context.FetchLanguagesAsync();
+            model.Problem = Problems.Find(model.ProblemId);
+            model.Language = langs.FirstOrDefault(l => l.Id == model.LanguageId);
+
             return Window(model);
         }
     }

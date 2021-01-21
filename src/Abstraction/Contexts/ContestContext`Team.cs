@@ -100,5 +100,12 @@ namespace Ccs
         /// <param name="predicate">The conditions to match.</param>
         /// <returns>The task for listing entities.</returns>
         Task<List<Team>> ListTeamsAsync(Expression<Func<Team, bool>>? predicate = null);
+
+        /// <summary>
+        /// Statistics the submission status of team.
+        /// </summary>
+        /// <param name="team">The team to discover.</param>
+        /// <returns>The task for statistical result of submissions.</returns>
+        Task<IReadOnlyDictionary<int, (int, int)>> StatisticsAsync(Team? team);
     }
 }

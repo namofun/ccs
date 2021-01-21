@@ -110,5 +110,12 @@ namespace Ccs.Services
             return CacheAsync("Teams::Scoreboard", _options.Scoreboard,
                 async () => await base.FetchScoreboardAsync());
         }
+
+        public override Task<IReadOnlyDictionary<int, (int, int)>> StatisticsAsync(Team? team)
+        {
+            if (team == null) return Task.FromResult(_emptyStat);
+            return CacheAsync($"Teams::Statistics({team.TeamId})", _options.Statistics,
+                async () => await base.StatisticsAsync(team));
+        }
     }
 }

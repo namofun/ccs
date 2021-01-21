@@ -1,8 +1,7 @@
-﻿@model IEnumerable<Polygon.Models.Solution>
+﻿@model IReadOnlyList<Polygon.Models.Solution>
 @{
     ViewData["Title"] = "View Problem";
     ViewData["DisableAjaxRefresh"] = true;
-    Contest ctx = ViewBag.Contest;
     ProblemModel cp = ViewBag.CurrentProblem;
 }
 
@@ -13,13 +12,14 @@
 <div class="container pl-0 pr-0">
 <partial name="_StatusMessage" model="@TempData["StatusMessage"]" />
 @{ TempData.Remove("StatusMessage"); }
+
 <div class="row">
 <div class="col-12 col-lg-8" id="problem-descibe-parent">
     @Html.Raw((string)ViewData["Content"])
 </div>
 <div class="col-12 col-lg-4 sidebar">
-    <h3 class="mt-lg-5">Gym</h3>
-    <p>@ctx.Name</p>
+    <h3 class="mt-lg-5">Contest</h3>
+    <p>@Contest.Name</p>
     <h3>Operation</h3>
     <p><a class="btn btn-success btn-sm" asp-action="Submit" asp-route-prob="@cp.ShortName" data-toggle="ajaxWindow" data-target="submitCode"><i class="fas fa-cloud-upload-alt"></i> Submit</a></p>
     <h3>My Submissions</h3>
@@ -39,7 +39,7 @@
                     <td use-a>s@(sub.SubmissionId)</td>
                     <td use-a>@Html.CstTime(sub.Time)</td>
                     <td use-a class="text-variant">@sub.Language</td>
-                    <td use-a><verdict3 skipped="@sub.Skipped" value="@sub.Verdict" /></td>
+                    <td use-a><verdict skipped="@sub.Skipped" value="@sub.Verdict" /></td>
                 </tr>
             }
 

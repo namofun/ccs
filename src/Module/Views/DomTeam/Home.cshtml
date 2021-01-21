@@ -58,7 +58,7 @@ else
                     <tbody>
                         @foreach (var submit in Model.Submissions)
                         {
-                            ProblemModel p = Contest.Problems.Find(submit.Problem);
+                            ProblemModel p = Contest.Problems.Find(submit.ProblemId);
                             if (p == null) { continue; }
                             var t = submit.Time;
                             var b = !Contest.EndTime.HasValue || t < (Contest.StartTime + Contest.EndTime).Value;

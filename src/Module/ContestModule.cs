@@ -34,6 +34,9 @@ namespace SatelliteSite.ContestModule
 
             endpoints.WithErrorHandler("Contest", "DomPublic")
                 .MapStatusCode("/contest/{cid:c(1)}/{**slug}");
+
+            endpoints.WithErrorHandler("Contest", "Gym")
+                .MapStatusCode("/contest/{cid:c(2)}/{**slug}");
         }
 
         private static void EnsureRegistered<TService>(IServiceCollection services, ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)

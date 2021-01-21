@@ -1,5 +1,6 @@
 ﻿using Ccs.Entities;
 using Ccs.Models;
+using Microsoft.Extensions.FileProviders;
 using Polygon.Models;
 using System;
 using System.Collections.Generic;
@@ -53,5 +54,14 @@ namespace Ccs
         /// </summary>
         /// <returns>The task for enlisting statements.</returns>
         Task<List<Statement>> FetchRawStatementsAsync();
+
+        /// <summary>
+        /// Fetchs the testcase of the <paramref name="problem"/>.
+        /// </summary>
+        /// <param name="problem">The problem ID.</param>
+        /// <param name="testcaseId">The testcase ID.</param>
+        /// <param name="filetype">The file type.</param>
+        /// <returns>The task for getting file info.</returns>
+        Task<IFileInfo?> FetchTestcaseAsync(ProblemModel problem, int testcaseId, string filetype);
     }
 }

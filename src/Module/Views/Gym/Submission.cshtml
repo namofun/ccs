@@ -1,68 +1,73 @@
 ﻿@model SubmissionViewModel
 @{
-    Layout = null;
-    Contest ctx = ViewBag.Contest;
-    var time = Model.Time;
-    var compile_badge = Model.CompilerOutput is null ? "secondary"
-                      : Model.Verdict == Polygon.Entities.Verdict.CompileError ? "danger" : "success";
-    var compile_result = Model.CompilerOutput is null ? "waiting"
-                      : Model.Verdict == Polygon.Entities.Verdict.CompileError ? "failed" : "successful";
-    ProblemCollection problems = ViewBag.Problems;
-    var p = problems.Find(Model.Problem);
-    Polygon.Entities.Language l = null;
+    Layout = "_WindowLayout";
+    ViewData["Title"] = "Submission details";
+    ViewData["MaxWidth"] = "800px";
+    ViewData["HandleKey"] ??= "show_submission";
+    ViewData["CancelText"] = "Close";
 }
 
-<div class="modal fade" id="modal-@ViewData["HandleKey"]" tabindex="-1" role="dialog" aria-labelledby="modal-@ViewData["HandleKey"]-label" aria-hidden="true">
-    <div class="modal-dialog" style="max-width:800px" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modal-@ViewData["HandleKey"]-label">Submission details</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="container">
-                    <div class="d-flex flex-row">
-                        <div class="p-2">Problem: <b><span class="probid">@p.ShortName</span> - @p.Title</b></div>
-                        <div class="p-2">Team: <b>@Model.TeamName</b></div>
-                    </div>
-                    <div class="d-flex flex-row mb-3">
-                        <div class="p-2">Run result: <verdict3 value="@Model.Verdict" /></div>
-                        <div class="p-2">Language: <b>@l.Name</b></div>
-                        <div class="p-2">Time: @(Model.ExecuteTime.HasValue ? $"{Model.ExecuteTime.Value / 1000.0}s" : "N/A")</div>
-                        <div class="p-2">Memory: @(Model.ExecuteMemory.HasValue ? $"{Model.ExecuteMemory.Value / 1024}MB" : "N/A")</div>
-                        <div asp-show-if="ctx.RankingStrategy == 1" class="p-2">Score: @Model.Points</div>
-                    </div>
+<script src="~/lib/ace/ace.js"></script>
+<div class="container">
+<div class="d-flex flex-row">
+    <div class="p-2">Problem: <b><span class="probid">@Model.Problem.ShortName</span> - @Model.Problem.Title</b></div>
+    <div class="p-2">Submitted: <b title="@Model.Time">@Model.Time.ToString("HH:mm")</b></div>
+    <div class="p-2">Team: <b>@Model.TeamName</b></div>
+</div>
+<div class="d-flex flex-row mb-3">
+    <div class="p-2">Run result: <verdict value="@Model.Verdict" /></div>
+    <div class="p-2">Language: <b>@Model.Language.Name</b></div>
+    <div class="p-2">Time: @(Model.ExecuteTime.HasValue ? $"{Model.ExecuteTime.Value / 1000.0}s" : "N/A")</div>
+    <div class="p-2">Memory: @(Model.ExecuteMemory.HasValue ? $"{Model.ExecuteMemory.Value / 1024}MB" : "N/A")</div>
+    <div asp-show-if="Contest.RankingStrategy == 1" class="p-2">Score: @Model.Points</div>
+</div>
 
-                    <ace value="@Model.SourceCode.UnBase64()" file="Main.@l.FileExtension" />
+<ace value="@Model.SourceCode.UnBase64()" file="Main.@Model.Language.FileExtension" />
 
-                    <razor asp-show-if="Model.Verdict == Polygon.Entities.Verdict.CompileError">
-                        <hr />
-                        <h4 class="text-center">Compilation output</h4>
-                        <snippet class="pre-scrollable" base64="@Model.CompilerOutput" nodata="There were no compiler errors or warnings." />
-                    </razor>
+<razor asp-show-if="Model.Verdict != Verdict.Pending && Model.Verdict != Verdict.Running">
+<hr />
+<h4 class="text-center">Compilation output</h4>
+<snippet class="pre-scrollable" base64="@Model.CompilerOutput" nodata="There were no compiler errors or warnings." />
+</razor>
 
-                    <razor asp-show-if="Model.Verdict != Polygon.Entities.Verdict.CompileError">
-                        <hr />
-                        <h4 class="text-center">Judging Protocol</h4>
+<razor asp-show-if="Model.Verdict != Polygon.Entities.Verdict.CompileError">
+<hr />
+<h4 class="text-center">Judging Protocol</h4>
 
-                        @{ ViewData["Shared"] = true; }
-                        @foreach (var (r, t) in (IEnumerable<(Polygon.Entities.JudgingRun, Polygon.Entities.Testcase)>)ViewBag.Runs)
-                        {
-                            var type = r == null
-                                ? "_SubmissionDetailNull"
-                                : p.Interactive
-                                ? "_SubmissionDetailInteractive"
-                                : "_SubmissionDetailOutput";
-                            <partial name="@type" model="(r, t)" />
-                        }
-                    </razor>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
+@foreach (var (detail, testcase) in Model.Runs)
+{
+<div class="run" asp-show-if="detail == null">
+    <h4 id="run-@testcase.Rank">Run @testcase.Rank</h4>
+    <p class="nodata">Testcase not used.</p>
+</div>
+<div class="run @(detail?.Status == Verdict.Accepted ? "run_correct" : "")" asp-show-if="detail != null">
+    <h4 id="run-@testcase.Rank">Run @testcase.Rank</h4>
+    <table><tr><td><table class="table table-sm table-striped table-bordered table-hover">
+        <tr>
+            <th>Description</th>
+            <td>@testcase.Description</td>
+        </tr>
+        <tr>
+            <th>Download</th>
+            <td>
+                <a asp-action="FetchTestcase" asp-route-prob="@Model.Problem.ShortName" asp-route-tcid="@detail.TestcaseId" asp-route-filetype="input">Input</a>
+                /
+                <a asp-action="FetchTestcase" asp-route-prob="@Model.Problem.ShortName" asp-route-tcid="@detail.TestcaseId" asp-route-filetype="output">Reference Output</a>
+            </td>
+        </tr>
+        <tr>
+            <th>Status</th>
+            <td>@(detail.ExecuteTime)ms, @(detail.ExecuteMemory)kb.</td>
+        </tr>
+        <tr>
+            <th>Result</th>
+            <td><verdict value="@detail.Status" /></td>
+        </tr>
+    </table></td><td></td></tr></table>
+
+    <snippet h5-title="Diff output" class="mb-3" base64="@detail.OutputDiff" nodata="There was no diff output." />
+    <snippet h5-title="Judging system output (info/debug/errors)" class="mb-4" base64="@detail.OutputSystem" />
+</div>
+}
+</razor>
 </div>

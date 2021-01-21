@@ -15,6 +15,7 @@ namespace Ccs.Services
     public partial class ImmediateContestContext
     {
         private static readonly ConcurrentAsyncLock _teamLock = new ConcurrentAsyncLock();
+        protected static readonly IReadOnlyDictionary<int, (int, int)> _emptyStat = new Dictionary<int, (int, int)>();
 
         public Task<List<Team>> ListTeamsAsync(Expression<Func<Team, bool>>? predicate = null)
         {
@@ -186,6 +187,15 @@ namespace Ccs.Services
                 .Include(t => t.ScoreCache)
                 .ToDictionaryAsync(t => t.TeamId, t => (IScoreboardRow)t);
             return new ScoreboardModel(value);
+        }
+
+        public virtual async Task<IReadOnlyDictionary<int, (int, int)>> StatisticsAsync(Team? team)
+        {
+            if (team == null) return _emptyStat;
+            var (cid, teamid) = (team.ContestId, team.TeamId);
+            return await Db.SubmissionStatistics
+                .Where(t => t.ContestId == cid && t.TeamId == teamid)
+                .ToDictionaryAsync(s => s.ProblemId, s => (s.AcceptedSubmission, s.TotalSubmission));
         }
     }
 }

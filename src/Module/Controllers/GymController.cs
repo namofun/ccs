@@ -12,33 +12,44 @@ using System.Threading.Tasks;
 namespace SatelliteSite.ContestModule.Controllers
 {
     [Area("Contest")]
-    [Authorize]
-    [Route("[controller]/{cid:c(2)}")]
+    [Route("[area]/{cid:c(2)}")]
+    [Authorize(Policy = "ContestVisible")]
+    [SupportStatusCodePage]
     public class GymController : ContestControllerBase
     {
         public bool TooEarly => Contest.GetState() < ContestState.Started;
 
-        private IActionResult GoBackHome(string message)
+        private IReadOnlyDictionary<int, (int Accepted, int Total)> Statistics { get; set; }
+
+        private RedirectToActionResult GoBackHome(string message)
         {
             StatusMessage = message;
             return RedirectToAction(nameof(Home));
         }
 
-        private IActionResult NotStarted() => View("NotStarted");
+        private ViewResult NotStarted() => View("NotStarted");
 
         public override async Task OnActionExecutingAsync(ActionExecutingContext context)
         {
             if ((Contest.StartTime ?? DateTimeOffset.MaxValue) >= DateTimeOffset.Now)
+            {
                 context.Result = NotStarted();
-            
+            }
+
+            ViewData["NavbarName"] = Ccs.CcsDefaults.GymNavbar;
+            ViewData["BigUrl"] = Url.Action("Home", "Gym");
+            ViewData["UseLightTheme"] = true;
             await base.OnActionExecutingAsync(context);
 
-            //if (context.Result == null && Team != null)
-            //    ViewBag.TeamStatistics = await Facade.Teams
-            //        .StatisticsSubmissionAsync(Team.ContestId, Team.TeamId);
+            if (context.Result == null)
+            {
+                Statistics = await Context.StatisticsAsync(Team);
+                ViewData["SubmissionStatistics"] = Statistics;
+            }
         }
 
 
+        //~
         [HttpGet("[action]")]
         public async Task<IActionResult> Scoreboard()
         {
@@ -49,6 +60,7 @@ namespace SatelliteSite.ContestModule.Controllers
         }
 
 
+        //~
         [HttpGet]
         public async Task<IActionResult> Home()
         {
@@ -61,10 +73,11 @@ namespace SatelliteSite.ContestModule.Controllers
         }
 
 
-        [HttpGet("[action]/{sid}")]
+        [HttpGet("submissions/{sid}")]
         public async Task<IActionResult> Submission(int sid)
         {
-            if (Team == null) return Forbid();
+            if (Team == null && Contest.StatusAvailable != 1)
+                return Forbid();
 
             var model = await Context.FetchSolutionAsync(
                 sid, (s, j) => new SubmissionViewModel
@@ -72,9 +85,9 @@ namespace SatelliteSite.ContestModule.Controllers
                     SubmissionId = s.Id,
                     Verdict = j.Status,
                     Time = s.Time,
-                    Problem = s.ProblemId,
+                    ProblemId = s.ProblemId,
                     CompilerOutput = j.CompileError,
-                    Language = s.Language,
+                    LanguageId = s.Language,
                     SourceCode = s.SourceCode,
                     Points = j.TotalScore ?? 0,
                     TeamId = s.TeamId,
@@ -84,32 +97,28 @@ namespace SatelliteSite.ContestModule.Controllers
                 });
 
             if (model == null) return NotFound();
-            Dictionary<int, (int ac, int tot)> substat = ViewBag.TeamStatistics;
-            model.TeamName = (await Context.FindTeamByIdAsync(model.TeamId)).TeamName;
+            model.Problem = Problems.Find(model.ProblemId);
+            var langs = await Context.FetchLanguagesAsync();
+            model.Language = langs.FirstOrDefault(l => l.Id == model.LanguageId);
 
-            if (model.TeamId != Team.TeamId)
+            if (model.Problem == null
+                || model.Language == null
+                || model.TeamId != Team?.TeamId
+                && (Contest.StatusAvailable == 0
+                || (Contest.StatusAvailable == 2 && Statistics.GetValueOrDefault(model.ProblemId).Accepted == 0)))
             {
-                if (Contest.StatusAvailable == 2)
-                {
-                    if (substat.GetValueOrDefault(model.Problem).ac == 0)
-                        return Forbid();
-                }
-                else if (Contest.StatusAvailable == 0)
-                {
-                    return Forbid();
-                }
+                return Forbid();
             }
 
-            //var tcs = await judgings.GetDetailsAsync(model.Problem.ProblemId, model.JudgingId);
-            //if (!model.Problem.Shared)
-            //    tcs = tcs.Where(t => !t.Item2.IsSecret);
-            //ViewBag.Runs = tcs;
-
+            var teamNames = await Context.FetchTeamNamesAsync();
+            model.TeamName = teamNames.GetValueOrDefault(model.TeamId, "");
+            model.Runs = await Context.FetchDetailsAsync(model.ProblemId, model.JudgingId);
+            if (!model.Problem.Shared) model.Runs = model.Runs.Where(t => !t.Item2.IsSecret);
             return Window(model);
         }
 
 
-        [HttpGet("problem/{prob}")]
+        [HttpGet("problems/{prob}")]
         public async Task<IActionResult> ProblemView(string prob)
         {
             if (TooEarly && !ViewData.ContainsKey("IsJury")) return NotFound();
@@ -126,6 +135,7 @@ namespace SatelliteSite.ContestModule.Controllers
         }
 
 
+        //~
         [HttpGet("[action]")]
         public IActionResult Submit(string prob)
         {
@@ -135,6 +145,7 @@ namespace SatelliteSite.ContestModule.Controllers
         }
 
 
+        //~
         [HttpGet("[action]")]
         public async Task<IActionResult> Register()
         {
@@ -152,6 +163,7 @@ namespace SatelliteSite.ContestModule.Controllers
         }
 
 
+        //~
         [HttpPost("[action]")]
         [AuditPoint(AuditlogType.Team)]
         public async Task<IActionResult> Register(GymRegisterModel model)
@@ -215,6 +227,7 @@ namespace SatelliteSite.ContestModule.Controllers
         }
 
 
+        //~
         [HttpPost("[action]")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Submit(TeamCodeSubmitModel model)
@@ -260,7 +273,7 @@ namespace SatelliteSite.ContestModule.Controllers
         }
 
 
-        [HttpGet("problem/{prob}/testcase/{tcid}/fetch/{filetype}")]
+        [HttpGet("problems/{prob}/testcase/{tcid}/fetch/{filetype}")]
         public async Task<IActionResult> FetchTestcase(string prob, int tcid, string filetype)
         {
             if (filetype == "input") filetype = "in";
@@ -271,26 +284,23 @@ namespace SatelliteSite.ContestModule.Controllers
             var problem = Problems.Find(prob);
             if (problem == null) return NotFound();
 
-            //var tc = await testcases.FindAsync(problem.ProblemId, tcid);
-            //if (tc == null) return NotFound();
-            //if (tc.IsSecret && !problem.Shared) return NotFound();
-
-            //var file = testcases.GetFile(tc, filetype);
-            //if (!file.Exists) return NotFound();
+            var file = await Context.FetchTestcaseAsync(problem, tcid, filetype);
+            if (file == null || !file.Exists) return NotFound();
 
             return File(
-                fileStream: null, // file.CreateReadStream(),
+                fileStream: file.CreateReadStream(),
                 contentType: "application/octet-stream",
                 fileDownloadName: $"{problem.ShortName}.t{tcid}.{filetype}");
         }
 
 
-        [HttpGet("[action]")]
+        [HttpGet("submissions")]
         public async Task<IActionResult> Submissions(int page = 1)
         {
             if (page <= 0) return BadRequest();
             var model = await Context.FetchSolutionsAsync(page, 50);
-            ViewBag.TeamsName = await Context.FetchTeamNamesAsync();
+            var tn = await Context.FetchTeamNamesAsync();
+            foreach (var solu in model) solu.AuthorName = tn.GetValueOrDefault(solu.TeamId, string.Empty);
             return View(model);
         }
     }

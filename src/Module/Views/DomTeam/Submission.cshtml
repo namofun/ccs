@@ -3,18 +3,14 @@
     ViewData["Title"] = "Submission details";
     Layout = "_WindowLayout";
     ViewData["MaxWidth"] = "800px";
-    ViewData["HandleKey"] ??= "view_clarification";
-    var time = Model.Time;
-    var langs = await Contest.Context.FetchLanguagesAsync();
-    ProblemModel p = Contest.Problems.Find(Model.Problem);
-    Language l = langs.FirstOrDefault(l => l.Id == Model.Language);
+    ViewData["HandleKey"] ??= "view_submission";
 }
 
 <div class="@(ViewData.ContainsKey("InAjax") ? "container" : "")">
     <div class="d-flex flex-row">
-        <div class="p-2">Problem: <b><span class="probid">@p.ShortName</span> - @p.Title</b></div>
-        <div class="p-2">Submitted: <b>@time.ToString("HH:mm")</b></div>
-        <div class="p-2">Language: <b>@l.Name</b></div>
+        <div class="p-2">Problem: <b><span class="probid">@Model.Problem.ShortName</span> - @Model.Problem.Title</b></div>
+        <div class="p-2">Submitted: <b>@Model.Time.ToString("HH:mm")</b></div>
+        <div class="p-2">Language: <b>@Model.Language.Name</b></div>
         <div class="p-2">Compilation: <span class="badge badge-@(Model.CompilerOutput is null ? "secondary" : Model.Verdict == Verdict.CompileError ? "danger" : "success")">@(Model.CompilerOutput is null ? "waiting" : Model.Verdict == Verdict.CompileError ? "failed" : "successful")</span></div>
     </div>
 
@@ -35,7 +31,7 @@
     <h4 class="text-center">Source code</h4>
     <script src="~/lib/ace/ace.js"></script>
     <p asp-show-if="Contest.GetState() != ContestState.Finalized" class="nodata">Source code will be available when contest is finalized.</p>
-    <ace asp-show-if="Contest.GetState() == ContestState.Finalized" value="@Model.SourceCode.UnBase64()" file="Main.@l.FileExtension" />
+    <ace asp-show-if="Contest.GetState() == ContestState.Finalized" value="@Model.SourceCode.UnBase64()" file="Main.@Model.Language.FileExtension" />
 </div>
 
 @section Scripts {
