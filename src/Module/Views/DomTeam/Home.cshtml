@@ -1,18 +1,10 @@
-﻿@model SingleBoardViewModel
+﻿@model TeamHomeViewModel
 @{
     ViewData["Title"] = "Team";
     ViewData["RefreshAfter"] = "setFlashAndProgress";
     ViewData["RefreshBefore"] = "saveFlash";
     ViewData["RefreshSpan"] = 30;
-    bool inajax = ViewData.ContainsKey("InAjax");
-
-    IEnumerable<SubmissionViewModel> submits = ViewBag.Submissions;
-    IEnumerable<Clarification> claris = ViewBag.Clarifications;
-    Team team = ViewBag.Team;
-    var received = claris.Where(c => !c.Sender.HasValue);
-    var sent = claris.Where(c => c.Sender.HasValue);
-
-    if (inajax)
+    if (ViewData.ContainsKey("InAjax"))
     {
         Layout = null;
         <partial name="_Progress" />
@@ -23,7 +15,7 @@
 {
     <h1 id="teamwelcome" class="text-center">
         Welcome team 
-        <span id="teamwelcometeam">@team.TeamName</span>!
+        <span id="teamwelcometeam">@Contest.Team.TeamName</span>!
     </h1>
     <h2 id="contestnotstarted" class="text-center">
         <razor asp-show-if="Contest.StartTime.HasValue">
@@ -48,7 +40,7 @@ else
     <div class="row">
         <div class="col-md-6 col-12">
             <h3 class="teamoverview">Submissions</h3>
-            @if (submits.Count() == 0)
+            @if (Model.Submissions.Count == 0)
             {
                 <div class="alert alert-warning">No submissions</div>
             }
@@ -64,9 +56,10 @@ else
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var submit in submits)
+                        @foreach (var submit in Model.Submissions)
                         {
                             ProblemModel p = Contest.Problems.Find(submit.Problem);
+                            if (p == null) { continue; }
                             var t = submit.Time;
                             var b = !Contest.EndTime.HasValue || t < (Contest.StartTime + Contest.EndTime).Value;
                             <tr asp-action="Submission" asp-route-submitid="@submit.SubmissionId" data-toggle="ajaxWindow" data-target="submission" class="unseen" id="submit_@submit.SubmissionId">
@@ -82,7 +75,7 @@ else
         </div>
         <div class="col-md-6 col-12">
             <h3 class="teamoverview">Clarifications</h3>
-            @if (received.Count() == 0)
+            @if (!Model.Clarifications.Any(c => !c.Sender.HasValue))
             {
                 <p class="nodata">No clarifications.</p>
             }
@@ -100,13 +93,13 @@ else
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var clar in received)
+                            @foreach (var clar in Model.Clarifications.Where(c => !c.Sender.HasValue))
                             {
                                 var prob = Contest.Problems.Find(clar.ProblemId ?? -1);
                                 <tr asp-action="ClarificationView" asp-route-clarid="@clar.Id" data-toggle="ajaxWindow" data-target="recv-clar" class="unseen" id="clar_@clar.Id">
                                     <td use-a>@clar.SubmitTime.ToString("HH:mm")</td>
                                     <td use-a>Jury</td>
-                                    <td use-a>@(clar.Recipient.HasValue ? team.TeamName : "All")</td>
+                                    <td use-a>@(clar.Recipient.HasValue ? Contest.Team.TeamName : "All")</td>
                                     <td use-a>@clar.Category @prob?.ShortName issue</td>
                                     <td use-a>@string.Join('\n', clar.Body.Split('\n').Where(s => !string.IsNullOrWhiteSpace(s) && !s.StartsWith('>')))</td>
                                 </tr>
@@ -117,7 +110,7 @@ else
             }
 
             <h3 class="teamoverview">Clarification Requests</h3>
-            @if (sent.Count() == 0)
+            @if (!Model.Clarifications.Any(c => c.Sender.HasValue))
             {
                 <p class="nodata">No clarification request.</p>
             }
@@ -135,12 +128,12 @@ else
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var clar in sent)
+                            @foreach (var clar in Model.Clarifications.Where(c => c.Sender.HasValue))
                             {
                                 var prob = Contest.Problems.Find(clar.ProblemId ?? -1);
                                 <tr asp-action="ClarificationView" asp-route-clarid="@clar.Id" data-toggle="ajaxWindow" data-target="sent-clar">
                                     <td use-a>@clar.SubmitTime.ToString("HH:mm")</td>
-                                    <td use-a>@team.TeamName</td>
+                                    <td use-a>@Contest.Team.TeamName</td>
                                     <td use-a>Jury</td>
                                     <td use-a>@clar.Category @prob?.ShortName issue</td>
                                     <td use-a>@string.Join('\n', clar.Body.Split('\n').Where(s => !string.IsNullOrWhiteSpace(s) && !s.StartsWith('>')))</td>
@@ -164,98 +157,95 @@ else
     </div>
 }
 
-@if (!inajax)
-{
-    @section Scripts {
-        <script>
-            $(function () {
-                var seenSub = getSeenSubmissions();
-                for (var i = 0; i < seenSub.length; i++)
-                    $('#submit_' + seenSub[i]).removeClass('unseen');
-                var seenClar = getSeenClarification();
-                for (var i = 0; i < seenClar.length; i++)
-                    $('#clar_' + seenClar[i]).removeClass('unseen');
-            });
-        </script>
-        <script>
-            var $flash = null;
+@section Scripts {
+    <script>
+        $(function () {
+            var seenSub = getSeenSubmissions();
+            for (var i = 0; i < seenSub.length; i++)
+                $('#submit_' + seenSub[i]).removeClass('unseen');
+            var seenClar = getSeenClarification();
+            for (var i = 0; i < seenClar.length; i++)
+                $('#clar_' + seenClar[i]).removeClass('unseen');
+        });
+    </script>
+    <script>
+        var $flash = null;
 
-            function getSeenSubmissions() {
-	            var cookieVal = getCookie("xylab_submission_seen_at_cid_@Contest.Id");
-	            if (cookieVal === null || cookieVal === "") {
-		            return new Array();
-	            }
-	            return JSON.parse(cookieVal);
+        function getSeenSubmissions() {
+	        var cookieVal = getCookie("xylab_submission_seen_at_cid_@Contest.Id");
+	        if (cookieVal === null || cookieVal === "") {
+		        return new Array();
+	        }
+	        return JSON.parse(cookieVal);
+        }
+
+        function getSeenClarification() {
+	        var cookieVal = getCookie("xylab_clarification_seen_at_cid_@Contest.Id");
+	        if (cookieVal === null || cookieVal === "") {
+		        return new Array();
+	        }
+	        return JSON.parse(cookieVal);
+        }
+
+        function saveFlash() {
+            $flash = $('[data-flash-messages]').children();
+        }
+
+        function setSeenSub(sub) {
+            $('#submit_' + sub).removeClass('unseen');
+            var seenSubmissions = getSeenSubmissions();
+            if (seenSubmissions.indexOf(sub) == -1)
+                seenSubmissions.push(sub);
+            var cookieVal = JSON.stringify(seenSubmissions);
+	        setCookie("xylab_submission_seen_at_cid_@Contest.Id", cookieVal);
+        }
+
+        function setSeenClar(clar) {
+            $('#clar_' + clar).removeClass('unseen');
+            var seenClaris = getSeenClarification();
+            if (seenClaris.indexOf(clar) == -1)
+                seenClaris.push(clar);
+            var cookieVal = JSON.stringify(seenClaris);
+	        setCookie("xylab_clarification_seen_at_cid_@Contest.Id", cookieVal);
+        }
+
+        function setFlashAndProgress() {
+            var $newProgress = $('[data-ajax-refresh-target] > [data-progress-bar]');
+            if ($newProgress.length) {
+                var $oldProgress = $('body > [data-progress-bar]');
+                $oldProgress.html($newProgress.children());
+                $newProgress.remove();
             }
 
-            function getSeenClarification() {
-	            var cookieVal = getCookie("xylab_clarification_seen_at_cid_@Contest.Id");
-	            if (cookieVal === null || cookieVal === "") {
-		            return new Array();
-	            }
-	            return JSON.parse(cookieVal);
+            $('[data-flash-messages]').html($flash);
+
+            var seenSub = getSeenSubmissions();
+            for (var i = 0; i < seenSub.length; i++)
+                $('#submit_'+seenSub[i]).removeClass('unseen');
+            var seenClar = getSeenClarification();
+            for (var i = 0; i < seenClar.length; i++)
+                $('#clar_'+seenClar[i]).removeClass('unseen');
+        }
+
+        function markSeen($elem) {
+            $elem.closest('tr').removeClass('unseen');
+        }
+    </script>
+    <style>
+
+        .data-table td a, .data-table td a:hover {
+            display: block;
+            text-decoration: none;
+            color: inherit;
+            padding: 3px 5px;
+        }
+
+        .data-table tr {
+            border-bottom: 1px solid silver;
+        }
+
+            .data-table tr:hover {
+                background: #ffffcc !important;
             }
-
-            function saveFlash() {
-                $flash = $('[data-flash-messages]').children();
-            }
-
-            function setSeenSub(sub) {
-                $('#submit_' + sub).removeClass('unseen');
-                var seenSubmissions = getSeenSubmissions();
-                if (seenSubmissions.indexOf(sub) == -1)
-                    seenSubmissions.push(sub);
-                var cookieVal = JSON.stringify(seenSubmissions);
-	            setCookie("xylab_submission_seen_at_cid_@Contest.Id", cookieVal);
-            }
-
-            function setSeenClar(clar) {
-                $('#clar_' + clar).removeClass('unseen');
-                var seenClaris = getSeenClarification();
-                if (seenClaris.indexOf(clar) == -1)
-                    seenClaris.push(clar);
-                var cookieVal = JSON.stringify(seenClaris);
-	            setCookie("xylab_clarification_seen_at_cid_@Contest.Id", cookieVal);
-            }
-
-            function setFlashAndProgress() {
-                var $newProgress = $('[data-ajax-refresh-target] > [data-progress-bar]');
-                if ($newProgress.length) {
-                    var $oldProgress = $('body > [data-progress-bar]');
-                    $oldProgress.html($newProgress.children());
-                    $newProgress.remove();
-                }
-
-                $('[data-flash-messages]').html($flash);
-
-                var seenSub = getSeenSubmissions();
-                for (var i = 0; i < seenSub.length; i++)
-                    $('#submit_'+seenSub[i]).removeClass('unseen');
-                var seenClar = getSeenClarification();
-                for (var i = 0; i < seenClar.length; i++)
-                    $('#clar_'+seenClar[i]).removeClass('unseen');
-            }
-
-            function markSeen($elem) {
-                $elem.closest('tr').removeClass('unseen');
-            }
-        </script>
-        <style>
-
-            .data-table td a, .data-table td a:hover {
-                display: block;
-                text-decoration: none;
-                color: inherit;
-                padding: 3px 5px;
-            }
-
-            .data-table tr {
-                border-bottom: 1px solid silver;
-            }
-
-                .data-table tr:hover {
-                    background: #ffffcc !important;
-                }
-        </style>
-    }
+    </style>
 }

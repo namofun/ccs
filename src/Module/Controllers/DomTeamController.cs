@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using SatelliteSite.ContestModule.Models;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -60,15 +61,18 @@ namespace SatelliteSite.ContestModule.Controllers
         [HttpGet]
         public async Task<IActionResult> Home()
         {
+            var scb = await Context.FetchScoreboardAsync();
+            var bq = scb.Data.GetValueOrDefault(Team.TeamId);
+            var cats = await Context.FetchCategoriesAsync();
+            var affs = await Context.FetchAffiliationsAsync();
+
             int teamid = Team.TeamId;
-            var board = await Context.SingleBoardAsync(teamid);
-            
-            ViewBag.Clarifications = await Context.ListClarificationsAsync(
+            var clars = await Context.ListClarificationsAsync(
                 c => (c.Sender == null && c.Recipient == null)
                 || c.Recipient == teamid || c.Sender == teamid);
 
-            ViewBag.Submissions = await Context.FetchSolutionsAsync(
-                teamid: teamid,
+            var submits = await Context.FetchSolutionsAsync(
+                teamid: Team.TeamId,
                 selector: (s, j) => new SubmissionViewModel
                 {
                     Points = j.TotalScore ?? 0,
@@ -79,7 +83,20 @@ namespace SatelliteSite.ContestModule.Controllers
                     Problem = s.ProblemId,
                 });
 
-            return View(board);
+            return View(new TeamHomeViewModel
+            {
+                RankCache = bq.RankCache,
+                ScoreCache = bq.ScoreCache,
+                TeamId = bq.TeamId,
+                TeamName = bq.TeamName,
+                ContestId = Contest.Id,
+                RankingStrategy = Contest.RankingStrategy,
+                Problems = Problems,
+                Affiliation = affs[bq.AffiliationId],
+                Category = cats[bq.CategoryId],
+                Clarifications = clars,
+                Submissions = submits,
+            });
         }
 
 

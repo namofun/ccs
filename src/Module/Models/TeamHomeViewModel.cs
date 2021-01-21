@@ -1,18 +1,33 @@
 ﻿#nullable disable
 using Ccs.Entities;
+using Ccs.Models;
 using System.Collections.Generic;
 using System.Linq;
 using Tenant.Entities;
 
-namespace Ccs.Models
+namespace SatelliteSite.ContestModule.Models
 {
-    public class SingleBoardViewModel : BoardViewModel
+    public class TeamHomeViewModel : BoardViewModel, IScoreboardRow
     {
-        public IScoreboardRow QueryInfo { get; set; }
-
         public Category Category { get; set; }
 
         public Affiliation Affiliation { get; set; }
+
+        public IReadOnlyList<Clarification> Clarifications { get; set; }
+
+        public IReadOnlyList<SubmissionViewModel> Submissions { get; set; }
+
+        public int TeamId { get; set; }
+
+        public string TeamName { get; set; }
+
+        public int CategoryId => Category.Id;
+
+        public int AffiliationId => Affiliation.Id;
+
+        public RankCache RankCache { get; set; }
+
+        public ICollection<ScoreCache> ScoreCache { get; set; }
 
         protected override IEnumerable<SortOrderModel> GetEnumerable()
         {
@@ -23,7 +38,7 @@ namespace Ccs.Models
         {
             var prob = new ScoreCellModel[Problems.Count];
 
-            foreach (var pp in QueryInfo.ScoreCache ?? Enumerable.Empty<ScoreCache>())
+            foreach (var pp in ScoreCache ?? Enumerable.Empty<ScoreCache>())
             {
                 var p = Problems.Find(pp.ProblemId);
                 if (p == null) continue;
@@ -41,14 +56,14 @@ namespace Ccs.Models
 
             yield return new TeamModel
             {
-                TeamId = QueryInfo.TeamId,
-                TeamName = QueryInfo.TeamName,
+                TeamId = TeamId,
+                TeamName = TeamName,
                 Affiliation = Affiliation.Name,
                 AffiliationId = Affiliation.Abbreviation,
                 Category = Category.Name,
                 CategoryColor = Category.Color,
-                Points = QueryInfo.RankCache?.PointsRestricted ?? 0,
-                Penalty = QueryInfo.RankCache?.TotalTimeRestricted ?? 0,
+                Points = RankCache?.PointsRestricted ?? 0,
+                Penalty = RankCache?.TotalTimeRestricted ?? 0,
                 ShowRank = true,
                 Problems = prob,
             };
