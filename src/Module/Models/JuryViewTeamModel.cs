@@ -43,7 +43,7 @@ namespace SatelliteSite.ContestModule.Models
 
             foreach (var pp in ScoreCache ?? Enumerable.Empty<ScoreCache>())
             {
-                var p = Problems.FirstOrDefault(a => a.ProblemId == pp.ProblemId);
+                var p = Problems.Find(pp.ProblemId);
                 if (p == null) continue;
                 var pid = p.Rank - 1;
 

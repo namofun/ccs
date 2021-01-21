@@ -25,7 +25,7 @@ namespace Ccs.Events
         /// <summary>
         /// The contest freeze time
         /// </summary>
-        public DateTimeOffset? FreezeTime => Contest.StartTime + Contest.FreezeTime;
+        public DateTimeOffset? FreezeTime { get; }
 
         /// <summary>
         /// The contest problems
@@ -46,6 +46,7 @@ namespace Ccs.Events
             if (now < endTime) endTime = now;
             Deadline = endTime;
             Problems = problems;
+            FreezeTime = Contest.StartTime + Contest.FreezeTime;
         }
     }
 }

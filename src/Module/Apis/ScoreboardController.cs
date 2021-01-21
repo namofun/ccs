@@ -43,7 +43,8 @@ namespace SatelliteSite.ContestModule.Apis
                 Problems = probs,
                 IsPublic = @public,
                 Categories = orgs,
-                Contest = Contest,
+                ContestId = Contest.Id,
+                RankingStrategy = Contest.RankingStrategy,
                 Affiliations = affs,
             };
 

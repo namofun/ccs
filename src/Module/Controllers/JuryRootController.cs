@@ -81,9 +81,9 @@ namespace SatelliteSite.ContestModule.Controllers
             var newcont = new Contest
             {
                 StartTime = Contest.StartTime,
-                EndTime = Contest.EndTime,
-                FreezeTime = Contest.FreezeTime,
-                UnfreezeTime = Contest.UnfreezeTime,
+                EndTimeSeconds = Contest.EndTimeSeconds,
+                FreezeTimeSeconds = Contest.FreezeTimeSeconds,
+                UnfreezeTimeSeconds = Contest.UnfreezeTimeSeconds,
             };
 
             var state = newcont.GetState(now);
@@ -102,22 +102,22 @@ namespace SatelliteSite.ContestModule.Controllers
             {
                 if (state != ContestState.Started)
                     return GoBackHome("Error contest is not started.");
-                newcont.FreezeTime = now - newcont.StartTime.Value;
+                newcont.FreezeTimeSeconds = (now - newcont.StartTime.Value).TotalSeconds;
             }
             else if (target == "endnow")
             {
                 if (state != ContestState.Started && state != ContestState.Frozen)
                     return GoBackHome("Error contest has not started or has ended.");
-                newcont.EndTime = now - newcont.StartTime.Value;
+                newcont.EndTimeSeconds = (now - newcont.StartTime.Value).TotalSeconds;
 
                 if (newcont.FreezeTime.HasValue && newcont.FreezeTime.Value > newcont.EndTime.Value)
-                    newcont.FreezeTime = newcont.EndTime;
+                    newcont.FreezeTimeSeconds = newcont.EndTimeSeconds;
             }
             else if (target == "unfreeze")
             {
                 if (state != ContestState.Ended)
                     return GoBackHome("Error contest has not ended.");
-                newcont.UnfreezeTime = now - newcont.StartTime.Value;
+                newcont.UnfreezeTimeSeconds = (now - newcont.StartTime.Value).TotalSeconds;
             }
             else if (target == "delay")
             {
@@ -130,9 +130,9 @@ namespace SatelliteSite.ContestModule.Controllers
                 _ => new Contest
                 {
                     StartTime = newcont.StartTime,
-                    EndTime = newcont.EndTime,
-                    FreezeTime = newcont.FreezeTime,
-                    UnfreezeTime = newcont.UnfreezeTime,
+                    EndTimeSeconds = newcont.EndTimeSeconds,
+                    FreezeTimeSeconds = newcont.FreezeTimeSeconds,
+                    UnfreezeTimeSeconds = newcont.UnfreezeTimeSeconds,
                 });
 
             await HttpContext.AuditAsync("changed time", $"{Contest.Id}");
@@ -290,11 +290,14 @@ namespace SatelliteSite.ContestModule.Controllers
             }
 
             var cst = Contest;
+            var freezeTimeSeconds = freezeTime?.TotalSeconds;
+            var endTimeSeconds = endTime?.TotalSeconds;
+            var unfreezeTimeSeconds = unfreezeTime?.TotalSeconds;
 
             if (startTime != cst.StartTime
-                || endTime != cst.EndTime
-                || freezeTime != cst.FreezeTime
-                || unfreezeTime != cst.UnfreezeTime)
+                || endTimeSeconds != cst.EndTimeSeconds
+                || freezeTimeSeconds != cst.FreezeTimeSeconds
+                || unfreezeTimeSeconds != cst.UnfreezeTimeSeconds)
                 contestTimeChanged = true;
 
             await Context.UpdateContestAsync(
@@ -305,9 +308,9 @@ namespace SatelliteSite.ContestModule.Controllers
                     RankingStrategy = model.RankingStrategy,
                     IsPublic = model.IsPublic,
                     StartTime = startTime,
-                    FreezeTime = freezeTime,
-                    EndTime = endTime,
-                    UnfreezeTime = unfreezeTime,
+                    FreezeTimeSeconds = freezeTimeSeconds,
+                    EndTimeSeconds = endTimeSeconds,
+                    UnfreezeTimeSeconds = unfreezeTimeSeconds,
                     RegisterCategory = defaultCat,
                     BalloonAvailable = model.UseBalloon,
                     PrintingAvailable = model.UsePrintings,

@@ -7,7 +7,6 @@
     bool inajax = ViewData.ContainsKey("InAjax");
 
     IEnumerable<SubmissionViewModel> submits = ViewBag.Submissions;
-    submits = submits.Where(s => s.Problem != null);
     IEnumerable<Clarification> claris = ViewBag.Clarifications;
     Team team = ViewBag.Team;
     var received = claris.Where(c => !c.Sender.HasValue);
@@ -20,17 +19,17 @@
     }
 }
 
-@if ((Model.Contest.StartTime ?? DateTimeOffset.MaxValue) > DateTimeOffset.Now)
+@if ((Contest.StartTime ?? DateTimeOffset.MaxValue) > DateTimeOffset.Now)
 {
     <h1 id="teamwelcome" class="text-center">
         Welcome team 
         <span id="teamwelcometeam">@team.TeamName</span>!
     </h1>
     <h2 id="contestnotstarted" class="text-center">
-        <razor asp-show-if="Model.Contest.StartTime.HasValue">
-            Contest scheduled to start on @Model.Contest.StartTime.Value.ToString("ddd, dd MMM yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture) CST
+        <razor asp-show-if="Contest.StartTime.HasValue">
+            Contest scheduled to start on @Contest.StartTime.Value.ToString("ddd, dd MMM yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture) CST
         </razor>
-        <razor asp-show-if="!Model.Contest.StartTime.HasValue">
+        <razor asp-show-if="!Contest.StartTime.HasValue">
             Contest has been delayed
         </razor>
     </h2>
@@ -69,12 +68,12 @@ else
                         {
                             ProblemModel p = Contest.Problems.Find(submit.Problem);
                             var t = submit.Time;
-                            var b = !Model.Contest.EndTime.HasValue || t < (Model.Contest.StartTime + Model.Contest.EndTime).Value;
+                            var b = !Contest.EndTime.HasValue || t < (Contest.StartTime + Contest.EndTime).Value;
                             <tr asp-action="Submission" asp-route-submitid="@submit.SubmissionId" data-toggle="ajaxWindow" data-target="submission" class="unseen" id="submit_@submit.SubmissionId">
                                 <td use-a>@t.ToString("HH:mm")</td>
                                 <td use-a class="probid" title="@p.TimeLimit">@p.ShortName</td>
                                 <td use-a class="langid">@submit.Language</td>
-                                <td use-a><span asp-show-if="Model.Contest.RankingStrategy == 1">@submit.Points - </span><verdict value="@submit.Verdict" too-late="!b" /></td>
+                                <td use-a><span asp-show-if="Contest.RankingStrategy == 1">@submit.Points - </span><verdict value="@submit.Verdict" too-late="!b" /></td>
                             </tr>
                         }
                     </tbody>
@@ -103,7 +102,7 @@ else
                         <tbody>
                             @foreach (var clar in received)
                             {
-                                var prob = Model.Problems.FirstOrDefault(c => c.ProblemId == clar.ProblemId);
+                                var prob = Contest.Problems.Find(clar.ProblemId ?? -1);
                                 <tr asp-action="ClarificationView" asp-route-clarid="@clar.Id" data-toggle="ajaxWindow" data-target="recv-clar" class="unseen" id="clar_@clar.Id">
                                     <td use-a>@clar.SubmitTime.ToString("HH:mm")</td>
                                     <td use-a>Jury</td>
@@ -138,7 +137,7 @@ else
                         <tbody>
                             @foreach (var clar in sent)
                             {
-                                var prob = Model.Problems.FirstOrDefault(c => c.ProblemId == clar.ProblemId);
+                                var prob = Contest.Problems.Find(clar.ProblemId ?? -1);
                                 <tr asp-action="ClarificationView" asp-route-clarid="@clar.Id" data-toggle="ajaxWindow" data-target="sent-clar">
                                     <td use-a>@clar.SubmitTime.ToString("HH:mm")</td>
                                     <td use-a>@team.TeamName</td>
@@ -182,7 +181,7 @@ else
             var $flash = null;
 
             function getSeenSubmissions() {
-	            var cookieVal = getCookie("xylab_submission_seen_at_cid_@Model.Contest.Id");
+	            var cookieVal = getCookie("xylab_submission_seen_at_cid_@Contest.Id");
 	            if (cookieVal === null || cookieVal === "") {
 		            return new Array();
 	            }
@@ -190,7 +189,7 @@ else
             }
 
             function getSeenClarification() {
-	            var cookieVal = getCookie("xylab_clarification_seen_at_cid_@Model.Contest.Id");
+	            var cookieVal = getCookie("xylab_clarification_seen_at_cid_@Contest.Id");
 	            if (cookieVal === null || cookieVal === "") {
 		            return new Array();
 	            }
@@ -207,7 +206,7 @@ else
                 if (seenSubmissions.indexOf(sub) == -1)
                     seenSubmissions.push(sub);
                 var cookieVal = JSON.stringify(seenSubmissions);
-	            setCookie("xylab_submission_seen_at_cid_@Model.Contest.Id", cookieVal);
+	            setCookie("xylab_submission_seen_at_cid_@Contest.Id", cookieVal);
             }
 
             function setSeenClar(clar) {
@@ -216,7 +215,7 @@ else
                 if (seenClaris.indexOf(clar) == -1)
                     seenClaris.push(clar);
                 var cookieVal = JSON.stringify(seenClaris);
-	            setCookie("xylab_clarification_seen_at_cid_@Model.Contest.Id", cookieVal);
+	            setCookie("xylab_clarification_seen_at_cid_@Contest.Id", cookieVal);
             }
 
             function setFlashAndProgress() {

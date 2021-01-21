@@ -125,7 +125,8 @@ namespace SatelliteSite.ContestModule.Controllers
                 Problems = Problems,
                 IsPublic = isPublic && !isJury,
                 Categories = orgs,
-                Contest = Contest,
+                ContestId = Contest.Id,
+                RankingStrategy = Contest.RankingStrategy,
                 Affiliations = affs,
             };
 

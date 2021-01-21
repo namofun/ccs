@@ -118,7 +118,8 @@ namespace SatelliteSite.ContestModule
             return new SingleBoardViewModel
             {
                 QueryInfo = bq,
-                Contest = context.Contest,
+                ContestId = context.Contest.Id,
+                RankingStrategy = context.Contest.RankingStrategy,
                 Problems = await context.FetchProblemsAsync(),
                 Affiliation = affs[bq.AffiliationId],
                 Category = cats[bq.CategoryId],

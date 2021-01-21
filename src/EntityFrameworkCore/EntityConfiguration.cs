@@ -239,6 +239,18 @@ namespace Ccs.Entities
 
             entity.Property(e => e.ShortName)
                 .IsRequired();
+
+            entity.Ignore(e => e.EndTime)
+                .Property(e => e.EndTimeSeconds)
+                .HasColumnName(nameof(Contest.EndTime));
+
+            entity.Ignore(e => e.FreezeTime)
+                .Property(e => e.FreezeTimeSeconds)
+                .HasColumnName(nameof(Contest.FreezeTime));
+
+            entity.Ignore(e => e.UnfreezeTime)
+                .Property(e => e.UnfreezeTimeSeconds)
+                .HasColumnName(nameof(Contest.UnfreezeTime));
         }
 
         public void Configure(EntityTypeBuilder<Member> entity)

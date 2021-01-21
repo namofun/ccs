@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace Ccs.Entities
 {
@@ -28,19 +29,34 @@ namespace Ccs.Entities
         public DateTimeOffset? StartTime { get; set; }
 
         /// <summary>
+        /// The freeze time (in seconds)
+        /// </summary>
+        public double? FreezeTimeSeconds { get; set; }
+
+        /// <summary>
+        /// The end time (in seconds)
+        /// </summary>
+        public double? EndTimeSeconds { get; set; }
+
+        /// <summary>
+        /// The unfreeze time (in seconds)
+        /// </summary>
+        public double? UnfreezeTimeSeconds { get; set; }
+
+        /// <summary>
         /// The freeze time
         /// </summary>
-        public TimeSpan? FreezeTime { get; set; }
+        public TimeSpan? FreezeTime => FromSecondsToTimeSpan(FreezeTimeSeconds);
 
         /// <summary>
         /// The end time
         /// </summary>
-        public TimeSpan? EndTime { get; set; }
+        public TimeSpan? EndTime => FromSecondsToTimeSpan(EndTimeSeconds);
 
         /// <summary>
         /// The unfreeze time
         /// </summary>
-        public TimeSpan? UnfreezeTime { get; set; }
+        public TimeSpan? UnfreezeTime => FromSecondsToTimeSpan(UnfreezeTimeSeconds);
 
         /// <summary>
         /// The ranking strategy
@@ -134,27 +150,31 @@ namespace Ccs.Entities
                 return ContestState.NotScheduled;
             if (StartTime.Value > now)
                 return ContestState.ScheduledToStart;
-            if (!EndTime.HasValue)
+            if (!EndTimeSeconds.HasValue)
                 return ContestState.Started;
 
-            var timeSpan = now - StartTime.Value;
+            var timeSpan = (now - StartTime.Value).TotalSeconds;
 
-            if (FreezeTime.HasValue)
+            if (FreezeTimeSeconds.HasValue)
             {
-                if (UnfreezeTime.HasValue && UnfreezeTime.Value < timeSpan)
+                if (UnfreezeTimeSeconds.HasValue && UnfreezeTimeSeconds.Value < timeSpan)
                     return ContestState.Finalized;
-                if (EndTime.Value < timeSpan)
+                if (EndTimeSeconds.Value < timeSpan)
                     return ContestState.Ended;
-                if (FreezeTime.Value < timeSpan)
+                if (FreezeTimeSeconds.Value < timeSpan)
                     return ContestState.Frozen;
                 return ContestState.Started;
             }
             else
             {
-                if (EndTime.Value < timeSpan)
+                if (EndTimeSeconds.Value < timeSpan)
                     return ContestState.Finalized;
                 return ContestState.Started;
             }
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private TimeSpan? FromSecondsToTimeSpan(double? time)
+            => time.HasValue ? TimeSpan.FromSeconds(time.Value) : default(TimeSpan?);
     }
 }

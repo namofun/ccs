@@ -7,7 +7,9 @@ namespace Ccs.Models
 {
     public abstract class BoardViewModel : IEnumerable<SortOrderModel>
     {
-        public Contest Contest { get; set; }
+        public int ContestId { get; set; }
+
+        public int RankingStrategy { get; set; }
 
         public HashSet<(string, string)> ShowCategory { get; private set; }
 

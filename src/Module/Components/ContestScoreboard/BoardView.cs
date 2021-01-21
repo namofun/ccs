@@ -93,7 +93,7 @@ namespace SatelliteSite.ContestModule.Components.ContestScoreboard
             writer.WriteLine("</style>");
 
             if (_usefoot)
-                Footer.WriteTo(_model.ShowCategory, writer, encoder, _model.Contest.RankingStrategy);
+                Footer.WriteTo(_model.ShowCategory, writer, encoder, _model.RankingStrategy);
         }
     }
 }

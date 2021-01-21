@@ -46,7 +46,7 @@ namespace Ccs.Models
             int last_point = int.MinValue;
             int last_penalty = int.MinValue;
             var cats = new Dictionary<int, Category>();
-            src = RankingSolver.Strategies[Contest.RankingStrategy].SortByRule(src, ispublic);
+            src = RankingSolver.Strategies[RankingStrategy].SortByRule(src, ispublic);
 
             foreach (var item in src)
             {
@@ -69,7 +69,7 @@ namespace Ccs.Models
 
                 foreach (var pp in item.ScoreCache ?? Array.Empty<ScoreCache>())
                 {
-                    var p = Problems.FirstOrDefault(a => a.ProblemId == pp.ProblemId);
+                    var p = Problems.Find(pp.ProblemId);
                     if (p == null) continue;
                     var pid = p.Rank - 1;
 
@@ -112,7 +112,7 @@ namespace Ccs.Models
 
                 yield return new TeamModel
                 {
-                    ContestId = IsPublic ? default(int?) : Contest.Id,
+                    ContestId = IsPublic ? default(int?) : ContestId,
                     TeamId = item.TeamId,
                     TeamName = item.TeamName,
                     Affiliation = Affiliations.GetValueOrDefault(item.AffiliationId)?.Name ?? "",

@@ -12,6 +12,7 @@ namespace SatelliteSite.ContestModule.Controllers
     [Area("Contest")]
     [Route("[area]/{cid:c(1)}")]
     [Authorize("ContestVisible")]
+    [SupportStatusCodePage]
     public class DomPublicController : ContestControllerBase
     {
         public bool TooEarly => Contest.GetState() < ContestState.Started;

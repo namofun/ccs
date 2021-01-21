@@ -11,28 +11,28 @@
     var inJury = ViewData.ContainsKey("InJury");
     var affs = Model.Affiliations.Values.Where(a => a.Id != 0 || inJury);
     var grps = Model.Categories.Values.Where(g => g.IsPublic || inJury);
-    var state = Model.Contest.GetState();
+    var state = Contest.GetState();
     var dateFormat = System.Globalization.CultureInfo.GetCultureInfo(1033);
-    var freezeLength = (int)((Model.Contest.EndTime - Model.Contest.FreezeTime)?.TotalMinutes ?? 0);
+    var freezeLength = (int)((Contest.EndTime - Contest.FreezeTime)?.TotalMinutes ?? 0);
 }
 
 <div class="card">
     <div class="card-header" style="font-family: Roboto, sans-serif; display: flex;">
-        <span style="font-weight: bold;">@Model.Contest.Name</span>
+        <span style="font-weight: bold;">@Contest.Name</span>
         <span style="color: DimGray; margin-left: auto;">
             <razor asp-show-if="@(state == ContestState.NotScheduled)">
                 scheduling
             </razor>
             <razor asp-show-if="@(state == ContestState.ScheduledToStart)">
-                <razor asp-show-if="@(Model.Contest.StartTime.Value.Date > DateTimeOffset.Now)">
-                    scheduled to start on @string.Format(dateFormat, "{0:ddd, dd MMM yyyy HH:mm:ss CST}", Model.Contest.StartTime)
+                <razor asp-show-if="@(Contest.StartTime.Value.Date > DateTimeOffset.Now)">
+                    scheduled to start on @string.Format(dateFormat, "{0:ddd, dd MMM yyyy HH:mm:ss CST}", Contest.StartTime)
                 </razor>
-                <razor asp-show-if="@(Model.Contest.StartTime.Value.Date < DateTimeOffset.Now)">
-                    scheduled to start on @Model.Contest.StartTime?.ToString("HH:mm")
+                <razor asp-show-if="@(Contest.StartTime.Value.Date < DateTimeOffset.Now)">
+                    scheduled to start on @Contest.StartTime?.ToString("HH:mm")
                 </razor>
             </razor>
             <razor asp-show-if="@(state == ContestState.Started || state == ContestState.Frozen)">
-                starts: @Model.Contest.StartTime?.ToString("HH:mm") - ends: @Model.Contest.EndTime?.ToString("HH:mm")
+                starts: @Contest.StartTime?.ToString("HH:mm") - ends: @((Contest.StartTime + Contest.EndTime)?.ToString("HH:mm"))
             </razor>
             <razor asp-show-if="@(state == ContestState.Ended)">
                 contest over, waiting for results

@@ -51,7 +51,8 @@ namespace SatelliteSite.ContestModule.Controllers
 
             return View(new JuryViewTeamModel
             {
-                Contest = Contest,
+                ContestId = Contest.Id,
+                RankingStrategy = Contest.RankingStrategy,
                 Problems = Problems,
                 Affiliation = affs[team.AffiliationId],
                 Category = cats[team.CategoryId],
