@@ -197,5 +197,15 @@ namespace Ccs.Services
                 .Where(t => t.ContestId == cid && t.TeamId == teamid)
                 .ToDictionaryAsync(s => s.ProblemId, s => (s.AcceptedSubmission, s.TotalSubmission));
         }
+
+        public virtual async Task<IReadOnlyDictionary<int, int>> StatisticsAcceptedAsync()
+        {
+            int cid = Contest.Id;
+            return await Db.SubmissionStatistics
+                .Where(t => t.ContestId == cid)
+                .GroupBy(k => k.ProblemId, v => v.AcceptedSubmission)
+                .Select(g => new { g.Key, Value = g.Sum() })
+                .ToDictionaryAsync(s => s.Key, s => s.Value);
+        }
     }
 }

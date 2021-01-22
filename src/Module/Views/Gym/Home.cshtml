@@ -1,17 +1,12 @@
-﻿@{
+﻿@model GymHomeViewModel
+@{
     ViewData["Title"] = "Dashboard";
-    bool inajax = ViewData.ContainsKey("InAjax");
-    Team team = ViewBag.Team;
-    Contest ctx = ViewBag.Contest;
-    Dictionary<int, int> stats = ViewBag.Statistics;
-    Dictionary<int, (int ac, int tot)> substat = ViewBag.TeamStatistics;
-    ProblemCollection probs = ViewBag.Problems;
-    IEnumerable<Clarification> clars = ViewBag.Clarifications;
 }
 
 <div class="container pl-0 pr-0">
 <partial name="_StatusMessage" model="@TempData["StatusMessage"]" />
 @{ TempData.Remove("StatusMessage"); }
+
 <div class="row">
 <div class="col-12 col-lg-8 main">
     <h2 class="mt-4 mb-3">Problems</h2>
@@ -24,27 +19,26 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var prob in probs)
+            @foreach (var prob in Contest.Problems)
             {
-                var ot = substat?.GetValueOrDefault(prob.ProblemId) ?? default;
-                <tr class="@(ot.ac > 0 ? "accepted-problem" : ot.tot > 0 ? "rejected-problem" : "")">
+                var ot = Model.MeStatistics?.GetValueOrDefault(prob.ProblemId) ?? default;
+                <tr class="@(ot.Accepted > 0 ? "accepted-problem" : ot.Total > 0 ? "rejected-problem" : "")">
                     <td class="prob-short-name" style="font-weight:bold">@prob.ShortName</td>
                     <td class="text-left"><a asp-action="ProblemView" asp-route-prob="@prob.ShortName">@prob.Title</a></td>
-                    <td><i class="fas fa-user"></i> &times; @stats.GetValueOrDefault(prob.ProblemId)</td>
+                    <td><i class="fas fa-user"></i> &times; @Model.AllStatistics.GetValueOrDefault(prob.ProblemId)</td>
                 </tr>
             }
         </tbody>
     </table>
     <h3 class="mt-4 mt-lg-5 mb-3">Announcement</h3>
     <ul class="list-unstyled">
-        @if (clars.Any())
+        @if (Model.Clarifications.Count > 0)
         {
-            foreach (var clar in clars)
+            foreach (var clar in Model.Clarifications)
             {
-                var prob = probs.FirstOrDefault(c => c.ProblemId == clar.ProblemId);
                 <li>
                     <p>
-                        <b>@clar.Category @prob?.ShortName issue</b>
+                        <b>@clar.Category @Contest.Problems.Find(clar.ProblemId ?? -110)?.ShortName issue</b>
                         <br />
                         @clar.Body
                         <br />
@@ -59,29 +53,30 @@
         }
     </ul>
 </div>
+
 <div class="col-12 col-lg-4 sidebar">
-    <h3 class="mt-lg-5">Gym</h3>
+    <h3 class="mt-lg-5">Contest</h3>
     <p>
-        @ctx.Name
+        @Contest.Name
         <br />
-        Start Time: @Html.CstTime(ctx.StartTime)
+        Start Time: @Html.CstTime(Contest.StartTime)
         <br />
-        End Time: @Html.CstTime(ctx.StartTime + ctx.EndTime)
+        End Time: @Html.CstTime(Contest.StartTime + Contest.EndTime)
     </p>
-    @Html.Raw(ViewBag.Markdown)
+    @Html.Raw(Model.Markdown)
     <h3 class="mt-4">Practice</h3>
     <razor asp-no-viewdata-key="HasTeam">
-        <p asp-show-if="!ctx.RegisterCategory.HasValue">
+        <p asp-show-if="!Contest.RegisterCategory.HasValue">
             Registration closed.
         </p>
-        <p asp-show-if="ctx.RegisterCategory.HasValue">
+        <p asp-show-if="Contest.RegisterCategory.HasValue">
             Want to solve the contest problems? Just register for practice and you will be able to submit solutions.
             <br />
             <a class="mt-2 btn btn-sm btn-primary" asp-action="Register">Register</a>
         </p>
     </razor>
     <p asp-viewdata-key="HasTeam">
-        You have registered as Team <b>@team.TeamName</b>.
+        You have registered as Team <b>@Contest.Team.TeamName</b>.
     </p>
 </div>
 </div>

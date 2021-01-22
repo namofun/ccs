@@ -11,18 +11,19 @@ namespace SatelliteSite.ContestModule.Controllers
     [Route("[area]/{cid:c(7)}/[controller]")]
     public class JuryController : JuryControllerBase
     {
-        [HttpGet("[action]")]
+        [HttpGet("/[area]/{cid:c(1)}/[controller]/[action]")]
         public new IActionResult Print()
             => base.Print();
 
 
-        [HttpPost("[action]")]
+        [HttpPost("/[area]/{cid:c(1)}/[controller]/[action]")]
+        [ValidateAntiForgeryToken]
         [AuditPoint(AuditlogType.Printing)]
         public new Task<IActionResult> Print(AddPrintModel model)
             => base.Print(model);
 
 
-        [HttpGet("[action]")]
+        [HttpGet("/[area]/{cid:c(1)}/[controller]/[action]")]
         public Task<IActionResult> Scoreboard(
             [FromQuery(Name = "affiliations[]")] int[] affiliations,
             [FromQuery(Name = "categories[]")] int[] categories,
@@ -35,7 +36,7 @@ namespace SatelliteSite.ContestModule.Controllers
             => View();
 
 
-        [HttpGet("[action]")]
+        [HttpGet("/[area]/{cid:c(1)}/[controller]/[action]")]
         [Authorize(Roles = "Administrator")]
         public IActionResult ResetEventFeed()
             => AskPost(
@@ -48,7 +49,7 @@ namespace SatelliteSite.ContestModule.Controllers
                 type: BootstrapColor.warning);
 
 
-        [HttpPost("[action]")]
+        [HttpPost("/[area]/{cid:c(1)}/[controller]/[action]")]
         [ValidateAntiForgeryToken]
         [AuditPoint(AuditlogType.Contest)]
         [ActionName("ResetEventFeed")]
@@ -140,7 +141,7 @@ namespace SatelliteSite.ContestModule.Controllers
         }
 
 
-        [HttpGet("[action]")]
+        [HttpGet("/[area]/{cid:c(1)}/[controller]/[action]")]
         public async Task<IActionResult> Balloon()
         {
             if (!Contest.BalloonAvailable) return NotFound();
@@ -149,7 +150,7 @@ namespace SatelliteSite.ContestModule.Controllers
         }
 
 
-        [HttpGet("balloon/{id}/set-done")]
+        [HttpGet("/[area]/{cid:c(1)}/[controller]/balloon/{id}/set-done")]
         public async Task<IActionResult> BalloonSetDone(int id)
         {
             if (!Contest.BalloonAvailable) return NotFound();

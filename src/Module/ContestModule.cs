@@ -181,9 +181,9 @@ namespace SatelliteSite.ContestModule
                     .ActiveWhenAction("Submissions");
 
                 menu.HasEntry(500)
-                    .HasLink("Contest", "Gym", "Scoreboard")
+                    .HasLink("Contest", "Gym", "Standings")
                     .HasTitle("fas fa-list-ol", "Standings")
-                    .ActiveWhenAction("Scoreboard");
+                    .ActiveWhenAction("Standings");
 
                 menu.HasEntry(600)
                     .HasLink("Contest", "Jury", "Home")

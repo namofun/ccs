@@ -21,10 +21,10 @@ namespace SatelliteSite.ContestModule.Controllers
 
         private IReadOnlyDictionary<int, (int Accepted, int Total)> Statistics { get; set; }
 
-        private RedirectToActionResult GoBackHome(string message)
+        private RedirectToActionResult GoBackHome(string message, string action = nameof(Home))
         {
             StatusMessage = message;
-            return RedirectToAction(nameof(Home));
+            return RedirectToAction(action);
         }
 
         private ViewResult NotStarted() => View("NotStarted");
@@ -51,7 +51,7 @@ namespace SatelliteSite.ContestModule.Controllers
 
         //~
         [HttpGet("[action]")]
-        public async Task<IActionResult> Scoreboard()
+        public async Task<IActionResult> Standings()
         {
             ViewBag.Members = await Context.FetchTeamMembersAsync();
             return await Scoreboard(
@@ -60,16 +60,16 @@ namespace SatelliteSite.ContestModule.Controllers
         }
 
 
-        //~
         [HttpGet]
         public async Task<IActionResult> Home()
         {
-            //ViewBag.Statistics = await Facade.StatisticAcceptedAsync(cid);
-
-            int? teamid = Team?.TeamId;
-            ViewBag.Clarifications = await Context.ListClarificationsAsync(c => c.Recipient == null && c.Sender == null);
-            ViewBag.Markdown = await Context.GetReadmeAsync();
-            return View();
+            return View(new GymHomeViewModel
+            {
+                Clarifications = await Context.ListClarificationsAsync(c => c.Recipient == null && c.Sender == null),
+                Markdown = await Context.GetReadmeAsync(),
+                MeStatistics = Statistics,
+                AllStatistics = await Context.StatisticsAcceptedAsync(),
+            });
         }
 
 
@@ -135,13 +135,15 @@ namespace SatelliteSite.ContestModule.Controllers
         }
 
 
-        //~
         [HttpGet("[action]")]
         public IActionResult Submit(string prob)
         {
-            if (TooEarly && !ViewData.ContainsKey("IsJury"))
+            if (Team == null)
+                return Message("Submit", "You must have a team first.");
+            else if (TooEarly && !Accessor.IsJury)
                 return Message("Submit", "Contest not started.", BootstrapColor.danger);
-            return Window(new TeamCodeSubmitModel { Problem = prob });
+            else
+                return Window(new TeamCodeSubmitModel { Problem = prob });
         }
 
 
@@ -227,37 +229,24 @@ namespace SatelliteSite.ContestModule.Controllers
         }
 
 
-        //~
         [HttpPost("[action]")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Submit(TeamCodeSubmitModel model)
         {
-            if (!ViewData.ContainsKey("HasTeam"))
-            {
-                StatusMessage = "You should register first.";
-                return RedirectToAction(nameof(Register));
-            }
+            if (Team == null)
+                return GoBackHome("You should register first.", nameof(Register));
 
-            if (TooEarly && !ViewData.ContainsKey("IsJury"))
-            {
-                StatusMessage = "Contest not started.";
-                return RedirectToAction(nameof(Home));
-            }
+            if (TooEarly && !Accessor.IsJury)
+                return GoBackHome("Contest not started.");
 
             var prob = Problems.Find(model.Problem);
             if (prob is null || !prob.AllowSubmit)
-            {
-                StatusMessage = "Error problem not found.";
-                return RedirectToAction(nameof(Home));
-            }
+                return GoBackHome("Error problem not found.");
 
             var langs = await Context.FetchLanguagesAsync();
             var lang = langs.FirstOrDefault(l => l.Id == model.Language);
             if (lang == null)
-            {
-                StatusMessage = "Error language not found.";
-                return RedirectToAction(nameof(Home));
-            }
+                return GoBackHome("Error language not found.");
 
             var s = await Context.SubmitAsync(
                 code: model.Code,

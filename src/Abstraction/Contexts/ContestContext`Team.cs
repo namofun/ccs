@@ -107,5 +107,11 @@ namespace Ccs
         /// <param name="team">The team to discover.</param>
         /// <returns>The task for statistical result of submissions.</returns>
         Task<IReadOnlyDictionary<int, (int, int)>> StatisticsAsync(Team? team);
+
+        /// <summary>
+        /// Statistics the submission status of whole contest.
+        /// </summary>
+        /// <returns>The task for statistical result of submissions.</returns>
+        Task<IReadOnlyDictionary<int, int>> StatisticsAcceptedAsync();
     }
 }

@@ -24,6 +24,11 @@ namespace SatelliteSite.ContestModule.Controllers
         private IContestContextAccessor _accessor;
 
         /// <summary>
+        /// Context accessor for contest controlling
+        /// </summary>
+        protected IContestContextAccessor Accessor => _accessor;
+
+        /// <summary>
         /// Context for contest controlling
         /// </summary>
         protected IContestContext Context => _accessor.Context;
