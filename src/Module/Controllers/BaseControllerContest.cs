@@ -163,8 +163,7 @@ namespace SatelliteSite.ContestModule.Controllers
             if (!feature.ProblemInitialized)
                 feature.ProblemInitialize(await feature.Context.FetchProblemsAsync());
 
-            _accessor = HttpContext.RequestServices.GetRequiredService<IContestContextAccessor>();
-
+            _accessor = feature.AsAccessor();
             ViewData["Contest"] = Contest;
             ViewData["Problems"] = Problems;
             ViewData["Team"] = Team;

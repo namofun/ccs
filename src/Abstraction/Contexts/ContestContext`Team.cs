@@ -88,6 +88,14 @@ namespace Ccs
         Task UpdateTeamAsync(Team origin, Expression<Func<Team, Team>> expression);
 
         /// <summary>
+        /// Update team by expression.
+        /// </summary>
+        /// <param name="origin">The original team model.</param>
+        /// <param name="status">The new team status.</param>
+        /// <returns>The task for updating contest teams.</returns>
+        Task UpdateTeamAsync(Team origin, int status);
+
+        /// <summary>
         /// Delete the team and returns existing members.
         /// </summary>
         /// <param name="origin">The original team.</param>

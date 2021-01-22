@@ -196,7 +196,7 @@ namespace SatelliteSite.ContestModule.Controllers
         {
             var team = await Context.FindTeamByIdAsync(teamid);
             if (team == null) return NotFound();
-            await Context.UpdateTeamAsync(team, _ => new Team { Status = 1 });
+            await Context.UpdateTeamAsync(team, 1);
             await HttpContext.AuditAsync("accepted", $"{teamid}");
 
             return Message(
@@ -211,7 +211,7 @@ namespace SatelliteSite.ContestModule.Controllers
         {
             var team = await Context.FindTeamByIdAsync(teamid);
             if (team == null) return NotFound();
-            await Context.UpdateTeamAsync(team, _ => new Team { Status = 2 });
+            await Context.UpdateTeamAsync(team, 2);
             await HttpContext.AuditAsync("rejected", $"{teamid}");
 
             return Message(

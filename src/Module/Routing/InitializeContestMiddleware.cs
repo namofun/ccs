@@ -9,6 +9,7 @@ namespace SatelliteSite.ContestModule.Routing
     public class InitializeContestMiddleware
     {
         private static readonly PathString _contestBase = new PathString("/contest");
+        private static readonly PathString _problemsetBase = new PathString("/problemset");
         private readonly RequestDelegate _next;
         private readonly IContestContextFactory _factory;
 
@@ -25,7 +26,8 @@ namespace SatelliteSite.ContestModule.Routing
                 return _next(context);
             }
 
-            if (!context.Request.Path.StartsWithSegments(_contestBase, out var remaining)
+            if (!(context.Request.Path.StartsWithSegments(_contestBase, out var remaining)
+                || context.Request.Path.StartsWithSegments(_problemsetBase, out remaining))
                 || !remaining.HasValue)
             {
                 return _next(context);
@@ -42,10 +44,10 @@ namespace SatelliteSite.ContestModule.Routing
                 return Task.CompletedTask;
             }
 
-            return ContestAsync(context, cid);
+            return InvokeAsync(context, cid);
         }
 
-        private async Task ContestAsync(HttpContext context, int cid)
+        private async Task InvokeAsync(HttpContext context, int cid)
         {
             var feature = context.RequestServices.GetRequiredService<IContestFeature>();
             var ctx = await _factory.CreateAsync(cid, context.RequestServices);

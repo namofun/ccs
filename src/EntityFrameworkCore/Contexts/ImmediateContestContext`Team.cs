@@ -17,6 +17,12 @@ namespace Ccs.Services
         private static readonly ConcurrentAsyncLock _teamLock = new ConcurrentAsyncLock();
         protected static readonly IReadOnlyDictionary<int, (int, int)> _emptyStat = new Dictionary<int, (int, int)>();
 
+        private Task FixTeamCountAsync(int cid)
+            => Db.Contests
+                .Where(c => c.Id == cid)
+                .BatchUpdateAsync(c => new Contest { TeamCount =
+                    Db.Teams.Count(cp => cp.ContestId == cid && cp.Status == 1 && cp.Category.IsPublic) });
+
         public Task<List<Team>> ListTeamsAsync(Expression<Func<Team, bool>>? predicate = null)
         {
             int cid = Contest.Id;
@@ -96,6 +102,7 @@ namespace Ccs.Services
             }
 
             await Db.SaveChangesAsync();
+            if (team.Status == 1) await FixTeamCountAsync(cid);
             return team;
         }
 
@@ -108,6 +115,13 @@ namespace Ccs.Services
 
             if (affected != 1)
                 throw new DbUpdateException();
+        }
+
+        public virtual async Task UpdateTeamAsync(Team origin, int status)
+        {
+            if (origin.Status == status) return;
+            await UpdateTeamAsync(origin, t => new Team { Status = status });
+            if (origin.Status == 1 || status == 1) await FixTeamCountAsync(Contest.Id);
         }
 
         public virtual async Task<IReadOnlyList<Member>> DeleteTeamAsync(Team team)
@@ -129,6 +143,7 @@ namespace Ccs.Services
                 .Where(t => t.ContestId == cid && t.TeamId == teamid)
                 .BatchDeleteAsync();
 
+            if (team.Status == 1) await FixTeamCountAsync(cid);
             return list;
         }
 

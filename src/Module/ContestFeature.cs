@@ -20,6 +20,8 @@ namespace SatelliteSite.ContestModule
         internal void ProblemInitialize(ProblemCollection problems);
 
         internal void Authenticate(Team team, bool isJury);
+
+        internal IContestContextAccessor AsAccessor();
     }
 
 
@@ -86,5 +88,6 @@ namespace SatelliteSite.ContestModule
         int IContestContextBase.Kind => Context.Contest.Kind;
         int IContestContextBase.StatusAvailable => Context.Contest.StatusAvailable;
         ContestState IContestContextBase.GetState(DateTimeOffset? nowTime) => Context.Contest.GetState(nowTime);
+        IContestContextAccessor IContestFeature.AsAccessor() => this;
     }
 }

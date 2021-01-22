@@ -31,11 +31,11 @@ namespace SatelliteSite.ContestModule.Routing
             }
             else
             {
-                return TeamAsync(context, feature);
+                return InvokeAsync(context, feature);
             }
         }
 
-        private async Task TeamAsync(HttpContext context, IContestFeature feature)
+        private async Task InvokeAsync(HttpContext context, IContestFeature feature)
         {
             Team? team = null;
             if (int.TryParse(context.User.GetUserId(), out int uid))
