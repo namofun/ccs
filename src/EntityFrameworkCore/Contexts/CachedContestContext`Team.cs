@@ -118,10 +118,10 @@ namespace Ccs.Services
                 async () => await base.StatisticsAsync(team));
         }
 
-        public override Task<IReadOnlyDictionary<int, int>> StatisticsAcceptedAsync()
+        public override Task<IReadOnlyDictionary<int, (int, int, int, int)>> StatisticsGlobalAsync()
         {
             return CacheAsync($"Teams::Statistics(*)", _options.Statistics,
-                async () => await base.StatisticsAcceptedAsync());
+                async () => await base.StatisticsGlobalAsync());
         }
     }
 }

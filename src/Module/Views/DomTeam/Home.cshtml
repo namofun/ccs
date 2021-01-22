@@ -19,7 +19,7 @@
     </h1>
     <h2 id="contestnotstarted" class="text-center">
         <razor asp-show-if="Contest.StartTime.HasValue">
-            Contest scheduled to start on @Contest.StartTime.Value.ToString("ddd, dd MMM yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture) CST
+            Contest scheduled to start on @Html.CstTime(Contest.StartTime, false)
         </razor>
         <razor asp-show-if="!Contest.StartTime.HasValue">
             Contest has been delayed

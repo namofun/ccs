@@ -25,7 +25,7 @@
                 <tr class="@(ot.Accepted > 0 ? "accepted-problem" : ot.Total > 0 ? "rejected-problem" : "")">
                     <td class="prob-short-name" style="font-weight:bold">@prob.ShortName</td>
                     <td class="text-left"><a asp-action="ProblemView" asp-route-prob="@prob.ShortName">@prob.Title</a></td>
-                    <td><i class="fas fa-user"></i> &times; @Model.AllStatistics.GetValueOrDefault(prob.ProblemId)</td>
+                    <td><i class="fas fa-user"></i> &times; @Model.AllStatistics.GetValueOrDefault(prob.ProblemId).AcceptedTeams</td>
                 </tr>
             }
         </tbody>

@@ -111,7 +111,7 @@ namespace Ccs
         /// <summary>
         /// Statistics the submission status of whole contest.
         /// </summary>
-        /// <returns>The task for statistical result of submissions.</returns>
-        Task<IReadOnlyDictionary<int, int>> StatisticsAcceptedAsync();
+        /// <returns>The task for statistical result of submissions (Accepted, Total, AcceptedTeam, TotalTeam).</returns>
+        Task<IReadOnlyDictionary<int, (int, int, int, int)>> StatisticsGlobalAsync();
     }
 }

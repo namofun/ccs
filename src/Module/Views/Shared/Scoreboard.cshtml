@@ -20,26 +20,7 @@
     <div class="card-header" style="font-family: Roboto, sans-serif; display: flex;">
         <span style="font-weight: bold;">@Contest.Name</span>
         <span style="color: DimGray; margin-left: auto;">
-            <razor asp-show-if="@(state == ContestState.NotScheduled)">
-                scheduling
-            </razor>
-            <razor asp-show-if="@(state == ContestState.ScheduledToStart)">
-                <razor asp-show-if="@(Contest.StartTime.Value.Date > DateTimeOffset.Now)">
-                    scheduled to start on @string.Format(dateFormat, "{0:ddd, dd MMM yyyy HH:mm:ss CST}", Contest.StartTime)
-                </razor>
-                <razor asp-show-if="@(Contest.StartTime.Value.Date < DateTimeOffset.Now)">
-                    scheduled to start on @Contest.StartTime?.ToString("HH:mm")
-                </razor>
-            </razor>
-            <razor asp-show-if="@(state == ContestState.Started || state == ContestState.Frozen)">
-                starts: @Contest.StartTime?.ToString("HH:mm") - ends: @((Contest.StartTime + Contest.EndTime)?.ToString("HH:mm"))
-            </razor>
-            <razor asp-show-if="@(state == ContestState.Ended)">
-                contest over, waiting for results
-            </razor>
-            <razor asp-show-if="@(state == ContestState.Finalized)">
-                final standings
-            </razor>
+            @state.ToString(Contest.StartTime, Contest.EndTime)
         </span>
     </div>
 </div>
@@ -108,7 +89,7 @@ else
 }
 
 <p id="lastmod">
-    Last Update: @string.Format(dateFormat, "{0:ddd, dd MMM yyyy HH:mm:ss CST}", Model.UpdateTime)<br />
+    Last Update: @Html.CstTime(Model.UpdateTime, false)<br />
     using <a href="https://www.domjudge.org/" rel="nofollow" target="_top">DOMjudge</a> judgehost and theme
 </p>
 

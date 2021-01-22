@@ -198,14 +198,24 @@ namespace Ccs.Services
                 .ToDictionaryAsync(s => s.ProblemId, s => (s.AcceptedSubmission, s.TotalSubmission));
         }
 
-        public virtual async Task<IReadOnlyDictionary<int, int>> StatisticsAcceptedAsync()
+        public virtual async Task<IReadOnlyDictionary<int, (int, int, int, int)>> StatisticsGlobalAsync()
         {
             int cid = Contest.Id;
             return await Db.SubmissionStatistics
                 .Where(t => t.ContestId == cid)
-                .GroupBy(k => k.ProblemId, v => v.AcceptedSubmission)
-                .Select(g => new { g.Key, Value = g.Sum() })
-                .ToDictionaryAsync(s => s.Key, s => s.Value);
+                .GroupBy(k => k.ProblemId, v => new { v.AcceptedSubmission, v.TotalSubmission })
+                .Select(
+                    selector: g => new
+                    {
+                        ProblemId = g.Key,
+                        Accepted = g.Sum(a => a.AcceptedSubmission),
+                        Total = g.Sum(a => a.TotalSubmission),
+                        AcceptedTeams = g.Sum(a => a.AcceptedSubmission > 0 ? 1 : 0),
+                        TotalTeams = g.Sum(a => a.TotalSubmission > 0 ? 1 : 0),
+                    })
+                .ToDictionaryAsync(
+                    keySelector: s => s.ProblemId,
+                    elementSelector: s => (s.Accepted, s.Total, s.AcceptedTeams, s.TotalTeams));
         }
     }
 }

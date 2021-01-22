@@ -11,6 +11,6 @@ namespace SatelliteSite.ContestModule.Models
 
         public IReadOnlyDictionary<int, (int Accepted, int Total)> MeStatistics { get; set; }
 
-        public IReadOnlyDictionary<int, int> AllStatistics { get; set; }
+        public IReadOnlyDictionary<int, (int Accepted, int Total, int AcceptedTeams, int TotalTeams)> AllStatistics { get; set; }
     }
 }

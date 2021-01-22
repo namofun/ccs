@@ -3,6 +3,7 @@ using Ccs;
 using Ccs.Entities;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -13,6 +14,9 @@ namespace SatelliteSite.ContestModule
     /// </summary>
     public static class ContestContextExtensions
     {
+        private static readonly CultureInfo EnglishCulture
+            = CultureInfo.GetCultureInfo(1033);
+
         /// <summary>
         /// Select two same property from the source enumerable.
         /// </summary>
@@ -56,6 +60,29 @@ namespace SatelliteSite.ContestModule
             var member = await context.FindMemberByUserAsync(userId);
             if (member == null) return null;
             return await context.FindTeamByIdAsync(member.TeamId);
+        }
+
+        /// <summary>
+        /// Format the state string.
+        /// </summary>
+        /// <param name="state">The contest state.</param>
+        /// <param name="start">The start time.</param>
+        /// <param name="end">The end time.</param>
+        /// <returns>The status string.</returns>
+        public static string ToString(this ContestState state, DateTimeOffset? start, TimeSpan? end)
+        {
+            if (state == ContestState.Frozen) state = ContestState.Started;
+            return state switch
+            {
+                ContestState.NotScheduled => "scheduling",
+                ContestState.Finalized => "final standings",
+                ContestState.Ended => "contest over, waiting for results",
+                ContestState.Started when (end?.TotalDays ?? 0) < 1 => $"starts: {start:HH:mm} - ends: {start + end:HH:mm}",
+                ContestState.Started => $"{end?.Days} days, {end?.TotalHours - (end?.Days * 24)} hours",
+                ContestState.ScheduledToStart when start!.Value.Date < DateTimeOffset.Now => $"scheduled to start on {start:HH:mm}",
+                ContestState.ScheduledToStart => string.Format(EnglishCulture, "scheduled to start on {0:ddd, dd MMM yyyy HH:mm:ss} CST", start),
+                _ => "unknown",
+            };
         }
     }
 }

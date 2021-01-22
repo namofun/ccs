@@ -1,0 +1,113 @@
+﻿@model GymStandingViewModel
+@{
+    ViewData["Title"] = "Standings";
+    var state = Contest.GetState();
+    var sortOrder = Model.Single();
+}
+
+@functions {
+    void ShowRow(TeamModel row)
+    {
+        WriteLiteral("<tr class=\"text-center\"><td scope=\"row\">");
+        Write(row.Rank);
+        WriteLiteral("</td><td class=\"text-left\"><a class=\"font-weight-semibold\">");
+        Write(row.TeamName);
+        WriteLiteral("</a>");
+        if (Model.TeamMembers.Contains(row.TeamId))
+        {
+            bool fst = true;
+            foreach (var userName in Model.TeamMembers[row.TeamId])
+            {
+                WriteLiteral(fst ? " : <a href=\"" : ", <a href=\"");
+                Write(Url.Action("Show", "Profile", new { area = "Account", username = userName }));
+                WriteLiteral("\">");
+                Write(userName);
+                WriteLiteral("</a>");
+                fst = false;
+            }
+        }
+        WriteLiteral("</td><td>");
+        Write(row.Points);
+        WriteLiteral("</td>");
+        foreach (var penalty in row.Problems)
+        {
+            if (penalty == null || penalty.JudgedCount == 0)
+            {
+                WriteLiteral("<td></td>");
+                continue;
+            }
+            WriteLiteral("<td class=\"text-center\"><a><span class=\"font-weight-bold");
+            WriteLiteral(Contest.RankingStrategy == 0 || Contest.RankingStrategy == 2 ? penalty.Score.HasValue ? " text-success" : " text-danger" : "");
+            WriteLiteral("\">");
+            WriteLiteral(Contest.RankingStrategy switch
+            {
+                0 => penalty.Score.HasValue ? penalty.JudgedCount == 1 ? "+" : $"+{penalty.JudgedCount - 1}" : $"-{penalty.JudgedCount}",
+                1 => penalty.Score ?? 0,
+                2 => penalty.Score.HasValue ? $"{penalty.Score}" : $"-{penalty.JudgedCount}",
+                _ => "",
+            });
+            WriteLiteral(penalty.PendingCount > 0 ? "?" : "");
+            WriteLiteral("</span></a></td>");
+        }
+        WriteLiteral("</tr>\r\n");
+    }
+}
+
+<style>
+    .thead-light-2 { background: #F9FAFB; }
+    #eoj-scoreboard td { border-color: rgba(34,36,38,.1); }
+    #eoj-scoreboard a[href] { color: #4183c4; text-decoration: none; }
+    #eoj-scoreboard tbody tr td, .table tbody tr th { padding-top: .5em; padding-bottom: .5em; }
+    #eoj-scoreboard thead > tr:first-child > th:first-child { border-top-left-radius: .26666667rem; }
+    #eoj-scoreboard thead > tr:first-child > th:last-child { border-top-right-radius: .26666667rem; }
+    #eoj-scoreboard tfoot > tr:last-child > td:first-child { border-bottom-left-radius: .26666667rem; }
+    #eoj-scoreboard tfoot > tr:last-child > td:last-child { border-bottom-right-radius: .26666667rem; }
+    .head-box { min-width: 3em; max-width: 3em; width: 3em; }
+    #eoj-container { min-width: @(3*(Contest.Problems.Count+2)+15)em; max-width: @(3*(Contest.Problems.Count+2)+25)em; }
+
+    @@media (min-width: 1200px) {
+        .head-box { min-width: 4em; max-width: 4em; width: 4em; }
+        #eoj-container { min-width: @(4*(Contest.Problems.Count+2)+15)em; max-width: @(4*(Contest.Problems.Count+2)+25)em; }
+    }
+</style>
+
+<div class="container-fluid pl-0 pr-0" id="eoj-container">
+<div class="row">
+<div class="col-12">
+<h2 class="mt-3 mb-2 text-md-center">@Contest.Name</h2>
+<span class="d-block text-md-center mb-3 text-muted" style="font-size:1.2em">
+    @state.ToString(Contest.StartTime, Contest.EndTime)
+</span>
+
+<table class="table table-bordered center" style="table-layout:fixed" id="eoj-scoreboard">
+    <thead>
+        <tr class="text-center thead-light-2">
+            <th class="head-box" title="Rank">#</th>
+            <th class="text-left">Who</th>
+            <th class="head-box" title="Score">=</th>
+            @foreach (var prob in Contest.Problems)
+            {
+                <th class="head-box"><a asp-action="ProblemView" asp-route-prob="@prob.ShortName">@prob.ShortName</a></th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var row in sortOrder) { ShowRow(row); }
+    </tbody>
+    <tfoot>
+        <tr class="thead-light-2">
+            <td colspan="3"><span class="text-success">Accepted</span><br>Tried</td>
+            @foreach (var item in sortOrder.Statistics)
+            {
+                <td class="text-center" style="width: 6.25%"><span class="text-success">@item.Accepted</span><br>@(item.Accepted + item.Rejected)</td>
+            }
+        </tr>
+    </tfoot>
+</table>
+
+<small class="text-muted mt-2 text-right d-block">
+    Last Update: @Html.CstTime(Model.UpdateTime, false)
+</small>
+</div>
+</div>
+</div>

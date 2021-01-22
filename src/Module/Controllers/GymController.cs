@@ -49,14 +49,26 @@ namespace SatelliteSite.ContestModule.Controllers
         }
 
 
-        //~
         [HttpGet("[action]")]
-        public async Task<IActionResult> Standings()
+        public async Task<IActionResult> Standings(int page = 1)
         {
-            ViewBag.Members = await Context.FetchTeamMembersAsync();
-            return await Scoreboard(
-                isPublic: Contest.GetState() < ContestState.Finalized,
-                isJury: false, true, null, null);
+            if (page <= 0) return BadRequest();
+            var scb = await Context.FetchScoreboardAsync();
+            var orgs = await Context.FetchCategoriesAsync();
+            var orgid = orgs.Values.Where(o => o.IsPublic).Select(a => a.Id).ToHashSet();
+
+            return View(new GymStandingViewModel
+            {
+                OrganizationIds = orgid,
+                CurrentPage = page,
+                RankCache = scb.Data.Values,
+                UpdateTime = scb.RefreshTime,
+                Problems = Problems,
+                TeamMembers = await Context.FetchTeamMembersAsync(),
+                Statistics = await Context.StatisticsGlobalAsync(),
+                ContestId = Contest.Id,
+                RankingStrategy = Contest.RankingStrategy,
+            });
         }
 
 
@@ -68,7 +80,7 @@ namespace SatelliteSite.ContestModule.Controllers
                 Clarifications = await Context.ListClarificationsAsync(c => c.Recipient == null && c.Sender == null),
                 Markdown = await Context.GetReadmeAsync(),
                 MeStatistics = Statistics,
-                AllStatistics = await Context.StatisticsAcceptedAsync(),
+                AllStatistics = await Context.StatisticsGlobalAsync(),
             });
         }
 
