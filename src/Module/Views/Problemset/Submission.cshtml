@@ -1,0 +1,32 @@
+﻿@model CodeViewModel
+@{
+    Layout = "_WindowLayout";
+    ViewData["Title"] = $"Submission s{Model.SubmissionId}";
+    ViewData["MaxWidth"] = "800px";
+    ViewData["HandleKey"] ??= "view_submission";
+    ViewData["CancelText"] = "Close";
+}
+
+<script src="~/lib/ace/ace.js"></script>
+<script src="~/lib/ace/ext-modelist.js"></script>
+
+<h5>Overview</h5>
+<p>
+    Language: @Model.LanguageName, <br />
+    Verdict: <verdict value="@Model.Status" />,<br />
+    Runtime: @(Model.ExecuteTime.HasValue ? $"{Model.ExecuteTime}ms, {Model.ExecuteMemory}kB" : "N/A"), <br />
+    Sent Time: @Html.CstTime(Model.DateTime)
+</p>
+
+<razor asp-show-if="Model.Status != Verdict.CompileError">
+<h5>Testcase runs</h5>
+<p>
+    @foreach (var (d, t) in Model.Details) {<a title="#@t.Rank, @(d == null ? "unknown" : $"runtime: {d.ExecuteTime}ms, result: {d.Status}")"><verdict-badge value="@(d?.Status ?? Verdict.Pending)" judging-pending="Model.Status == Verdict.Running || Model.Status == Verdict.Pending" /></a>}
+</p>
+</razor>
+
+<h5>Compiler output</h5>
+<snippet base64="@Model.CompileError" class="mb-3" nodata="There were no compiler errors or warnings." />
+
+<h5>Source code</h5>
+<ace value="@Model.Code.UnBase64()" file="Main.@Model.FileExtensions" />

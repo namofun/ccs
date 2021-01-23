@@ -1,0 +1,134 @@
+﻿@model ProblemModel
+@{
+    ViewData["Title"] = $"Problem {Model.ShortName}";
+}
+
+<link rel="stylesheet" href="~/lib/katex/katex.min.css" />
+<script defer src="~/lib/katex/katex.min.js"></script>
+<script defer src="~/lib/clipboard-js/clipboard.min.js"></script>
+
+<div class="container-fluid mt-3 pt-0 pt-xl-2 pl-0 pr-0">
+    <div class="row">
+        <div class="col-12 col-lg-12 col-xl-1"></div>
+        <div class="col-12 col-lg-8 col-xl-6">
+            @Html.Raw(Model.Statement)
+        </div>
+        <div class="col-12 col-lg-4 col-xl-3">
+            <h4 class="mt-lg-5">Tags</h4>
+            <p>
+                <tags color="secondary" list="@Model.TagName" />
+                <tags color="info" list="@Model.Source" />
+            </p>
+            <h4>Operations</h4>
+            <p asp-show-if="User.IsSignedIn()">
+                <a asp-action="Submit" data-toggle="ajaxWindow" data-target="submit" class="btn btn-success btn-sm">
+                    <i class="fas fa-cloud-upload-alt"></i> Submit
+                </a>
+            </p>
+            <p asp-show-if="!User.IsSignedIn()">You should login first.</p>
+            <h4>My submissions</h4>
+            <table class="data-table pagination-sm table table-hover table-striped table-sm submissions-table" role="grid">
+                <thead class="thead-light">
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">time</th>
+                        <th scope="col">verdict</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function dateFormat(fmt, date) {
+        let ret;
+        const opt = {
+            "Y+": date.getFullYear().toString(),
+            "m+": (date.getMonth() + 1).toString(),
+            "d+": date.getDate().toString(),
+            "H+": date.getHours().toString(),
+            "M+": date.getMinutes().toString(),
+        };
+        for (let k in opt) {
+            ret = new RegExp("(" + k + ")").exec(fmt);
+            if (ret) {
+                fmt = fmt.replace(ret[1], (ret[1].length == 1) ? (opt[k]) : (opt[k].padStart(ret[1].length, "0")))
+            };
+        };
+        return fmt;
+    }
+
+    xylab = { "dt": {} };
+
+    xylab.dt.verdicts = [
+        { "tag": "unknown", "class": "sol sol_queued" },
+        { "tag": "timelimit", "class": "sol sol_incorrect" },
+        { "tag": "memory-limit", "class": "sol sol_incorrect" },
+        { "tag": "run-error", "class": "sol sol_incorrect" },
+        { "tag": "output-limit", "class": "sol sol_incorrect" },
+        { "tag": "wrong-answer", "class": "sol sol_incorrect" },
+        { "tag": "compiler-error", "class": "sol sol_incorrect" },
+        { "tag": "wrong-answer", "class": "sol sol_incorrect" },
+        { "tag": "queued", "class": "sol sol_queued" },
+        { "tag": "running", "class": "sol sol_queued" },
+        { "tag": "undefined", "class": "sol sol_incorrect" },
+        { "tag": "correct", "class": "sol sol_correct" }
+    ];
+
+    xylab.dt.verdict = function (data, type, row) {
+        return '<span class="' + xylab.dt.verdicts[data].class + '">' + xylab.dt.verdicts[data].tag + '</span>';
+    };
+
+    xylab.dt.wrapUrl = function (url, wd, inf) {
+        return function (data, type, row) {
+            if (type != 'display') return inf(data, type, row);
+            return '<a data-target="' + wd + '" data-toggle="ajaxWindow" href="' + url.replace('_SUBMIT_ID_', row.id) + '">' + inf(data, type, row) + '</a>';
+        };
+    };
+
+    xylab.dt.prefix = function (pf) {
+        return function (data, type, row) {
+            return pf + data;
+        };
+    };
+
+    xylab.dt.time = function (fmt) {
+        return function (data, type, row) {
+            return dateFormat(fmt, new Date(data));
+        };
+    };
+
+    function makeUrl(fn) {
+        return xylab.dt.wrapUrl('@Url.Action("Submission", new { submitid = "_SUBMIT_ID_" })', 'view', fn);
+    }
+
+    $().ready(function () {
+        $('.data-table').DataTable({
+            "paging": true,
+            "pageLength": 15,
+            "searching": false,
+            "ordering": false,
+            "info": false,
+            "autoWidth": false,
+            "lengthChange": false,
+            "serverSide": true,
+            "ajax": {
+                "url": "@Url.ActionLink("Submissions")"
+            },
+            "columns": [
+                { "data": "id", "render": makeUrl(xylab.dt.prefix('s')) },
+                { "data": "time", "render": makeUrl(xylab.dt.time('Y/mm/dd HH:MM')) },
+                { "data": "status", "render": makeUrl(xylab.dt.verdict) },
+            ],
+            "language": {
+                "oPaginate": {
+                    "sPrevious": "&laquo;",
+                    "sNext": "&raquo;",
+                },
+            }
+        });
+    });
+</script>

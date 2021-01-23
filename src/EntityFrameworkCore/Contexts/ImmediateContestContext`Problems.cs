@@ -18,15 +18,17 @@ namespace Ccs.Services
     {
         private ProblemCollection? _readed_problem_collection;
 
-        private IQueryable<ProblemModel> QueryProblems(int cid)
-            => from cp in Db.ContestProblems
-               where cp.ContestId == cid
+        private IQueryable<ProblemModel> QueryProblems(IQueryable<ContestProblem> contestProblems)
+            => from cp in contestProblems
                join p in Db.Problems on cp.ProblemId equals p.Id
                select new ProblemModel(
                    cp.ContestId, cp.ProblemId, cp.ShortName,
                    cp.AllowSubmit, p.AllowJudge,
-                   cp.Color, cp.Score,
+                   cp.Color, cp.Score, p.TagName, p.Source,
                    p.Title, p.TimeLimit, p.MemoryLimit, p.CombinedRunCompare, p.Shared);
+
+        private IQueryable<ProblemModel> QueryProblems(int cid)
+            => QueryProblems(Db.ContestProblems.Where(cp => cp.ContestId == cid));
 
         private IQueryable<PartialScore> QueryScores(int cid)
             => from cp in Db.ContestProblems

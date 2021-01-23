@@ -1,0 +1,47 @@
+﻿@model IPagedList<ProblemModel>
+@{
+    ViewData["Title"] = "Problem List";
+    IReadOnlyDictionary<int, (int, int)> stat = ViewBag.Statistics;
+    IReadOnlyDictionary<int, (int, int, int, int)> global = ViewBag.GlobalStatistics;
+}
+
+<h2 class="mt-2">Problems</h2>
+
+<table class="mt-3 table table-responsive-md">
+    <thead>
+        <tr>
+            <th style="min-width:6em"><span class="d-none d-lg-inline"> Prob.</span>ID</th>
+            <th style="min-width:20em">Title</th>
+            <th style="min-width:10em">Ratio<span class="d-none d-lg-inline"> (AC/Total)</span></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            var (myac, mytot) = stat.GetValueOrDefault(item.ProblemId);
+            var (allac, alltot, _, _) = global.GetValueOrDefault(item.ProblemId);
+            <tr>
+                <td>
+                    @item.ShortName
+                    <i asp-show-if="myac > 0" class="fas fa-check-circle text-success"></i>
+                    <i asp-show-if="myac == 0 && mytot > 0" class="fas fa-exclamation-circle text-warning"></i>
+                </td>
+                <td>
+                    <a asp-action="View" asp-route-probid="@item.ShortName">@item.Title</a>
+                    <span style="font-size:0.9em">
+                        <tags color="info" list="@item.Source" />
+                        <tags color="secondary" list="@item.TagName" />
+                    </span>
+                </td>
+                <td>@Html.RatioOf(allac, alltot)</td>
+            </tr>
+        }
+    </tbody>
+    <tfoot>
+        <tr>
+            <td colspan="3">
+                <pagination bs-current-page="Model.CurrentPage" bs-total-page="Model.TotalPage" />
+            </td>
+        </tr>
+    </tfoot>
+</table>

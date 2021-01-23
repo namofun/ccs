@@ -37,6 +37,10 @@ namespace SatelliteSite.ContestModule
 
             endpoints.WithErrorHandler("Contest", "Gym")
                 .MapStatusCode("/contest/{cid:c(2)}/{**slug}");
+
+            endpoints.WithErrorHandler("Contest", "Problemset")
+                .MapStatusCode("/contest/{cid:c(4)}/{**slug}")
+                .MapStatusCode("/problemset/{cid:c(4)}/{**slug}");
         }
 
         private static void EnsureRegistered<TService>(IServiceCollection services, ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
@@ -236,6 +240,19 @@ namespace SatelliteSite.ContestModule
                     .HasLink("Contest", "DomTeam", "Scoreboard")
                     .HasTitle("fas fa-list-ol", "Scoreboard")
                     .ActiveWhenAction("Scoreboard");
+
+                menu.HasEntry(600)
+                    .HasLink("Contest", "Jury", "Home")
+                    .HasTitle("fas fa-arrow-right", "Jury")
+                    .RequireThat(ctx => Feature(ctx).IsJury);
+            });
+
+            menus.Menu(CcsDefaults.ProblemsetNavbar, menu =>
+            {
+                menu.HasEntry(100)
+                    .HasLink("Contest", "Problemset", "List")
+                    .HasTitle("fas fa-book-open", "Problemset")
+                    .ActiveWhenAction("List");
 
                 menu.HasEntry(600)
                     .HasLink("Contest", "Jury", "Home")

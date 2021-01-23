@@ -51,9 +51,23 @@
         public string? Statement { get; set; }
 
         /// <summary>
+        /// The problem tag
+        /// </summary>
+        public string TagName { get; }
+
+        /// <summary>
+        /// The problem source
+        /// </summary>
+        public string Source { get; }
+
+        /// <summary>
         /// Instantiate a model for contest problem.
         /// </summary>
-        public ProblemModel(int cid, int probid, string shortName, bool allowSubmit, bool allowJudge, string color, int codeforcesScore, string title, int timelimit, int memlimit, bool interactive, bool shared)
+        public ProblemModel(
+            int cid, int probid, string shortName,
+            bool allowSubmit, bool allowJudge,
+            string color, int codeforcesScore, string tag, string source,
+            string title, int timelimit, int memlimit, bool interactive, bool shared)
         {
             AllowJudge = allowJudge;
             AllowSubmit = allowSubmit;
@@ -67,6 +81,8 @@
             Shared = shared;
             ShortName = shortName;
             Title = title;
+            TagName = tag;
+            Source = source;
         }
     }
 }

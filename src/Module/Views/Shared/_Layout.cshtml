@@ -8,6 +8,7 @@
     if (ViewData.ContainsKey("InJury")) { ViewData["AjaxUpdateUrl"] = Url.Action("Updates", "Jury"); }
 }
 
+@if (Contest.Kind != 2) {
 @section Clocking {
     <div class="navbar-text" style="white-space:nowrap;">
         <i style="padding-left: 10px;" class="fas fa-clock"></i>
@@ -30,6 +31,7 @@
 
 @section Banner {
     <partial name="_Progress" />
+}
 }
 
 @section Header {

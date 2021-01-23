@@ -21,6 +21,11 @@
         public const string TeamNavbar = "Menu_CcsNavbar_Team";
 
         /// <summary>
+        /// The menu for ccs problemset navbar
+        /// </summary>
+        public const string ProblemsetNavbar = "Menu_CcsNavbar_Problemset";
+
+        /// <summary>
         /// The menu for ccs jury navbar
         /// </summary>
         public const string PublicNavbar = "Menu_CcsNavbar_Public";
