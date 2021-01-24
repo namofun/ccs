@@ -25,7 +25,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ccs.Scoreboard", "src\Score
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SatelliteSite.ContestModule", "src\Module\SatelliteSite.ContestModule.csproj", "{AF640FF9-EA38-46BF-90C1-9D4D9CA73297}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SatelliteSite.ContestModule.Registration", "src\Registration\SatelliteSite.ContestModule.Registration.csproj", "{3A4C80E7-5EF3-4B0B-9C50-F2CF51C9B8A0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ccs.Registration", "src\Registration\Ccs.Registration.csproj", "{3A4C80E7-5EF3-4B0B-9C50-F2CF51C9B8A0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

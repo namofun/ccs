@@ -1,9 +1,8 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
-    <DescriptionAttach>The team registration</DescriptionAttach>
+    <DescriptionAttach>The team registration abstraction</DescriptionAttach>
   </PropertyGroup>
 
   <Import Project="..\..\build\NugetPackage.props" />
@@ -11,13 +10,11 @@
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="SatelliteSite.Substrate" Version="$(SubstrateVersion)" />
-    <PackageReference Include="Polygon.TagHelpers" Version="$(PolygonVersion)" />
-    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerEndpoint" Version="5.1.9" />
+    <PackageReference Include="SatelliteSite.IdentityCore" Version="$(SubstrateVersion)" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Abstraction\Ccs.Abstraction.csproj" />
-    <ProjectReference Include="..\Scoreboard\Ccs.Scoreboard.csproj" />
   </ItemGroup>
 
 </Project>
