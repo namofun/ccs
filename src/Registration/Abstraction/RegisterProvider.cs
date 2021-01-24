@@ -1,4 +1,4 @@
-﻿using Ccs.Models;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.Threading.Tasks;
 
 namespace Ccs.Registration
@@ -30,8 +30,9 @@ namespace Ccs.Registration
         /// </summary>
         /// <param name="context">The register provider context.</param>
         /// <param name="model">The input model to validate.</param>
+        /// <param name="modelState">The model state dictionary.</param>
         /// <returns>The task for validating, returning the validate result.</returns>
-        Task<CheckResult> ValidateAsync(RegisterProviderContext context, TInputModel model);
+        Task ValidateAsync(RegisterProviderContext context, TInputModel model, ModelStateDictionary modelState);
 
         /// <summary>
         /// Executes the input model.
