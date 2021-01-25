@@ -1,8 +1,11 @@
-﻿#nullable enable
-using Microsoft.AspNetCore.Html;
+﻿using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.DataTables.Internal;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Net.Http.Headers;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -16,6 +19,12 @@ namespace Ccs.Registration
     /// </summary>
     public class RegisterProviderOutput<TModel> : HtmlContentBuilder
     {
+        /// <summary>
+        /// The cache to store factories for HtmlContent
+        /// </summary>
+        private static readonly IMemoryCache FactoryCache =
+            new MemoryCache(new MemoryCacheOptions { Clock = new Microsoft.Extensions.Internal.SystemClock() });
+
         /// <summary>
         /// Provides view data.
         /// </summary>
@@ -192,6 +201,124 @@ namespace Ccs.Registration
                     .AppendInnerHtml(LableFor(asp_for))
                     .AppendInnerHtml(select)
                     .AppendInnerHtmlOrNot(CommentFor(comment)));
+        }
+
+        /// <summary>
+        /// Appends a <c>&lt;textarea&gt;</c> element.
+        /// </summary>
+        /// <param name="for">The model expression.</param>
+        /// <param name="comment">The comments.</param>
+        /// <param name="required">Whether this field is required.</param>
+        /// <returns>The <see cref="IHtmlContentBuilder"/>.</returns>
+        public RegisterProviderOutput<TModel> AppendTextArea(
+            Expression<Func<TModel, string>> @for,
+            string? comment = null,
+            bool required = true)
+        {
+            var asp_for = ModelExpressionProvider.CreateModelExpression(ViewData, @for);
+
+            var textarea = Generator.GenerateTextArea(
+                ViewContext,
+                asp_for.ModelExplorer,
+                asp_for.Name,
+                rows: 0,
+                columns: 0,
+                htmlAttributes: null);
+
+            textarea.AddCssClass("form-control");
+            textarea.MergeAttribute("style", "min-height:20em;");
+            if (required) textarea.Attributes.Add("required", "required");
+
+            return AppendHtml(
+                new TagBuilder("div")
+                    .WithClass("form-group")
+                    .AppendInnerHtml(LableFor(asp_for))
+                    .AppendInnerHtml(textarea)
+                    .AppendInnerHtmlOrNot(CommentFor(comment)));
+        }
+
+        /// <summary>
+        /// Appends a <c>&lt;table&gt;</c> element.
+        /// </summary>
+        /// <typeparam name="TElement">The element types.</typeparam>
+        /// <param name="elements">The inner elements.</param>
+        /// <param name="tableClass">The attached class for table.</param>
+        /// <param name="theadClass">The attached class for thead.</param>
+        /// <returns>The <see cref="IHtmlContentBuilder"/>.</returns>
+        public RegisterProviderOutput<TModel> AppendDataTable<TElement>(
+            IReadOnlyList<TElement> elements,
+            string? tableClass = null,
+            string? theadClass = null)
+            where TElement : class
+        {
+            // Justification: the factory is implemented with Task.FromResult.
+            var viewModel = FactoryCache.GetOrCreate(typeof(TElement),
+                entry => DataRowFunctions.Factory((Type)entry.Key)).Result;
+
+            var uniqueId = Guid.NewGuid().ToString()[0..6];
+
+            var tbody = new TagBuilder("tbody")
+                .AppendList(elements, viewModel.TRow);
+
+            var thead = new TagBuilder("thead")
+                .AppendInnerHtml(viewModel.THead)
+                .WithClass(theadClass);
+
+            var table = new TagBuilder("table")
+                .WithClass("data-table table table-sm table-striped")
+                .WithClass(tableClass)
+                .AppendInnerHtml(thead)
+                .AppendInnerHtml(tbody);
+
+            var script = new TagBuilder("script");
+            script.InnerHtml
+                .AppendHtmlLine("$().ready(function(){$('#" + uniqueId + "').DataTable({")
+                .AppendHtmlLine("'searching': " + (viewModel.Searchable ? "true" : "false") + ",")
+                .AppendHtmlLine("'ordering': " + (viewModel.Sortable ? ("true, 'order': [" + viewModel.Sort + "],") : "false,"))
+                .AppendHtmlLine("'paging': false, 'info': false, 'autoWidth': false,")
+                .AppendHtmlLine("'language': { 'searchPlaceholder': 'filter table', 'search': '_INPUT_', 'oPaginate': {'sPrevious': '&laquo;', 'sNext': '&raquo;'} },")
+                .AppendHtmlLine("'aoColumnDefs': [{ aTargets: ['sortable'], bSortable: true }, { aTargets: ['searchable'], bSearchable: true }, { aTargets: ['_all'], bSortable: false, bSearchable: false }],")
+                .AppendHtmlLine("});});");
+
+            table.MergeAttribute("id", uniqueId);
+            base.AppendHtml(table);
+            base.AppendHtml(script);
+            return this;
+        }
+
+        /// <summary>
+        /// Marks this output only redirect to another action.
+        /// </summary>
+        /// <param name="action">The action name.</param>
+        /// <param name="controller">The controller name.</param>
+        /// <param name="routeValues">The route values.</param>
+        /// <returns>The <see cref="IHtmlContentBuilder"/>.</returns>
+        public RegisterProviderOutput<TModel> Redirect(
+            string? action = null,
+            string? controller = null,
+            object? routeValues = null)
+        {
+            var destinationUrl = Url.Action(action, controller, routeValues);
+            var request = ViewContext.HttpContext.Request;
+            var response = ViewContext.HttpContext.Response;
+
+            if (string.IsNullOrEmpty(destinationUrl))
+            {
+                throw new InvalidOperationException("No Routes Matched");
+            }
+
+            if (request.IsAjax())
+            {
+                response.StatusCode = StatusCodes.Status200OK;
+                response.Headers["X-Login-Page"] = destinationUrl;
+            }
+            else
+            {
+                response.StatusCode = StatusCodes.Status302Found;
+                response.Headers[HeaderNames.Location] = destinationUrl;
+            }
+
+            return this;
         }
     }
 }

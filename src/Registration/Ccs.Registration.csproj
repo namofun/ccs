@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <DescriptionAttach>The team registration abstraction</DescriptionAttach>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <Import Project="..\..\build\NugetPackage.props" />

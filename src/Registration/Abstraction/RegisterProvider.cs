@@ -46,18 +46,16 @@ namespace Ccs.Registration
         /// Renders the input view.
         /// </summary>
         /// <param name="context">The register provider context.</param>
-        /// <param name="model">The input model to render.</param>
         /// <param name="output">The view container to render to.</param>
         /// <returns>The task for rendering.</returns>
-        Task RenderInputAsync(RegisterProviderContext context, TInputModel model, RegisterProviderOutput<TInputModel> output);
+        Task RenderInputAsync(RegisterProviderContext context, RegisterProviderOutput<TInputModel> output);
 
         /// <summary>
         /// Renders the output view.
         /// </summary>
         /// <param name="context">The register provider context.</param>
-        /// <param name="model">The output model to render.</param>
         /// <param name="output">The view container to render to.</param>
         /// <returns>The task for rendering.</returns>
-        Task RenderOutputAsync(RegisterProviderContext context, TOutputModel model, RegisterProviderOutput<TOutputModel> output);
+        Task RenderOutputAsync(RegisterProviderContext context, RegisterProviderOutput<TOutputModel> output);
     }
 }

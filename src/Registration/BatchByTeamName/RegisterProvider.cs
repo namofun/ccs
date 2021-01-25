@@ -21,8 +21,8 @@ namespace Ccs.Registration.BatchByTeamName
 
         public async Task ValidateAsync(RegisterProviderContext context, BatchByTeamNameInputModel model, ModelStateDictionary modelState)
         {
-            model.Affiliations = await context.Context.FetchAffiliationsAsync(false);
-            model.Categories = await context.Context.FetchCategoriesAsync(false);
+            model.Affiliations ??= await context.Context.FetchAffiliationsAsync(false);
+            model.Categories ??= await context.Context.FetchCategoriesAsync(false);
 
             if (!model.Categories.ContainsKey(model.CategoryId))
             {
@@ -48,24 +48,32 @@ namespace Ccs.Registration.BatchByTeamName
 
         public Task RenderInputAsync(
             RegisterProviderContext context,
-            BatchByTeamNameInputModel model,
             RegisterProviderOutput<BatchByTeamNameInputModel> output)
         {
             output.WithTitle("Batch team register")
                 .AppendValidationSummary()
                 .AppendSelect(
                     @for: __model => __model.AffiliationId,
-                    items: model.Affiliations.Values.Select(a => new SelectListItem(a.Name, $"{a.Id}")))
+                    items: output.Model.Affiliations.Values.Select(a => new SelectListItem(a.Name, $"{a.Id}")))
                 .AppendSelect(
                     @for: __model => __model.CategoryId,
-                    items: model.Categories.Values.Select(c => new SelectListItem(c.Name, $"{c.Id}")));
+                    items: output.Model.Categories.Values.Select(c => new SelectListItem(c.Name, $"{c.Id}")))
+                .AppendTextArea(
+                    @for: __model => __model.TeamNames,
+                    comment: "队伍名称，每个一行，区分大小写和空格，提交后会绑定新用户并重置密码。");
 
             return Task.CompletedTask;
         }
 
-        public Task RenderOutputAsync(RegisterProviderContext context, BatchByTeamNameOutputModel model, RegisterProviderOutput<BatchByTeamNameOutputModel> output)
+        public Task RenderOutputAsync(RegisterProviderContext context, RegisterProviderOutput<BatchByTeamNameOutputModel> output)
         {
-            throw new NotImplementedException();
+            output.WithTitle("Batch import result")
+                .AppendDataTable(
+                    elements: output.Model,
+                    tableClass: "text-center table-hover",
+                    theadClass: "thead-light");
+
+            return Task.CompletedTask;
         }
     }
 }
