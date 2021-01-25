@@ -1,6 +1,7 @@
 ﻿@model IEnumerable<JuryListTeamModel>
 @{
     ViewData["Title"] = "Teams";
+    var providers = RPBinderAttribute.Get(Context);
 }
 
 <h2 class="mt-2">@ViewData["Title"]</h2>
@@ -72,15 +73,16 @@
             <i class="fas fa-plus"></i>&nbsp;Add new team
         </a>
     </div>
-    <div class="btn-group dropdown">
+    <div class="btn-group dropdown" asp-in-roles="Administrator,Teacher">
         <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" title="Import teams" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <i class="fas fa-file-import"></i>&nbsp;Import teams
         </a>
 
         <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-            <a class="dropdown-item" asp-action="ByList" data-toggle="ajaxWindow" data-target="importTeam"><i class="fas fa-envelope-open-text fa-fw"></i>&nbsp;Batch import</a>
-            <a class="dropdown-item" asp-action="ByGroup" data-toggle="ajaxWindow" data-target="importTeam"><i class="fas fa-graduation-cap fa-fw"></i>&nbsp;Add teaching class</a>
-            <a class="dropdown-item" asp-in-roles="Administrator" asp-action="LockoutTemporary" data-toggle="ajaxWindow" data-target="importTeam"><i class="fas fa-lock"></i>&nbsp;Lockout temporary users</a>
+            @foreach (var (name, provider) in providers)
+            {
+                <a class="dropdown-item" asp-action="Import" asp-route-provider="@name"><i class="@provider.Icon fa-fw"></i>&nbsp;@provider.Name</a>
+            }
         </div>
     </div>
 </div>

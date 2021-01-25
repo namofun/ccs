@@ -12,10 +12,25 @@ namespace Ccs.Registration
     public interface IRegisterProvider
     {
         /// <summary>
+        /// The name of registration provider.
+        /// </summary>
+        string Name { get; }
+
+        /// <summary>
+        /// The icon of registration provider.
+        /// </summary>
+        string Icon { get; }
+
+        /// <summary>
         /// Gets whether this provider is for jury or contestant.
         /// </summary>
         /// <returns><c>true</c> for jury; otherwise, <c>false</c>.</returns>
         bool JuryOrContestant { get; }
+
+        /// <summary>
+        /// The display order of registration provider.
+        /// </summary>
+        int Order { get; }
 
         /// <summary>
         /// Creates an empty input model with its fields initialized.
@@ -23,6 +38,14 @@ namespace Ccs.Registration
         /// <param name="context">The register provider context.</param>
         /// <returns>The task for creating an input model.</returns>
         Task<object> CreateInputModelAsync(RegisterProviderContext context);
+
+        /// <summary>
+        /// Reads the existing model from controller.
+        /// </summary>
+        /// <param name="model">The model instance.</param>
+        /// <param name="controller">The running controller.</param>
+        /// <returns>The task for reading form values.</returns>
+        Task<bool> ReadAsync(object model, ControllerBase controller);
 
         /// <summary>
         /// Validates the input content.
@@ -95,6 +118,15 @@ namespace Ccs.Registration
         /// <inheritdoc />
         public abstract bool JuryOrContestant { get; }
 
+        /// <inheritdoc />
+        public abstract int Order { get; }
+
+        /// <inheritdoc />
+        public abstract string Name { get; }
+
+        /// <inheritdoc />
+        public abstract string Icon { get; }
+
         /// <inheritdoc cref="IRegisterProvider.CreateInputModelAsync(RegisterProviderContext)" />
         protected abstract Task<TInputModel> CreateInputModelAsync(RegisterProviderContext context);
 
@@ -132,6 +164,9 @@ namespace Ccs.Registration
 
         RegisterProviderOutput IRegisterProvider.CreateOutputRenderer(ViewContext a, object b, IModelExpressionProvider c, IJsonHelper d, IViewComponentHelper e, IUrlHelper f)
             => new RegisterProviderOutput<TOutputModel>(a, (TOutputModel)b, c, d, e, f);
+
+        Task<bool> IRegisterProvider.ReadAsync(object model, ControllerBase controller)
+            => controller.TryUpdateModelAsync((TInputModel)model);
 
         #endregion
     }

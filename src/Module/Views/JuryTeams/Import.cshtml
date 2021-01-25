@@ -1,21 +1,14 @@
 ﻿@{
+    Ccs.Registration.IRegisterProvider provider = ViewBag.Provider;
+    Ccs.Registration.RegisterProviderContext context = ViewBag.Context;
     Layout = "_WindowLayout";
-    ViewData["Title"] = "Team Import";
-    ViewData["FormAjaxUpload"] = Url.Action("Import");
+    var output = provider.CreateInputRenderer(ViewContext, (object)Model, ModelExpressionProvider, Json, Component, Url);
+    await provider.RenderInputAsync(context, output);
+    ViewData["Title"] = output.Title;
 }
 
-<div class="form-group">
-    <label for="file">TSV File</label>
-    <div class="custom-file">
-        <input name="file" type="file" class="custom-file-input" id="file" />
-        <label class="custom-file-label" for="customFile">Choose file</label>
-    </div>
-    <small class="text-muted mt-2">
-        For each line in tsv, it should be <code>[name]\t[affname]\t[category]\t[uid]</code>.
-    </small>
-</div>
-<div class="upload-progress"><div></div></div>
+@output
 
 @section Footer {
-    <button type="submit" class="btn btn-primary">Begin</button>
+    <button asp-action="Import" type="submit" class="btn btn-primary">Import</button>
 }

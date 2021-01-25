@@ -1,4 +1,5 @@
 ﻿using Ccs.Entities;
+using Ccs.Registration.BatchByTeamName;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -7,10 +8,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Ccs.Registration.BatchByTeamName
+namespace Ccs.Registration
 {
     public class BatchByTeamNameRegisterProvider : RegisterProviderBase<BatchByTeamNameInputModel, BatchByTeamNameOutputModel>
     {
+        public override int Order => -1000;
+
+        public override string Name => "Temporary users";
+
+        public override string Icon => "fas fa-envelope-open-text";
+
         public override bool JuryOrContestant => true;
 
         private static string UserNameForTeamId(int teamId) => $"team{teamId:D3}";

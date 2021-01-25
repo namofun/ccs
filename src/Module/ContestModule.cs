@@ -101,6 +101,16 @@ namespace SatelliteSite.ContestModule
                     return Task.CompletedTask;
                 };
             });
+
+            services.Configure<Ccs.Registration.ContestRegistrationOptions>(options =>
+            {
+                options.Add("batch-by-name", new Ccs.Registration.BatchByTeamNameRegisterProvider());
+            });
+
+            services.PostConfigure<Ccs.Registration.ContestRegistrationOptions>(options =>
+            {
+                options.Complete();
+            });
         }
 
         public override void RegisterMenu(IMenuContributor menus)

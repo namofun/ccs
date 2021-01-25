@@ -313,7 +313,7 @@ namespace Ccs.Registration
             => ModelExpressionProvider.CreateModelExpression(ViewData, @for);
 
         private static ViewDataDictionary Create(ViewDataDictionary viewData, TModel model)
-            => viewData.Model == model ? viewData : new ViewDataDictionary<TModel>(viewData, model);
+            => new ViewDataDictionary<TModel>(viewData, model);
 
         private static IHtmlGenerator GetHtmlGenerator(ViewContext context)
             => context.HttpContext.RequestServices.GetRequiredService<IHtmlGenerator>();

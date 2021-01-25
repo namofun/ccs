@@ -93,47 +93,6 @@ namespace SatelliteSite.ContestModule.Controllers
             StatusMessage = "Lockout finished.";
             return RedirectToAction(nameof(List));
         }
-
-
-        [HttpGet("[action]")]
-        [Authorize(Roles = "Administrator,Teacher")]
-        public async Task<IActionResult> ByList()
-        {
-            ViewBag.Aff = await Store.ListAffiliationAsync(cid, false);
-            ViewBag.Cat = await Store.ListCategoryAsync(cid);
-
-            return Window(new AddTeamByListModel
-            {
-                AffiliationId = 1,
-                CategoryId = 3,
-            });
-        }
-
-
-        [HttpPost("[action]")]
-        [Authorize(Roles = "Administrator,Teacher")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ByListConfirmation(AddTeamByListModel model)
-        {
-            var affs = await Store.ListAffiliationAsync(cid, false);
-            var cats = await Store.ListCategoryAsync(cid);
-            var aff = affs.SingleOrDefault(a => a.AffiliationId == model.AffiliationId);
-            var cat = cats.SingleOrDefault(c => c.CategoryId == model.CategoryId);
-            if (aff == null || cat == null) return NotFound();
-
-            var names = (model.TeamNames ?? "").Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
-            var result = await Store.BatchCreateAsync(userManager, cid, aff, cat, names);
-            return View(result);
-        }
         */
-
-        [HttpGet("[action]")]
-        public IActionResult Import()
-        {
-            return Message(
-                title: "Import teams",
-                message: "Sorry, this module hasn't been finished.",
-                type: BootstrapColor.secondary);
-        }
     }
 }

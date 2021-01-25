@@ -7,15 +7,28 @@ namespace Ccs.Registration
     /// </summary>
     public class ContestRegistrationOptions
     {
+        private readonly List<(string, IRegisterProvider)> _providers
+            = new List<(string, IRegisterProvider)>();
+
         /// <summary>
         /// The providers.
         /// </summary>
-        public IList<IRegisterProvider> Providers { get; set; }
+        public IReadOnlyList<(string, IRegisterProvider)> Providers => _providers;
 
         /// <summary>
-        /// Initialize the options.
+        /// Adds a register provider to the list.
         /// </summary>
-        public ContestRegistrationOptions()
-            => Providers = new List<IRegisterProvider>();
+        /// <param name="name">The provider name.</param>
+        /// <param name="provider">The provider instance.</param>
+        public void Add(string name, IRegisterProvider provider)
+            => _providers.Add(
+                (FluentTagExtensions.NotNull(name, nameof(name)),
+                 FluentTagExtensions.NotNull(provider, nameof(provider))));
+
+        /// <summary>
+        /// Completes the options.
+        /// </summary>
+        public void Complete()
+            => _providers.Sort((a, b) => a.Item2.Order.CompareTo(b.Item2.Order));
     }
 }

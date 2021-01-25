@@ -1,4 +1,5 @@
 ﻿using Ccs.Entities;
+using Ccs.Registration;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -16,6 +17,10 @@ namespace SatelliteSite.ContestModule.Controllers
     [AuditPoint(AuditlogType.Team)]
     public partial class JuryTeamsController : JuryControllerBase
     {
+        private RegisterProviderContext CreateRegisterProviderContext()
+            => new RegisterProviderContext(Context, UserManager, HttpContext);
+
+
         [HttpGet]
         public async Task<IActionResult> List()
         {
@@ -218,6 +223,46 @@ namespace SatelliteSite.ContestModule.Controllers
                 title: "Team registration confirm",
                 message: $"Team #{teamid} is now rejected.",
                 type: BootstrapColor.success);
+        }
+
+
+        [HttpGet("[action]/{provider}")]
+        [Authorize(Roles = "Administrator,Teacher")]
+        public async Task<IActionResult> Import([RPBinder] IRegisterProvider provider)
+        {
+            if (provider == null) return NotFound();
+            var context = CreateRegisterProviderContext();
+            ViewBag.Provider = provider;
+            ViewBag.Context = context;
+            var model = await provider.CreateInputModelAsync(context);
+            return Window(model);
+        }
+
+
+        [HttpPost("[action]/{provider}")]
+        [Authorize(Roles = "Administrator,Teacher")]
+        [ActionName(nameof(Import))]
+        public async Task<IActionResult> ImportResult([RPBinder] IRegisterProvider provider)
+        {
+            if (provider == null) return NotFound();
+            var context = CreateRegisterProviderContext();
+            ViewBag.Provider = provider;
+            ViewBag.Context = context;
+            var model = await provider.CreateInputModelAsync(context);
+            await provider.ReadAsync(model, this);
+            await provider.ValidateAsync(context, model, ModelState);
+
+            if (ModelState.IsValid)
+            {
+                var output = await provider.ExecuteAsync(context, model);
+                await HttpContext.AuditAsync("import", null, "via " + provider.Name);
+                return Window("ImportResult", output);
+            }
+            else
+            {
+                // something got wrong, re-display the form.
+                return Window(model);
+            }
         }
     }
 }

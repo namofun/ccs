@@ -236,8 +236,8 @@ namespace Ccs.Services
         public virtual Task AttachMemberAsync(Team team, IUser user, bool temporary)
         {
             return Db.TeamMembers.UpsertAsync(
-                new { cid = team.ContestId, teamid = team.TeamId, uid = user.Id, temporary },
-                s => new Member { ContestId = s.cid, TeamId = s.teamid, UserId = s.uid, Temporary = s.temporary });
+                new { cid = team.ContestId, teamid = team.TeamId, uid = user.Id },
+                s => new Member { ContestId = s.cid, TeamId = s.teamid, UserId = s.uid, Temporary = temporary });
         }
     }
 }

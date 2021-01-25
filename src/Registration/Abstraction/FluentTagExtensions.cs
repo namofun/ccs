@@ -9,7 +9,7 @@ namespace Ccs.Registration
 {
     internal static class FluentTagExtensions
     {
-        private static T NotNull<T>(T value, string name) where T : class
+        public static T NotNull<T>(T value, string name) where T : class
             => value ?? throw new ArgumentNullException(name);
 
         public static TagBuilder WithClass(this TagBuilder tagBuilder, string? className)

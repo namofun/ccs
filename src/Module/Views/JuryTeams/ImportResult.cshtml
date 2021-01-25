@@ -1,0 +1,10 @@
+﻿@{
+    Ccs.Registration.IRegisterProvider provider = ViewBag.Provider;
+    Ccs.Registration.RegisterProviderContext context = ViewBag.Context;
+    Layout = "_WindowLayout";
+    var output = provider.CreateOutputRenderer(ViewContext, (object)Model, ModelExpressionProvider, Json, Component, Url);
+    await provider.RenderOutputAsync(context, output);
+    ViewData["Title"] = output.Title;
+}
+
+@output
