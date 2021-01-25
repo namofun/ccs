@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+﻿using Ccs.Entities;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -9,6 +12,20 @@ namespace Ccs.Registration.BatchByTeamName
     public class BatchByTeamNameRegisterProvider : IRegisterProvider<BatchByTeamNameInputModel, BatchByTeamNameOutputModel>
     {
         public bool JuryOrContestant => true;
+
+        public static string UserNameForTeamId(int teamId) => $"team{teamId:D3}";
+
+        public static Func<string> CreatePasswordGenerator()
+        {
+            const string passwordSource = "abcdefhjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ2345678";
+            var rng = new Random(unchecked((int)DateTimeOffset.Now.Ticks));
+            return () =>
+            {
+                Span<char> pwd = stackalloc char[8];
+                for (int i = 0; i < 8; i++) pwd[i] = passwordSource[rng.Next(passwordSource.Length)];
+                return pwd.ToString();
+            };
+        }
 
         public async Task<BatchByTeamNameInputModel> CreateInputModelAsync(RegisterProviderContext context)
         {
@@ -40,15 +57,100 @@ namespace Ccs.Registration.BatchByTeamName
             }
         }
 
-        public Task<BatchByTeamNameOutputModel> ExecuteAsync(RegisterProviderContext context, BatchByTeamNameInputModel model)
+        public async Task<BatchByTeamNameOutputModel> ExecuteAsync(RegisterProviderContext context, BatchByTeamNameInputModel model)
         {
+            var rng = CreatePasswordGenerator();
+            var result = new List<TeamAccount>();
 
-            throw new NotImplementedException();
+            var teamNames = model.TeamNames.Split('\n');
+            int affId = model.AffiliationId, catId = model.CategoryId;
+            var existingTeams = await context.Context.ListTeamsAsync(c => c.AffiliationId == affId && c.CategoryId == catId);
+            var list = existingTeams.ToLookup(a => a.TeamName);
+
+            foreach (var item2 in teamNames)
+            {
+                var item = item2.Trim();
+
+                if (list.Contains(item))
+                {
+                    var e = list[item];
+                    foreach (var team in e)
+                    {
+                        string pwd = rng();
+                        var user = await EnsureTeamWithPassword(team, pwd);
+
+                        result.Add(new TeamAccount
+                        {
+                            Id = team.TeamId,
+                            TeamName = team.TeamName,
+                            UserName = user.UserName,
+                            Password = pwd,
+                        });
+                    }
+                }
+                else
+                {
+                    var team = new Team
+                    {
+                        AffiliationId = affId,
+                        CategoryId = catId,
+                        ContestId = context.Context.Contest.Id,
+                        Status = 1,
+                        TeamName = item,
+                    };
+
+                    await context.Context.CreateTeamAsync(team, null);
+                    string pwd = rng();
+                    var user = await EnsureTeamWithPassword(team, pwd);
+
+                    result.Add(new TeamAccount
+                    {
+                        Id = team.TeamId,
+                        TeamName = team.TeamName,
+                        UserName = user.UserName,
+                        Password = pwd,
+                    });
+                }
+            }
+
+            return new BatchByTeamNameOutputModel(result);
+
+            async Task<IUser> EnsureTeamWithPassword(Team team, string password)
+            {
+                string username = UserNameForTeamId(team.TeamId);
+                var UserManager = context.UserManager;
+                var user = await UserManager.FindByNameAsync(username);
+
+                if (user != null)
+                {
+                    if (await UserManager.HasPasswordAsync(user))
+                    {
+                        var token = await UserManager.GeneratePasswordResetTokenAsync(user);
+                        await UserManager.ResetPasswordAsync(user, token, password);
+                    }
+                    else
+                    {
+                        await UserManager.AddPasswordAsync(user, password);
+                    }
+
+                    if (await UserManager.IsLockedOutAsync(user))
+                    {
+                        await UserManager.SetLockoutEndDateAsync(user, null);
+                    }
+                }
+                else
+                {
+                    user = UserManager.CreateEmpty(username);
+                    user.Email = $"{username}@contest.acm.xylab.fun";
+                    await UserManager.CreateAsync(user, password);
+                }
+
+                await context.Context.AttachMemberAsync(team, user, true);
+                return user;
+            }
         }
 
-        public Task RenderInputAsync(
-            RegisterProviderContext context,
-            RegisterProviderOutput<BatchByTeamNameInputModel> output)
+        public Task RenderInputAsync(RegisterProviderContext context, RegisterProviderOutput<BatchByTeamNameInputModel> output)
         {
             output.WithTitle("Batch team register")
                 .AppendValidationSummary()

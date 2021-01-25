@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Abstraction\Ccs.Abstraction.csproj" />
+    <ProjectReference Include="..\Registration\Ccs.Registration.csproj" />
     <ProjectReference Include="..\Scoreboard\Ccs.Scoreboard.csproj" />
   </ItemGroup>
 

@@ -123,5 +123,11 @@ namespace Ccs.Services
             return CacheAsync($"Teams::Statistics(*)", _options.Statistics,
                 async () => await base.StatisticsGlobalAsync());
         }
+
+        public override async Task AttachMemberAsync(Team team, IUser user, bool temporary)
+        {
+            await base.AttachMemberAsync(team, user, temporary);
+            Expire($"Teams::User({user.Id})");
+        }
     }
 }

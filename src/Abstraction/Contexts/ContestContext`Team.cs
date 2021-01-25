@@ -103,6 +103,15 @@ namespace Ccs
         Task<IReadOnlyList<Member>> DeleteTeamAsync(Team origin);
 
         /// <summary>
+        /// Attach a user to the team if not attached.
+        /// </summary>
+        /// <param name="team">The contest team.</param>
+        /// <param name="user">The identity user.</param>
+        /// <param name="temporary">Whether this member is temporary account.</param>
+        /// <returns>The task for attaching member.</returns>
+        Task AttachMemberAsync(Team team, IUser user, bool temporary);
+
+        /// <summary>
         /// List the teams with selected conditions.
         /// </summary>
         /// <param name="predicate">The conditions to match.</param>

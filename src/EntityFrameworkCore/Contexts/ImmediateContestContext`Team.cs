@@ -232,5 +232,12 @@ namespace Ccs.Services
                     keySelector: s => s.ProblemId,
                     elementSelector: s => (s.Accepted, s.Total, s.AcceptedTeams, s.TotalTeams));
         }
+
+        public virtual Task AttachMemberAsync(Team team, IUser user, bool temporary)
+        {
+            return Db.TeamMembers.UpsertAsync(
+                new { cid = team.ContestId, teamid = team.TeamId, uid = user.Id, temporary },
+                s => new Member { ContestId = s.cid, TeamId = s.teamid, UserId = s.uid, Temporary = s.temporary });
+        }
     }
 }
