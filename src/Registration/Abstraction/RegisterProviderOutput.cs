@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.DataTables.Internal;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Net.Http.Headers;
 using System;
 using System.Collections;
@@ -15,20 +16,20 @@ using System.Linq.Expressions;
 namespace Ccs.Registration
 {
     /// <summary>
-    ///  Class used to represent the output of an <see cref="IRegisterProvider{TInputModel, TOutputModel}"/>.
+    /// Base class used to represent the output of an <see cref="IRegisterProvider"/>.
     /// </summary>
-    public class RegisterProviderOutput<TModel> : HtmlContentBuilder
+    public abstract class RegisterProviderOutput : HtmlContentBuilder
     {
         /// <summary>
         /// The cache to store factories for HtmlContent
         /// </summary>
-        private static readonly IMemoryCache FactoryCache =
+        private static readonly IMemoryCache DataTableFactoryCache =
             new MemoryCache(new MemoryCacheOptions { Clock = new Microsoft.Extensions.Internal.SystemClock() });
 
         /// <summary>
         /// Provides view data.
         /// </summary>
-        public ViewDataDictionary<TModel> ViewData { get; }
+        public ViewDataDictionary ViewData { get; }
 
         /// <summary>
         /// Provides helps on HTML generating.
@@ -38,7 +39,7 @@ namespace Ccs.Registration
         /// <summary>
         /// Provides model.
         /// </summary>
-        public TModel Model => ViewData.Model;
+        public object Model => ViewData.Model;
 
         /// <summary>
         /// Provides <see cref="ModelExpression"/> for expressions.
@@ -71,11 +72,24 @@ namespace Ccs.Registration
         public string Title { get; private set; } = "Register";
 
         /// <summary>
-        /// Initialize a <see cref="RegisterProviderOutput{TModel}"/>.
+        /// Initialize a <see cref="RegisterProviderOutput"/>.
         /// </summary>
-        public RegisterProviderOutput()
+        protected RegisterProviderOutput(
+            ViewDataDictionary viewData,
+            IHtmlGenerator htmlGenerator,
+            IModelExpressionProvider modelExpressionProvider,
+            ViewContext viewContext,
+            IJsonHelper jsonHelper,
+            IViewComponentHelper viewComponentHelper,
+            IUrlHelper urlHelper)
         {
-            throw new NotImplementedException();
+            ViewData = viewData;
+            Generator = htmlGenerator;
+            ModelExpressionProvider = modelExpressionProvider;
+            ViewContext = viewContext;
+            Json = jsonHelper;
+            Component = viewComponentHelper;
+            Url = urlHelper;
         }
 
         private TagBuilder LableFor(ModelExpression @for)
@@ -91,40 +105,12 @@ namespace Ccs.Registration
                 .WithClass("text-muted mt-2")
                 .AppendInner(comment);
 
-        /// <inheritdoc cref="IHtmlContentBuilder.Append(string)" />
-        public new RegisterProviderOutput<TModel> Append(string unencoded)
-        {
-            base.Append(unencoded);
-            return this;
-        }
-
-        /// <inheritdoc cref="IHtmlContentBuilder.AppendHtml(IHtmlContent)" />
-        public new RegisterProviderOutput<TModel> AppendHtml(IHtmlContent htmlContent)
-        {
-            base.AppendHtml(htmlContent);
-            return this;
-        }
-
-        /// <inheritdoc cref="IHtmlContentBuilder.Append(string)" />
-        public new RegisterProviderOutput<TModel> AppendHtml(string encoded)
-        {
-            base.AppendHtml(encoded);
-            return this;
-        }
-
-        /// <inheritdoc cref="IHtmlContentBuilder.Clear" />
-        public new RegisterProviderOutput<TModel> Clear()
-        {
-            base.Clear();
-            return this;
-        }
-
         /// <summary>
         /// Sets the dialog title.
         /// </summary>
         /// <param name="title">The dialog title.</param>
         /// <returns>The <see cref="IHtmlContentBuilder"/>.</returns>
-        public RegisterProviderOutput<TModel> WithTitle(string title)
+        protected IHtmlContentBuilder WithTitle(string title)
         {
             Title = title;
             return this;
@@ -134,7 +120,7 @@ namespace Ccs.Registration
         /// Appends a <c>&lt;div asp-validation-summary="All"&gt;&lt;/div&gt;</c>.
         /// </summary>
         /// <returns>The <see cref="IHtmlContentBuilder"/>.</returns>
-        public RegisterProviderOutput<TModel> AppendValidationSummary()
+        protected IHtmlContentBuilder AppendValidationSummary()
         {
             var tagBuilder = Generator.GenerateValidationSummary(
                 ViewContext,
@@ -158,30 +144,27 @@ namespace Ccs.Registration
         /// <summary>
         /// Appends a <c>&lt;select&gt;</c> element.
         /// </summary>
-        /// <typeparam name="TElement">The target element type.</typeparam>
         /// <param name="for">The model expression.</param>
         /// <param name="items">The select option items.</param>
         /// <param name="comment">The comments.</param>
         /// <param name="required">Whether this field is required.</param>
         /// <returns>The <see cref="IHtmlContentBuilder"/>.</returns>
-        public RegisterProviderOutput<TModel> AppendSelect<TElement>(
-            Expression<Func<TModel, TElement>> @for,
+        protected IHtmlContentBuilder AppendSelect(
+            ModelExpression @for,
             IEnumerable<SelectListItem> items,
             string? comment = null,
             bool required = true)
         {
-            var asp_for = ModelExpressionProvider.CreateModelExpression(ViewData, @for);
-
             items ??= Enumerable.Empty<SelectListItem>();
-            var realModelType = asp_for.ModelExplorer.ModelType;
+            var realModelType = @for.ModelExplorer.ModelType;
             var allowMultiple = typeof(string) != realModelType && typeof(IEnumerable).IsAssignableFrom(realModelType);
-            var currentValues = Generator.GetCurrentValues(ViewContext, asp_for.ModelExplorer, asp_for.Name, allowMultiple);
+            var currentValues = Generator.GetCurrentValues(ViewContext, @for.ModelExplorer, @for.Name, allowMultiple);
 
             var select = Generator.GenerateSelect(
                 ViewContext,
-                asp_for.ModelExplorer,
+                @for.ModelExplorer,
                 optionLabel: null,
-                expression: asp_for.Name,
+                expression: @for.Name,
                 selectList: items,
                 currentValues: currentValues,
                 allowMultiple: allowMultiple,
@@ -198,7 +181,7 @@ namespace Ccs.Registration
             return AppendHtml(
                 new TagBuilder("div")
                     .WithClass("form-group")
-                    .AppendInnerHtml(LableFor(asp_for))
+                    .AppendInnerHtml(LableFor(@for))
                     .AppendInnerHtml(select)
                     .AppendInnerHtmlOrNot(CommentFor(comment)));
         }
@@ -210,17 +193,15 @@ namespace Ccs.Registration
         /// <param name="comment">The comments.</param>
         /// <param name="required">Whether this field is required.</param>
         /// <returns>The <see cref="IHtmlContentBuilder"/>.</returns>
-        public RegisterProviderOutput<TModel> AppendTextArea(
-            Expression<Func<TModel, string>> @for,
+        protected IHtmlContentBuilder AppendTextArea(
+            ModelExpression @for,
             string? comment = null,
             bool required = true)
         {
-            var asp_for = ModelExpressionProvider.CreateModelExpression(ViewData, @for);
-
             var textarea = Generator.GenerateTextArea(
                 ViewContext,
-                asp_for.ModelExplorer,
-                asp_for.Name,
+                @for.ModelExplorer,
+                @for.Name,
                 rows: 0,
                 columns: 0,
                 htmlAttributes: null);
@@ -232,7 +213,7 @@ namespace Ccs.Registration
             return AppendHtml(
                 new TagBuilder("div")
                     .WithClass("form-group")
-                    .AppendInnerHtml(LableFor(asp_for))
+                    .AppendInnerHtml(LableFor(@for))
                     .AppendInnerHtml(textarea)
                     .AppendInnerHtmlOrNot(CommentFor(comment)));
         }
@@ -245,14 +226,14 @@ namespace Ccs.Registration
         /// <param name="tableClass">The attached class for table.</param>
         /// <param name="theadClass">The attached class for thead.</param>
         /// <returns>The <see cref="IHtmlContentBuilder"/>.</returns>
-        public RegisterProviderOutput<TModel> AppendDataTable<TElement>(
+        protected IHtmlContentBuilder AppendDataTable<TElement>(
             IReadOnlyList<TElement> elements,
             string? tableClass = null,
             string? theadClass = null)
             where TElement : class
         {
             // Justification: the factory is implemented with Task.FromResult.
-            var viewModel = FactoryCache.GetOrCreate(typeof(TElement),
+            var viewModel = DataTableFactoryCache.GetOrCreate(typeof(TElement),
                 entry => DataRowFunctions.Factory((Type)entry.Key)).Result;
 
             var uniqueId = Guid.NewGuid().ToString()[0..6];
@@ -293,7 +274,7 @@ namespace Ccs.Registration
         /// <param name="controller">The controller name.</param>
         /// <param name="routeValues">The route values.</param>
         /// <returns>The <see cref="IHtmlContentBuilder"/>.</returns>
-        public RegisterProviderOutput<TModel> Redirect(
+        protected IHtmlContentBuilder Redirect(
             string? action = null,
             string? controller = null,
             object? routeValues = null)
@@ -318,6 +299,118 @@ namespace Ccs.Registration
                 response.Headers[HeaderNames.Location] = destinationUrl;
             }
 
+            return this;
+        }
+    }
+
+
+    /// <summary>
+    /// Strongly typed class used to represent the output of an <see cref="IRegisterProvider"/>.
+    /// </summary>
+    public class RegisterProviderOutput<TModel> : RegisterProviderOutput where TModel : class
+    {
+        private ModelExpression Create<TElement>(Expression<Func<TModel, TElement>> @for)
+            => ModelExpressionProvider.CreateModelExpression(ViewData, @for);
+
+        private static ViewDataDictionary Create(ViewDataDictionary viewData, TModel model)
+            => viewData.Model == model ? viewData : new ViewDataDictionary<TModel>(viewData, model);
+
+        private static IHtmlGenerator GetHtmlGenerator(ViewContext context)
+            => context.HttpContext.RequestServices.GetRequiredService<IHtmlGenerator>();
+
+        /// <summary>
+        /// Initialize a <see cref="RegisterProviderOutput{TModel}"/>.
+        /// </summary>
+        public RegisterProviderOutput(
+            ViewContext viewContext,
+            TModel model,
+            IModelExpressionProvider modelExpressionProvider,
+            IJsonHelper jsonHelper,
+            IViewComponentHelper viewComponentHelper,
+            IUrlHelper urlHelper)
+            : base(Create(viewContext.ViewData, model),
+                  GetHtmlGenerator(viewContext),
+                  modelExpressionProvider,
+                  viewContext,
+                  jsonHelper,
+                  viewComponentHelper,
+                  urlHelper)
+        {
+        }
+
+        /// <inheritdoc cref="RegisterProviderOutput.ViewData"/>
+        public new ViewDataDictionary<TModel> ViewData => (ViewDataDictionary<TModel>)base.ViewData;
+
+        /// <inheritdoc cref="RegisterProviderOutput.Model"/>
+        public new TModel Model => ViewData.Model;
+
+        /// <inheritdoc cref="IHtmlContentBuilder.Append(string)" />
+        public new RegisterProviderOutput<TModel> Append(string unencoded)
+        {
+            base.Append(unencoded);
+            return this;
+        }
+
+        /// <inheritdoc cref="IHtmlContentBuilder.AppendHtml(IHtmlContent)" />
+        public new RegisterProviderOutput<TModel> AppendHtml(IHtmlContent htmlContent)
+        {
+            base.AppendHtml(htmlContent);
+            return this;
+        }
+
+        /// <inheritdoc cref="IHtmlContentBuilder.Append(string)" />
+        public new RegisterProviderOutput<TModel> AppendHtml(string encoded)
+        {
+            base.AppendHtml(encoded);
+            return this;
+        }
+
+        /// <inheritdoc cref="IHtmlContentBuilder.Clear" />
+        public new RegisterProviderOutput<TModel> Clear()
+        {
+            base.Clear();
+            return this;
+        }
+
+        /// <inheritdoc cref="RegisterProviderOutput.WithTitle(string)" />
+        public new RegisterProviderOutput<TModel> WithTitle(string title)
+        {
+            base.WithTitle(title);
+            return this;
+        }
+
+        /// <inheritdoc cref="RegisterProviderOutput.AppendValidationSummary" />
+        public new RegisterProviderOutput<TModel> AppendValidationSummary()
+        {
+            base.AppendValidationSummary();
+            return this;
+        }
+
+        /// <inheritdoc cref="RegisterProviderOutput.AppendSelect(ModelExpression, IEnumerable{SelectListItem}, string?, bool)" />
+        public RegisterProviderOutput<TModel> AppendSelect<TElement>(Expression<Func<TModel, TElement>> @for, IEnumerable<SelectListItem> items, string? comment = null, bool required = true)
+        {
+            base.AppendSelect(Create(@for), items, comment, required);
+            return this;
+        }
+
+        /// <inheritdoc cref="RegisterProviderOutput.AppendTextArea(ModelExpression, string?, bool)" />
+        public RegisterProviderOutput<TModel> AppendTextArea(Expression<Func<TModel, string>> @for, string? comment = null, bool required = true)
+        {
+            base.AppendTextArea(Create(@for), comment, required);
+            return this;
+        }
+
+        /// <inheritdoc cref="RegisterProviderOutput.AppendDataTable{TElement}(IReadOnlyList{TElement}, string?, string?)" />
+        public new RegisterProviderOutput<TModel> AppendDataTable<TElement>(IReadOnlyList<TElement> elements, string? tableClass = null, string? theadClass = null) where TElement : class
+        {
+            base.AppendDataTable(elements, tableClass, theadClass);
+            return this;
+        }
+
+        /// <inheritdoc cref="RegisterProviderOutput.Redirect(string?, string?, object?)" />
+        public new RegisterProviderOutput<TModel> Redirect(string? action = null, string? controller = null, object? routeValues = null)
+        {
+            base.Redirect(action, controller, routeValues);
             return this;
         }
     }

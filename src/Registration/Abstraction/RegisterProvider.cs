@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using System.Threading.Tasks;
 
 namespace Ccs.Registration
@@ -6,11 +9,7 @@ namespace Ccs.Registration
     /// <summary>
     /// Provides the basic abstraction for registration.
     /// </summary>
-    /// <typeparam name="TInputModel">The input model.</typeparam>
-    /// <typeparam name="TOutputModel">The output model.</typeparam>
-    public interface IRegisterProvider<TInputModel, TOutputModel>
-        where TInputModel : class
-        where TOutputModel : class
+    public interface IRegisterProvider
     {
         /// <summary>
         /// Gets whether this provider is for jury or contestant.
@@ -23,7 +22,7 @@ namespace Ccs.Registration
         /// </summary>
         /// <param name="context">The register provider context.</param>
         /// <returns>The task for creating an input model.</returns>
-        Task<TInputModel> CreateInputModelAsync(RegisterProviderContext context);
+        Task<object> CreateInputModelAsync(RegisterProviderContext context);
 
         /// <summary>
         /// Validates the input content.
@@ -32,15 +31,15 @@ namespace Ccs.Registration
         /// <param name="model">The input model to validate.</param>
         /// <param name="modelState">The model state dictionary.</param>
         /// <returns>The task for validating, returning the validate result.</returns>
-        Task ValidateAsync(RegisterProviderContext context, TInputModel model, ModelStateDictionary modelState);
+        Task ValidateAsync(RegisterProviderContext context, object model, ModelStateDictionary modelState);
 
         /// <summary>
         /// Executes the input model.
         /// </summary>
         /// <param name="context">The register provider context.</param>
         /// <param name="model">The input model to execute.</param>
-        /// <returns>The task for executing.</returns>
-        Task<TOutputModel> ExecuteAsync(RegisterProviderContext context, TInputModel model);
+        /// <returns>The task for executing, returning the output model.</returns>
+        Task<object> ExecuteAsync(RegisterProviderContext context, object model);
 
         /// <summary>
         /// Renders the input view.
@@ -48,7 +47,7 @@ namespace Ccs.Registration
         /// <param name="context">The register provider context.</param>
         /// <param name="output">The view container to render to.</param>
         /// <returns>The task for rendering.</returns>
-        Task RenderInputAsync(RegisterProviderContext context, RegisterProviderOutput<TInputModel> output);
+        Task RenderInputAsync(RegisterProviderContext context, RegisterProviderOutput output);
 
         /// <summary>
         /// Renders the output view.
@@ -56,6 +55,84 @@ namespace Ccs.Registration
         /// <param name="context">The register provider context.</param>
         /// <param name="output">The view container to render to.</param>
         /// <returns>The task for rendering.</returns>
-        Task RenderOutputAsync(RegisterProviderContext context, RegisterProviderOutput<TOutputModel> output);
+        Task RenderOutputAsync(RegisterProviderContext context, RegisterProviderOutput output);
+
+        /// <summary>
+        /// Creates the <see cref="RegisterProviderOutput"/> for input rendering.
+        /// </summary>
+        /// <returns>The created <see cref="RegisterProviderOutput"/>.</returns>
+        RegisterProviderOutput CreateInputRenderer(
+            ViewContext viewContext,
+            object model,
+            IModelExpressionProvider modelExpressionProvider,
+            IJsonHelper jsonHelper,
+            IViewComponentHelper viewComponentHelper,
+            IUrlHelper urlHelper);
+
+        /// <summary>
+        /// Creates the <see cref="RegisterProviderOutput"/> for output rendering.
+        /// </summary>
+        /// <returns>The created <see cref="RegisterProviderOutput"/>.</returns>
+        RegisterProviderOutput CreateOutputRenderer(
+            ViewContext viewContext,
+            object model,
+            IModelExpressionProvider modelExpressionProvider,
+            IJsonHelper jsonHelper,
+            IViewComponentHelper viewComponentHelper,
+            IUrlHelper urlHelper);
+    }
+
+
+    /// <summary>
+    /// Provides the basic abstraction for registration.
+    /// </summary>
+    /// <typeparam name="TInputModel">The input model.</typeparam>
+    /// <typeparam name="TOutputModel">The output model.</typeparam>
+    public abstract class RegisterProviderBase<TInputModel, TOutputModel> : IRegisterProvider
+        where TInputModel : class
+        where TOutputModel : class
+    {
+        /// <inheritdoc />
+        public abstract bool JuryOrContestant { get; }
+
+        /// <inheritdoc cref="IRegisterProvider.CreateInputModelAsync(RegisterProviderContext)" />
+        protected abstract Task<TInputModel> CreateInputModelAsync(RegisterProviderContext context);
+
+        /// <inheritdoc cref="IRegisterProvider.ValidateAsync(RegisterProviderContext, object, ModelStateDictionary)" />
+        protected abstract Task ValidateAsync(RegisterProviderContext context, TInputModel model, ModelStateDictionary modelState);
+
+        /// <inheritdoc cref="IRegisterProvider.ExecuteAsync(RegisterProviderContext, object)" />
+        protected abstract Task<TOutputModel> ExecuteAsync(RegisterProviderContext context, TInputModel model);
+
+        /// <inheritdoc cref="IRegisterProvider.RenderInputAsync(RegisterProviderContext, RegisterProviderOutput)" />
+        protected abstract Task RenderInputAsync(RegisterProviderContext context, RegisterProviderOutput<TInputModel> output);
+
+        /// <inheritdoc cref="IRegisterProvider.RenderOutputAsync(RegisterProviderContext, RegisterProviderOutput)" />
+        protected abstract Task RenderOutputAsync(RegisterProviderContext context, RegisterProviderOutput<TOutputModel> output);
+
+        #region Implicit Implementations
+
+        async Task<object> IRegisterProvider.CreateInputModelAsync(RegisterProviderContext context)
+            => await CreateInputModelAsync(context);
+
+        Task IRegisterProvider.ValidateAsync(RegisterProviderContext context, object model, ModelStateDictionary modelState)
+            => ValidateAsync(context, (TInputModel)model, modelState);
+
+        async Task<object> IRegisterProvider.ExecuteAsync(RegisterProviderContext context, object model)
+            => await ExecuteAsync(context, (TInputModel)model);
+
+        Task IRegisterProvider.RenderInputAsync(RegisterProviderContext context, RegisterProviderOutput output)
+            => RenderInputAsync(context, (RegisterProviderOutput<TInputModel>)output);
+
+        Task IRegisterProvider.RenderOutputAsync(RegisterProviderContext context, RegisterProviderOutput output)
+            => RenderOutputAsync(context, (RegisterProviderOutput<TOutputModel>)output);
+
+        RegisterProviderOutput IRegisterProvider.CreateInputRenderer(ViewContext a, object b, IModelExpressionProvider c, IJsonHelper d, IViewComponentHelper e, IUrlHelper f)
+            => new RegisterProviderOutput<TInputModel>(a, (TInputModel)b, c, d, e, f);
+
+        RegisterProviderOutput IRegisterProvider.CreateOutputRenderer(ViewContext a, object b, IModelExpressionProvider c, IJsonHelper d, IViewComponentHelper e, IUrlHelper f)
+            => new RegisterProviderOutput<TOutputModel>(a, (TOutputModel)b, c, d, e, f);
+
+        #endregion
     }
 }
