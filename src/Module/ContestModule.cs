@@ -272,6 +272,9 @@ namespace SatelliteSite.ContestModule
 
             menus.Component(Polygon.ResourceDictionary.ComponentProblemOverview)
                 .HasComponent<Components.ProblemUsage.ProblemUsageViewComponent>(10);
+
+            menus.Component(IdentityModule.ExtensionPointDefaults.DashboardUserDetail)
+                .HasComponent<Components.ParticipantDashboard.ParticipantDashboardViewComponent>(100);
         }
 
         public void RegisterPolicies(IAuthorizationPolicyContainer container)

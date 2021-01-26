@@ -61,6 +61,7 @@ namespace SatelliteSite
         IQueryable<Judging> IContestDbContext.Judgings => Judgings;
         IQueryable<JudgingRun> IContestDbContext.JudgingRuns => JudgingRuns;
         IQueryable<Testcase> IContestDbContext.Testcases => Testcases;
+        IQueryable<Affiliation> IContestDbContext.Affiliations => Affiliations;
         IQueryable<Category> IContestDbContext.Categories => Categories;
         IQueryable<SubmissionStatistics> IContestDbContext.SubmissionStatistics => SubmissionStatistics;
     }

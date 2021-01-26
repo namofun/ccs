@@ -105,6 +105,11 @@ namespace Ccs.Services
         IQueryable<Testcase> Testcases { get; }
 
         /// <summary>
+        /// Gets the queryable for <see cref="Affiliation"/>.
+        /// </summary>
+        IQueryable<Affiliation> Affiliations { get; }
+
+        /// <summary>
         /// Gets the queryable for <see cref="Category"/>.
         /// </summary>
         IQueryable<Category> Categories { get; }

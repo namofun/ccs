@@ -61,5 +61,12 @@ namespace Ccs.Services
         /// <param name="probid">The problem ID.</param>
         /// <returns>The problem model.</returns>
         Task<List<Problem2Model>> FindProblemUsageAsync(int probid);
+
+        /// <summary>
+        /// Finds the participant information of some user.
+        /// </summary>
+        /// <param name="userid">The user ID.</param>
+        /// <returns>The participant model.</returns>
+        Task<List<ParticipantModel>> FindParticipantOfAsync(int userid);
     }
 }

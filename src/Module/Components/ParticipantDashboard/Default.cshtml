@@ -1,0 +1,64 @@
+﻿@namespace SatelliteSite.ContestModule.Components.ParticipantDashboard
+@using Ccs.Models
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, SatelliteSite.Substrate
+@addTagHelper *, Polygon.TagHelpers
+@model IReadOnlyList<ParticipantModel>
+
+<h3 class="mt-3">Teams in contests</h3>
+
+<div class="table-wrapper">
+    <table class="data-table table table-sm table-striped" id="contest-list" style="width:auto">
+        <thead>
+            <tr>
+                <th scope="col" class="sortable searchable">contest</th>
+                <th scope="col" class="sortable searchable">team</th>
+                <th scope="col" class="sortable searchable">aff.</th>
+                <th scope="col" class="sortable searchable">cat.</th>
+                <th scope="col" class="sortable">status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var team in Model)
+            {
+            <tr asp-area="Contest" asp-controller="JuryTeams" asp-action="Detail" asp-route-teamid="@team.TeamId">
+                <td use-a data-order="@team.ContestId" data-search="@team.ContestName" title="c@(team.ContestId) - @(team.ContestName)"><span class="forceWidth" style="max-width:20em">c@(team.ContestId) - @(team.ContestName)</span></td>
+                <td use-a data-order="@team.TeamName" data-search="@team.TeamName" title="t@(team.TeamId) - @(team.TeamName)"><span class="forceWidth" style="max-width:20em">t@(team.TeamId) - @(team.TeamName)</span></td>
+                <td use-a class="text-variant" title="@team.AffiliationName">@team.AffiliationId</td>
+                <td use-a>@team.CategoryName</td>
+                <td use-a><misc-status type="TeamStatus" value="@team.TeamStatus" /></td>
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<script>
+    $().ready(function () {
+        $('#contest-list').DataTable({
+            "paging": true,
+            "pageLength": 10,
+            "searching": true,
+            "ordering": true,
+            "order": [[0, 'desc']],
+            "info": false,
+            "autoWidth": true,
+            "language": {
+                "searchPlaceholder": "filter table",
+                "search": "_INPUT_",
+            },
+            'aoColumnDefs': [
+                { aTargets: ['sortable'], bSortable: true },
+                { aTargets: ['searchable'], bSearchable: true },
+                { aTargets: ['_all'], bSortable: false, bSearchable: false }
+            ],
+        });
+    });
+</script>
+
+<style>
+    .dataTables_length > label,
+    .dataTables_filter > label {
+        margin-bottom: 3px;
+    }
+</style>

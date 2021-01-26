@@ -37,8 +37,22 @@ namespace Ccs.Services
                    cp.AllowSubmit, cp.Color, cp.Score,
                    c.Name, c.ShortName, c.Kind, c.RankingStrategy);
 
+        private IQueryable<ParticipantModel> QueryParticipant(int userid)
+            => from tm in Db.TeamMembers
+               where tm.UserId == userid
+               join t in Db.Teams on new { tm.ContestId, tm.TeamId } equals new { t.ContestId, t.TeamId }
+               join c in Db.Contests on tm.ContestId equals c.Id
+               join tc in Db.Categories on t.CategoryId equals tc.Id
+               join ta in Db.Affiliations on t.AffiliationId equals ta.Id
+               select new ParticipantModel(
+                   c.Id, c.Name, t.TeamId, t.TeamName,
+                   ta.Abbreviation, ta.Name, tc.Name, t.Status);
+
         public Task<List<Problem2Model>> FindProblemUsageAsync(int probid)
             => QueryProblemsUsage(probid).ToListAsync();
+
+        public Task<List<ParticipantModel>> FindParticipantOfAsync(int userid)
+            => QueryParticipant(userid).ToListAsync();
 
         public Task<IPagedList<ContestListModel>> ListAsync(int page = 1, int limit = 100)
             => Db.Contests
