@@ -6,7 +6,7 @@ namespace Ccs.Services
     /// <summary>
     /// The marker interface to gets the <see cref="IQueryable{T}"/>s.
     /// </summary>
-    public interface IContextQueryableStore
+    public interface IContestQueryableStore
     {
         /// <summary>
         /// Gets the queryable for <see cref="Contest"/>.

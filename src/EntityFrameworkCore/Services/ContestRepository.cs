@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Ccs.Services
 {
-    public class ContestRepository<TContext> : IContestRepository, ISupportDbContext
+    public class ContestRepository<TContext> : IContestRepository, ISupportDbContext, IContestQueryableStore
         where TContext : DbContext, IContestDbContext
     {
         public IContestDbContext Db { get; }
@@ -76,5 +76,21 @@ namespace Ccs.Services
 
             return e.Entity;
         }
+
+        #region QueryableStore
+
+        IQueryable<Contest> IContestQueryableStore.Contests => Db.Contests;
+        IQueryable<ContestProblem> IContestQueryableStore.ContestProblems => Db.ContestProblems;
+        IQueryable<Jury> IContestQueryableStore.ContestJuries => Db.ContestJuries;
+        IQueryable<Team> IContestQueryableStore.Teams => Db.Teams;
+        IQueryable<Member> IContestQueryableStore.TeamMembers => Db.TeamMembers;
+        IQueryable<Clarification> IContestQueryableStore.Clarifications => Db.Clarifications;
+        IQueryable<Balloon> IContestQueryableStore.Balloons => Db.Balloons;
+        IQueryable<Event> IContestQueryableStore.ContestEvents => Db.ContestEvents;
+        IQueryable<Printing> IContestQueryableStore.Printings => Db.Printings;
+        IQueryable<RankCache> IContestQueryableStore.RankCache => Db.RankCache;
+        IQueryable<ScoreCache> IContestQueryableStore.ScoreCache => Db.ScoreCache;
+
+        #endregion
     }
 }
