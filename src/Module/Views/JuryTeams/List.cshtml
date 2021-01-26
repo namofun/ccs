@@ -81,8 +81,9 @@
         <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
             @foreach (var (name, provider) in providers)
             {
-                <a class="dropdown-item" asp-action="Import" asp-route-provider="@name"><i class="@provider.Icon fa-fw"></i>&nbsp;@provider.Name</a>
+                <a class="dropdown-item" asp-action="Import" asp-route-provider="@name"><i class="@provider.Icon"></i>&nbsp;@provider.Name</a>
             }
+            <a class="dropdown-item" asp-action="LockoutTemporary" data-toggle="ajaxWindow" data-target="importTeam"><i class="fas fa-lock"></i>&nbsp;Lockout temporary users</a>
         </div>
     </div>
 </div>

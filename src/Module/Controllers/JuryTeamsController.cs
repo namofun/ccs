@@ -264,5 +264,30 @@ namespace SatelliteSite.ContestModule.Controllers
                 return Window(model);
             }
         }
+
+
+        [HttpGet("[action]")]
+        [Authorize(Roles = "Administrator")]
+        public IActionResult LockoutTemporary()
+        {
+            return AskPost(
+                title: "Lockout temporary users",
+                message: "Are you sure to lockout temporary users? " +
+                    "You should only proceed this after the whole contest is over.",
+                area: "Contest", controller: "JuryTeams", action: nameof(LockoutTemporary), new { cid = Contest.Id },
+                type: BootstrapColor.warning);
+        }
+
+
+        [HttpPost("[action]")]
+        [Authorize(Roles = "Administrator")]
+        [ValidateAntiForgeryToken]
+        [ActionName(nameof(LockoutTemporary))]
+        public async Task<IActionResult> LockoutTemporaryConfirmation()
+        {
+            await Context.LockOutTemporaryAsync(UserManager);
+            StatusMessage = "Lockout finished.";
+            return RedirectToAction(nameof(List));
+        }
     }
 }

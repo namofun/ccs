@@ -21,7 +21,7 @@ namespace Ccs.Services
             => Db.Contests
                 .Where(c => c.Id == cid)
                 .BatchUpdateAsync(c => new Contest { TeamCount =
-                    Db.Teams.Count(cp => cp.ContestId == cid && cp.Status == 1 && cp.Category.IsPublic) });
+                    Db.Teams.Count(cp => cp.ContestId == c.Id && cp.Status == 1 && cp.Category.IsPublic) });
 
         public Task<List<Team>> ListTeamsAsync(Expression<Func<Team, bool>>? predicate = null)
         {
@@ -238,6 +238,19 @@ namespace Ccs.Services
             return Db.TeamMembers.UpsertAsync(
                 new { cid = team.ContestId, teamid = team.TeamId, uid = user.Id },
                 s => new Member { ContestId = s.cid, TeamId = s.teamid, UserId = s.uid, Temporary = temporary });
+        }
+
+        public virtual async Task<List<Member>> LockOutTemporaryAsync(IUserManager userManager)
+        {
+            int cid = Contest.Id;
+
+            var query = Db.TeamMembers.Where(m => m.ContestId == cid && m.Temporary);
+            await userManager.BatchLockOutAsync(query.Select(m => m.UserId));
+
+            var members = await query.ToListAsync();
+            var affected = await query.BatchDeleteAsync();
+
+            return members;
         }
     }
 }

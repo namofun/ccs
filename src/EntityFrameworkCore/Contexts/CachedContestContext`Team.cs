@@ -129,5 +129,16 @@ namespace Ccs.Services
             await base.AttachMemberAsync(team, user, temporary);
             Expire($"Teams::User({user.Id})");
         }
+
+        public override async Task<List<Member>> LockOutTemporaryAsync(IUserManager userManager)
+        {
+            var result = await base.LockOutTemporaryAsync(userManager);
+
+            ExpireTeamThings(
+                "Teams::Members",
+                result.Select(m => $"Teams::User({m.UserId})"));
+
+            return result;
+        }
     }
 }

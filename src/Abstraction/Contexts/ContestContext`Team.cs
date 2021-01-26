@@ -130,5 +130,12 @@ namespace Ccs
         /// </summary>
         /// <returns>The task for statistical result of submissions (Accepted, Total, AcceptedTeam, TotalTeam).</returns>
         Task<IReadOnlyDictionary<int, (int, int, int, int)>> StatisticsGlobalAsync();
+
+        /// <summary>
+        /// Lock out the temporary accounts.
+        /// </summary>
+        /// <param name="userManager">The user manager.</param>
+        /// <returns>The task for locking out.</returns>
+        Task<List<Member>> LockOutTemporaryAsync(IUserManager userManager);
     }
 }

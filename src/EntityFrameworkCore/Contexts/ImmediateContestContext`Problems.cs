@@ -41,7 +41,7 @@ namespace Ccs.Services
             => Db.Contests
                 .Where(c => c.Id == cid)
                 .BatchUpdateAsync(c => new Contest { ProblemCount =
-                    Db.ContestProblems.Count(cp => cp.ContestId == cid) });
+                    Db.ContestProblems.Count(cp => cp.ContestId == c.Id) });
 
         public virtual async Task<ProblemCollection> FetchProblemsAsync(bool nonCached = false)
         {
