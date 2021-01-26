@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 namespace Ccs.Registration.BatchByTeamName
 {
-    public class BatchByTeamNameOutputModel : IReadOnlyList<TeamAccount>
+    public class OutputModel : IReadOnlyList<TeamAccount>
     {
         private readonly IReadOnlyList<TeamAccount> _accounts;
 
-        public BatchByTeamNameOutputModel(IReadOnlyList<TeamAccount> accounts)
+        public OutputModel(IReadOnlyList<TeamAccount> accounts)
             => _accounts = accounts;
 
         public TeamAccount this[int index] => _accounts[index];

@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel;
 
-namespace SatelliteSite.ContestModule.Models
+namespace Ccs.Registration.TeachingClass
 {
-    public class AddTeamByGroupModel
+    public class InputModel
     {
         [DisplayName("Class")]
         public int GroupId { get; set; }

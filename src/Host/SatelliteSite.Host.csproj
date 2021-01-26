@@ -11,6 +11,7 @@
     <PackageReference Include="Polygon.DataAccess" Version="$(PolygonVersion)" />
     <PackageReference Include="SatelliteSite.PolygonModule" Version="$(PolygonVersion)" />
     <PackageReference Include="Polygon.FakeJudgehost.DataExtensions" Version="$(PolygonVersion)" />
+    <PackageReference Include="SatelliteSite.StudentModule" Version="$(TenantVersion)" />
     <PackageReference Include="SatelliteSite.Substrate" Version="$(SubstrateVersion)" />
     <PackageReference Include="SatelliteSite.HostBuilder" Version="$(SubstrateVersion)" />
     <PackageReference Include="SatelliteSite.IdentityModule" Version="$(SubstrateVersion)" />
@@ -26,6 +27,7 @@
   <ItemGroup>
     <ProjectReference Include="..\EntityFrameworkCore\Ccs.Storage.Relational.csproj" />
     <ProjectReference Include="..\Module\SatelliteSite.ContestModule.csproj" />
+    <ProjectReference Include="..\Registration.TenantRelated\Ccs.Registration.TenantRelated.csproj" />
   </ItemGroup>
 
 </Project>

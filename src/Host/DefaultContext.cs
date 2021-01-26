@@ -18,7 +18,7 @@ using Tenant.Entities;
 namespace SatelliteSite
 {
     public class DefaultContext :
-        IdentityDbContext<User, Role, int>,
+        IdentityDbContext<MyUser, Role, int>,
         ITenantDbContext,
         IPolygonDbContext,
         IContestDbContext

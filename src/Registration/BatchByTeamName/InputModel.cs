@@ -6,7 +6,7 @@ using Tenant.Entities;
 
 namespace Ccs.Registration.BatchByTeamName
 {
-    public class BatchByTeamNameInputModel
+    public class InputModel
     {
         [BindNever]
         public IReadOnlyDictionary<int, Affiliation> Affiliations { get; set; }

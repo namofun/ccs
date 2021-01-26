@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <DescriptionAttach>The team registration for tenant related things</DescriptionAttach>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Ccs.Registration</RootNamespace>
+  </PropertyGroup>
+
+  <Import Project="..\..\build\NugetPackage.props" />
+
+  <ItemGroup>
+    <PackageReference Include="Tenant.Students.Abstraction" Version="$(TenantVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Registration\Ccs.Registration.csproj" />
+  </ItemGroup>
+
+</Project>

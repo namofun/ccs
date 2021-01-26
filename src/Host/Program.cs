@@ -25,10 +25,11 @@ namespace SatelliteSite
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .MarkDomain<Program>()
-                .AddModule<IdentityModule.IdentityModule<User, Role, DefaultContext>>()
+                .AddModule<IdentityModule.IdentityModule<MyUser, Role, DefaultContext>>()
                 .AddModule<PolygonModule.PolygonModule<Polygon.DefaultRole<DefaultContext, QueryCache>>>()
                 .AddModule<GroupModule.GroupModule<DefaultContext>>()
-                .AddModule<ContestModule.ContestModule<Ccs.RelationalRole<User, Role, DefaultContext>>>()
+                .AddModule<StudentModule.StudentModule<MyUser, Role, DefaultContext>>()
+                .AddModule<ContestModule.ContestModule<Ccs.RelationalRole<MyUser, Role, DefaultContext>>>()
                 .AddDatabaseMssql<DefaultContext>("UserDbConnection")//, d => d.UseTableSplittingJoinsRemoval())
                 .ConfigureSubstrateDefaults<DefaultContext>(builder =>
                 {
@@ -36,7 +37,7 @@ namespace SatelliteSite
                     {
                         services.AddMarkdown();
 
-                        services.AddDbModelSupplier<DefaultContext, Polygon.Storages.PolygonIdentityEntityConfiguration<User, DefaultContext>>();
+                        services.AddDbModelSupplier<DefaultContext, Polygon.Storages.PolygonIdentityEntityConfiguration<MyUser, DefaultContext>>();
 
                         services.Configure<Polygon.PolygonPhysicalOptions>(options =>
                         {

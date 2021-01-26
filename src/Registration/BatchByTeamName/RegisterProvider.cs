@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Ccs.Registration
 {
-    public class BatchByTeamNameRegisterProvider : RegisterProviderBase<BatchByTeamNameInputModel, BatchByTeamNameOutputModel>
+    public class BatchByTeamNameRegisterProvider : RegisterProviderBase<InputModel, OutputModel>
     {
         public override int Order => -1000;
 
@@ -34,16 +34,16 @@ namespace Ccs.Registration
             };
         }
 
-        protected override async Task<BatchByTeamNameInputModel> CreateInputModelAsync(RegisterProviderContext context)
+        protected override async Task<InputModel> CreateInputModelAsync(RegisterProviderContext context)
         {
-            return new BatchByTeamNameInputModel
+            return new InputModel
             {
                 Affiliations = await context.Context.FetchAffiliationsAsync(false),
                 Categories = await context.Context.FetchCategoriesAsync(false),
             };
         }
 
-        protected override async Task ValidateAsync(RegisterProviderContext context, BatchByTeamNameInputModel model, ModelStateDictionary modelState)
+        protected override async Task ValidateAsync(RegisterProviderContext context, InputModel model, ModelStateDictionary modelState)
         {
             model.Affiliations ??= await context.Context.FetchAffiliationsAsync(false);
             model.Categories ??= await context.Context.FetchCategoriesAsync(false);
@@ -64,7 +64,7 @@ namespace Ccs.Registration
             }
         }
 
-        protected override async Task<BatchByTeamNameOutputModel> ExecuteAsync(RegisterProviderContext context, BatchByTeamNameInputModel model)
+        protected override async Task<OutputModel> ExecuteAsync(RegisterProviderContext context, InputModel model)
         {
             var rng = CreatePasswordGenerator();
             var result = new List<TeamAccount>();
@@ -120,7 +120,7 @@ namespace Ccs.Registration
                 }
             }
 
-            return new BatchByTeamNameOutputModel(result);
+            return new OutputModel(result);
 
             async Task<IUser> EnsureTeamWithPassword(Team team, string password)
             {
@@ -157,7 +157,7 @@ namespace Ccs.Registration
             }
         }
 
-        protected override Task RenderInputAsync(RegisterProviderContext context, RegisterProviderOutput<BatchByTeamNameInputModel> output)
+        protected override Task RenderInputAsync(RegisterProviderContext context, RegisterProviderOutput<InputModel> output)
         {
             output.WithTitle("Batch team register")
                 .AppendValidationSummary()
@@ -174,7 +174,7 @@ namespace Ccs.Registration
             return Task.CompletedTask;
         }
 
-        protected override Task RenderOutputAsync(RegisterProviderContext context, RegisterProviderOutput<BatchByTeamNameOutputModel> output)
+        protected override Task RenderOutputAsync(RegisterProviderContext context, RegisterProviderOutput<OutputModel> output)
         {
             output.WithTitle("Batch import result")
                 .AppendDataTable(
