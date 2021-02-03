@@ -142,6 +142,18 @@ namespace Ccs.Registration
         /// <inheritdoc cref="IRegisterProvider.RenderOutputAsync(RegisterProviderContext, RegisterProviderOutput)" />
         protected abstract Task RenderOutputAsync(RegisterProviderContext context, RegisterProviderOutput<TOutputModel> output);
 
+        /// <inheritdoc cref="IRegisterProvider.CreateInputRenderer(ViewContext, object, IModelExpressionProvider, IJsonHelper, IViewComponentHelper, IUrlHelper)" />
+        protected virtual RegisterProviderOutput<TInputModel> CreateInputRenderer(ViewContext viewContext, TInputModel model, IModelExpressionProvider modelExpressionProvider, IJsonHelper jsonHelper, IViewComponentHelper viewComponentHelper, IUrlHelper urlHelper)
+            => new RegisterProviderOutput<TInputModel>(viewContext, model, modelExpressionProvider, jsonHelper, viewComponentHelper, urlHelper);
+
+        /// <inheritdoc cref="IRegisterProvider.CreateOutputRenderer(ViewContext, object, IModelExpressionProvider, IJsonHelper, IViewComponentHelper, IUrlHelper)" />
+        protected virtual RegisterProviderOutput<TOutputModel> CreateOutputRenderer(ViewContext viewContext, TOutputModel model, IModelExpressionProvider modelExpressionProvider, IJsonHelper jsonHelper, IViewComponentHelper viewComponentHelper, IUrlHelper urlHelper)
+            => new RegisterProviderOutput<TOutputModel>(viewContext, model, modelExpressionProvider, jsonHelper, viewComponentHelper, urlHelper);
+
+        /// <inheritdoc cref="IRegisterProvider.ReadAsync(object, ControllerBase)" />
+        protected virtual Task<bool> ReadAsync(TInputModel model, ControllerBase controller)
+            => controller.TryUpdateModelAsync(model);
+
         #region Implicit Implementations
 
         async Task<object> IRegisterProvider.CreateInputModelAsync(RegisterProviderContext context)
@@ -160,13 +172,13 @@ namespace Ccs.Registration
             => RenderOutputAsync(context, (RegisterProviderOutput<TOutputModel>)output);
 
         RegisterProviderOutput IRegisterProvider.CreateInputRenderer(ViewContext a, object b, IModelExpressionProvider c, IJsonHelper d, IViewComponentHelper e, IUrlHelper f)
-            => new RegisterProviderOutput<TInputModel>(a, (TInputModel)b, c, d, e, f);
+            => CreateInputRenderer(a, (TInputModel)b, c, d, e, f);
 
         RegisterProviderOutput IRegisterProvider.CreateOutputRenderer(ViewContext a, object b, IModelExpressionProvider c, IJsonHelper d, IViewComponentHelper e, IUrlHelper f)
-            => new RegisterProviderOutput<TOutputModel>(a, (TOutputModel)b, c, d, e, f);
+            => CreateOutputRenderer(a, (TOutputModel)b, c, d, e, f);
 
         Task<bool> IRegisterProvider.ReadAsync(object model, ControllerBase controller)
-            => controller.TryUpdateModelAsync((TInputModel)model);
+            => ReadAsync((TInputModel)model, controller);
 
         #endregion
     }

@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.DependencyInjection;
+using System.Security.Claims;
 
 namespace Ccs.Registration
 {
@@ -22,6 +24,20 @@ namespace Ccs.Registration
         /// Provides http context.
         /// </summary>
         public HttpContext HttpContext { get; }
+
+        /// <summary>
+        /// Provides claims principal.
+        /// </summary>
+        public ClaimsPrincipal User
+            => HttpContext.User;
+
+        /// <summary>
+        /// Gets the required service.
+        /// </summary>
+        /// <typeparam name="TService">The service type.</typeparam>
+        /// <returns>The service instance.</returns>
+        public TService GetRequiredService<TService>()
+            => HttpContext.RequestServices.GetRequiredService<TService>();
 
         /// <summary>
         /// Instantiate an execution context for register provider.

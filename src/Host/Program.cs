@@ -46,6 +46,11 @@ namespace SatelliteSite
                             options.ProblemDirectory = Path.Combine(context.HostingEnvironment.ContentRootPath, "Problems");
                         });
 
+                        services.Configure<Ccs.Registration.ContestRegistrationOptions>(options =>
+                        {
+                            options.Add("student-by-class", new Ccs.Registration.TeachingClassRegisterProvider());
+                        });
+
                         services.ConfigureApplicationBuilder(options =>
                         {
                             options.PointBeforeUrlRewriting.Add(app => app.UseMiddleware<Test46160Middleware>());

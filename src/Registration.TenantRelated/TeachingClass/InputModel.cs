@@ -1,17 +1,21 @@
-﻿using System.ComponentModel;
+﻿#nullable disable
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using System.Collections.Generic;
+using System.ComponentModel;
+using Tenant.Entities;
 
 namespace Ccs.Registration.TeachingClass
 {
     public class InputModel
     {
+        [BindNever]
+        public IReadOnlyDictionary<int, Category> Categories { get; set; }
+
+        [BindNever]
+        public IReadOnlyList<Class> Classes { get; set; }
+
         [DisplayName("Class")]
-        public int GroupId { get; set; }
-
-        [DisplayName("Only temporary users are added")]
-        public bool AddNonTemporaryUser { get; set; }
-
-        [DisplayName("Affiliation")]
-        public int AffiliationId { get; set; }
+        public int ClassId { get; set; }
 
         [DisplayName("Category")]
         public int CategoryId { get; set; }
