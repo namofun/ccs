@@ -7,7 +7,7 @@
     <RootNamespace>Ccs.Registration</RootNamespace>
   </PropertyGroup>
 
-  <Import Project="..\..\build\NugetPackage.props" />
+  <Import Project="..\..\build\NugetPackage.Backend.props" />
 
   <ItemGroup>
     <PackageReference Include="Tenant.Students.Abstraction" Version="$(TenantVersion)" />

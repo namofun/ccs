@@ -130,7 +130,7 @@ namespace Ccs.Registration
 
                 if (user != null)
                 {
-                    if (await UserManager.HasPasswordAsync(user))
+                    if (user.HasPassword())
                     {
                         var token = await UserManager.GeneratePasswordResetTokenAsync(user);
                         await UserManager.ResetPasswordAsync(user, token, password);

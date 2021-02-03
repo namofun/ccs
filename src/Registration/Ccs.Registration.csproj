@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <Import Project="..\..\build\NugetPackage.props" />
+  <Import Project="..\..\build\NugetPackage.Backend.props" />
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />

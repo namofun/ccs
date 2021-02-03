@@ -245,7 +245,7 @@ namespace Ccs.Services
             int cid = Contest.Id;
 
             var query = Db.TeamMembers.Where(m => m.ContestId == cid && m.Temporary);
-            await userManager.BatchLockOutAsync(query.Select(m => m.UserId));
+            await userManager.LockoutUsersAsync(query.Select(m => m.UserId));
 
             var members = await query.ToListAsync();
             var affected = await query.BatchDeleteAsync();

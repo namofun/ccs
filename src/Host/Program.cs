@@ -30,7 +30,8 @@ namespace SatelliteSite
                 .AddModule<GroupModule.GroupModule<DefaultContext>>()
                 .AddModule<StudentModule.StudentModule<MyUser, Role, DefaultContext>>()
                 .AddModule<ContestModule.ContestModule<Ccs.RelationalRole<MyUser, Role, DefaultContext>>>()
-                .AddDatabaseMssql<DefaultContext>("UserDbConnection")//, d => d.UseTableSplittingJoinsRemoval())
+                .AddModule<TelemetryModule.TelemetryModule>()
+                .AddDatabase<DefaultContext>((c, b) => b.UseSqlServer(c.GetConnectionString("UserDbConnection"), b => b.UseBulk()))
                 .ConfigureSubstrateDefaults<DefaultContext>(builder =>
                 {
                     builder.ConfigureServices((context, services) =>
