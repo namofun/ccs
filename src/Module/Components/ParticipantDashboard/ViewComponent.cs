@@ -1,6 +1,6 @@
 ﻿using Ccs.Services;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using SatelliteSite.IdentityModule.Models;
 using System.Threading.Tasks;
 
 namespace SatelliteSite.ContestModule.Components.ParticipantDashboard
@@ -13,6 +13,6 @@ namespace SatelliteSite.ContestModule.Components.ParticipantDashboard
             => _service = service;
 
         public async Task<IViewComponentResult> InvokeAsync()
-            => View("Default", await _service.FindParticipantOfAsync((ViewData.Model as IUser)?.Id ?? 0));
+            => View("Default", await _service.FindParticipantOfAsync((ViewData.Model as UserDetailModel)?.User?.Id ?? 0));
     }
 }

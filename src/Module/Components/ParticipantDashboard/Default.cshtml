@@ -21,7 +21,7 @@
         <tbody>
             @foreach (var team in Model)
             {
-            <tr asp-area="Contest" asp-controller="JuryTeams" asp-action="Detail" asp-route-teamid="@team.TeamId">
+            <tr asp-area="Contest" asp-route-cid="@team.ContestId" asp-controller="JuryTeams" asp-action="Detail" asp-route-teamid="@team.TeamId">
                 <td use-a data-order="@team.ContestId" data-search="@team.ContestName" title="c@(team.ContestId) - @(team.ContestName)"><span class="forceWidth" style="max-width:20em">c@(team.ContestId) - @(team.ContestName)</span></td>
                 <td use-a data-order="@team.TeamName" data-search="@team.TeamName" title="t@(team.TeamId) - @(team.TeamName)"><span class="forceWidth" style="max-width:20em">t@(team.TeamId) - @(team.TeamName)</span></td>
                 <td use-a class="text-variant" title="@team.AffiliationName">@team.AffiliationId</td>
