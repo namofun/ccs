@@ -35,20 +35,6 @@ namespace Ccs.Registration
             };
         }
 
-        protected override async Task<bool> ReadAsync(InputModel model, ControllerBase controller)
-        {
-            var categories = model.Categories;
-            var classes = model.Classes;
-            model.Categories = null;
-            model.Classes = null;
-
-            var result = await controller.TryUpdateModelAsync(model);
-
-            model.Categories = categories;
-            model.Classes = classes;
-            return result;
-        }
-
         protected override Task ValidateAsync(RegisterProviderContext context, InputModel model, ModelStateDictionary modelState)
         {
             if (!model.Categories.ContainsKey(model.CategoryId))
