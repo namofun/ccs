@@ -1,7 +1,14 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Ccs.Entities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Security.Claims;
+using System.Threading.Tasks;
+using Tenant.Entities;
 
 namespace Ccs.Registration
 {
@@ -10,15 +17,13 @@ namespace Ccs.Registration
     /// </summary>
     public sealed class RegisterProviderContext
     {
-        /// <summary>
-        /// Provides contest context.
-        /// </summary>
-        public IContestContext Context { get; }
+        private IUserManager? _userManager;
 
         /// <summary>
         /// Provides user management.
         /// </summary>
-        public IUserManager UserManager { get; }
+        public IUserManager UserManager
+            => _userManager ??= GetRequiredService<IUserManager>();
 
         /// <summary>
         /// Provides http context.
@@ -40,15 +45,75 @@ namespace Ccs.Registration
             => HttpContext.RequestServices.GetRequiredService<TService>();
 
         /// <summary>
+        /// Provides contest feature.
+        /// </summary>
+        public IContestContextBase Contest { get; }
+
+        /// <summary>
+        /// Provides contest team.
+        /// </summary>
+        public Team? Team => Contest.Team;
+
+        /// <summary>
+        /// Create team.
+        /// </summary>
+        /// <param name="team">The original team model.</param>
+        /// <param name="users">The team members.</param>
+        /// <returns>The task for creating contest teams, returning the team id.</returns>
+        public Task<Team> CreateTeamAsync(Team team, IEnumerable<IUser>? users)
+            => Contest.Context.CreateTeamAsync(team, users);
+
+        /// <summary>
+        /// Fetch the affiliations used in contest.
+        /// </summary>
+        /// <param name="contestFiltered">Whether filtering the entities only used in this contest.</param>
+        /// <returns>The task for fetching affiliations.</returns>
+        public Task<IReadOnlyDictionary<int, Affiliation>> FetchAffiliationsAsync(bool contestFiltered = true)
+            => Contest.Context.FetchAffiliationsAsync(contestFiltered);
+
+        /// <summary>
+        /// Fetch the categories used in contest.
+        /// </summary>
+        /// <param name="contestFiltered">Whether filtering the entities only used in this contest.</param>
+        /// <returns>The task for fetching affiliations.</returns>
+        public Task<IReadOnlyDictionary<int, Category>> FetchCategoriesAsync(bool contestFiltered = true)
+            => Contest.Context.FetchCategoriesAsync(contestFiltered);
+
+        /// <summary>
+        /// Attach a user to the team if not attached.
+        /// </summary>
+        /// <param name="team">The contest team.</param>
+        /// <param name="user">The identity user.</param>
+        /// <param name="temporary">Whether this member is temporary account.</param>
+        /// <returns>The task for attaching member.</returns>
+        public Task AttachMemberAsync(Team team, IUser user, bool temporary)
+            => Contest.Context.AttachMemberAsync(team, user, temporary);
+
+        /// <summary>
+        /// Fetch the team members as a lookup dictionary.
+        /// </summary>
+        /// <returns>The task for getting this lookup.</returns>
+        public Task<ILookup<int, string>> FetchTeamMembersAsync()
+            => Contest.Context.FetchTeamMembersAsync();
+
+        /// <summary>
+        /// List the teams with selected conditions.
+        /// </summary>
+        /// <param name="predicate">The conditions to match.</param>
+        /// <returns>The task for listing entities.</returns>
+        public Task<List<Team>> ListTeamsAsync(Expression<Func<Team, bool>>? predicate = null)
+            => Contest.Context.ListTeamsAsync(predicate);
+
+        /// <summary>
         /// Instantiate an execution context for register provider.
         /// </summary>
         /// <param name="context">The contest context.</param>
         /// <param name="userManager">The user manager.</param>
         /// <param name="httpContext">The http context.</param>
-        public RegisterProviderContext(IContestContext context, IUserManager userManager, HttpContext httpContext)
+        public RegisterProviderContext(IContestContextBase context, HttpContext httpContext, IUserManager? userManager = null)
         {
-            Context = context;
-            UserManager = userManager;
+            Contest = context;
+            _userManager = userManager;
             HttpContext = httpContext;
         }
     }

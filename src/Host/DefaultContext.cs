@@ -26,6 +26,7 @@ namespace SatelliteSite
         public DefaultContext(DbContextOptions options)
             : base(options)
         {
+            ChangeTracker.AutoDetectChangesEnabled = false;
         }
 
         public virtual DbSet<Contest> Contests { get; set; }

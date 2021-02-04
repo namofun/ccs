@@ -38,16 +38,13 @@ namespace Ccs.Registration
         {
             return new InputModel
             {
-                Affiliations = await context.Context.FetchAffiliationsAsync(false),
-                Categories = await context.Context.FetchCategoriesAsync(false),
+                Affiliations = await context.FetchAffiliationsAsync(false),
+                Categories = await context.FetchCategoriesAsync(false),
             };
         }
 
-        protected override async Task ValidateAsync(RegisterProviderContext context, InputModel model, ModelStateDictionary modelState)
+        protected override Task ValidateAsync(RegisterProviderContext context, InputModel model, ModelStateDictionary modelState)
         {
-            model.Affiliations ??= await context.Context.FetchAffiliationsAsync(false);
-            model.Categories ??= await context.Context.FetchCategoriesAsync(false);
-
             if (!model.Categories.ContainsKey(model.CategoryId))
             {
                 modelState.AddModelError("bbtnrp::nocat", "Category not found.");
@@ -62,6 +59,8 @@ namespace Ccs.Registration
             {
                 modelState.AddModelError("bbtnrp::notn", "No team name specified.");
             }
+
+            return Task.CompletedTask;
         }
 
         protected override async Task<OutputModel> ExecuteAsync(RegisterProviderContext context, InputModel model)
@@ -71,8 +70,9 @@ namespace Ccs.Registration
 
             var teamNames = model.TeamNames.Split('\n');
             int affId = model.AffiliationId, catId = model.CategoryId;
-            var existingTeams = await context.Context.ListTeamsAsync(c => c.AffiliationId == affId && c.CategoryId == catId);
+            var existingTeams = await context.ListTeamsAsync(c => c.Status == 1 && c.AffiliationId == affId && c.CategoryId == catId);
             var list = existingTeams.ToLookup(a => a.TeamName);
+            var userManager = context.UserManager;
 
             foreach (var item2 in teamNames)
             {
@@ -101,12 +101,12 @@ namespace Ccs.Registration
                     {
                         AffiliationId = affId,
                         CategoryId = catId,
-                        ContestId = context.Context.Contest.Id,
+                        ContestId = context.Contest.Id,
                         Status = 1,
                         TeamName = item,
                     };
 
-                    await context.Context.CreateTeamAsync(team, null);
+                    await context.CreateTeamAsync(team, null);
                     string pwd = rng();
                     var user = await EnsureTeamWithPassword(team, pwd);
 
@@ -125,34 +125,33 @@ namespace Ccs.Registration
             async Task<IUser> EnsureTeamWithPassword(Team team, string password)
             {
                 string username = UserNameForTeamId(team.TeamId);
-                var UserManager = context.UserManager;
-                var user = await UserManager.FindByNameAsync(username);
+                var user = await userManager.FindByNameAsync(username);
 
                 if (user != null)
                 {
                     if (user.HasPassword())
                     {
-                        var token = await UserManager.GeneratePasswordResetTokenAsync(user);
-                        await UserManager.ResetPasswordAsync(user, token, password);
+                        var token = await userManager.GeneratePasswordResetTokenAsync(user);
+                        await userManager.ResetPasswordAsync(user, token, password);
                     }
                     else
                     {
-                        await UserManager.AddPasswordAsync(user, password);
+                        await userManager.AddPasswordAsync(user, password);
                     }
 
-                    if (await UserManager.IsLockedOutAsync(user))
+                    if (await userManager.IsLockedOutAsync(user))
                     {
-                        await UserManager.SetLockoutEndDateAsync(user, null);
+                        await userManager.SetLockoutEndDateAsync(user, null);
                     }
                 }
                 else
                 {
-                    user = UserManager.CreateEmpty(username);
+                    user = userManager.CreateEmpty(username);
                     user.Email = $"{username}@contest.acm.xylab.fun";
-                    await UserManager.CreateAsync(user, password);
+                    await userManager.CreateAsync(user, password);
                 }
 
-                await context.Context.AttachMemberAsync(team, user, true);
+                await context.AttachMemberAsync(team, user, true);
                 return user;
             }
         }

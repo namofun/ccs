@@ -18,7 +18,7 @@ namespace SatelliteSite.ContestModule.Controllers
     public partial class JuryTeamsController : JuryControllerBase
     {
         private RegisterProviderContext CreateRegisterProviderContext()
-            => new RegisterProviderContext(Context, UserManager, HttpContext);
+            => new RegisterProviderContext(Accessor, HttpContext, UserManager);
 
 
         [HttpGet]

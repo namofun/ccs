@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using SatelliteSite.ContestModule.Routing;
-using System;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 

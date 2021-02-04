@@ -1,8 +1,6 @@
 ﻿using Ccs.Registration.TeachingClass;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using SatelliteSite;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,7 +29,7 @@ namespace Ccs.Registration
             return new InputModel
             {
                 Classes = await studentStore.ListClassesAsync(tenantId),
-                Categories = await context.Context.FetchCategoriesAsync(false),
+                Categories = await context.FetchCategoriesAsync(false),
             };
         }
 
@@ -56,36 +54,24 @@ namespace Ccs.Registration
             var @class = model.Classes.Single(a => a.Id == model.ClassId);
             var category = model.Categories[model.CategoryId];
             int classId = model.ClassId, catId = model.CategoryId;
-            int cid = context.Context.Contest.Id, affId = @class.AffiliationId;
+            int cid = context.Contest.Id, affId = @class.AffiliationId;
 
-            var db = studentStore.GetQueryableStore();
-            var db2 = context.Context.GetQueryableStore();
+            var students = await studentStore.ListStudentsAsync(@class);
+            var targets = students.ToLookup(
+                keySelector: s => new { s.Id, s.Name },
+                elementSelector: s => s.UserId.HasValue ? new { UserId = s.UserId!.Value, UserName = s.UserName! } : null);
 
-            var query =
-                from cs in db.ClassStudents
-                where cs.ClassId == classId
-                join s in db.Students on cs.StudentId equals s.Id
-                join u in db.Users on s.Id equals u.StudentId into uu
-                from u in uu.DefaultIfEmpty()
-                select new { s, u };
+            var _allTeams = await context.ListTeamsAsync(t => t.Status == 1);
+            var allTeams = _allTeams.ToDictionary(a => a.TeamId);
+            var existing = allTeams.Values
+                .Where(t => t.AffiliationId == affId && t.CategoryId == catId)
+                .Select(t => t.TeamName)
+                .ToHashSet();
 
-            var targets = await query.ToLookupAsync(a => a.s, a => a.u);
-
-            var query2 =
-                from t in db2.Teams
-                where t.ContestId == cid && t.Status == 1
-                where t.AffiliationId == affId && t.CategoryId == catId
-                select t.TeamName;
-
-            var existing = await query2.ToHashSetAsync();
-
-            var query3 =
-                from t in db2.Teams
-                where t.ContestId == cid && t.Status == 1
-                join tm in db2.TeamMembers on new { t.ContestId, t.TeamId } equals new { tm.ContestId, tm.TeamId }
-                select new { tm.UserId, t.TeamName };
-
-            var memberBelong = await query3.ToDictionaryAsync(a => a.UserId, a => a.TeamName);
+            var members = await context.FetchTeamMembersAsync();
+            var memberBelong = members
+                .SelectMany(g => g, (g, c) => new { UserName = c, allTeams[g.Key].TeamName })
+                .ToDictionary(a => a.UserName, a => a.TeamName);
 
             var result = new OutputModel
             {
@@ -107,15 +93,15 @@ namespace Ccs.Registration
                 {
                     result.NotEligible.Add(teamName);
                 }
-                else if (student.Any(a => memberBelong.ContainsKey(a.Id)))
+                else if (student.Any(a => memberBelong.ContainsKey(a!.UserName)))
                 {
-                    var err = student.Where(a => memberBelong.ContainsKey(a.Id)).First();
-                    result.UserDuplicate.Add((teamName, err.UserName, memberBelong[err.Id]));
+                    var err = student.Where(a => memberBelong.ContainsKey(a!.UserName)).First();
+                    result.UserDuplicate.Add((teamName, err!.UserName, memberBelong[err.UserName]));
                 }
                 else
                 {
-                    var r = await context.Context.CreateTeamAsync(
-                        users: student, // no item will be null
+                    var r = await context.CreateTeamAsync(
+                        users: student.Select(a => new FakeRegisterUser(a!.UserId)), // no item will be null
                         team: new Entities.Team
                         {
                             AffiliationId = affId,
