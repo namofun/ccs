@@ -40,16 +40,13 @@ namespace SatelliteSite
 
                         services.AddDbModelSupplier<DefaultContext, Polygon.Storages.PolygonIdentityEntityConfiguration<MyUser, DefaultContext>>();
 
-                        services.Configure<Polygon.PolygonPhysicalOptions>(options =>
+                        services.ConfigurePolygonStorage(options =>
                         {
                             options.JudgingDirectory = Path.Combine(context.HostingEnvironment.ContentRootPath, "Runs");
                             options.ProblemDirectory = Path.Combine(context.HostingEnvironment.ContentRootPath, "Problems");
                         });
 
-                        services.Configure<Ccs.Registration.ContestRegistrationOptions>(options =>
-                        {
-                            options.Add("student-by-class", new Ccs.Registration.TeachingClassRegisterProvider());
-                        });
+                        services.AddContestRegistrationProvider<Ccs.Registration.TeachingClassRegisterProvider>("student-by-class");
 
                         services.ConfigureApplicationBuilder(options =>
                         {

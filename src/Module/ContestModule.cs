@@ -43,36 +43,21 @@ namespace SatelliteSite.ContestModule
                 .MapStatusCode("/problemset/{cid:c(4)}/{**slug}");
         }
 
-        private static void EnsureRegistered<TService>(IServiceCollection services, ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
-        {
-            var serviceType = typeof(TService);
-
-            for (int i = 0; i < services.Count; i++)
-            {
-                if (services[i].ServiceType != serviceType) continue;
-                if (services[i].Lifetime != serviceLifetime)
-                    throw new InvalidOperationException(
-                        $"The service lifetime for {serviceType} is not correct.");
-                return;
-            }
-
-            throw new InvalidOperationException(
-                $"No implementation for {serviceType} was registered.");
-        }
-
         public override void RegisterServices(IServiceCollection services)
         {
             new TRole().Configure(services);
 
             services.AddScoped<ScopedContestContextFactory>();
-            EnsureRegistered<IContestContextFactory>(services, ServiceLifetime.Singleton);
-            EnsureRegistered<IScoreboard>(services);
-            EnsureRegistered<IPrintingService>(services);
-            EnsureRegistered<IContestRepository>(services);
+            services.EnsureSingleton<IContestContextFactory>();
+            services.EnsureScoped<IScoreboard>();
+            services.EnsureScoped<IPrintingService>();
+            services.EnsureScoped<IContestRepository>();
+
+            services.AddContestRegistration();
 
             services.AddScoped<ContestFeature>();
-            services.AddScoped<IContestContextAccessor>(sp => sp.GetRequiredService<ContestFeature>());
-            services.AddScoped<IContestFeature>(sp => sp.GetRequiredService<ContestFeature>());
+            services.AddScopedUpcast<IContestContextAccessor, ContestFeature>();
+            services.AddScopedUpcast<IContestFeature, ContestFeature>();
 
             services.AddSingleton<IAuthorizationHandler, ContestAuthorizationHandler>();
             services.AddSingleton<IRewriteRule, ContestOnlyRewriteRule>();
@@ -100,16 +85,6 @@ namespace SatelliteSite.ContestModule
                     context.Response.StatusCode = 403;
                     return Task.CompletedTask;
                 };
-            });
-
-            services.Configure<Ccs.Registration.ContestRegistrationOptions>(options =>
-            {
-                options.Add("batch-by-name", new Ccs.Registration.BatchByTeamNameRegisterProvider());
-            });
-
-            services.PostConfigure<Ccs.Registration.ContestRegistrationOptions>(options =>
-            {
-                options.Complete();
             });
         }
 
