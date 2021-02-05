@@ -71,7 +71,7 @@ namespace Ccs.Specifications
         /// Construct a <see cref="Contest"/>.
         /// </summary>
         /// <param name="c">The contest entity.</param>
-        public Contest(Entities.Contest c)
+        public Contest(IContestInformation c)
         {
             FormalName = c.Name ?? "Demo Contest via Project CCS";
             Name = c.Name ?? "Demo Contest";

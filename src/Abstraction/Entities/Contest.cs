@@ -6,26 +6,20 @@ namespace Ccs.Entities
     /// <summary>
     /// The entity class for contests.
     /// </summary>
-    public class Contest
+    public class Contest : IContestInformation
     {
-        /// <summary>
-        /// The contest ID
-        /// </summary>
+        private ContestSettings? _settings;
+
+        /// <inheritdoc />
         public int Id { get; set; }
 
-        /// <summary>
-        /// The contest title
-        /// </summary>
+        /// <inheritdoc />
         public string Name { get; set; } = "";
 
-        /// <summary>
-        /// The contest short name
-        /// </summary>
+        /// <inheritdoc />
         public string ShortName { get; set; } = "DOMjudge";
 
-        /// <summary>
-        /// The start time
-        /// </summary>
+        /// <inheritdoc />
         public DateTimeOffset? StartTime { get; set; }
 
         /// <summary>
@@ -43,87 +37,19 @@ namespace Ccs.Entities
         /// </summary>
         public double? UnfreezeTimeSeconds { get; set; }
 
-        /// <summary>
-        /// The freeze time
-        /// </summary>
-        public TimeSpan? FreezeTime => FromSecondsToTimeSpan(FreezeTimeSeconds);
-
-        /// <summary>
-        /// The end time
-        /// </summary>
-        public TimeSpan? EndTime => FromSecondsToTimeSpan(EndTimeSeconds);
-
-        /// <summary>
-        /// The unfreeze time
-        /// </summary>
-        public TimeSpan? UnfreezeTime => FromSecondsToTimeSpan(UnfreezeTimeSeconds);
-
-        /// <summary>
-        /// The ranking strategy
-        /// </summary>
-        /// <remarks>
-        /// This represent the kind of ranking strategy.
-        /// <list type="bullet"><c>0</c>: XCPC Rules</list>
-        /// <list type="bullet"><c>1</c>: IOI Rules</list>
-        /// <list type="bullet"><c>2</c>: Codeforces Rules</list>
-        /// </remarks>
-        public int RankingStrategy { get; set; }
-
-        /// <summary>
-        /// Whether this contest is public
-        /// </summary>
+        /// <inheritdoc />
         public bool IsPublic { get; set; }
 
-        /// <summary>
-        /// Whether printing is available
-        /// </summary>
-        public bool PrintingAvailable { get; set; }
+        /// <inheritdoc />
+        public int RankingStrategy { get; set; }
 
-        /// <summary>
-        /// Whether balloon is available
-        /// </summary>
-        public bool BalloonAvailable { get; set; }
-
-        /// <summary>
-        /// Default self-register category
-        /// </summary>
-        public int? RegisterCategory { get; set; }
-
-        /// <summary>
-        /// The flags for contest kind
-        /// </summary>
-        /// <remarks>
-        /// This represent the kind of contest.
-        /// <list type="bullet"><c>0</c>: Normal contest with DOMjudge UI</list>
-        /// <list type="bullet"><c>1</c>: Practice contest with Codeforces UI</list>
-        /// <list type="bullet"><c>2</c>: Problem set with legacy OJ UI</list>
-        /// </remarks>
+        /// <inheritdoc />
         public int Kind { get; set; }
 
         /// <summary>
-        /// The submission status availability
+        /// The settings JSON in type of <see cref="ContestSettings"/>
         /// </summary>
-        /// <remarks>
-        /// This represent the status of submission status.
-        /// <list type="bullet"><c>0</c>: Unavailable</list>
-        /// <list type="bullet"><c>1</c>: Available</list>
-        /// <list type="bullet"><c>2</c>: Available when accepted</list>
-        /// </remarks>
-        public int StatusAvailable { get; set; }
-
-        /// <summary>
-        /// The available languages for submitting
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// When <c>null</c>, the allowed languages list comes from <see cref="Polygon.Entities.Language.AllowSubmit"/>.
-        /// </para>
-        /// <para>
-        /// Otherwise, a string of JSON array like <c>["c","cpp","java","python3"]</c>.
-        /// If such language ID doesn't exist, the language ID will be ignored.
-        /// </para>
-        /// </remarks>
-        public string? Languages { get; set; }
+        public string? SettingsJson { get; set; }
 
         /// <summary>
         /// The count of registered teams
@@ -137,42 +63,23 @@ namespace Ccs.Entities
         /// <remarks>This field is used for caching.</remarks>
         public int ProblemCount { get; set; }
 
+        /// <inheritdoc />
+        TimeSpan? IContestTime.FreezeTime => FromSecondsToTimeSpan(FreezeTimeSeconds);
+
+        /// <inheritdoc />
+        TimeSpan? IContestTime.EndTime => FromSecondsToTimeSpan(EndTimeSeconds);
+
+        /// <inheritdoc />
+        TimeSpan? IContestTime.UnfreezeTime => FromSecondsToTimeSpan(UnfreezeTimeSeconds);
+
+        /// <inheritdoc />
+        IContestSettings IContestInformation.Settings => _settings ??= ContestSettings.Parse(SettingsJson);
+
         /// <summary>
-        /// Get the state of contest.
+        /// Converts the nullable double-typed time seconds to <see cref="TimeSpan"/>.
         /// </summary>
-        /// <param name="nowTime">The current datetime.</param>
-        /// <returns>The state of contest.</returns>
-        public ContestState GetState(DateTimeOffset? nowTime = null)
-        {
-            var now = nowTime ?? DateTimeOffset.Now;
-
-            if (!StartTime.HasValue)
-                return ContestState.NotScheduled;
-            if (StartTime.Value > now)
-                return ContestState.ScheduledToStart;
-            if (!EndTimeSeconds.HasValue)
-                return ContestState.Started;
-
-            var timeSpan = (now - StartTime.Value).TotalSeconds;
-
-            if (FreezeTimeSeconds.HasValue)
-            {
-                if (UnfreezeTimeSeconds.HasValue && UnfreezeTimeSeconds.Value < timeSpan)
-                    return ContestState.Finalized;
-                if (EndTimeSeconds.Value < timeSpan)
-                    return ContestState.Ended;
-                if (FreezeTimeSeconds.Value < timeSpan)
-                    return ContestState.Frozen;
-                return ContestState.Started;
-            }
-            else
-            {
-                if (EndTimeSeconds.Value < timeSpan)
-                    return ContestState.Finalized;
-                return ContestState.Started;
-            }
-        }
-
+        /// <param name="time">The time in seconds.</param>
+        /// <returns>The time in TimeSpan.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private TimeSpan? FromSecondsToTimeSpan(double? time)
             => time.HasValue ? TimeSpan.FromSeconds(time.Value) : default(TimeSpan?);

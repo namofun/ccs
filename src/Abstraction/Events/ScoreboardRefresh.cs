@@ -1,16 +1,18 @@
 ﻿using Ccs.Entities;
 using MediatR;
 using System;
-using System.Collections.Generic;
 
 namespace Ccs.Events
 {
+    /// <summary>
+    /// The event for a scoreboard refresh request.
+    /// </summary>
     public class ScoreboardRefreshEvent : INotification
     {
         /// <summary>
         /// The contest
         /// </summary>
-        public Contest Contest { get; }
+        public IContestInformation Contest { get; }
 
         /// <summary>
         /// The contest end time or current request time
@@ -30,14 +32,14 @@ namespace Ccs.Events
         /// <summary>
         /// The contest problems
         /// </summary>
-        public IReadOnlyList<ContestProblem> Problems { get; }
+        public ProblemCollection Problems { get; }
 
         /// <summary>
         /// Construct a <see cref="ScoreboardRefreshEvent"/>.
         /// </summary>
         /// <param name="contest">The contest entity.</param>
         /// <param name="problems">The contest problems.</param>
-        public ScoreboardRefreshEvent(Contest contest, IReadOnlyList<ContestProblem> problems)
+        public ScoreboardRefreshEvent(Contest contest, ProblemCollection problems)
         {
             Contest = contest;
             var now = DateTimeOffset.Now;

@@ -64,7 +64,7 @@ namespace Ccs.Specifications
         /// Construct a <see cref="State"/>.
         /// </summary>
         /// <param name="ctx">The contest entity.</param>
-        public State(Entities.Contest ctx)
+        public State(IContestInformation ctx)
         {
             Id = $"{ctx.Id}";
 
