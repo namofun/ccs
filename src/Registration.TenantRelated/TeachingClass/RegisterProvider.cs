@@ -9,15 +9,13 @@ using Tenant.Services;
 
 namespace Ccs.Registration
 {
-    public class TeachingClassRegisterProvider : RegisterProviderBase<InputModel, OutputModel>
+    public class TeachingClassRegisterProvider : JuryRegisterProviderBase<InputModel, OutputModel>
     {
         public override int Order => -500;
 
         public override string Name => "Teaching class";
 
         public override string Icon => "fas fa-graduation-cap";
-
-        public override bool JuryOrContestant => true;
 
         protected override async Task<InputModel> CreateInputModelAsync(RegisterProviderContext context)
         {

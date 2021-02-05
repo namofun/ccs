@@ -73,6 +73,13 @@ namespace Ccs.Services
 
         public override Task<IReadOnlyDictionary<int, Team>> FetchTeamsAsync()
         {
+            if (((Microsoft.EntityFrameworkCore.DbContext)Db).ChangeTracker.AutoDetectChangesEnabled)
+            {
+                throw new InvalidOperationException(
+                    "This function requires EFCore auto change-detect disabled. " +
+                    "For more information, please refer to \"ChangeTracker.AutoDetectChangesEnabled\".");
+            }
+
             return CacheAsync("Teams::Analysis", TimeSpan.FromMinutes(2),
                 async () => await base.FetchTeamsAsync());
         }

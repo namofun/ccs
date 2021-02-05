@@ -182,4 +182,40 @@ namespace Ccs.Registration
 
         #endregion
     }
+
+
+    /// <summary>
+    /// Provides the jury abstraction for registration.
+    /// </summary>
+    /// <typeparam name="TInputModel">The input model.</typeparam>
+    /// <typeparam name="TOutputModel">The output model.</typeparam>
+    public abstract class JuryRegisterProviderBase<TInputModel, TOutputModel> :
+        RegisterProviderBase<TInputModel, TOutputModel>
+        where TInputModel : class
+        where TOutputModel : class
+    {
+        /// <inheritdoc />
+        public override sealed bool JuryOrContestant => true;
+    }
+
+
+    /// <summary>
+    /// Provides the contestant abstraction for registration.
+    /// </summary>
+    /// <typeparam name="TInputModel">The input model.</typeparam>
+    public abstract class ContestantRegisterProviderBase<TInputModel> :
+        RegisterProviderBase<TInputModel, StatusMessageModel>
+        where TInputModel : class
+    {
+        /// <inheritdoc />
+        public override sealed bool JuryOrContestant => false;
+
+        /// <inheritdoc />
+        protected override sealed RegisterProviderOutput<StatusMessageModel> CreateOutputRenderer(ViewContext viewContext, StatusMessageModel model, IModelExpressionProvider modelExpressionProvider, IJsonHelper jsonHelper, IViewComponentHelper viewComponentHelper, IUrlHelper urlHelper)
+            => throw new System.NotSupportedException();
+
+        /// <inheritdoc />
+        protected override sealed Task RenderOutputAsync(RegisterProviderContext context, RegisterProviderOutput<StatusMessageModel> output)
+            => throw new System.NotSupportedException();
+    }
 }

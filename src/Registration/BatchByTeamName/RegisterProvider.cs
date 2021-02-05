@@ -10,15 +10,13 @@ using System.Threading.Tasks;
 
 namespace Ccs.Registration
 {
-    public class BatchByTeamNameRegisterProvider : RegisterProviderBase<InputModel, OutputModel>
+    public class BatchByTeamNameRegisterProvider : JuryRegisterProviderBase<InputModel, OutputModel>
     {
         public override int Order => -1000;
 
         public override string Name => "Temporary users";
 
         public override string Icon => "fas fa-envelope-open-text";
-
-        public override bool JuryOrContestant => true;
 
         private static string UserNameForTeamId(int teamId) => $"team{teamId:D3}";
 

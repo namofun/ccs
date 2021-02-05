@@ -268,6 +268,23 @@ namespace Ccs.Registration
         }
 
         /// <summary>
+        /// Appends a &lt;div class="alert"&gt; element.
+        /// </summary>
+        /// <param name="content">The alert content.</param>
+        /// <param name="color">The alert color.</param>
+        /// <returns>The <see cref="IHtmlContentBuilder"/>.</returns>
+        protected IHtmlContentBuilder AppendAlert(
+            string content,
+            BootstrapColor color = BootstrapColor.success)
+        {
+            var alert = new TagBuilder("div");
+            alert.AppendInner(content);
+            alert.AddCssClass("alert alert-" + color);
+            base.AppendHtml(alert);
+            return this;
+        }
+
+        /// <summary>
         /// Marks this output only redirect to another action.
         /// </summary>
         /// <param name="action">The action name.</param>
@@ -404,6 +421,13 @@ namespace Ccs.Registration
         public new RegisterProviderOutput<TModel> AppendDataTable<TElement>(IReadOnlyList<TElement> elements, string? tableClass = null, string? theadClass = null) where TElement : class
         {
             base.AppendDataTable(elements, tableClass, theadClass);
+            return this;
+        }
+
+        /// <inheritdoc cref="RegisterProviderOutput.AppendAlert(string, BootstrapColor)"/>
+        public new IHtmlContentBuilder AppendAlert(string content, BootstrapColor color = BootstrapColor.success)
+        {
+            base.AppendAlert(content, color);
             return this;
         }
 
