@@ -9,6 +9,15 @@ namespace Ccs.Entities
     public class Contest : IContestInformation
     {
         private ContestSettings? _settings;
+        private (TimeSpan? F, TimeSpan? E, TimeSpan? U)? _cachedTimeSpans;
+        private (TimeSpan? F, TimeSpan? E, TimeSpan? U) TimeSpans
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => _cachedTimeSpans ??= (
+                F: FreezeTimeSeconds.HasValue ? TimeSpan.FromSeconds(FreezeTimeSeconds.Value) : default(TimeSpan?),
+                E: EndTimeSeconds.HasValue ? TimeSpan.FromSeconds(EndTimeSeconds.Value) : default(TimeSpan?),
+                U: UnfreezeTimeSeconds.HasValue ? TimeSpan.FromSeconds(UnfreezeTimeSeconds.Value) : default(TimeSpan?));
+        }
 
         /// <inheritdoc />
         public int Id { get; set; }
@@ -64,24 +73,15 @@ namespace Ccs.Entities
         public int ProblemCount { get; set; }
 
         /// <inheritdoc />
-        TimeSpan? IContestTime.FreezeTime => FromSecondsToTimeSpan(FreezeTimeSeconds);
+        TimeSpan? IContestTime.FreezeTime => TimeSpans.F;
 
         /// <inheritdoc />
-        TimeSpan? IContestTime.EndTime => FromSecondsToTimeSpan(EndTimeSeconds);
+        TimeSpan? IContestTime.EndTime => TimeSpans.E;
 
         /// <inheritdoc />
-        TimeSpan? IContestTime.UnfreezeTime => FromSecondsToTimeSpan(UnfreezeTimeSeconds);
+        TimeSpan? IContestTime.UnfreezeTime => TimeSpans.U;
 
         /// <inheritdoc />
         IContestSettings IContestInformation.Settings => _settings ??= ContestSettings.Parse(SettingsJson);
-
-        /// <summary>
-        /// Converts the nullable double-typed time seconds to <see cref="TimeSpan"/>.
-        /// </summary>
-        /// <param name="time">The time in seconds.</param>
-        /// <returns>The time in TimeSpan.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private TimeSpan? FromSecondsToTimeSpan(double? time)
-            => time.HasValue ? TimeSpan.FromSeconds(time.Value) : default(TimeSpan?);
     }
 }

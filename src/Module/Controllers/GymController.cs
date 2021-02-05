@@ -17,8 +17,6 @@ namespace SatelliteSite.ContestModule.Controllers
     [SupportStatusCodePage]
     public class GymController : ContestControllerBase
     {
-        public bool TooEarly => Contest.GetState() < ContestState.Started;
-
         private IReadOnlyDictionary<int, (int Accepted, int Total)> Statistics { get; set; }
 
         private RedirectToActionResult GoBackHome(string message, string action = nameof(Home))
@@ -88,7 +86,7 @@ namespace SatelliteSite.ContestModule.Controllers
         [HttpGet("submissions/{sid}")]
         public async Task<IActionResult> Submission(int sid)
         {
-            if (Team == null && Contest.StatusAvailable != 1)
+            if (Team == null && Contest.Settings.StatusAvailable != 1)
                 return Forbid();
 
             var model = await Context.FetchSolutionAsync(
@@ -116,8 +114,8 @@ namespace SatelliteSite.ContestModule.Controllers
             if (model.Problem == null
                 || model.Language == null
                 || model.TeamId != Team?.TeamId
-                && (Contest.StatusAvailable == 0
-                || (Contest.StatusAvailable == 2 && Statistics.GetValueOrDefault(model.ProblemId).Accepted == 0)))
+                && (Contest.Settings.StatusAvailable == 0
+                || (Contest.Settings.StatusAvailable == 2 && Statistics.GetValueOrDefault(model.ProblemId).Accepted == 0)))
             {
                 return Forbid();
             }
@@ -152,7 +150,7 @@ namespace SatelliteSite.ContestModule.Controllers
         {
             if (Team == null)
                 return Message("Submit", "You must have a team first.");
-            else if (TooEarly && !Accessor.IsJury)
+            else if (TooEarly && !Contest.IsJury)
                 return Message("Submit", "Contest not started.", BootstrapColor.danger);
             else
                 return Window(new TeamCodeSubmitModel { Problem = prob });
@@ -184,7 +182,7 @@ namespace SatelliteSite.ContestModule.Controllers
         {
             if (ViewData.ContainsKey("HasTeam"))
                 return GoBackHome("Already registered");
-            if (Contest.RegisterCategory == null || User.IsInRole("Blocked"))
+            if (Contest.Settings.RegisterCategory == null || User.IsInRole("Blocked"))
                 return GoBackHome("Error registration closed.");
 
             string teamName;
@@ -229,7 +227,7 @@ namespace SatelliteSite.ContestModule.Controllers
                 {
                     AffiliationId = affId,
                     ContestId = Contest.Id,
-                    CategoryId = Contest.RegisterCategory.Value,
+                    CategoryId = 0,
                     RegisterTime = DateTimeOffset.Now,
                     Status = 1,
                     TeamName = teamName,
@@ -248,7 +246,7 @@ namespace SatelliteSite.ContestModule.Controllers
             if (Team == null)
                 return GoBackHome("You should register first.", nameof(Register));
 
-            if (TooEarly && !Accessor.IsJury)
+            if (TooEarly && !Contest.IsJury)
                 return GoBackHome("Contest not started.");
 
             var prob = Problems.Find(model.Problem);

@@ -1,5 +1,4 @@
-﻿using Ccs.Entities;
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
@@ -28,6 +27,7 @@ namespace SatelliteSite.ContestModule.Models
 
         [Required]
         [DisplayName("Self-registered category")]
+        [Obsolete]
         public int DefaultCategory { get; set; }
 
         [Required]
@@ -61,7 +61,7 @@ namespace SatelliteSite.ContestModule.Models
 
         public JuryEditModel() { }
 
-        public JuryEditModel(Contest cont)
+        public JuryEditModel(Ccs.IContestInformation cont)
         {
             var startTime = cont.StartTime?.ToString("yyyy-MM-dd HH:mm:ss zzz") ?? "";
             var stopTime = cont.EndTime?.ToDeltaString() ?? "";
@@ -76,11 +76,11 @@ namespace SatelliteSite.ContestModule.Models
             StartTime = startTime;
             StopTime = stopTime;
             UnfreezeTime = unfTime;
-            DefaultCategory = cont.RegisterCategory ?? 0;
             IsPublic = cont.IsPublic;
-            UsePrintings = cont.PrintingAvailable;
-            UseBalloon = cont.BalloonAvailable;
-            StatusAvailable = cont.StatusAvailable;
+            DefaultCategory = 0;
+            UsePrintings = cont.Settings.PrintingAvailable;
+            UseBalloon = cont.Settings.BalloonAvailable;
+            StatusAvailable = cont.Settings.StatusAvailable;
         }
     }
 }

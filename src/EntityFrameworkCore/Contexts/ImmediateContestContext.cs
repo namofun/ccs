@@ -18,7 +18,7 @@ namespace Ccs.Services
         private IContestRepository? _ccsFacade;
         private IPolygonFacade? _polygonFacade;
 
-        public Contest Contest => _contest;
+        public IContestInformation Contest => _contest;
 
         public IPolygonFacade Polygon => _polygonFacade ??= Get<IPolygonFacade>();
 

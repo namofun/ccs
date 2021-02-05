@@ -17,8 +17,6 @@ namespace SatelliteSite.ContestModule.Controllers
     [Authorize(Policy = "ContestHasTeam")]
     public class DomTeamController : ContestControllerBase
     {
-        public bool TooEarly => Contest.GetState() < ContestState.Started;
-
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             if (Team.Status != 1)
@@ -42,9 +40,7 @@ namespace SatelliteSite.ContestModule.Controllers
             [FromQuery(Name = "affiliations[]")] int[] affiliations,
             [FromQuery(Name = "categories[]")] int[] categories,
             [FromQuery(Name = "clear")] string clear = "")
-            => Scoreboard(
-                isPublic: Contest.GetState() < ContestState.Finalized,
-                isJury: false, clear == "clear", affiliations, categories);
+            => Scoreboard(isPublic: !TooLate, isJury: false, clear == "clear", affiliations, categories);
 
 
         [HttpGet("[action]")]

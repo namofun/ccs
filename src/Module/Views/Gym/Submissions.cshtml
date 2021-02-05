@@ -33,7 +33,7 @@
             {
                 var prob = Contest.Problems.Find(stat.ProblemId);
                 if (prob == null) { continue; }
-                var notIgnore = Contest.StatusAvailable == 1 || stat.TeamId == teamid || (Contest.StatusAvailable == 2 && avp.Contains(stat.ProblemId));
+                var notIgnore = Contest.Settings.StatusAvailable == 1 || stat.TeamId == teamid || (Contest.Settings.StatusAvailable == 2 && avp.Contains(stat.ProblemId));
                 <tr role="row" asp-link-ignore="@(!notIgnore)" asp-action="Submission" asp-route-sid="@stat.SubmissionId" data-toggle="ajaxWindow" data-target="showSubmission">
                     <td use-a="">@stat.SubmissionId</td>
                     <td use-a>@Html.CstTime(stat.Time)</td>

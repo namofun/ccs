@@ -18,10 +18,9 @@ namespace Ccs.Services
         public virtual async Task<IReadOnlyList<Language>> FetchLanguagesAsync()
         {
             var langs = await Polygon.Languages.ListAsync(true);
-            if (!string.IsNullOrEmpty(Contest.Languages))
+            if (Contest.Settings.Languages != null)
             {
-                var available = Contest.Languages!.AsJson<string[]>() ?? Array.Empty<string>();
-                langs = langs.Where(l => available.Contains(l.Id)).ToList();
+                langs = langs.Where(l => Contest.Settings.Languages.Contains(l.Id)).ToList();
             }
 
             return langs;

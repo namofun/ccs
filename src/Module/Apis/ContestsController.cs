@@ -1,4 +1,5 @@
-﻿using Ccs.Events;
+﻿using Ccs;
+using Ccs.Events;
 using Ccs.Specifications;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

@@ -23,7 +23,7 @@ namespace Ccs
         /// <summary>
         /// The contest entity
         /// </summary>
-        Contest Contest { get; }
+        IContestInformation Contest { get; }
 
         /// <summary>
         /// Lists the problems in the problemset.

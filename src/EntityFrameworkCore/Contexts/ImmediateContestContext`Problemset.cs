@@ -26,7 +26,7 @@ namespace Ccs.Services
 
         public virtual async Task<IPagedList<ProblemModel>> ListProblemsetAsync(int page, int count)
         {
-            int totalCount = Contest.ProblemCount;
+            int totalCount = _contest.ProblemCount;
             int cid = Contest.Id;
 
             var model = await QueryProblems(Db.ContestProblems

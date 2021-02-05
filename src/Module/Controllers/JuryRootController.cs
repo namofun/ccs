@@ -1,4 +1,6 @@
-﻿using Ccs.Entities;
+﻿using Ccs;
+using Ccs.Entities;
+using Ccs.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SatelliteSite.ContestModule.Models;
@@ -79,12 +81,12 @@ namespace SatelliteSite.ContestModule.Controllers
         {
             var now = DateTimeOffset.Now;
 
-            var newcont = new Contest
+            var newcont = new TimeOnlyModel
             {
                 StartTime = Contest.StartTime,
-                EndTimeSeconds = Contest.EndTimeSeconds,
-                FreezeTimeSeconds = Contest.FreezeTimeSeconds,
-                UnfreezeTimeSeconds = Contest.UnfreezeTimeSeconds,
+                EndTime = Contest.EndTime,
+                FreezeTime = Contest.FreezeTime,
+                UnfreezeTime = Contest.UnfreezeTime,
             };
 
             var state = newcont.GetState(now);
@@ -103,22 +105,22 @@ namespace SatelliteSite.ContestModule.Controllers
             {
                 if (state != ContestState.Started)
                     return GoBackHome("Error contest is not started.");
-                newcont.FreezeTimeSeconds = (now - newcont.StartTime.Value).TotalSeconds;
+                newcont.FreezeTime = now - newcont.StartTime.Value;
             }
             else if (target == "endnow")
             {
                 if (state != ContestState.Started && state != ContestState.Frozen)
                     return GoBackHome("Error contest has not started or has ended.");
-                newcont.EndTimeSeconds = (now - newcont.StartTime.Value).TotalSeconds;
+                newcont.EndTime = now - newcont.StartTime.Value;
 
                 if (newcont.FreezeTime.HasValue && newcont.FreezeTime.Value > newcont.EndTime.Value)
-                    newcont.FreezeTimeSeconds = newcont.EndTimeSeconds;
+                    newcont.FreezeTime = newcont.EndTime;
             }
             else if (target == "unfreeze")
             {
                 if (state != ContestState.Ended)
                     return GoBackHome("Error contest has not ended.");
-                newcont.UnfreezeTimeSeconds = (now - newcont.StartTime.Value).TotalSeconds;
+                newcont.UnfreezeTime = now - newcont.StartTime.Value;
             }
             else if (target == "delay")
             {
@@ -127,13 +129,17 @@ namespace SatelliteSite.ContestModule.Controllers
                 newcont.StartTime = null;
             }
 
+            var sta = newcont.StartTime;
+            var end = newcont.EndTime?.TotalSeconds;
+            var frz = newcont.FreezeTime?.TotalSeconds;
+            var unf = newcont.UnfreezeTime?.TotalSeconds;
             await Context.UpdateContestAsync(
                 _ => new Contest
                 {
-                    StartTime = newcont.StartTime,
-                    EndTimeSeconds = newcont.EndTimeSeconds,
-                    FreezeTimeSeconds = newcont.FreezeTimeSeconds,
-                    UnfreezeTimeSeconds = newcont.UnfreezeTimeSeconds,
+                    StartTime = sta,
+                    EndTimeSeconds = end,
+                    FreezeTimeSeconds = frz,
+                    UnfreezeTimeSeconds = unf,
                 });
 
             await HttpContext.AuditAsync("changed time", $"{Contest.Id}");
@@ -144,7 +150,7 @@ namespace SatelliteSite.ContestModule.Controllers
         [HttpGet("/[area]/{cid:c(1)}/[controller]/[action]")]
         public async Task<IActionResult> Balloon()
         {
-            if (!Contest.BalloonAvailable) return NotFound();
+            if (!Contest.Settings.BalloonAvailable) return NotFound();
             var model = await Context.FetchBalloonsAsync();
             return View(model);
         }
@@ -153,7 +159,7 @@ namespace SatelliteSite.ContestModule.Controllers
         [HttpGet("/[area]/{cid:c(1)}/[controller]/balloon/{id}/set-done")]
         public async Task<IActionResult> BalloonSetDone(int id)
         {
-            if (!Contest.BalloonAvailable) return NotFound();
+            if (!Contest.Settings.BalloonAvailable) return NotFound();
             await Context.SetBalloonDoneAsync(id);
             return RedirectToAction(nameof(Balloon));
         }
@@ -290,16 +296,22 @@ namespace SatelliteSite.ContestModule.Controllers
                 return View(model);
             }
 
-            var cst = Contest;
             var freezeTimeSeconds = freezeTime?.TotalSeconds;
             var endTimeSeconds = endTime?.TotalSeconds;
             var unfreezeTimeSeconds = unfreezeTime?.TotalSeconds;
 
-            if (startTime != cst.StartTime
-                || endTimeSeconds != cst.EndTimeSeconds
-                || freezeTimeSeconds != cst.FreezeTimeSeconds
-                || unfreezeTimeSeconds != cst.UnfreezeTimeSeconds)
+            if (startTime != Contest.StartTime
+                || endTime != Contest.EndTime
+                || freezeTime != Contest.FreezeTime
+                || unfreezeTime != Contest.UnfreezeTime)
                 contestTimeChanged = true;
+
+            var settings = Contest.Settings.Clone();
+            //settings.RegisterCategory = defaultCat;
+            settings.BalloonAvailable = model.UseBalloon;
+            settings.PrintingAvailable = model.UsePrintings;
+            settings.StatusAvailable = model.StatusAvailable;
+            var settingsJson = settings.ToString();
 
             await Context.UpdateContestAsync(
                 _ => new Contest
@@ -312,10 +324,7 @@ namespace SatelliteSite.ContestModule.Controllers
                     FreezeTimeSeconds = freezeTimeSeconds,
                     EndTimeSeconds = endTimeSeconds,
                     UnfreezeTimeSeconds = unfreezeTimeSeconds,
-                    RegisterCategory = defaultCat,
-                    BalloonAvailable = model.UseBalloon,
-                    PrintingAvailable = model.UsePrintings,
-                    StatusAvailable = model.StatusAvailable,
+                    SettingsJson = settingsJson,
                 });
 
             await HttpContext.AuditAsync("updated", $"{Contest.Id}", "via edit-page");

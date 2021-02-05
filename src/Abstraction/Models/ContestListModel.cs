@@ -52,13 +52,13 @@ namespace Ccs.Models
         /// <param name="isPublic">Whether to show to public.</param>
         /// <param name="problemCount">The count of problems.</param>
         /// <param name="teamCount">The count of teams.</param>
-        public ContestListModel(int id, string name, string shortName, DateTimeOffset? start, TimeSpan? duration, int kind, int ranker, bool isPublic, int teamCount, int problemCount)
+        public ContestListModel(int id, string name, string shortName, DateTimeOffset? start, double? duration, int kind, int ranker, bool isPublic, int teamCount, int problemCount)
         {
             ContestId = id;
             Name = name;
             ShortName = shortName;
             StartTime = start;
-            Duration = duration;
+            Duration = duration.HasValue ? TimeSpan.FromSeconds(duration.Value) : default(TimeSpan?);
             Kind = kind;
             RankingStrategy = ranker;
             IsPublic = isPublic;

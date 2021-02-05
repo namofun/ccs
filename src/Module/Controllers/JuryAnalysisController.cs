@@ -1,4 +1,5 @@
 ﻿using Ccs.Entities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Polygon.Entities;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 namespace SatelliteSite.ContestModule.Controllers
 {
     [Area("Contest")]
-    [Route("[area]/{cid:c(7)}/jury/analysis")]
+    [Route("[area]/{cid:c(3)}/jury/analysis")]
     public class JuryAnalysisController : JuryControllerBase
     {
         public IReadOnlyDictionary<int, Team> Teams { get; set; }
@@ -44,16 +45,15 @@ namespace SatelliteSite.ContestModule.Controllers
         public override async Task OnActionExecutingAsync(ActionExecutingContext context)
         {
             await base.OnActionExecutingAsync(context);
-            if (context.Result == null && Contest.GetState() == ContestState.NotScheduled)
+            if (context.Result == null && !Contest.StartTime.HasValue)
             {
-                context.Result = StatusCodePage(410);
+                context.Result = StatusCodePage(StatusCodes.Status410Gone);
                 return;
             }
-            
-            var time = Contest.EndTime;
-            if (time.HasValue && time.Value.TotalMinutes >= 14400)
+
+            if (!Contest.EndTime.HasValue || Contest.EndTime.Value.TotalMinutes >= 1440)
             {
-                context.Result = StatusCodePage(503);
+                context.Result = StatusCodePage(StatusCodes.Status503ServiceUnavailable);
                 return;
             }
 

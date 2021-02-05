@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 namespace SatelliteSite.ContestModule.Controllers
 {
     [Area("Contest")]
-    [Route("[area]/{cid:c(7)}/jury/printings")]
+    [Route("[area]/{cid:c(3)}/jury/printings")]
     public class JuryPrintingsController : JuryControllerBase
     {
         IPrintingService Store { get; }
@@ -16,7 +16,7 @@ namespace SatelliteSite.ContestModule.Controllers
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             base.OnActionExecuting(context);
-            if (!Contest.PrintingAvailable) context.Result = NotFound();
+            if (!Contest.Settings.PrintingAvailable) context.Result = NotFound();
         }
 
 

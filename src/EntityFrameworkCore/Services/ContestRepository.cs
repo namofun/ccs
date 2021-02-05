@@ -57,7 +57,7 @@ namespace Ccs.Services
         public Task<IPagedList<ContestListModel>> ListAsync(int page = 1, int limit = 100)
             => Db.Contests
                 .OrderByDescending(c => c.Id)
-                .Select(c => new ContestListModel(c.Id, c.Name, c.ShortName, c.StartTime, c.EndTime, c.Kind, c.RankingStrategy, c.IsPublic, c.TeamCount, c.ProblemCount))
+                .Select(c => new ContestListModel(c.Id, c.Name, c.ShortName, c.StartTime, c.EndTimeSeconds, c.Kind, c.RankingStrategy, c.IsPublic, c.TeamCount, c.ProblemCount))
                 .ToPagedListAsync(page, limit);
 
         public Task<IPagedList<ContestListModel>> ListAsync(int userId, int kind, int page = 1, int limit = 100)

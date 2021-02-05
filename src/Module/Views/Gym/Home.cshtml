@@ -66,10 +66,10 @@
     @Html.Raw(Model.Markdown)
     <h3 class="mt-4">Practice</h3>
     <razor asp-no-viewdata-key="HasTeam">
-        <p asp-show-if="!Contest.RegisterCategory.HasValue">
+        <p asp-show-if="Contest.Settings.RegisterCategory == null">
             Registration closed.
         </p>
-        <p asp-show-if="Contest.RegisterCategory.HasValue">
+        <p asp-show-if="Contest.Settings.RegisterCategory != null">
             Want to solve the contest problems? Just register for practice and you will be able to submit solutions.
             <br />
             <a class="mt-2 btn btn-sm btn-primary" asp-action="Register">Register</a>

@@ -1,15 +1,14 @@
-﻿using Ccs.Entities;
-using MediatR;
+﻿using MediatR;
 
 namespace Ccs.Events
 {
     public class ContestUpdateEvent : INotification
     {
-        public Contest OldContest { get; }
+        public IContestInformation OldContest { get; }
 
-        public Contest NewContest { get; }
+        public IContestInformation NewContest { get; }
 
-        public ContestUpdateEvent(Contest old, Contest @new)
+        public ContestUpdateEvent(IContestInformation old, IContestInformation @new)
         {
             OldContest = old;
             NewContest = @new;

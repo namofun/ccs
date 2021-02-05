@@ -14,7 +14,7 @@
 <div class="row">
     <div class="col-lg-7">
         <p>
-            <span class="sol">Registration</span> <misc-status type="RegistrationStatus" value="Contest.RegisterCategory ?? 0" /><br />
+            <span class="sol">Registration</span> <misc-status type="RegistrationStatus" value="Contest.Settings.RegisterCategory?.Count ?? 0" /><br />
             <span class="sol">Rule</span> <misc-status type="ContestRule" value="Contest.RankingStrategy" />
         </p>
         @Html.Raw(ViewBag.Markdown)
@@ -24,7 +24,7 @@
         @if (Contest.Team == null)
         {
             <p>You didn't register for this contest.</p>
-            @if (Contest.RegisterCategory.HasValue)
+            @if ((Contest.Settings.RegisterCategory?.Count ?? 0) > 0)
             {
                 <form method="post" asp-action="Register">
                     <button class="btn btn-primary" type="submit">Register</button>

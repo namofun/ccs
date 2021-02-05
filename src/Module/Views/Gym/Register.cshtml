@@ -1,7 +1,6 @@
 ﻿@model GymRegisterModel
 @{
     ViewData["Title"] = "Register";
-    Contest ctx = ViewBag.Contest;
 }
 <form asp-action="Register" method="post">
 <div class="container pl-0 pr-0">
@@ -40,11 +39,11 @@ If you register as practice, the copyrights for shared codes belongs to its writ
 <div class="col-12 col-lg-4 sidebar">
     <h3 class="mt-lg-5">Gym</h3>
     <p>
-        @ctx.Name
+        @Contest.Name
         <br />
-        Start Time: @Html.CstTime(ctx.StartTime)
+        Start Time: @Html.CstTime(Contest.StartTime)
         <br />
-        End Time: @Html.CstTime(ctx.StartTime + ctx.EndTime)
+        End Time: @Html.CstTime(Contest.StartTime + Contest.EndTime)
     </p>
 </div>
 </div>

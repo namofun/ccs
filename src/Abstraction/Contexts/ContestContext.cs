@@ -18,7 +18,7 @@ namespace Ccs
         /// <summary>
         /// The contest entity
         /// </summary>
-        Contest Contest { get; }
+        IContestInformation Contest { get; }
 
         /// <summary>
         /// Fetch the contest scoreboard.

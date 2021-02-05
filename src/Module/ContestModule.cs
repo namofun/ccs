@@ -218,7 +218,7 @@ namespace SatelliteSite.ContestModule
                     .HasLink("Contest", "DomTeam", "Print")
                     .HasTitle("fas fa-file-alt", "Print")
                     .ActiveWhenAction("Print")
-                    .RequireThat(ctx => Feature(ctx).PrintingAvailable);
+                    .RequireThat(ctx => Feature(ctx).Settings.PrintingAvailable);
 
                 menu.HasEntry(500)
                     .HasLink("Contest", "DomTeam", "Scoreboard")

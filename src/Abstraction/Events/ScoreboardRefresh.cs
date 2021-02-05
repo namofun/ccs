@@ -39,7 +39,7 @@ namespace Ccs.Events
         /// </summary>
         /// <param name="contest">The contest entity.</param>
         /// <param name="problems">The contest problems.</param>
-        public ScoreboardRefreshEvent(Contest contest, ProblemCollection problems)
+        public ScoreboardRefreshEvent(IContestInformation contest, ProblemCollection problems)
         {
             Contest = contest;
             var now = DateTimeOffset.Now;

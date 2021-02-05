@@ -21,7 +21,7 @@ namespace SatelliteSite.ContestModule.Apis
         /// <summary>
         /// Contest entity
         /// </summary>
-        protected Ccs.Entities.Contest Contest => Context.Contest;
+        protected IContestInformation Contest => Context.Contest;
 
         /// <summary>
         /// Messaging center

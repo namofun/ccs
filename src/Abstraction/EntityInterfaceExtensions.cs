@@ -23,6 +23,17 @@ namespace Ccs
         }
 
         /// <summary>
+        /// Gets a value indicating whether participants can register.
+        /// </summary>
+        /// <param name="settings">The contest settings.</param>
+        /// <returns>The category ID, or null if not registrable.</returns>
+        public static bool CanRegister(this IContestSettings settings)
+        {
+            if (settings.RegisterCategory == null) return false;
+            return settings.RegisterCategory.Count != 0;
+        }
+
+        /// <summary>
         /// Gets the state of contest.
         /// </summary>
         /// <param name="time">The contest time.</param>

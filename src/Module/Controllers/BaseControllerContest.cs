@@ -24,11 +24,6 @@ namespace SatelliteSite.ContestModule.Controllers
         private IContestContextAccessor _accessor;
 
         /// <summary>
-        /// Context accessor for contest controlling
-        /// </summary>
-        protected IContestContextAccessor Accessor => _accessor;
-
-        /// <summary>
         /// Context for contest controlling
         /// </summary>
         protected IContestContext Context => _accessor.Context;
@@ -36,7 +31,7 @@ namespace SatelliteSite.ContestModule.Controllers
         /// <summary>
         /// The contest entity
         /// </summary>
-        protected Contest Contest => Context.Contest;
+        protected IContestContextAccessor Contest => _accessor;
 
         /// <summary>
         /// The messaging center
@@ -59,12 +54,22 @@ namespace SatelliteSite.ContestModule.Controllers
         protected ProblemCollection Problems => _accessor.Problems;
 
         /// <summary>
+        /// Whether the contest has not been started
+        /// </summary>
+        protected bool TooEarly => Contest.GetState() < ContestState.Started;
+
+        /// <summary>
+        /// Whether the contest has been finalized
+        /// </summary>
+        protected bool TooLate => Contest.GetState() == ContestState.Finalized;
+
+        /// <summary>
         /// Presents a view for printing codes.
         /// </summary>
         /// <returns>The action result.</returns>
         protected IActionResult Print()
         {
-            if (!Contest.PrintingAvailable) return NotFound();
+            if (!Contest.Settings.PrintingAvailable) return NotFound();
             return View("Print", new Models.AddPrintModel());
         }
 
@@ -75,7 +80,7 @@ namespace SatelliteSite.ContestModule.Controllers
         /// <returns>The action result.</returns>
         protected async Task<IActionResult> Print(Models.AddPrintModel model)
         {
-            if (!Contest.PrintingAvailable) return NotFound();
+            if (!Contest.Settings.PrintingAvailable) return NotFound();
 
             using var stream = model.SourceFile.OpenReadStream();
             var bytes = new byte[model.SourceFile.Length];

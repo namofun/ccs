@@ -90,9 +90,9 @@
                     <div class="col-lg-6">
                         <h5 class="ml-2 text-left">During contest</h5>
                         <ul>
-                            <li asp-show-if="Contest.BalloonAvailable"><a asp-action="Balloon">Balloon status</a></li>
-                            <li asp-show-if="Contest.PrintingAvailable"><a asp-controller="JuryPrintings" asp-action="List">Printing status</a></li>
-                            <li asp-show-if="Contest.PrintingAvailable"><a asp-action="Print">Print</a></li>
+                            <li asp-show-if="Contest.Settings.BalloonAvailable"><a asp-action="Balloon">Balloon status</a></li>
+                            <li asp-show-if="Contest.Settings.PrintingAvailable"><a asp-controller="JuryPrintings" asp-action="List">Printing status</a></li>
+                            <li asp-show-if="Contest.Settings.PrintingAvailable"><a asp-action="Print">Print</a></li>
                             <li><a asp-controller="JuryRejudgings" asp-action="List">Rejudgings</a></li>
                             <li><a asp-controller="JuryAnalysis" asp-action="Overview">Statistics/Analysis</a></li>
                             <!--<li><a asp-action="ResetEventFeed" data-target="refresh" data-toggle="ajaxWindow">Reset event feed</a></li>-->

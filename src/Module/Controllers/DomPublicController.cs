@@ -1,4 +1,5 @@
-﻿using Ccs.Entities;
+﻿using Ccs;
+using Ccs.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -15,11 +16,9 @@ namespace SatelliteSite.ContestModule.Controllers
     [SupportStatusCodePage]
     public class DomPublicController : ContestControllerBase
     {
-        public bool TooEarly => Contest.GetState() < ContestState.Started;
-
         public override void OnActionExecuting(ActionExecutingContext context)
         {
-            ViewData["NavbarName"] = Ccs.CcsDefaults.PublicNavbar;
+            ViewData["NavbarName"] = CcsDefaults.PublicNavbar;
             ViewData["BigUrl"] = Url.Action("Info", "DomPublic");
             ViewData["UseLightTheme"] = true;
             base.OnActionExecuting(context);
@@ -56,7 +55,7 @@ namespace SatelliteSite.ContestModule.Controllers
                 return RedirectToAction(nameof(Info));
             }
 
-            if (!Contest.RegisterCategory.HasValue || User.IsInRole("Blocked"))
+            if (/*!Contest.RegisterCategory.HasValue || */User.IsInRole("Blocked"))
             {
                 StatusMessage = "Error registration closed.";
                 return RedirectToAction(nameof(Info));
@@ -75,7 +74,7 @@ namespace SatelliteSite.ContestModule.Controllers
                 {
                     AffiliationId = aff.Id,
                     ContestId = Contest.Id,
-                    CategoryId = Contest.RegisterCategory.Value,
+                    CategoryId = Contest.Settings.GetRegisterCategory("").Value,
                     RegisterTime = DateTimeOffset.Now,
                     Status = 0,
                     TeamName = User.GetNickName(),
@@ -92,8 +91,6 @@ namespace SatelliteSite.ContestModule.Controllers
             [FromQuery(Name = "affiliations[]")] int[] affiliations,
             [FromQuery(Name = "categories[]")] int[] categories,
             [FromQuery(Name = "clear")] string clear = "")
-            => Scoreboard(
-                isPublic: Contest.GetState() < ContestState.Finalized,
-                isJury: false, clear == "clear", affiliations, categories);
+            => Scoreboard(isPublic: !TooLate, isJury: false, clear == "clear", affiliations, categories);
     }
 }

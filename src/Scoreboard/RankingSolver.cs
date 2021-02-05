@@ -47,7 +47,7 @@ namespace Ccs.Scoreboard
         /// </summary>
         /// <param name="contest">The contest entity.</param>
         /// <returns>The ranking strategy.</returns>
-        private IRankingStrategy Select(Contest contest)
+        private IRankingStrategy Select(IContestInformation contest)
         {
             if (contest == null ||
                 contest.RankingStrategy > Strategies.Count ||

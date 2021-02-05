@@ -75,21 +75,17 @@ namespace SatelliteSite.ContestModule
             _problemInitialized = true;
         }
 
-        int IContestContextBase.Id => Context.Contest.Id;
-        string IContestContextBase.Name => Context.Contest.Name;
-        string IContestContextBase.ShortName => Context.Contest.ShortName;
-        DateTimeOffset? IContestContextBase.StartTime => Context.Contest.StartTime;
-        TimeSpan? IContestContextBase.FreezeTime => Context.Contest.FreezeTime;
-        TimeSpan? IContestContextBase.EndTime => Context.Contest.EndTime;
-        TimeSpan? IContestContextBase.UnfreezeTime => Context.Contest.UnfreezeTime;
-        int IContestContextBase.RankingStrategy => Context.Contest.RankingStrategy;
-        bool IContestContextBase.IsPublic => Context.Contest.IsPublic;
-        bool IContestContextBase.PrintingAvailable => Context.Contest.PrintingAvailable;
-        bool IContestContextBase.BalloonAvailable => Context.Contest.BalloonAvailable;
-        int? IContestContextBase.RegisterCategory => Context.Contest.RegisterCategory;
-        int IContestContextBase.Kind => Context.Contest.Kind;
-        int IContestContextBase.StatusAvailable => Context.Contest.StatusAvailable;
-        ContestState IContestContextBase.GetState(DateTimeOffset? nowTime) => Context.Contest.GetState(nowTime);
+        int IContestInformation.Id => Context.Contest.Id;
+        string IContestInformation.Name => Context.Contest.Name;
+        string IContestInformation.ShortName => Context.Contest.ShortName;
+        DateTimeOffset? IContestTime.StartTime => Context.Contest.StartTime;
+        int IContestInformation.RankingStrategy => Context.Contest.RankingStrategy;
+        bool IContestInformation.IsPublic => Context.Contest.IsPublic;
+        int IContestInformation.Kind => Context.Contest.Kind;
+        TimeSpan? IContestTime.FreezeTime => ((IContestInformation)Context.Contest).FreezeTime;
+        TimeSpan? IContestTime.EndTime => ((IContestInformation)Context.Contest).EndTime;
+        TimeSpan? IContestTime.UnfreezeTime => ((IContestInformation)Context.Contest).UnfreezeTime;
+        IContestSettings IContestInformation.Settings => ((IContestInformation)Context.Contest).Settings;
         IContestContextAccessor IContestFeature.AsAccessor() => this;
         IProblemsetContext IContestFeature.AsProblemset() => (IProblemsetContext)Context;
     }
