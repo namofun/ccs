@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Ccs.Services;
+using Microsoft.AspNetCore.Mvc;
 using Polygon.Entities;
 using SatelliteSite.ContestModule.Models;
 using System;
@@ -12,7 +13,7 @@ namespace SatelliteSite.ContestModule.Controllers
     [Area("Contest")]
     [Route("[area]/{cid:c(7)}/jury/rejudgings")]
     [AuditPoint(AuditlogType.Rejudging)]
-    public class JuryRejudgingsController : JuryControllerBase
+    public class JuryRejudgingsController : JuryControllerBase<IRejudgingContext>
     {
         [HttpGet]
         public async Task<IActionResult> List()

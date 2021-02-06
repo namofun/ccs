@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Ccs.Services
 {
-    public partial class ImmediateContestContext
+    public partial class ImmediateContestContext : IRejudgingContext
     {
         public virtual Task<Rejudging> CreateRejudgingAsync(Rejudging entity)
         {
@@ -19,9 +19,9 @@ namespace Ccs.Services
             return Polygon.Rejudgings.DeleteAsync(entity);
         }
 
-        public virtual Task<Rejudging> FindRejudgingAsync(int id)
+        public virtual Task<Rejudging?> FindRejudgingAsync(int id)
         {
-            return Polygon.Rejudgings.FindAsync(Contest.Id, id);
+            return Polygon.Rejudgings.FindAsync(Contest.Id, id)!;
         }
 
         public virtual Task<List<Rejudging>> FetchRejudgingsAsync(bool includeStat = true)

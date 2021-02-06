@@ -20,7 +20,7 @@ namespace Ccs
         /// <summary>
         /// Converts the store as a <see cref="IContestQueryableStore"/>.
         /// </summary>
-        /// <param name="store">The <see cref="IContestRepository"/>.</param>
+        /// <param name="store">The <see cref="IContestContext"/>.</param>
         /// <returns>The <see cref="IContestQueryableStore"/>.</returns>
         public static IContestQueryableStore GetQueryableStore(this IContestContext store)
             => store as IContestQueryableStore

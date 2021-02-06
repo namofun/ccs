@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Ccs.Services
 {
-    public partial class ImmediateContestContext
+    public partial class ImmediateContestContext : IBalloonContext
     {
         public virtual async Task<List<BalloonModel>> FetchBalloonsAsync()
         {

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Ccs.Services;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Threading.Tasks;
 
@@ -6,7 +7,7 @@ namespace SatelliteSite.ContestModule.Controllers
 {
     [Area("Contest")]
     [Route("[area]/{cid:c(1)}/jury/balloon")]
-    public class JuryBalloonsController : JuryControllerBase
+    public class JuryBalloonsController : JuryControllerBase<IBalloonContext>
     {
         public override void OnActionExecuting(ActionExecutingContext context)
         {

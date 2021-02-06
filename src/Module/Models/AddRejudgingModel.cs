@@ -1,4 +1,4 @@
-﻿using Ccs;
+﻿using Ccs.Services;
 using Polygon.Entities;
 using System;
 using System.Collections.Generic;
@@ -36,7 +36,7 @@ namespace SatelliteSite.ContestModule.Models
 
         public IReadOnlyDictionary<int, string> AllowedTeamNames { get; private set; }
 
-        public async Task<AddRejudgingModel> LoadAsync(IContestContext context)
+        public async Task<AddRejudgingModel> LoadAsync(IRejudgingContext context)
         {
             AllowedTeamNames ??= await context.FetchTeamNamesAsync();
             AllowedJudgehosts ??= await context.FetchJudgehostsAsync();

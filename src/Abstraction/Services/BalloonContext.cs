@@ -2,18 +2,21 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Ccs
+namespace Ccs.Services
 {
-    public partial interface IContestContext
+    /// <summary>
+    /// Provides contract for balloon controlling.
+    /// </summary>
+    public interface IBalloonContext : IContestContext
     {
         /// <summary>
-        /// List the balloon and fill in problem related informations.
+        /// Lists the balloon and fill in problem related informations.
         /// </summary>
         /// <returns>The task for balloon models.</returns>
         Task<List<BalloonModel>> FetchBalloonsAsync();
 
         /// <summary>
-        /// Set the balloon in contest as done.
+        /// Sets the balloon in contest as done.
         /// </summary>
         /// <param name="id">The balloon ID.</param>
         /// <returns>The task for setting done.</returns>

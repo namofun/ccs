@@ -33,4 +33,21 @@ namespace SatelliteSite.ContestModule.Controllers
             return RedirectToAction(action, controller);
         }
     }
+
+    /// <summary>
+    /// Context-typed base controller for jury related things.
+    /// </summary>
+    public abstract class JuryControllerBase<TContext> : JuryControllerBase
+        where TContext : class, Ccs.IContestContext
+    {
+        /// <inheritdoc cref="ContestControllerBase.Context" />
+        protected new TContext Context => base.Context as TContext;
+
+        /// <inheritdoc />
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            base.OnActionExecuting(context);
+            if (Context == null) context.Result = NotFound();
+        }
+    }
 }
