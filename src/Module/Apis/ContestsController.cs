@@ -1,5 +1,6 @@
 ﻿using Ccs;
 using Ccs.Events;
+using Ccs.Services;
 using Ccs.Specifications;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -112,7 +113,7 @@ namespace SatelliteSite.ContestModule.Apis
         public async Task<ActionResult<ServerStatus>> Status(
             [FromRoute] int cid)
         {
-            return await Context.GetJudgeQueueAsync();
+            return await ((ISubmissionContext)Context).GetJudgeQueueAsync();
         }
     }
 }

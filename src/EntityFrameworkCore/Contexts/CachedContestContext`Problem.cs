@@ -8,13 +8,13 @@ namespace Ccs.Services
 {
     public partial class CachedContestContext
     {
-        public override Task<ProblemCollection> FetchProblemsAsync(bool nonCached = false)
+        public override Task<ProblemCollection> ListProblemsAsync(bool nonCached = false)
         {
             if (nonCached)
-                return base.FetchProblemsAsync(true);
+                return base.ListProblemsAsync(true);
 
             return CacheAsync("Problems", _options.Problem,
-                async () => await base.FetchProblemsAsync(true));
+                async () => await base.ListProblemsAsync(true));
         }
 
         public override async Task UpdateProblemAsync(

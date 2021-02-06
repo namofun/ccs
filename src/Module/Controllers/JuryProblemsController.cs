@@ -1,4 +1,5 @@
 ﻿using Ccs.Entities;
+using Ccs.Services;
 using Microsoft.AspNetCore.Mvc;
 using Polygon.Packaging;
 using SatelliteSite.ContestModule.Models;
@@ -15,7 +16,7 @@ namespace SatelliteSite.ContestModule.Controllers
     [Area("Contest")]
     [Route("[area]/{cid:c(7)}/jury/problems")]
     [AuditPoint(AuditlogType.Problem)]
-    public class JuryProblemsController : JuryControllerBase
+    public class JuryProblemsController : JuryControllerBase<IProblemContext>
     {
         [HttpGet("[action]")]
         public IActionResult Add()

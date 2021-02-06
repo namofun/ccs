@@ -57,7 +57,7 @@ namespace SatelliteSite.ContestModule.Controllers
         [ActionName("ResetEventFeed")]
         public async Task<IActionResult> ResetEventFeedConfirmation()
         {
-            await Mediator.Publish(new Ccs.Events.ScoreboardRefreshEvent(Contest, Problems));
+            await Mediator.Publish(new Ccs.Events.ScoreboardRefreshEvent(Contest));
             await HttpContext.AuditAsync("reset event", Contest.Id.ToString());
             StatusMessage = "Event feed reset.";
             return RedirectToAction(nameof(Home));
@@ -339,7 +339,7 @@ namespace SatelliteSite.ContestModule.Controllers
         [ActionName("RefreshCache")]
         public async Task<IActionResult> RefreshCacheConfirmation()
         {
-            await Mediator.Publish(new Ccs.Events.ScoreboardRefreshEvent(Contest, Problems));
+            await Mediator.Publish(new Ccs.Events.ScoreboardRefreshEvent(Contest));
             StatusMessage = "Scoreboard cache has been refreshed.";
             await HttpContext.AuditAsync("refresh scoreboard cache", Contest.Id.ToString());
             return RedirectToAction(nameof(Home));

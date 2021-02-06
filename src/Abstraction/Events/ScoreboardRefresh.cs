@@ -1,5 +1,4 @@
-﻿using Ccs.Entities;
-using MediatR;
+﻿using MediatR;
 using System;
 
 namespace Ccs.Events
@@ -30,16 +29,10 @@ namespace Ccs.Events
         public DateTimeOffset? FreezeTime { get; }
 
         /// <summary>
-        /// The contest problems
-        /// </summary>
-        public ProblemCollection Problems { get; }
-
-        /// <summary>
         /// Construct a <see cref="ScoreboardRefreshEvent"/>.
         /// </summary>
         /// <param name="contest">The contest entity.</param>
-        /// <param name="problems">The contest problems.</param>
-        public ScoreboardRefreshEvent(IContestInformation contest, ProblemCollection problems)
+        public ScoreboardRefreshEvent(IContestInformation contest)
         {
             Contest = contest;
             var now = DateTimeOffset.Now;
@@ -47,7 +40,6 @@ namespace Ccs.Events
             var endTime = (Contest.StartTime + Contest.EndTime) ?? now;
             if (now < endTime) endTime = now;
             Deadline = endTime;
-            Problems = problems;
             FreezeTime = Contest.StartTime + Contest.FreezeTime;
         }
     }

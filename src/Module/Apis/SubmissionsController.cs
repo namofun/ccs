@@ -1,4 +1,5 @@
-﻿using Ccs.Specifications;
+﻿using Ccs.Services;
+using Ccs.Specifications;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -17,7 +18,7 @@ namespace SatelliteSite.ContestModule.Apis
     [Authorize(AuthenticationSchemes = "Basic")]
     [Authorize(Roles = "CDS,Administrator")]
     [Produces("application/json")]
-    public class SubmissionsController : ApiControllerBase
+    public class SubmissionsController : ApiControllerBase<ISubmissionContext>
     {
         /// <summary>
         /// Get all the submissions for this contest
@@ -90,8 +91,7 @@ namespace SatelliteSite.ContestModule.Apis
             var team = await Context.FindTeamByIdAsync(teamid);
             var langs = await Context.FetchLanguagesAsync();
             var lang = langs.FirstOrDefault(lang => lang.Id == langid);
-            var probs = await Context.FetchProblemsAsync();
-            var prob = probs.FirstOrDefault(prob => prob.ProblemId == probid);
+            var prob = await Context.FindProblemAsync(probid);
             if (team == null || lang == null || prob == null) return BadRequest();
 
             var s = await Context.SubmitAsync(

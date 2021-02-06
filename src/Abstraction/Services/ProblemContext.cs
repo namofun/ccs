@@ -13,21 +13,46 @@ namespace Ccs
     public partial interface IContestContext
     {
         /// <summary>
-        /// Fetch the contest problems.
+        /// Lists the contest problems.
         /// </summary>
         /// <param name="nonCached">Whether to fetch the non-cached result.</param>
         /// <returns>The task for fetching problems.</returns>
-        Task<ProblemCollection> FetchProblemsAsync(bool nonCached = false);
+        Task<ProblemCollection> ListProblemsAsync(bool nonCached = false);
 
         /// <summary>
-        /// Create problems by expression.
+        /// Finds the problem in current problemset.
+        /// </summary>
+        /// <param name="probid">The problem ID.</param>
+        /// <param name="withStatement">Whether to include statement.</param>
+        /// <returns>The task for fetching model.</returns>
+        Task<ProblemModel?> FindProblemAsync(string probid, bool withStatement = false);
+
+        /// <summary>
+        /// Finds the problem in current problemset.
+        /// </summary>
+        /// <param name="probid">The problem ID.</param>
+        /// <param name="withStatement">Whether to include statement.</param>
+        /// <returns>The task for fetching model.</returns>
+        Task<ProblemModel?> FindProblemAsync(int probid, bool withStatement = false);
+    }
+}
+
+namespace Ccs.Services
+{
+    /// <summary>
+    /// Provides contract for problem controlling.
+    /// </summary>
+    public interface IProblemContext : IContestContext
+    {
+        /// <summary>
+        /// Creates problems by entity.
         /// </summary>
         /// <param name="entity">The contest problem to create.</param>
         /// <returns>The task for creating contest problems.</returns>
         Task CreateProblemAsync(ContestProblem entity);
 
         /// <summary>
-        /// Update problems by expression.
+        /// Updates problems by expression.
         /// </summary>
         /// <param name="origin">The original problem model.</param>
         /// <param name="expression">The expression for updating contest problem.</param>
@@ -35,14 +60,14 @@ namespace Ccs
         Task UpdateProblemAsync(ProblemModel origin, Expression<Func<ContestProblem, ContestProblem>> expression);
 
         /// <summary>
-        /// Delete such problem from contest.
+        /// Deletes such problem from contest.
         /// </summary>
         /// <param name="problem">The original problem model.</param>
         /// <returns>The task for deleting contest problems.</returns>
         Task DeleteProblemAsync(ProblemModel problem);
 
         /// <summary>
-        /// Check the availability of problems to add into contest.
+        /// Checks the availability of problems to add into contest.
         /// </summary>
         /// <param name="probId">The problem ID.</param>
         /// <param name="user">The current user.</param>
@@ -50,13 +75,13 @@ namespace Ccs
         Task<CheckResult> CheckProblemAvailabilityAsync(int probId, ClaimsPrincipal user);
 
         /// <summary>
-        /// Fetch the raw statements of current contest.
+        /// Gets the raw statements of current contest.
         /// </summary>
         /// <returns>The task for enlisting statements.</returns>
         Task<List<Statement>> FetchRawStatementsAsync();
 
         /// <summary>
-        /// Fetchs the testcase of the <paramref name="problem"/>.
+        /// Gets the testcase of the <paramref name="problem"/>.
         /// </summary>
         /// <param name="problem">The problem ID.</param>
         /// <param name="testcaseId">The testcase ID.</param>

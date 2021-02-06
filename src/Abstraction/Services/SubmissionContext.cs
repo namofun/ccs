@@ -7,9 +7,12 @@ using System.Linq.Expressions;
 using System.Net;
 using System.Threading.Tasks;
 
-namespace Ccs
+namespace Ccs.Services
 {
-    public partial interface IContestContext
+    /// <summary>
+    /// Provides contract for submission controlling.
+    /// </summary>
+    public interface ISubmissionContext : IContestContext
     {
         /// <summary>
         /// Get the status of judge queue.
@@ -24,17 +27,6 @@ namespace Ccs
         /// <param name="includeJudgings">Whether to include judgings in results.</param>
         /// <returns>The task for fetching submission entity.</returns>
         Task<Submission?> FindSubmissionAsync(int submissionId, bool includeJudgings = false);
-
-        /// <summary>
-        /// Fetch solutions with contest.
-        /// </summary>
-        /// <param name="probid">The problem ID.</param>
-        /// <param name="langid">The language ID.</param>
-        /// <param name="teamid">The team ID.</param>
-        /// <param name="all">Whether to show all solutions.</param>
-        /// <returns>The task for fetching solution list.</returns>
-        Task<List<Polygon.Models.Solution>> FetchSolutionsAsync(
-            int? probid = null, string? langid = null, int? teamid = null, bool all = false);
 
         /// <summary>
         /// List the solutions satisfying some conditions.
@@ -127,8 +119,7 @@ namespace Ccs
         /// </summary>
         /// <param name="predicate">The predicate.</param>
         /// <returns>The count task.</returns>
-        Task<int> CountJudgingAsync(
-            Expression<Func<Judging, bool>> predicate);
+        Task<int> CountJudgingAsync(Expression<Func<Judging, bool>> predicate);
 
         /// <summary>
         /// Find the judging for the id.
@@ -152,6 +143,23 @@ namespace Ccs
         /// <param name="predicate">The submission condition.</param>
         /// <returns>The task for fetching source code.</returns>
         Task<SubmissionSource> FetchSourceAsync(Expression<Func<Submission, bool>> predicate);
+    }
+}
+
+namespace Ccs
+{
+    public partial interface IContestContext
+    {
+        /// <summary>
+        /// Fetch solutions with contest.
+        /// </summary>
+        /// <param name="probid">The problem ID.</param>
+        /// <param name="langid">The language ID.</param>
+        /// <param name="teamid">The team ID.</param>
+        /// <param name="all">Whether to show all solutions.</param>
+        /// <returns>The task for fetching solution list.</returns>
+        Task<List<Polygon.Models.Solution>> FetchSolutionsAsync(
+            int? probid = null, string? langid = null, int? teamid = null, bool all = false);
 
         /// <summary>
         /// Create a submission for team.

@@ -49,11 +49,6 @@ namespace SatelliteSite.ContestModule.Controllers
         protected Team Team => _accessor.Team;
 
         /// <summary>
-        /// The problem list
-        /// </summary>
-        protected ProblemCollection Problems => _accessor.Problems;
-
-        /// <summary>
         /// Whether the contest has not been started
         /// </summary>
         protected bool TooEarly => Contest.GetState() < ContestState.Started;
@@ -121,18 +116,26 @@ namespace SatelliteSite.ContestModule.Controllers
             bool isPublic, bool isJury, bool clear,
             int[] filtered_affiliations, int[] filtered_categories)
         {
+            if (Contest.Kind == 2)
+            {
+                throw new NotSupportedException();
+            }
+
+            var probs = await Context.ListProblemsAsync();
             var scb = await Context.FetchScoreboardAsync();
             var affs = await Context.FetchAffiliationsAsync();
             var orgs = await Context.FetchCategoriesAsync();
 
             if (!isJury)
+            {
                 orgs = orgs.Values.Where(o => o.IsPublic).ToDictionary(c => c.Id);
+            }
 
             var board = new FullBoardViewModel
             {
                 RankCache = scb.Data.Values,
                 UpdateTime = scb.RefreshTime,
-                Problems = Problems,
+                Problems = probs,
                 IsPublic = isPublic && !isJury,
                 Categories = orgs,
                 ContestId = Contest.Id,
@@ -165,12 +168,9 @@ namespace SatelliteSite.ContestModule.Controllers
             ActionExecutingContext context, ActionExecutionDelegate next)
         {
             var feature = HttpContext.Features.Get<IContestFeature>();
-            if (!feature.ProblemInitialized)
-                feature.ProblemInitialize(await feature.Context.FetchProblemsAsync());
 
             _accessor = feature.AsAccessor();
             ViewData["Contest"] = Contest;
-            ViewData["Problems"] = Problems;
             ViewData["Team"] = Team;
             if (_accessor.Team != null) ViewData["HasTeam"] = true;
             ViewData["IsJury"] = _accessor.IsJury;
@@ -192,9 +192,7 @@ namespace SatelliteSite.ContestModule.Controllers
             }
             */
 
-            if (!Contest.IsPublic &&
-                !_accessor.IsJury &&
-                !_accessor.HasTeam)
+            if (!Contest.IsPublic && !_accessor.IsJury && !_accessor.HasTeam)
             {
                 context.Result = NotFound();
                 return;
@@ -204,7 +202,9 @@ namespace SatelliteSite.ContestModule.Controllers
             ViewData["ContestId"] = Contest.Id;
 
             if (context.Result == null)
+            {
                 await OnActionExecutedAsync(await next());
+            }
         }
 
         /// <inheritdoc cref="Controller.OnActionExecuting(ActionExecutingContext)"/>

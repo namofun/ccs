@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Ccs.Services;
+using Microsoft.AspNetCore.Mvc;
 using Polygon.Entities;
 using SatelliteSite.ContestModule.Models;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ namespace SatelliteSite.ContestModule.Controllers
 {
     [Area("Contest")]
     [Route("[area]/{cid:c(7)}/jury/submissions")]
-    public class JurySubmissionsController : JuryControllerBase
+    public class JurySubmissionsController : JuryControllerBase<ISubmissionContext>
     {
         [HttpGet]
         public async Task<IActionResult> List(bool all = false)
@@ -29,7 +30,7 @@ namespace SatelliteSite.ContestModule.Controllers
             if (submit == null) return NotFound();
             var judgings = submit.Judgings;
 
-            var prob = Problems.Find(submit.ProblemId);
+            var prob = await Context.FindProblemAsync(submit.ProblemId);
             if (prob == null) return NotFound(); // the problem is deleted later
 
             var judging = judgingid.HasValue

@@ -53,4 +53,22 @@ namespace SatelliteSite.ContestModule.Apis
             context.Result = NotFound();
         }
     }
+
+
+    /// <summary>
+    /// The strong-typed endpoints controller base to connect to CDS.
+    /// </summary>
+    public class ApiControllerBase<TContext> : ApiControllerBase
+        where TContext : class, IContestContext
+    {
+        /// <inheritdoc cref="ApiControllerBase.Context" />
+        protected new TContext Context => base.Context as TContext;
+
+        /// <inheritdoc />
+        public override async Task OnActionExecuting(ActionExecutingContext context)
+        {
+            await base.OnActionExecuting(context);
+            if (Context == null) context.Result = NotFound();
+        }
+    }
 }

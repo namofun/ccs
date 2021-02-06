@@ -1,4 +1,5 @@
 ﻿using Ccs.Entities;
+using Ccs.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,6 +19,7 @@ namespace Ccs.Registration
     public sealed class RegisterProviderContext
     {
         private IUserManager? _userManager;
+        private readonly ITeamContext _teamContext;
 
         /// <summary>
         /// Provides user management.
@@ -61,7 +63,7 @@ namespace Ccs.Registration
         /// <param name="users">The team members.</param>
         /// <returns>The task for creating contest teams, returning the team id.</returns>
         public Task<Team> CreateTeamAsync(Team team, IEnumerable<IUser>? users)
-            => Contest.Context.CreateTeamAsync(team, users);
+            => _teamContext.CreateTeamAsync(team, users);
 
         /// <summary>
         /// Fetch the affiliations used in contest.
@@ -69,7 +71,7 @@ namespace Ccs.Registration
         /// <param name="contestFiltered">Whether filtering the entities only used in this contest.</param>
         /// <returns>The task for fetching affiliations.</returns>
         public Task<IReadOnlyDictionary<int, Affiliation>> FetchAffiliationsAsync(bool contestFiltered = true)
-            => Contest.Context.FetchAffiliationsAsync(contestFiltered);
+            => _teamContext.FetchAffiliationsAsync(contestFiltered);
 
         /// <summary>
         /// Fetch the categories used in contest.
@@ -77,7 +79,7 @@ namespace Ccs.Registration
         /// <param name="contestFiltered">Whether filtering the entities only used in this contest.</param>
         /// <returns>The task for fetching affiliations.</returns>
         public Task<IReadOnlyDictionary<int, Category>> FetchCategoriesAsync(bool contestFiltered = true)
-            => Contest.Context.FetchCategoriesAsync(contestFiltered);
+            => _teamContext.FetchCategoriesAsync(contestFiltered);
 
         /// <summary>
         /// Attach a user to the team if not attached.
@@ -87,14 +89,14 @@ namespace Ccs.Registration
         /// <param name="temporary">Whether this member is temporary account.</param>
         /// <returns>The task for attaching member.</returns>
         public Task AttachMemberAsync(Team team, IUser user, bool temporary)
-            => Contest.Context.AttachMemberAsync(team, user, temporary);
+            => _teamContext.AttachMemberAsync(team, user, temporary);
 
         /// <summary>
         /// Fetch the team members as a lookup dictionary.
         /// </summary>
         /// <returns>The task for getting this lookup.</returns>
         public Task<ILookup<int, string>> FetchTeamMembersAsync()
-            => Contest.Context.FetchTeamMembersAsync();
+            => _teamContext.FetchTeamMembersAsync();
 
         /// <summary>
         /// List the teams with selected conditions.
@@ -102,7 +104,7 @@ namespace Ccs.Registration
         /// <param name="predicate">The conditions to match.</param>
         /// <returns>The task for listing entities.</returns>
         public Task<List<Team>> ListTeamsAsync(Expression<Func<Team, bool>>? predicate = null)
-            => Contest.Context.ListTeamsAsync(predicate);
+            => _teamContext.ListTeamsAsync(predicate);
 
         /// <summary>
         /// Instantiate an execution context for register provider.
@@ -114,6 +116,8 @@ namespace Ccs.Registration
         {
             Contest = context;
             _userManager = userManager;
+            _teamContext = (context.Context as ITeamContext)
+                ?? throw new NotSupportedException("Team controlling is not supported.");
             HttpContext = httpContext;
         }
     }

@@ -68,6 +68,7 @@ namespace Ccs.Scoreboard
         /// <inheritdoc />
         public Task Handle(ScoreboardRefreshEvent notification, CancellationToken cancellationToken)
         {
+            if (notification.Contest.Kind == 2) return Task.CompletedTask;
             return Select(notification.Contest).RefreshCache(Store, notification);
         }
 
@@ -76,6 +77,7 @@ namespace Ccs.Scoreboard
         {
             if (notification.Submission.ContestId == 0) return;
             var context = await Factory.CreateAsync(notification.Submission.ContestId);
+            if (context == null || context.Contest.Kind == 2) return;
             var contest = context.Contest;
             if (contest.GetState(notification.Submission.Time) >= ContestState.Ended) return;
             await Select(contest).Pending(Store, contest, notification);
@@ -87,13 +89,14 @@ namespace Ccs.Scoreboard
             if (notification.ContestId == null) return;
             if (!notification.Judging.Active) return;
             var context = await Factory.CreateAsync(notification.ContestId.Value);
+            if (context == null || context.Contest.Kind == 2) return;
             var contest = context.Contest;
             if (contest.GetState(notification.SubmitTime) >= ContestState.Ended) return;
 
             if (contest.RankingStrategy == 2 && notification.Judging.Status == Verdict.Accepted)
             {
-                var problems = await context.FetchProblemsAsync();
-                var cfscore = problems.Where(p => p.ProblemId == notification.ProblemId).FirstOrDefault()?.Score ?? 0;
+                var problem = await context.FindProblemAsync(notification.ProblemId);
+                var cfscore = problem?.Score ?? 0;
                 notification = new JudgingFinishedEvent2(notification, cfscore);
             }
 

@@ -61,6 +61,7 @@ namespace SatelliteSite.ContestModule.Controllers
             var bq = scb.Data.GetValueOrDefault(Team.TeamId);
             var cats = await Context.FetchCategoriesAsync();
             var affs = await Context.FetchAffiliationsAsync();
+            var probs = await Context.ListProblemsAsync();
 
             int teamid = Team.TeamId;
             var clars = await Context.ListClarificationsAsync(
@@ -87,7 +88,7 @@ namespace SatelliteSite.ContestModule.Controllers
                 TeamName = bq.TeamName,
                 ContestId = Contest.Id,
                 RankingStrategy = Contest.RankingStrategy,
-                Problems = Problems,
+                Problems = probs,
                 Affiliation = affs[bq.AffiliationId],
                 Category = cats[bq.CategoryId],
                 Clarifications = clars,
@@ -97,17 +98,18 @@ namespace SatelliteSite.ContestModule.Controllers
 
 
         [HttpGet("problems")]
-        public IActionResult ProblemList()
+        public async Task<IActionResult> ProblemList()
         {
-            return View(Problems);
+            var problems = await Context.ListProblemsAsync();
+            return View(problems);
         }
 
 
         [HttpGet("problems/{prob}")]
-        public IActionResult ProblemView(string prob)
+        public async Task<IActionResult> ProblemView(string prob)
         {
             if (TooEarly && !ViewData.ContainsKey("IsJury")) return NotFound();
-            var problem = Problems.Find(prob);
+            var problem = await Context.FindProblemAsync(prob, true);
             if (problem == null) return NotFound();
 
             var view = problem.Statement;
@@ -171,7 +173,8 @@ namespace SatelliteSite.ContestModule.Controllers
             if (string.IsNullOrWhiteSpace(model.Body))
                 ModelState.AddModelError("xys::empty", "No empty clarification");
 
-            var usage = Problems.ClarificationCategories.SingleOrDefault(cp => model.Type == cp.Item1);
+            var probs = await Context.ListProblemsAsync();
+            var usage = probs.ClarificationCategories.SingleOrDefault(cp => model.Type == cp.Item1);
             if (usage.Item1 == null)
                 ModelState.AddModelError("xys::error_cate", "The category specified is wrong.");
 
@@ -222,7 +225,7 @@ namespace SatelliteSite.ContestModule.Controllers
                 return RedirectToAction(nameof(Home));
             }
 
-            var prob = Problems.Find(model.Problem);
+            var prob = await Context.FindProblemAsync(model.Problem);
             if (prob is null || !prob.AllowSubmit)
             {
                 StatusMessage = "Error problem not found.";
@@ -272,7 +275,7 @@ namespace SatelliteSite.ContestModule.Controllers
             if (model == null) return NotFound();
 
             var langs = await Context.FetchLanguagesAsync();
-            model.Problem = Problems.Find(model.ProblemId);
+            model.Problem = await Context.FindProblemAsync(model.ProblemId);
             model.Language = langs.FirstOrDefault(l => l.Id == model.LanguageId);
 
             return Window(model);

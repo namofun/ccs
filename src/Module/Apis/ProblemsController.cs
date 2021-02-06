@@ -28,7 +28,7 @@ namespace SatelliteSite.ContestModule.Apis
             [FromRoute] int cid,
             [FromQuery] int[] ids = null)
         {
-            return (await Context.FetchProblemsAsync())
+            return (await Context.ListProblemsAsync())
                 .WhereIf(ids != null && ids.Length > 0, cp => ids.Contains(cp.ProblemId))
                 .Select(cp => new Problem(cp))
                 .ToArray();
@@ -46,7 +46,7 @@ namespace SatelliteSite.ContestModule.Apis
             [FromRoute] int cid,
             [FromRoute] int id)
         {
-            var probs = await Context.FetchProblemsAsync();
+            var probs = await Context.ListProblemsAsync();
             var prob = probs.FirstOrDefault(cp => cp.ProblemId == id);
             return new Problem(prob);
         }

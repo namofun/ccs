@@ -1,4 +1,5 @@
-﻿using Ccs.Specifications;
+﻿using Ccs.Services;
+using Ccs.Specifications;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -15,7 +16,7 @@ namespace SatelliteSite.ContestModule.Apis
     [Authorize(AuthenticationSchemes = "Basic")]
     [Authorize(Roles = "CDS,Administrator")]
     [Produces("application/json")]
-    public class OrganizationsController : ApiControllerBase
+    public class OrganizationsController : ApiControllerBase<ITeamContext>
     {
         /// <summary>
         /// Get all the organizations for this contest
@@ -50,8 +51,7 @@ namespace SatelliteSite.ContestModule.Apis
             [FromRoute] int cid,
             [FromRoute] string id)
         {
-            var results = await Context.FetchAffiliationsAsync();
-            var org = results.Values.FirstOrDefault(a => a.Abbreviation == id);
+            var org = await Context.FetchAffiliationAsync(id);
             return org == null ? null : new Organization(org);
         }
     }

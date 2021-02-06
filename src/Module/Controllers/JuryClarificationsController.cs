@@ -1,4 +1,5 @@
 ﻿using Ccs.Entities;
+using Ccs.Services;
 using Microsoft.AspNetCore.Mvc;
 using SatelliteSite.ContestModule.Models;
 using System;
@@ -8,9 +9,9 @@ using System.Threading.Tasks;
 namespace SatelliteSite.ContestModule.Controllers
 {
     [Area("Contest")]
-    [Route("[area]/{cid:c(7)}/jury/clarifications")]
+    [Route("[area]/{cid:c(3)}/jury/clarifications")]
     [AuditPoint(AuditlogType.Clarification)]
-    public class JuryClarificationsController : JuryControllerBase
+    public class JuryClarificationsController : JuryControllerBase<IClarificationContext>
     {
         [HttpGet]
         public async Task<IActionResult> List()
@@ -18,7 +19,7 @@ namespace SatelliteSite.ContestModule.Controllers
             return View(new JuryListClarificationModel
             {
                 AllClarifications = await Context.ListClarificationsAsync(c => c.Recipient == null),
-                Problems = Problems,
+                Problems = await Context.ListProblemsAsync(),
                 TeamNames = await Context.FetchTeamNamesAsync(),
                 JuryName = User.GetUserName(),
             });
@@ -31,7 +32,9 @@ namespace SatelliteSite.ContestModule.Controllers
         {
             // validate the model
             if (string.IsNullOrWhiteSpace(model.Body))
+            {
                 ModelState.AddModelError("xys::clar_empty", "Clarification body cannot be empty.");
+            }
 
             // reply clar
             Clarification replyTo = null;
@@ -39,13 +42,18 @@ namespace SatelliteSite.ContestModule.Controllers
             {
                 replyTo = await Context.FindClarificationAsync(model.ReplyTo.Value);
                 if (replyTo == null)
+                {
                     ModelState.AddModelError("xys::clar_not_found", "The clarification replied to not found.");
+                }
             }
 
             // determine category
-            var usage = Problems.ClarificationCategories.FirstOrDefault(cp => model.Type == cp.Item1);
+            var probs = await Context.ListProblemsAsync();
+            var usage = probs.ClarificationCategories.FirstOrDefault(cp => model.Type == cp.Item1);
             if (usage.Item1 == null)
+            {
                 ModelState.AddModelError("xys::error_cate", "The category specified is wrong.");
+            }
 
             if (!ModelState.IsValid) return View(model);
             var clar = await Context.ClarifyAsync(
@@ -83,11 +91,17 @@ namespace SatelliteSite.ContestModule.Controllers
             var result = await Context.SetClarificationAnsweredAsync(clarid, answered);
 
             if (result && answered)
+            {
                 return GoBackHome($"Clarification #{clarid} is now answered.", "List", "JuryClarifications");
+            }
             else if (result)
+            {
                 return GoBackHome($"Clarification #{clarid} is now unanswered.", "Detail", "JuryClarifications");
+            }
             else
+            {
                 return Message("Set clarification", "Unknown error.", BootstrapColor.danger);
+            }
         }
 
 
@@ -113,7 +127,7 @@ namespace SatelliteSite.ContestModule.Controllers
             {
                 Associated = query,
                 Main = query.First(),
-                Problems = Problems,
+                Problems = await Context.ListProblemsAsync(),
                 Teams = await Context.FetchTeamNamesAsync(),
                 UserName = User.GetUserName(),
             });
@@ -127,11 +141,17 @@ namespace SatelliteSite.ContestModule.Controllers
             var result = await Context.ClaimClarificationAsync(clarid, admin, claim);
 
             if (result && claim)
+            {
                 return RedirectToAction(nameof(Detail));
+            }
             else if (result)
+            {
                 return RedirectToAction(nameof(List));
+            }
             else
+            {
                 return GoBackHome($"Clarification has been claimed before.", "List", "JuryClarifications");
+            }
         }
     }
 }

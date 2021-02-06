@@ -1,4 +1,5 @@
 ﻿using Ccs.Models;
+using Ccs.Services;
 using Ccs.Specifications;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,7 +17,7 @@ namespace SatelliteSite.ContestModule.Apis
     [Authorize(AuthenticationSchemes = "Basic")]
     [Authorize(Roles = "CDS,Administrator")]
     [Produces("application/json")]
-    public class ScoreboardController : ApiControllerBase
+    public class ScoreboardController : ApiControllerBase<ITeamContext>
     {
         /// <summary>
         /// Get the scoreboard for this contest
@@ -29,12 +30,12 @@ namespace SatelliteSite.ContestModule.Apis
             [FromRoute] int cid,
             [FromQuery] bool @public)
         {
-            if (!Contest.StartTime.HasValue)
+            if (!Contest.StartTime.HasValue || Contest.Kind == 2)
                 return null;
             var scb = await Context.FetchScoreboardAsync();
             var affs = await Context.FetchAffiliationsAsync();
             var orgs = await Context.FetchCategoriesAsync();
-            var probs = await Context.FetchProblemsAsync();
+            var probs = await Context.ListProblemsAsync();
 
             var board = new FullBoardViewModel
             {

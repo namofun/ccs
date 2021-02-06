@@ -123,5 +123,12 @@ namespace Ccs.Services
         /// <param name="event">The new event entity.</param>
         /// <returns>The task for emitting.</returns>
         Task EmitEventAsync(Event @event);
+
+        /// <summary>
+        /// Gets the scores in the contest.
+        /// </summary>
+        /// <param name="cid">The contest ID.</param>
+        /// <returns>The task for fetching.</returns>
+        Task<IReadOnlyDictionary<int, int>> GetModeScoresAsync(int cid);
     }
 }

@@ -182,7 +182,8 @@ namespace SatelliteSite.ContestModule.Controllers
             if (rej == null || rej.EndTime != null) return NotFound();
 
             var pending = await Context.CountJudgingAsync(
-                j => j.RejudgingId == rejudgingid && (j.Status == Verdict.Pending || j.Status == Verdict.Running));
+                j => j.RejudgingId == rejudgingid
+                    && (j.Status == Verdict.Pending || j.Status == Verdict.Running));
 
             if (pending > 0)
             {
@@ -192,7 +193,7 @@ namespace SatelliteSite.ContestModule.Controllers
 
             await Context.ApplyRejudgingAsync(rej, int.Parse(User.GetUserId()));
             await HttpContext.AuditAsync("applied", $"{rejudgingid}");
-            await Mediator.Publish(new Ccs.Events.ScoreboardRefreshEvent(Contest, Problems));
+            await Mediator.Publish(new Ccs.Events.ScoreboardRefreshEvent(Contest));
             StatusMessage = "Rejudging applied. Scoreboard cache will be refreshed.";
             return RedirectToAction(nameof(Detail));
         }

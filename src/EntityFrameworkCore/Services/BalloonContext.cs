@@ -11,7 +11,7 @@ namespace Ccs.Services
     {
         public virtual async Task<List<BalloonModel>> FetchBalloonsAsync()
         {
-            var problems = await FetchProblemsAsync();
+            var problems = await ListProblemsAsync();
             int cid = Contest.Id;
             var balloonQuery =
                 from b in Db.Balloons

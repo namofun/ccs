@@ -1,8 +1,8 @@
-﻿using Ccs.Specifications;
+﻿using Ccs.Services;
+using Ccs.Specifications;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -16,7 +16,7 @@ namespace SatelliteSite.ContestModule.Apis
     [Authorize(AuthenticationSchemes = "Basic")]
     [Authorize(Roles = "CDS,Administrator")]
     [Produces("application/json")]
-    public class GroupsController : ApiControllerBase
+    public class GroupsController : ApiControllerBase<ITeamContext>
     {
         /// <summary>
         /// Get all the groups for this contest
@@ -51,8 +51,7 @@ namespace SatelliteSite.ContestModule.Apis
             [FromRoute] int cid,
             [FromRoute] int id)
         {
-            var cats = await Context.FetchCategoriesAsync();
-            var cat = cats.GetValueOrDefault(id);
+            var cat = await Context.FetchCategoryAsync(id);
             return cat == null ? null : new Group(cat);
         }
     }

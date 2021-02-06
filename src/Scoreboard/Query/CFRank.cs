@@ -148,7 +148,7 @@ namespace Ccs.Scoreboard.Query
         public async Task RefreshCache(IScoreboard store, ScoreboardRefreshEvent args)
         {
             int cid = args.Contest.Id;
-            var scores = args.Problems.ToDictionary(k => k.ProblemId, v => v.Score);
+            var scores = await store.GetModeScoresAsync(cid);
             var results = await store.FetchSolutionsAsync(cid, args.Deadline);
 
             var rcc = new Dictionary<int, RankCache>();

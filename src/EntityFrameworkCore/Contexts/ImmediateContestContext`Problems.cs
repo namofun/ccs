@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace Ccs.Services
 {
-    public partial class ImmediateContestContext
+    public partial class ImmediateContestContext : IProblemContext
     {
         private ProblemCollection? _readed_problem_collection;
 
@@ -43,7 +43,7 @@ namespace Ccs.Services
                 .BatchUpdateAsync(c => new Contest { ProblemCount =
                     Db.ContestProblems.Count(cp => cp.ContestId == c.Id) });
 
-        public virtual async Task<ProblemCollection> FetchProblemsAsync(bool nonCached = false)
+        public virtual async Task<ProblemCollection> ListProblemsAsync(bool nonCached = false)
         {
             if (_readed_problem_collection != null && !nonCached)
                 return _readed_problem_collection;
@@ -89,7 +89,7 @@ namespace Ccs.Services
         public virtual async Task<List<Statement>> FetchRawStatementsAsync()
         {
             int cid = Contest.Id;
-            var problems = await FetchProblemsAsync();
+            var problems = await ListProblemsAsync();
 
             var raw = await Db.ContestProblems
                 .Where(cp => cp.ContestId == cid)

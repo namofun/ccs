@@ -12,7 +12,7 @@ using Tenant.Services;
 
 namespace Ccs.Services
 {
-    public partial class ImmediateContestContext
+    public partial class ImmediateContestContext : IAnalysisContext, ITeamContext
     {
         private static readonly ConcurrentAsyncLock _teamLock = new ConcurrentAsyncLock();
         protected static readonly IReadOnlyDictionary<int, (int, int)> _emptyStat = new Dictionary<int, (int, int)>();

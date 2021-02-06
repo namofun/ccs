@@ -22,6 +22,8 @@ namespace SatelliteSite.ContestModule.Models
 
         public string TeamName { get; set; }
 
+        public int Kind { get; set; }
+
         public int Status { get; set; }
 
         public int CategoryId => Category.Id;

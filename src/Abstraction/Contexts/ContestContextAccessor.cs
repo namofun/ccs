@@ -7,8 +7,6 @@ namespace Ccs
     /// </summary>
     public interface IContestContextAccessor : IContestContextBase
     {
-        /// <summary>The problem collection</summary>
-        ProblemCollection Problems { get; }
     }
 
     /// <summary>

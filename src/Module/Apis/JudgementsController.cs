@@ -1,4 +1,5 @@
-﻿using Ccs.Specifications;
+﻿using Ccs.Services;
+using Ccs.Specifications;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Polygon.Entities;
@@ -17,7 +18,7 @@ namespace SatelliteSite.ContestModule.Apis
     [Authorize(AuthenticationSchemes = "Basic")]
     [Authorize(Roles = "CDS,Administrator")]
     [Produces("application/json")]
-    public class JudgementsController : ApiControllerBase
+    public class JudgementsController : ApiControllerBase<ISubmissionContext>
     {
         /// <summary>
         /// Get all the judgements for this contest

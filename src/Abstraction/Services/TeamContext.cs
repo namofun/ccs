@@ -12,67 +12,84 @@ namespace Ccs
     public partial interface IContestContext
     {
         /// <summary>
-        /// Fetch the affiliation.
+        /// Gets the specified affiliation.
         /// </summary>
         /// <param name="id">The affiliation ID.</param>
-        /// <returns>The task for fetching affiliations.</returns>
+        /// <returns>The task for fetching affiliation.</returns>
         Task<Affiliation?> FetchAffiliationAsync(int id);
 
         /// <summary>
-        /// Fetch the affiliations used in contest.
+        /// Gets the specified affiliation.
+        /// </summary>
+        /// <param name="abbr">The affiliation ID.</param>
+        /// <returns>The task for fetching affiliation.</returns>
+        Task<Affiliation?> FetchAffiliationAsync(string abbr);
+
+        /// <summary>
+        /// Gets the specified category.
+        /// </summary>
+        /// <param name="id">The category ID.</param>
+        /// <returns>The task for fetching category.</returns>
+        Task<Category?> FetchCategoryAsync(int id);
+
+        /// <summary>
+        /// Gets all the affiliations used in contest.
         /// </summary>
         /// <param name="contestFiltered">Whether filtering the entities only used in this contest.</param>
         /// <returns>The task for fetching affiliations.</returns>
         Task<IReadOnlyDictionary<int, Affiliation>> FetchAffiliationsAsync(bool contestFiltered = true);
 
         /// <summary>
-        /// Fetch the categories used in contest.
+        /// Gets all the categories used in contest.
         /// </summary>
         /// <param name="contestFiltered">Whether filtering the entities only used in this contest.</param>
-        /// <returns>The task for fetching affiliations.</returns>
+        /// <returns>The task for fetching categories.</returns>
         Task<IReadOnlyDictionary<int, Category>> FetchCategoriesAsync(bool contestFiltered = true);
 
         /// <summary>
-        /// Find team by team ID.
+        /// Finds team by team ID.
         /// </summary>
         /// <param name="teamId">The team ID.</param>
         /// <returns>The task for fetching team entity.</returns>
         Task<Team?> FindTeamByIdAsync(int teamId);
 
         /// <summary>
-        /// Find team by user ID.
+        /// Finds team by user ID.
         /// </summary>
         /// <param name="userId">The user ID.</param>
         /// <returns>The task for fetching team member entity.</returns>
         Task<Member?> FindMemberByUserAsync(int userId);
 
         /// <summary>
-        /// Fetch the team names as a lookup dictionary.
+        /// Gets all the team names as a lookup dictionary.
         /// </summary>
         /// <returns>The task for getting this dictionary.</returns>
         Task<IReadOnlyDictionary<int, string>> FetchTeamNamesAsync();
 
         /// <summary>
-        /// Fetch the team members as a lookup dictionary.
+        /// Gets the team members as a lookup dictionary.
         /// </summary>
         /// <returns>The task for getting this lookup.</returns>
         Task<ILookup<int, string>> FetchTeamMembersAsync();
+    }
+}
 
+namespace Ccs.Services
+{
+    /// <summary>
+    /// Provides contract for team controlling.
+    /// </summary>
+    public interface ITeamContext : IContestContext
+    {
         /// <summary>
-        /// Fetch the team member.
+        /// Gets the team member for specified team.
         /// </summary>
         /// <param name="team">The team.</param>
         /// <returns>The task for getting member.</returns>
         Task<IEnumerable<string>> FetchTeamMemberAsync(Team team);
 
         /// <summary>
-        /// Fetch the team names as a lookup dictionary.
-        /// </summary>
-        /// <returns>The task for getting this dictionary.</returns>
-        Task<IReadOnlyDictionary<int, Team>> FetchTeamsAsync();
-
-        /// <summary>
-        /// Create team.
+        /// Creates a team with users.
         /// </summary>
         /// <param name="team">The original team model.</param>
         /// <param name="users">The team members.</param>
@@ -80,7 +97,7 @@ namespace Ccs
         Task<Team> CreateTeamAsync(Team team, IEnumerable<IUser>? users);
 
         /// <summary>
-        /// Update team by expression.
+        /// Updates team by expression.
         /// </summary>
         /// <param name="origin">The original team model.</param>
         /// <param name="expression">The expression for updating team.</param>
@@ -88,7 +105,7 @@ namespace Ccs
         Task UpdateTeamAsync(Team origin, Expression<Func<Team, Team>> expression);
 
         /// <summary>
-        /// Update team by expression.
+        /// Updates team status.
         /// </summary>
         /// <param name="origin">The original team model.</param>
         /// <param name="status">The new team status.</param>
@@ -96,14 +113,14 @@ namespace Ccs
         Task UpdateTeamAsync(Team origin, int status);
 
         /// <summary>
-        /// Delete the team and returns existing members.
+        /// Deletes the team and returns existing members.
         /// </summary>
         /// <param name="origin">The original team.</param>
         /// <returns>The task for deleting contest teams.</returns>
         Task<IReadOnlyList<Member>> DeleteTeamAsync(Team origin);
 
         /// <summary>
-        /// Attach a user to the team if not attached.
+        /// Attaches a user to the team if not attached.
         /// </summary>
         /// <param name="team">The contest team.</param>
         /// <param name="user">The identity user.</param>
@@ -112,7 +129,7 @@ namespace Ccs
         Task AttachMemberAsync(Team team, IUser user, bool temporary);
 
         /// <summary>
-        /// List the teams with selected conditions.
+        /// Lists the teams with selected conditions.
         /// </summary>
         /// <param name="predicate">The conditions to match.</param>
         /// <returns>The task for listing entities.</returns>
@@ -132,7 +149,7 @@ namespace Ccs
         Task<IReadOnlyDictionary<int, (int, int, int, int)>> StatisticsGlobalAsync();
 
         /// <summary>
-        /// Lock out the temporary accounts.
+        /// Locks out the temporary accounts.
         /// </summary>
         /// <param name="userManager">The user manager.</param>
         /// <returns>The task for locking out.</returns>

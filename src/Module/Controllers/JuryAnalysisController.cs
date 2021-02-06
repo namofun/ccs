@@ -1,4 +1,5 @@
 ﻿using Ccs.Entities;
+using Ccs.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -13,7 +14,7 @@ namespace SatelliteSite.ContestModule.Controllers
 {
     [Area("Contest")]
     [Route("[area]/{cid:c(3)}/jury/analysis")]
-    public class JuryAnalysisController : JuryControllerBase
+    public class JuryAnalysisController : JuryControllerBase<IAnalysisContext>
     {
         public IReadOnlyDictionary<int, Team> Teams { get; set; }
 
@@ -120,7 +121,7 @@ namespace SatelliteSite.ContestModule.Controllers
         [HttpGet("[action]/{probid}")]
         public async Task<IActionResult> Problem(int probid)
         {
-            var prob = Problems.Find(probid);
+            var prob = await Context.FindProblemAsync(probid);
             if (prob == null) return NotFound();
 
             int cid = Contest.Id;

@@ -29,7 +29,16 @@ namespace Ccs
         /// <param name="replyTo">The clarification to reply to.</param>
         /// <returns>The task for creating clarification.</returns>
         Task<Clarification> ClarifyAsync(Clarification clar, Clarification? replyTo = null);
+    }
+}
 
+namespace Ccs.Services
+{
+    /// <summary>
+    /// Provides contract for clarification controlling.
+    /// </summary>
+    public interface IClarificationContext : IContestContext
+    {
         /// <summary>
         /// Mark the clarification as <paramref name="answered"/> directly.
         /// </summary>

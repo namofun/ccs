@@ -55,34 +55,8 @@ namespace SatelliteSite.ContestModule.Controllers
                 return RedirectToAction(nameof(Info));
             }
 
-            if (/*!Contest.RegisterCategory.HasValue || */User.IsInRole("Blocked"))
-            {
-                StatusMessage = "Error registration closed.";
-                return RedirectToAction(nameof(Info));
-            }
-
-            string defaultAff = User.IsInRole("Student") ? "jlu" : "null";
-            var affiliations = await Context.FetchAffiliationsAsync(false);
-            var aff = affiliations.Values.SingleOrDefault(a => a.Abbreviation == defaultAff);
-            if (aff == null) throw new ApplicationException("No default affiliation.");
-
-            var user = await UserManager.GetUserAsync(User);
-
-            var team = await Context.CreateTeamAsync(
-                users: new[] { user },
-                team: new Team
-                {
-                    AffiliationId = aff.Id,
-                    ContestId = Contest.Id,
-                    CategoryId = Contest.Settings.GetRegisterCategory("").Value,
-                    RegisterTime = DateTimeOffset.Now,
-                    Status = 0,
-                    TeamName = User.GetNickName(),
-                });
-
-            await HttpContext.AuditAsync("added", $"{team.TeamId}");
-            StatusMessage = "Registration succeeded.";
-            return RedirectToAction(nameof(Info));
+            await Task.CompletedTask;
+            return NoContent();
         }
 
 

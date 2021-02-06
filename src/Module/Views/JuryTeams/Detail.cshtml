@@ -52,7 +52,7 @@
     <a asp-controller="JuryClarifications" asp-action="Send" asp-route-teamto="@Model.TeamId" class="btn btn-secondary" title="Send message"><i class="fas fa-envelope"></i>&nbsp;Send message</a>
 </p>
 
-<razor asp-show-if="Model.Status == 1">
+<razor asp-show-if="Model.Status == 1 && Model.Kind != 2">
     <h3>Score</h3>
     <domjudge-scoreboard model="Model" />
 </razor>

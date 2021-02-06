@@ -41,6 +41,13 @@ namespace Ccs.Services
         Task<List<Rejudging>> FetchRejudgingsAsync(bool includeStat = true);
 
         /// <summary>
+        /// Count the judgings with predicate.
+        /// </summary>
+        /// <param name="predicate">The predicate.</param>
+        /// <returns>The count task.</returns>
+        Task<int> CountJudgingAsync(Expression<Func<Judging, bool>> predicate);
+
+        /// <summary>
         /// Lists the rejudging for certain contest.
         /// </summary>
         /// <returns>The task for fetching rejudging entities.</returns>

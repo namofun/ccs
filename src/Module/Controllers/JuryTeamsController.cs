@@ -1,5 +1,6 @@
 ﻿using Ccs.Entities;
 using Ccs.Registration;
+using Ccs.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -15,7 +16,7 @@ namespace SatelliteSite.ContestModule.Controllers
     [Authorize]
     [Route("[area]/{cid:c(7)}/jury/teams")]
     [AuditPoint(AuditlogType.Team)]
-    public partial class JuryTeamsController : JuryControllerBase
+    public partial class JuryTeamsController : JuryControllerBase<ITeamContext>
     {
         private RegisterProviderContext CreateRegisterProviderContext()
             => new RegisterProviderContext(Contest, HttpContext, UserManager);
@@ -58,7 +59,9 @@ namespace SatelliteSite.ContestModule.Controllers
             {
                 ContestId = Contest.Id,
                 RankingStrategy = Contest.RankingStrategy,
-                Problems = Problems,
+                Kind = Contest.Kind,
+                // For problemsets, don't show problems.
+                Problems = Contest.Kind == 2 ? null : await Context.ListProblemsAsync(),
                 Affiliation = affs[team.AffiliationId],
                 Category = cats[team.CategoryId],
                 Solutions = sols,
