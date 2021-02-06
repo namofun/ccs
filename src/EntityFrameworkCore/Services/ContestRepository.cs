@@ -60,7 +60,7 @@ namespace Ccs.Services
                 .Select(c => new ContestListModel(c.Id, c.Name, c.ShortName, c.StartTime, c.EndTimeSeconds, c.Kind, c.RankingStrategy, c.IsPublic, c.TeamCount, c.ProblemCount))
                 .ToPagedListAsync(page, limit);
 
-        public Task<IPagedList<ContestListModel>> ListAsync(int userId, int kind, int page = 1, int limit = 100)
+        public Task<IPagedList<ContestListModel>> ListAsync(ClaimsPrincipal user, int? kind = null, int page = 1, int limit = 100)
         {
             throw new NotImplementedException();
         }

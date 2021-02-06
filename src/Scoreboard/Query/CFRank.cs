@@ -149,7 +149,7 @@ namespace Ccs.Scoreboard.Query
         {
             int cid = args.Contest.Id;
             var scores = args.Problems.ToDictionary(k => k.ProblemId, v => v.Score);
-            var results = await store.FetchRecalculateAsync(cid, args.Deadline);
+            var results = await store.FetchSolutionsAsync(cid, args.Deadline);
 
             var rcc = new Dictionary<int, RankCache>();
             var scc = new Dictionary<(int, int), ScoreCache>();

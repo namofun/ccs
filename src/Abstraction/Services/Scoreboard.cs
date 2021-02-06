@@ -20,7 +20,7 @@ namespace Ccs.Services
         Task CreateBalloonAsync(int id);
 
         /// <summary>
-        /// Remove all caches from the contest and set up the new ranks and scores.
+        /// Removes all caches from the contest and set up the new ranks and scores.
         /// </summary>
         /// <param name="cid">The contest ID.</param>
         /// <param name="ranks">The new rank entities.</param>
@@ -32,7 +32,7 @@ namespace Ccs.Services
             IEnumerable<ScoreCache> scores);
 
         /// <summary>
-        /// Update the score cache, or insert the default value.
+        /// Updates the score cache, or insert the default value.
         /// </summary>
         /// <param name="cid">The contest ID.</param>
         /// <param name="teamid">The team ID.</param>
@@ -46,7 +46,7 @@ namespace Ccs.Services
             Expression<Func<ScoreCache, ScoreCache>> update);
 
         /// <summary>
-        /// Update the score cache value.
+        /// Updates the score cache value.
         /// </summary>
         /// <param name="cid">The contest ID.</param>
         /// <param name="teamid">The team ID.</param>
@@ -58,7 +58,7 @@ namespace Ccs.Services
             Expression<Func<ScoreCache, ScoreCache>> expression);
 
         /// <summary>
-        /// Update the score cache value with condition.
+        /// Updates the score cache value with condition.
         /// </summary>
         /// <param name="cid">The contest ID.</param>
         /// <param name="teamid">The team ID.</param>
@@ -72,7 +72,7 @@ namespace Ccs.Services
             Expression<Func<ScoreCache, ScoreCache>> expression);
 
         /// <summary>
-        /// Check whether the current solution is first to solve.
+        /// Checks whether the current solution is first to solve.
         /// </summary>
         /// <remarks>Note that this should be executed before running exact updates. This only runs when we are using the XCPC rules.</remarks>
         /// <param name="cid">The contest ID.</param>
@@ -82,7 +82,7 @@ namespace Ccs.Services
         Task<bool> IsFirstToSolveAsync(int cid, int teamid, int probid);
 
         /// <summary>
-        /// Update the rank cache value, or insert the default value.
+        /// Updates the rank cache value, or insert the default value.
         /// </summary>
         /// <param name="cid">The contest ID.</param>
         /// <param name="teamid">The team ID.</param>
@@ -96,22 +96,29 @@ namespace Ccs.Services
             Expression<Func<RankCache, RankCache, RankCache>> update);
 
         /// <summary>
-        /// Fetch the solution information for recalculating scoreboard.
+        /// Gets the solution information for recalculating scoreboard.
         /// </summary>
         /// <param name="cid">The contest ID.</param>
         /// <param name="deadline">The latest submission time.</param>
         /// <returns>The task for fetching solutions.</returns>
-        Task<List<ScoreCalculateModel>> FetchRecalculateAsync(int cid, DateTimeOffset deadline);
+        Task<List<ScoreCalculateModel>> FetchSolutionsAsync(int cid, DateTimeOffset deadline);
 
         /// <summary>
-        /// Rebuild the partial score used by some contest.
+        /// Rebuilds the partial score used by some contest.
         /// </summary>
         /// <param name="cid">The contest ID.</param>
         /// <returns>The task for recalculating.</returns>
         Task RebuildPartialScoreAsync(int cid);
 
         /// <summary>
-        /// Emit an event.
+        /// Rebuilds the submission statistics for some contest.
+        /// </summary>
+        /// <param name="cid">The contest ID.</param>
+        /// <returns>The task for recalculating.</returns>
+        Task RebuildStatisticsAsync(int cid);
+
+        /// <summary>
+        /// Emits an event.
         /// </summary>
         /// <param name="event">The new event entity.</param>
         /// <returns>The task for emitting.</returns>

@@ -13,14 +13,14 @@ namespace Ccs.Services
     public interface IPrintingService
     {
         /// <summary>
-        /// Create an instance of entity.
+        /// Creates an instance of printing.
         /// </summary>
         /// <param name="entity">The entity.</param>
         /// <returns>The task for creating entity.</returns>
         Task<Printing> CreateAsync(Printing entity);
 
         /// <summary>
-        /// Set the state of contest printing.
+        /// Sets the state of contest printing.
         /// </summary>
         /// <param name="printing">The printing entity.</param>
         /// <param name="done">The state.</param>
@@ -28,7 +28,7 @@ namespace Ccs.Services
         Task<bool> SetStateAsync(Printing printing, bool? done);
 
         /// <summary>
-        /// Find the printing entity.
+        /// Finds the printing entity.
         /// </summary>
         /// <param name="id">The printing ID.</param>
         /// <param name="full">Whether to include source code.</param>
@@ -36,14 +36,15 @@ namespace Ccs.Services
         Task<Printing?> FindAsync(int id, bool full = false);
 
         /// <summary>
-        /// Find the first printing entity satisfying the condition.
+        /// Finds the first printing entity satisfying the condition.
         /// </summary>
         /// <param name="condition">The condition expression.</param>
         /// <returns>The task for fetching entity.</returns>
+        /// <remarks>This implementation doesn't need to be thread safe.</remarks>
         Task<Printing?> FirstAsync(Expression<Func<Printing, bool>> condition);
 
         /// <summary>
-        /// List the printing tasks for jury page.
+        /// Lists the printing tasks for jury page.
         /// </summary>
         /// <param name="contestId">The contest ID.</param>
         /// <param name="limit">The count per page.</param>

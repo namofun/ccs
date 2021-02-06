@@ -15,14 +15,14 @@ namespace Ccs.Services
     public interface IContestRepository
     {
         /// <summary>
-        /// Find the instance of entity.
+        /// Finds the instance of contest.
         /// </summary>
         /// <param name="cid">The contest ID.</param>
         /// <returns>The task for fetching entity.</returns>
         Task<ContestWrapper?> FindAsync(int cid);
 
         /// <summary>
-        /// Update the instance of entity.
+        /// Updates the instance of contest.
         /// </summary>
         /// <param name="cid">The contest ID.</param>
         /// <param name="expression">The updating expression.</param>
@@ -30,7 +30,7 @@ namespace Ccs.Services
         Task UpdateAsync(int cid, Expression<Func<Contest, Contest>> expression);
 
         /// <summary>
-        /// Create an instance of entity.
+        /// Creates an instance of contest.
         /// </summary>
         /// <param name="kind">The contest kind.</param>
         /// <param name="user">The creation user.</param>
@@ -38,17 +38,17 @@ namespace Ccs.Services
         Task<ContestWrapper> CreateAndAssignAsync(int kind, ClaimsPrincipal user);
 
         /// <summary>
-        /// List the contests with user and kind limitation.
+        /// Lists the contests with user and kind limitation.
         /// </summary>
-        /// <param name="userId">The user ID.</param>
+        /// <param name="user">The user claims principal.</param>
         /// <param name="kind">The contest kind.</param>
         /// <param name="page">The current page.</param>
         /// <param name="limit">The count per page.</param>
         /// <returns>The task for fetching paged lists.</returns>
-        Task<IPagedList<ContestListModel>> ListAsync(int userId, int kind, int page = 1, int limit = 100);
+        Task<IPagedList<ContestListModel>> ListAsync(ClaimsPrincipal user, int? kind = null, int page = 1, int limit = 100);
 
         /// <summary>
-        /// List the contests with original entity.
+        /// Lists the contests with original entity.
         /// </summary>
         /// <param name="page">The current page.</param>
         /// <param name="limit">The count per page.</param>

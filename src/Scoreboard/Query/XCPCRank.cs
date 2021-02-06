@@ -168,7 +168,7 @@ namespace Ccs.Scoreboard.Query
         public async Task RefreshCache(IScoreboard store, ScoreboardRefreshEvent args)
         {
             int cid = args.Contest.Id;
-            var results = await store.FetchRecalculateAsync(cid, args.Deadline);
+            var results = await store.FetchSolutionsAsync(cid, args.Deadline);
             var rcc = new Dictionary<int, RankCache>();
             var scc = new Dictionary<(int, int), ScoreCache>();
             var fb = new HashSet<(int, int)>();
