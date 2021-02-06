@@ -46,7 +46,7 @@ namespace Ccs.Scoreboard.Query
 
         /// <inheritdoc />
         /// <remarks>The race condition caused by FirstToSolve query can be ignored. FirstToSolve field isn't important.</remarks>
-        public async Task Accept(IScoreboard store, Contest contest, JudgingFinishedEvent args)
+        public async Task Accept(IScoreboard store, IContestInformation contest, JudgingFinishedEvent args)
         {
             bool fb = await store.IsFirstToSolveAsync(
                 cid: args.ContestId!.Value,
@@ -107,7 +107,7 @@ namespace Ccs.Scoreboard.Query
 
 
         /// <inheritdoc />
-        public Task CompileError(IScoreboard store, Contest contest, JudgingFinishedEvent args)
+        public Task CompileError(IScoreboard store, IContestInformation contest, JudgingFinishedEvent args)
         {
             bool showPublic = contest.GetState(args.SubmitTime) < ContestState.Frozen;
             return store.ScoreUpdateAsync(
@@ -124,7 +124,7 @@ namespace Ccs.Scoreboard.Query
 
 
         /// <inheritdoc />
-        public Task Pending(IScoreboard store, Contest contest, SubmissionCreatedEvent args)
+        public Task Pending(IScoreboard store, IContestInformation contest, SubmissionCreatedEvent args)
         {
             return store.ScoreUpsertAsync(
                 cid: args.Submission.ContestId,
@@ -146,7 +146,7 @@ namespace Ccs.Scoreboard.Query
 
 
         /// <inheritdoc />
-        public Task Reject(IScoreboard store, Contest contest, JudgingFinishedEvent args)
+        public Task Reject(IScoreboard store, IContestInformation contest, JudgingFinishedEvent args)
         {
             bool showPublic = contest.GetState(args.SubmitTime) < ContestState.Frozen;
             return store.ScoreUpdateAsync(

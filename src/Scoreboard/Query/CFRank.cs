@@ -45,7 +45,7 @@ namespace Ccs.Scoreboard.Query
 
 
         /// <inheritdoc />
-        public Task CompileError(IScoreboard store, Contest contest, JudgingFinishedEvent args)
+        public Task CompileError(IScoreboard store, IContestInformation contest, JudgingFinishedEvent args)
         {
             return store.ScoreUpdateAsync(
                 cid: args.ContestId!.Value,
@@ -60,7 +60,7 @@ namespace Ccs.Scoreboard.Query
 
 
         /// <inheritdoc />
-        public Task Pending(IScoreboard store, Contest contest, SubmissionCreatedEvent args)
+        public Task Pending(IScoreboard store, IContestInformation contest, SubmissionCreatedEvent args)
         {
             return store.ScoreUpsertAsync(
                 cid: args.Submission.ContestId,
@@ -86,7 +86,7 @@ namespace Ccs.Scoreboard.Query
         /// solution comes from accepted to rejected, and the variable
         /// <c>fst</c> will be true.
         /// </remarks>
-        public Task Reject(IScoreboard store, Contest contest, JudgingFinishedEvent args)
+        public Task Reject(IScoreboard store, IContestInformation contest, JudgingFinishedEvent args)
         {
             bool fst = args.Judging.Active && args.Judging.RejudgingId.HasValue;
 
@@ -104,7 +104,7 @@ namespace Ccs.Scoreboard.Query
 
 
         /// <inheritdoc />
-        public async Task Accept(IScoreboard store, Contest contest, JudgingFinishedEvent args)
+        public async Task Accept(IScoreboard store, IContestInformation contest, JudgingFinishedEvent args)
         {
             double time = (args.SubmitTime - contest.StartTime)?.TotalSeconds ?? 0;
             int timee = (int)(time / 60);

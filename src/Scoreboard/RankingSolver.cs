@@ -19,8 +19,7 @@ namespace Ccs.Scoreboard
     public class RankingSolver :
         INotificationHandler<JudgingFinishedEvent>,
         INotificationHandler<SubmissionCreatedEvent>,
-        INotificationHandler<ScoreboardRefreshEvent>,
-        IRequestHandler<ScoreboardSortEvent, IEnumerable<IScoreboardRow>>
+        INotificationHandler<ScoreboardRefreshEvent>
     {
         /// <summary>
         /// The interface for scoreboard storage
@@ -105,12 +104,6 @@ namespace Ccs.Scoreboard
                 Verdict.CompileError => strategy.CompileError(Store, contest, notification),
                 _ => strategy.Reject(Store, contest, notification)
             });
-        }
-
-        /// <inheritdoc />
-        public Task<IEnumerable<IScoreboardRow>> Handle(ScoreboardSortEvent request, CancellationToken cancellationToken)
-        {
-            return Task.FromResult(Select(request.Contest).SortByRule(request.Source, request.IsPublic));
         }
     }
 }

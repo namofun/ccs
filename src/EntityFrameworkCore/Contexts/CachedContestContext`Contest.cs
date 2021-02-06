@@ -1,4 +1,5 @@
 ﻿using Ccs.Entities;
+using Ccs.Models;
 using Microsoft.AspNetCore.Identity;
 using Polygon.Entities;
 using System;
@@ -16,7 +17,7 @@ namespace Ccs.Services
                 async () => await base.FetchLanguagesAsync());
         }
 
-        public override async Task<Contest> UpdateContestAsync(
+        public override async Task<ContestWrapper> UpdateContestAsync(
             Expression<Func<Contest, Contest>> updateExpression)
         {
             await Ccs.UpdateAsync(Contest.Id, updateExpression);
@@ -25,7 +26,7 @@ namespace Ccs.Services
 
             // The other occurrence is in Factory.cs
             return await CacheAsync("Core", _options.Contest,
-                async () => await Ccs.FindAsync(Contest.Id));
+                async () => (await Ccs.FindAsync(Contest.Id))!);
         }
 
         public override Task<object> GetUpdatesAsync()

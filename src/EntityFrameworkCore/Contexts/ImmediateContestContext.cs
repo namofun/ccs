@@ -1,4 +1,5 @@
 ﻿using Ccs.Entities;
+using Ccs.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Polygon.Storages;
@@ -14,7 +15,7 @@ namespace Ccs.Services
     public partial class ImmediateContestContext : IContestContext, ISupportDbContext, IContestQueryableStore
     {
         private readonly IServiceProvider _services;
-        private readonly Contest _contest;
+        private readonly ContestWrapper _contest;
         private IContestRepository? _ccsFacade;
         private IPolygonFacade? _polygonFacade;
 
@@ -38,7 +39,7 @@ namespace Ccs.Services
         IQueryable<RankCache> IContestQueryableStore.RankCache => Db.RankCache;
         IQueryable<ScoreCache> IContestQueryableStore.ScoreCache => Db.ScoreCache;
 
-        public ImmediateContestContext(Contest contest, IServiceProvider serviceProvider)
+        public ImmediateContestContext(ContestWrapper contest, IServiceProvider serviceProvider)
         {
             _contest = contest;
             _services = serviceProvider;

@@ -18,10 +18,10 @@ namespace Ccs.Services
         public ContestRepository(TContext context)
             => Db = context;
 
-        public Task<Contest> FindAsync(int cid)
+        public Task<Contest?> FindAsync(int cid)
             => Db.Contests
                 .Where(c => c.Id == cid)
-                .SingleOrDefaultAsync();
+                .SingleOrDefaultAsync()!;
 
         public Task UpdateAsync(int cid, Expression<Func<Contest, Contest>> expression)
             => Db.Contests
@@ -77,7 +77,20 @@ namespace Ccs.Services
             return e.Entity;
         }
 
-        #region QueryableStore
+        async Task<ContestWrapper?> IContestRepository.FindAsync(int cid)
+        {
+            var entity = await FindAsync(cid);
+            if (entity == null) return null;
+            return new ContestWrapper(entity);
+        }
+
+        async Task<ContestWrapper> IContestRepository.CreateAndAssignAsync(int kind, ClaimsPrincipal user)
+        {
+            var entity = await CreateAndAssignAsync(kind, user);
+            return new ContestWrapper(entity);
+        }
+
+        #region Queryable Store
 
         IQueryable<Contest> IContestQueryableStore.Contests => Db.Contests;
         IQueryable<ContestProblem> IContestQueryableStore.ContestProblems => Db.ContestProblems;

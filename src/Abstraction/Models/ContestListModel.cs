@@ -1,7 +1,5 @@
 ﻿using Ccs.Entities;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Ccs.Models
 {
@@ -9,28 +7,28 @@ namespace Ccs.Models
     {
         private readonly int _state;
 
-        /// <inheritdoc cref="Contest.Id" />
+        /// <inheritdoc cref="IContestInformation.Id" />
         public int ContestId { get; }
 
-        /// <inheritdoc cref="Contest.Name" />
+        /// <inheritdoc cref="IContestInformation.Name" />
         public string Name { get; }
 
-        /// <inheritdoc cref="Contest.ShortName" />
+        /// <inheritdoc cref="IContestInformation.ShortName" />
         public string ShortName { get; }
 
-        /// <inheritdoc cref="Contest.StartTime" />
+        /// <inheritdoc cref="IContestTime.StartTime" />
         public DateTimeOffset? StartTime { get; }
 
         /// <summary>The contest duration</summary>
         public TimeSpan? Duration { get; }
 
-        /// <inheritdoc cref="Contest.Kind" />
+        /// <inheritdoc cref="IContestInformation.Kind" />
         public int Kind { get; }
 
-        /// <inheritdoc cref="Contest.RankingStrategy" />
+        /// <inheritdoc cref="IContestInformation.RankingStrategy" />
         public int RankingStrategy { get; }
 
-        /// <inheritdoc cref="Contest.IsPublic" />
+        /// <inheritdoc cref="IContestInformation.IsPublic" />
         public bool IsPublic { get; }
 
         /// <inheritdoc cref="Contest.TeamCount" />

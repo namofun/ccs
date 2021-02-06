@@ -19,7 +19,7 @@ namespace Ccs.Services
         /// </summary>
         /// <param name="cid">The contest ID.</param>
         /// <returns>The task for fetching entity.</returns>
-        Task<Contest> FindAsync(int cid);
+        Task<ContestWrapper?> FindAsync(int cid);
 
         /// <summary>
         /// Update the instance of entity.
@@ -35,7 +35,7 @@ namespace Ccs.Services
         /// <param name="kind">The contest kind.</param>
         /// <param name="user">The creation user.</param>
         /// <returns>The task for creating entity.</returns>
-        Task<Contest> CreateAndAssignAsync(int kind, ClaimsPrincipal user);
+        Task<ContestWrapper> CreateAndAssignAsync(int kind, ClaimsPrincipal user);
 
         /// <summary>
         /// List the contests with user and kind limitation.

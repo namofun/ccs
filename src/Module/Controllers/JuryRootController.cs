@@ -147,23 +147,6 @@ namespace SatelliteSite.ContestModule.Controllers
         }
 
 
-        [HttpGet("/[area]/{cid:c(1)}/[controller]/[action]")]
-        public async Task<IActionResult> Balloon()
-        {
-            if (!Contest.Settings.BalloonAvailable) return NotFound();
-            var model = await Context.FetchBalloonsAsync();
-            return View(model);
-        }
-
-
-        [HttpGet("/[area]/{cid:c(1)}/[controller]/balloon/{id}/set-done")]
-        public async Task<IActionResult> BalloonSetDone(int id)
-        {
-            if (!Contest.Settings.BalloonAvailable) return NotFound();
-            await Context.SetBalloonDoneAsync(id);
-            return RedirectToAction(nameof(Balloon));
-        }
-
 
         [HttpGet("[action]")]
         [Authorize(Roles = "Administrator")]

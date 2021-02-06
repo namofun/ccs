@@ -1,5 +1,4 @@
-﻿using Ccs.Entities;
-using Ccs.Events;
+﻿using Ccs.Events;
 using Ccs.Models;
 using Ccs.Services;
 using Polygon.Entities;
@@ -29,7 +28,7 @@ namespace Ccs.Scoreboard
         /// <param name="contest">The contest entity.</param>
         /// <param name="args">The submission created event.</param>
         /// <returns>The task for updating scoreboard.</returns>
-        Task Pending(IScoreboard store, Contest contest, SubmissionCreatedEvent args);
+        Task Pending(IScoreboard store, IContestInformation contest, SubmissionCreatedEvent args);
 
         /// <summary>
         /// A submission is judged as <see cref="Verdict.CompileError"/>.
@@ -38,7 +37,7 @@ namespace Ccs.Scoreboard
         /// <param name="contest">The contest entity.</param>
         /// <param name="args">The judging finished event.</param>
         /// <returns>The task for updating scoreboard.</returns>
-        Task CompileError(IScoreboard store, Contest contest, JudgingFinishedEvent args);
+        Task CompileError(IScoreboard store, IContestInformation contest, JudgingFinishedEvent args);
 
         /// <summary>
         /// A submission is judged as <see cref="Verdict.WrongAnswer"/> or other rejected verdicts.
@@ -47,7 +46,7 @@ namespace Ccs.Scoreboard
         /// <param name="contest">The contest entity.</param>
         /// <param name="args">The judging finished event.</param>
         /// <returns>The task for updating scoreboard.</returns>
-        Task Reject(IScoreboard store, Contest contest, JudgingFinishedEvent args);
+        Task Reject(IScoreboard store, IContestInformation contest, JudgingFinishedEvent args);
 
         /// <summary>
         /// A submission is judged as <see cref="Verdict.Accepted"/>.
@@ -56,7 +55,7 @@ namespace Ccs.Scoreboard
         /// <param name="contest">The contest entity.</param>
         /// <param name="args">The judging finished event.</param>
         /// <returns>The task for updating scoreboard.</returns>
-        Task Accept(IScoreboard store, Contest contest, JudgingFinishedEvent args);
+        Task Accept(IScoreboard store, IContestInformation contest, JudgingFinishedEvent args);
 
         /// <summary>
         /// The scoreboard cache is asked to be refreshed.

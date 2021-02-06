@@ -1,4 +1,5 @@
 ﻿using Ccs.Entities;
+using Ccs.Models;
 using Markdig;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -26,10 +27,10 @@ namespace Ccs.Services
             return langs;
         }
 
-        public virtual async Task<Contest> UpdateContestAsync(Expression<Func<Contest, Contest>> updateExpression)
+        public virtual async Task<ContestWrapper> UpdateContestAsync(Expression<Func<Contest, Contest>> updateExpression)
         {
             await Ccs.UpdateAsync(Contest.Id, updateExpression);
-            return await Ccs.FindAsync(Contest.Id);
+            return (await Ccs.FindAsync(Contest.Id))!;
         }
 
         public virtual Task<Dictionary<int, string>> FetchJuryAsync()

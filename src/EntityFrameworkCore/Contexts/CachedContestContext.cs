@@ -1,4 +1,4 @@
-﻿using Ccs.Entities;
+﻿using Ccs.Models;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using System;
@@ -12,7 +12,7 @@ namespace Ccs.Services
         private readonly CachedContestContextIntervalOptions _options;
 
         public CachedContestContext(
-            Contest contest,
+            ContestWrapper contest,
             IMemoryCache cache,
             IServiceProvider serviceProvider,
             IOptions<CachedContestContextIntervalOptions> options) :

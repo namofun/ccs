@@ -1,4 +1,5 @@
 ﻿using Ccs.Entities;
+using Ccs.Models;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
@@ -14,7 +15,7 @@ namespace Ccs
         /// </summary>
         /// <param name="updateExpression">The update expression.</param>
         /// <returns>The task for updating the contest.</returns>
-        Task<Contest> UpdateContestAsync(Expression<Func<Contest, Contest>> updateExpression);
+        Task<ContestWrapper> UpdateContestAsync(Expression<Func<Contest, Contest>> updateExpression);
 
         /// <summary>
         /// Fetch the ID of the latest event.

@@ -1,5 +1,4 @@
-﻿using Ccs.Entities;
-using Ccs.Models;
+﻿using Ccs.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

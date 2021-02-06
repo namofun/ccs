@@ -46,11 +46,11 @@ namespace Ccs.Scoreboard.Query
 
         /// <inheritdoc />
         /// <remarks>Accepted is scored as the same way as rejected.</remarks>
-        public Task Accept(IScoreboard store, Contest contest, JudgingFinishedEvent args) => Reject(store, contest, args);
+        public Task Accept(IScoreboard store, IContestInformation contest, JudgingFinishedEvent args) => Reject(store, contest, args);
 
 
         /// <inheritdoc />
-        public Task CompileError(IScoreboard store, Contest contest, JudgingFinishedEvent args)
+        public Task CompileError(IScoreboard store, IContestInformation contest, JudgingFinishedEvent args)
         {
             bool showPublic = contest.GetState(args.SubmitTime) < ContestState.Frozen;
             return store.ScoreUpdateAsync(
@@ -66,7 +66,7 @@ namespace Ccs.Scoreboard.Query
 
 
         /// <inheritdoc />
-        public Task Pending(IScoreboard store, Contest contest, SubmissionCreatedEvent args)
+        public Task Pending(IScoreboard store, IContestInformation contest, SubmissionCreatedEvent args)
         {
             return store.ScoreUpsertAsync(
                 cid: args.Submission.ContestId,
@@ -88,7 +88,7 @@ namespace Ccs.Scoreboard.Query
 
 
         /// <inheritdoc />
-        public async Task Reject(IScoreboard store, Contest contest, JudgingFinishedEvent args)
+        public async Task Reject(IScoreboard store, IContestInformation contest, JudgingFinishedEvent args)
         {
             bool showRestricted = contest.GetState(args.SubmitTime) >= ContestState.Frozen;
             double time = (args.SubmitTime - contest.StartTime)?.TotalSeconds ?? 0;
