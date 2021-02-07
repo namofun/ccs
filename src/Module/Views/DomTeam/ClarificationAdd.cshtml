@@ -5,6 +5,7 @@
     ViewData["MaxWidth"] = "800px";
     ViewData["StaticBackdrop"] = true;
     ViewData["HandleKey"] ??= "clarification";
+    var problems = await Contest.Context.ListProblemsAsync();
 }
 
 <div class="form-group">
@@ -15,7 +16,7 @@
 </div>
 <div class="form-group">
     <label class="required" asp-for="Type"></label>
-    <select asp-for="Type" class="form-control custom-select form-control" asp-items="Contest.Problems.ClarificationCategories.Select(a => new SelectListItem(a.Item4, a.Item1))"></select>
+    <select asp-for="Type" class="form-control custom-select form-control" asp-items="problems.ClarificationCategories.Select(a => new SelectListItem(a.Item4, a.Item1))"></select>
 </div>
 <div class="form-group">
     <label asp-for="Body" class="required"></label>

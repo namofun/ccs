@@ -5,6 +5,7 @@
     IReadOnlyDictionary<int, (int Accepted, int Total)> substat = ViewBag.SubmissionStatistics;
     var avp = substat?.Where(sc => sc.Value.Accepted > 0).Select(sc => sc.Key).ToHashSet() ?? new HashSet<int>();
     int? teamid = Contest.Team?.TeamId;
+    var problems = await Contest.Context.ListProblemsAsync();
 }
 
 <div class="container pl-0 pr-0">
@@ -31,7 +32,7 @@
         <tbody>
             @foreach (var stat in Model)
             {
-                var prob = Contest.Problems.Find(stat.ProblemId);
+                var prob = problems.Find(stat.ProblemId);
                 if (prob == null) { continue; }
                 var notIgnore = Contest.Settings.StatusAvailable == 1 || stat.TeamId == teamid || (Contest.Settings.StatusAvailable == 2 && avp.Contains(stat.ProblemId));
                 <tr role="row" asp-link-ignore="@(!notIgnore)" asp-action="Submission" asp-route-sid="@stat.SubmissionId" data-toggle="ajaxWindow" data-target="showSubmission">

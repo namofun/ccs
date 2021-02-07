@@ -2,6 +2,7 @@
 @{
     ViewData["Title"] = "Send clarification";
     var teams = await Contest.Context.FetchTeamNamesAsync();
+    var problems = await Contest.Context.ListProblemsAsync();
     Model.Body = !string.IsNullOrWhiteSpace(Model.Body) ? string.Join('\n', Model.Body.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).Select(c => "> " + c)) + '\n' : "";
     bool useCanned = ViewData.ContainsKey("UseCanned");
 }
@@ -25,7 +26,7 @@
 
     <div class="form-group">
         <label asp-for="Type"></label>
-        <select asp-for="Type" class="custom-select" asp-items="@Contest.Problems.ClarificationCategories.Select(cp => new SelectListItem(cp.Item4, cp.Item1))">
+        <select asp-for="Type" class="custom-select" asp-items="@problems.ClarificationCategories.Select(cp => new SelectListItem(cp.Item4, cp.Item1))">
         </select>
     </div>
 
