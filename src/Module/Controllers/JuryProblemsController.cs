@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.IO.Compression;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SatelliteSite.ContestModule.Controllers
@@ -32,7 +31,7 @@ namespace SatelliteSite.ContestModule.Controllers
         [HttpGet("{probid}")]
         public async Task<IActionResult> Detail(int probid, bool all = false)
         {
-            var prob = Problems.Find(probid);
+            var prob = await Context.FindProblemAsync(probid);
             if (prob == null) return NotFound();
             var sols = await Context.FetchSolutionsAsync(probid: probid, all: all);
             var tn = await Context.FetchTeamNamesAsync();
@@ -45,7 +44,7 @@ namespace SatelliteSite.ContestModule.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Add(ContestProblem model)
         {
-            if (null != Problems.Find(model.ShortName))
+            if (null != await Context.FindProblemAsync(model.ShortName))
                 ModelState.AddModelError("xys::duplicate", "Duplicate short name for problem.");
 
             var probDetect = await Context.CheckProblemAvailabilityAsync(model.ProblemId, User);
@@ -82,9 +81,9 @@ namespace SatelliteSite.ContestModule.Controllers
 
 
         [HttpGet("{probid}/[action]")]
-        public IActionResult Edit(int probid)
+        public async Task<IActionResult> Edit(int probid)
         {
-            var prob = Problems.Find(probid);
+            var prob = await Context.FindProblemAsync(probid);
             if (prob == null) return NotFound();
             return Window(prob);
         }
@@ -94,13 +93,16 @@ namespace SatelliteSite.ContestModule.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int probid, ContestProblem model)
         {
-            var origin = Problems.Find(probid);
+            var origin = await Context.FindProblemAsync(probid);
             if (origin == null) return NotFound();
 
-            if (Problems.Any(cp => cp.ShortName == model.ShortName && cp.ProblemId != probid))
+            var sameName = await Context.FindProblemAsync(model.ShortName);
+            if (sameName != null && sameName.ProblemId != probid)
+            {
                 ModelState.AddModelError("xys::duplicate", "Duplicate short name for problem.");
-            if (!ModelState.IsValid)
-                return Window(model);
+            }
+
+            if (!ModelState.IsValid) return Window(model);
 
             model.Color = "#" + model.Color.TrimStart('#');
             await Context.UpdateProblemAsync(origin,
@@ -118,9 +120,9 @@ namespace SatelliteSite.ContestModule.Controllers
 
 
         [HttpGet("{probid}/[action]")]
-        public IActionResult Delete(int probid)
+        public async Task<IActionResult> Delete(int probid)
         {
-            var prob = Problems.Find(probid);
+            var prob = await Context.FindProblemAsync(probid);
             if (prob == null) return NotFound();
 
             return AskPost(
@@ -135,7 +137,7 @@ namespace SatelliteSite.ContestModule.Controllers
         [HttpPost("{probid}/[action]")]
         public async Task<IActionResult> Delete(int probid, bool _ = true)
         {
-            var prob = Problems.Find(probid);
+            var prob = await Context.FindProblemAsync(probid);
             if (prob == null) return NotFound();
 
             await Context.DeleteProblemAsync(prob);
@@ -150,6 +152,8 @@ namespace SatelliteSite.ContestModule.Controllers
         public async Task<IActionResult> GenerateStatement(
             [FromServices] IStatementWriter writer)
         {
+            if (Contest.Kind == 2) return StatusCode(503);
+
             var stmts = await Context.FetchRawStatementsAsync();
             var startTime = Contest.StartTime ?? DateTimeOffset.Now;
             var startDate = startTime.ToString("dddd, MMMM d, yyyy", CultureInfo.GetCultureInfo(1033));

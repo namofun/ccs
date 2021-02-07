@@ -58,7 +58,7 @@ else
                     <tbody>
                         @foreach (var submit in Model.Submissions)
                         {
-                            ProblemModel p = Contest.Problems.Find(submit.ProblemId);
+                            var p = Model.Problems.Find(submit.ProblemId);
                             if (p == null) { continue; }
                             var t = submit.Time;
                             var b = !Contest.EndTime.HasValue || t < (Contest.StartTime + Contest.EndTime).Value;
@@ -95,7 +95,7 @@ else
                         <tbody>
                             @foreach (var clar in Model.Clarifications.Where(c => !c.Sender.HasValue))
                             {
-                                var prob = Contest.Problems.Find(clar.ProblemId ?? -1);
+                                var prob = Model.Problems.Find(clar.ProblemId ?? -1);
                                 <tr asp-action="ClarificationView" asp-route-clarid="@clar.Id" data-toggle="ajaxWindow" data-target="recv-clar" class="unseen" id="clar_@clar.Id">
                                     <td use-a>@clar.SubmitTime.ToString("HH:mm")</td>
                                     <td use-a>Jury</td>
@@ -130,7 +130,7 @@ else
                         <tbody>
                             @foreach (var clar in Model.Clarifications.Where(c => c.Sender.HasValue))
                             {
-                                var prob = Contest.Problems.Find(clar.ProblemId ?? -1);
+                                var prob = Model.Problems.Find(clar.ProblemId ?? -1);
                                 <tr asp-action="ClarificationView" asp-route-clarid="@clar.Id" data-toggle="ajaxWindow" data-target="sent-clar">
                                     <td use-a>@clar.SubmitTime.ToString("HH:mm")</td>
                                     <td use-a>@Contest.Team.TeamName</td>

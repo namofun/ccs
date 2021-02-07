@@ -114,6 +114,7 @@ namespace SatelliteSite.ContestModule.Controllers
 
             model.TotalSubmissions = toc;
             model.Teams = Teams;
+            model.Problems = await Context.ListProblemsAsync();
             return View(model);
         }
 

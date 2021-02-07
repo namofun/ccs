@@ -225,4 +225,21 @@ namespace SatelliteSite.ContestModule.Controllers
             return Task.CompletedTask;
         }
     }
+
+    /// <summary>
+    /// Context-typed base controller for related things.
+    /// </summary>
+    public abstract class ContestControllerBase<TContext> : ContestControllerBase
+        where TContext : class, IContestContext
+    {
+        /// <inheritdoc cref="ContestControllerBase.Context" />
+        protected new TContext Context => base.Context as TContext;
+
+        /// <inheritdoc />
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            base.OnActionExecuting(context);
+            if (Context == null) context.Result = NotFound();
+        }
+    }
 }

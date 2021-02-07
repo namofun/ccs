@@ -207,11 +207,18 @@ namespace SatelliteSite.ContestModule.Controllers
 
 
         [HttpGet("[action]")]
-        public IActionResult Submit()
+        public async Task<IActionResult> Submit()
         {
             if (TooEarly && !ViewData.ContainsKey("IsJury"))
+            {
                 return Message("Submit", "Contest not started.", BootstrapColor.danger);
-            return Window(new TeamCodeSubmitModel());
+            }
+
+            return Window(new TeamCodeSubmitModel
+            {
+                Languages = await Context.FetchLanguagesAsync(),
+                Problems = await Context.ListProblemsAsync(),
+            });
         }
 
 
@@ -219,6 +226,8 @@ namespace SatelliteSite.ContestModule.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Submit(TeamCodeSubmitModel model)
         {
+            throw new Exception("Should re-display");
+
             if (TooEarly && !ViewData.ContainsKey("IsJury"))
             {
                 StatusMessage = "Contest not started.";

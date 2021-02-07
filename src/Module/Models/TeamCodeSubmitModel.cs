@@ -1,4 +1,9 @@
-﻿using System.ComponentModel;
+﻿using Ccs;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using Polygon.Entities;
+using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace SatelliteSite.ContestModule.Models
 {
@@ -12,5 +17,13 @@ namespace SatelliteSite.ContestModule.Models
 
         [DisplayName("Source Code")]
         public string Code { get; set; }
+
+        [BindNever]
+        [ValidateNever]
+        public ProblemCollection Problems { get; set; }
+
+        [BindNever]
+        [ValidateNever]
+        public IReadOnlyList<Language> Languages { get; set; }
     }
 }

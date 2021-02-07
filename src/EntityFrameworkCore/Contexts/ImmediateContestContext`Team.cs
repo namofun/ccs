@@ -37,6 +37,16 @@ namespace Ccs.Services
             return Get<IAffiliationStore>().FindAsync(id)!;
         }
 
+        public virtual Task<Affiliation?> FetchAffiliationAsync(string id)
+        {
+            return Get<IAffiliationStore>().FindAsync(id)!;
+        }
+
+        public virtual Task<Category?> FetchCategoryAsync(int id)
+        {
+            return Get<ICategoryStore>().FindAsync(id)!;
+        }
+
         public virtual Task<Team?> FindTeamByIdAsync(int teamid)
         {
             int cid = Contest.Id;

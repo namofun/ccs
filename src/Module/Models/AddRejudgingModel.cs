@@ -1,4 +1,7 @@
-﻿using Ccs.Services;
+﻿using Ccs;
+using Ccs.Services;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Polygon.Entities;
 using System;
 using System.Collections.Generic;
@@ -30,17 +33,29 @@ namespace SatelliteSite.ContestModule.Models
         [TimeSpan]
         public string TimeAfter { get; set; }
 
+        [BindNever]
+        [ValidateNever]
         public IReadOnlyList<Language> AllowedLanguages { get; private set; }
 
+        [BindNever]
+        [ValidateNever]
         public IReadOnlyList<Judgehost> AllowedJudgehosts { get; private set; }
 
+        [BindNever]
+        [ValidateNever]
         public IReadOnlyDictionary<int, string> AllowedTeamNames { get; private set; }
 
+        [BindNever]
+        [ValidateNever]
+        public ProblemCollection AllowedProblems { get; private set; }
+
+        [Obsolete("Problem listing need refactor")]
         public async Task<AddRejudgingModel> LoadAsync(IRejudgingContext context)
         {
             AllowedTeamNames ??= await context.FetchTeamNamesAsync();
             AllowedJudgehosts ??= await context.FetchJudgehostsAsync();
             AllowedLanguages ??= await context.FetchLanguagesAsync();
+            AllowedProblems ??= await context.ListProblemsAsync();
             return this;
         }
     }

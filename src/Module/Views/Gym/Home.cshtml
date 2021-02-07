@@ -19,7 +19,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var prob in Contest.Problems)
+            @foreach (var prob in Model.Problems)
             {
                 var ot = Model.MeStatistics?.GetValueOrDefault(prob.ProblemId) ?? default;
                 <tr class="@(ot.Accepted > 0 ? "accepted-problem" : ot.Total > 0 ? "rejected-problem" : "")">
@@ -38,7 +38,7 @@
             {
                 <li>
                     <p>
-                        <b>@clar.Category @Contest.Problems.Find(clar.ProblemId ?? -110)?.ShortName issue</b>
+                        <b>@clar.Category @Model.Problems.Find(clar.ProblemId ?? -110)?.ShortName issue</b>
                         <br />
                         @clar.Body
                         <br />

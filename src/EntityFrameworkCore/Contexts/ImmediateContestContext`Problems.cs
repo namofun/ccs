@@ -30,12 +30,14 @@ namespace Ccs.Services
         private IQueryable<ProblemModel> QueryProblems(int cid)
             => QueryProblems(Db.ContestProblems.Where(cp => cp.ContestId == cid));
 
-        private IQueryable<PartialScore> QueryScores(int cid)
-            => from cp in Db.ContestProblems
-               where cp.ContestId == cid
+        private IQueryable<PartialScore> QueryScores(IQueryable<ContestProblem> contestProblems)
+            => from cp in contestProblems
                join t in Db.Testcases on cp.ProblemId equals t.ProblemId
                group t by cp.ProblemId into g
                select new PartialScore { Id = g.Key, Count = g.Count(), Score = g.Sum(t => t.Point) };
+
+        private IQueryable<PartialScore> QueryScores(int cid)
+            => QueryScores(Db.ContestProblems.Where(cp => cp.ContestId == cid));
 
         private Task FixProblemCountAsync(int cid)
             => Db.Contests
@@ -56,6 +58,38 @@ namespace Ccs.Services
                 res[i].Statement = await Polygon.Problems.ReadCompiledHtmlAsync(res[i].ProblemId);
 
             return _readed_problem_collection = res;
+        }
+
+        private async Task<ProblemModel?> FindProblemAsync(Expression<Func<ContestProblem, bool>> predicate, bool withStatement = false)
+        {
+            int cid = Contest.Id;
+            var baseQuery = Db.ContestProblems.Where(cp => cp.ContestId == cid).Where(predicate);
+            var model = await QueryProblems(baseQuery).SingleOrDefaultAsync();
+            if (model == null) return null;
+
+            var score = await QueryScores(baseQuery).SingleOrDefaultAsync();
+            if (score != null)
+            {
+                model.TestcaseCount = score.Count;
+                if (model.Score == 0) model.Score = score.Score;
+            }
+
+            if (withStatement)
+            {
+                model.Statement = await Polygon.Problems.ReadCompiledHtmlAsync(model.ProblemId);
+            }
+
+            return model;
+        }
+
+        public virtual Task<ProblemModel?> FindProblemAsync(string probid, bool withStatement = false)
+        {
+            return FindProblemAsync(cp => cp.ShortName == probid, withStatement);
+        }
+
+        public virtual Task<ProblemModel?> FindProblemAsync(int probid, bool withStatement = false)
+        {
+            return FindProblemAsync(cp => cp.ProblemId == probid, withStatement);
         }
 
         public virtual Task UpdateProblemAsync(

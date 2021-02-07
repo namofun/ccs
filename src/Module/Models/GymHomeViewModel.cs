@@ -1,4 +1,5 @@
-﻿using Ccs.Entities;
+﻿using Ccs;
+using Ccs.Entities;
 using System.Collections.Generic;
 
 namespace SatelliteSite.ContestModule.Models
@@ -12,5 +13,7 @@ namespace SatelliteSite.ContestModule.Models
         public IReadOnlyDictionary<int, (int Accepted, int Total)> MeStatistics { get; set; }
 
         public IReadOnlyDictionary<int, (int Accepted, int Total, int AcceptedTeams, int TotalTeams)> AllStatistics { get; set; }
+
+        public ProblemCollection Problems { get; set; }
     }
 }

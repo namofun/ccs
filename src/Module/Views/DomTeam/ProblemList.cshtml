@@ -1,4 +1,5 @@
-﻿@{
+﻿@model ProblemCollection
+@{
     ViewData["Title"] = "Team";
 }
 
@@ -12,13 +13,13 @@ else
 {
     <div class="container">
         <div class="row problem-list">
-            @for (int i = 0; i < Contest.Problems.Count; i += 3)
+            @for (int i = 0; i < Model.Count; i += 3)
             {
                 <div class="col-md-12">
                     <div class="card-deck my-md-3">
                         @for (int j = 0; j < 3; j++)
                         {
-                            if (i + j >= Contest.Problems.Count)
+                            if (i + j >= Model.Count)
                             {
                                 <div class="card" style="border:none;">
 
@@ -26,7 +27,7 @@ else
                             }
                             else
                             {
-                                var prob = Contest.Problems[i + j];
+                                var prob = Model[i + j];
                                 <div class="card">
                                     <div class="card-body">
                                         <h3 class="card-title">
@@ -36,7 +37,7 @@ else
                                         <h4 class="card-subtitle mb-2 text-muted">@prob.Title</h4>
                                         <h5 class="card-subtitle mb-2 text-muted">Limits: @(prob.TimeLimit)ms / @(prob.MemoryLimit / 1024)MB</h5>
 
-                                        <div class="text-center">
+                                        <div class="text-center" asp-show-if="!string.IsNullOrWhiteSpace(prob.Statement)">
                                             <a class="btn btn-secondary" role="button" asp-action="ProblemView" asp-route-prob="@prob.ShortName">
                                                 <i class="fas fa-file-pdf"></i>
                                                 problem text

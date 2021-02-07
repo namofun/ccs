@@ -57,30 +57,6 @@ namespace Ccs.Services
         Task<Polygon.Models.Solution> FetchSolutionAsync(int submitid);
 
         /// <summary>
-        /// Fetch solution with contest.
-        /// </summary>
-        /// <typeparam name="TSolution">The solution type.</typeparam>
-        /// <param name="selector">The result selector.</param>
-        /// <param name="probid">The problem ID.</param>
-        /// <param name="langid">The language ID.</param>
-        /// <param name="teamid">The team ID.</param>
-        /// <returns>The task for fetching solution list.</returns>
-        Task<List<TSolution>> FetchSolutionsAsync<TSolution>(
-            Expression<Func<Submission, Judging, TSolution>> selector,
-            int? probid = null, string? langid = null, int? teamid = null);
-
-        /// <summary>
-        /// Fetch solution with contest.
-        /// </summary>
-        /// <typeparam name="TSolution">The solution type.</typeparam>
-        /// <param name="submitid">The submission ID.</param>
-        /// <param name="selector">The result selector.</param>
-        /// <returns>The task for fetching solution list.</returns>
-        Task<TSolution> FetchSolutionAsync<TSolution>(
-            int submitid,
-            Expression<Func<Submission, Judging, TSolution>> selector);
-
-        /// <summary>
         /// List the submissions.
         /// </summary>
         /// <typeparam name="T">The DTO entity.</typeparam>
@@ -150,6 +126,30 @@ namespace Ccs
 {
     public partial interface IContestContext
     {
+        /// <summary>
+        /// Fetch solution with contest.
+        /// </summary>
+        /// <typeparam name="TSolution">The solution type.</typeparam>
+        /// <param name="selector">The result selector.</param>
+        /// <param name="probid">The problem ID.</param>
+        /// <param name="langid">The language ID.</param>
+        /// <param name="teamid">The team ID.</param>
+        /// <returns>The task for fetching solution list.</returns>
+        Task<List<TSolution>> FetchSolutionsAsync<TSolution>(
+            Expression<Func<Submission, Judging, TSolution>> selector,
+            int? probid = null, string? langid = null, int? teamid = null);
+
+        /// <summary>
+        /// Fetch solution with contest.
+        /// </summary>
+        /// <typeparam name="TSolution">The solution type.</typeparam>
+        /// <param name="submitid">The submission ID.</param>
+        /// <param name="selector">The result selector.</param>
+        /// <returns>The task for fetching solution list.</returns>
+        Task<TSolution> FetchSolutionAsync<TSolution>(
+            int submitid,
+            Expression<Func<Submission, Judging, TSolution>> selector);
+
         /// <summary>
         /// Fetch solutions with contest.
         /// </summary>

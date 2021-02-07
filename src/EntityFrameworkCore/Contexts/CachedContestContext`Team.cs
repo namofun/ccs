@@ -112,6 +112,18 @@ namespace Ccs.Services
             return results.GetValueOrDefault(id);
         }
 
+        public override async Task<Affiliation?> FetchAffiliationAsync(string id)
+        {
+            var results = await FetchAffiliationsAsync(true);
+            return results.Values.FirstOrDefault(a => a.Abbreviation == id);
+        }
+
+        public override async Task<Category?> FetchCategoryAsync(int id)
+        {
+            var results = await FetchCategoriesAsync(true);
+            return results.GetValueOrDefault(id);
+        }
+
         public override Task<ScoreboardModel> FetchScoreboardAsync()
         {
             return CacheAsync("Teams::Scoreboard", _options.Scoreboard,

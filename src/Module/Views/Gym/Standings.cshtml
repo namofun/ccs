@@ -63,11 +63,11 @@
     #eoj-scoreboard tfoot > tr:last-child > td:first-child { border-bottom-left-radius: .26666667rem; }
     #eoj-scoreboard tfoot > tr:last-child > td:last-child { border-bottom-right-radius: .26666667rem; }
     .head-box { min-width: 3em; max-width: 3em; width: 3em; }
-    #eoj-container { min-width: @(3*(Contest.Problems.Count+2)+15)em; max-width: @(3*(Contest.Problems.Count+2)+25)em; }
+    #eoj-container { min-width: @(3*(Model.Problems.Count+2)+15)em; max-width: @(3*(Model.Problems.Count+2)+25)em; }
 
     @@media (min-width: 1200px) {
         .head-box { min-width: 4em; max-width: 4em; width: 4em; }
-        #eoj-container { min-width: @(4*(Contest.Problems.Count+2)+15)em; max-width: @(4*(Contest.Problems.Count+2)+25)em; }
+        #eoj-container { min-width: @(4*(Model.Problems.Count+2)+15)em; max-width: @(4*(Model.Problems.Count+2)+25)em; }
     }
 </style>
 
@@ -85,7 +85,7 @@
             <th class="head-box" title="Rank">#</th>
             <th class="text-left">Who</th>
             <th class="head-box" title="Score">=</th>
-            @foreach (var prob in Contest.Problems)
+            @foreach (var prob in Model.Problems)
             {
                 <th class="head-box"><a asp-action="ProblemView" asp-route-prob="@prob.ShortName">@prob.ShortName</a></th>
             }

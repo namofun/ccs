@@ -34,7 +34,7 @@
     string loopProb(IReadOnlyDictionary<int, int> stat)
     {
         WriteLiteral("[");
-        foreach (var prob in Contest.Problems)
+        foreach (var prob in Model.Problems)
         {
             WriteLiteral($"{{\"label\":\"{prob.ShortName}\",\"value\":{stat.GetValueOrDefault(prob.ProblemId)}}},");
         }
@@ -124,7 +124,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var item in Contest.Problems)
+                        @foreach (var item in Model.Problems)
                         {
                             var pt = byprob.GetValueOrDefault(item.ProblemId);
                             <tr asp-action="Problem" asp-route-probid="@item.ProblemId">

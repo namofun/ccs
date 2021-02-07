@@ -208,6 +208,12 @@ namespace Ccs.Services
                 });
         }
 
+        public async Task<IReadOnlyDictionary<int, int>> GetModeScoresAsync(int cid)
+            => await Db.Set<ContestProblem>()
+                .Where(cp => cp.ContestId == cid)
+                .Select(cp => new { cp.ProblemId, cp.Score })
+                .ToDictionaryAsync(a => a.ProblemId, a => a.Score);
+
         private static readonly PropertyInfo RankCache_ContestId = typeof(RankCache).GetProperty(nameof(Team.ContestId))!;
         private static readonly PropertyInfo RankCache_TeamId = typeof(RankCache).GetProperty(nameof(Team.TeamId))!;
         private static readonly PropertyInfo ScoreCache_ContestId = typeof(ScoreCache).GetProperty(nameof(Team.ContestId))!;

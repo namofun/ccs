@@ -5,9 +5,8 @@
     ViewData["MaxWidth"] = "800px";
     ViewData["StaticBackdrop"] = true;
     ViewData["HandleKey"] ??= "submit";
-    var prb_sel = Contest.Problems.Select(cp => new SelectListItem($"{cp.ShortName} - {cp.Title}", cp.ShortName));
-    var lang = await Contest.Context.FetchLanguagesAsync();
-    var lang_sel = lang.Where(l => l.AllowSubmit).Select(l => new SelectListItem(l.Name, l.Id));
+    var prb_sel = Model.Problems.Select(cp => new SelectListItem($"{cp.ShortName} - {cp.Title}", cp.ShortName));
+    var lang_sel = Model.Languages.Where(l => l.AllowSubmit).Select(l => new SelectListItem(l.Name, l.Id));
 }
 
 <div class="form-group">

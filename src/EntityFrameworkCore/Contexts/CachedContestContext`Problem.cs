@@ -36,5 +36,31 @@ namespace Ccs.Services
             await base.DeleteProblemAsync(problem);
             Expire("Problems");
         }
+
+        public override async Task<ProblemModel?> FindProblemAsync(int probid, bool withStatement = false)
+        {
+            if (Contest.Kind == 2)
+            {
+                return await base.FindProblemAsync(probid, withStatement);
+            }
+            else
+            {
+                var probs = await ListProblemsAsync();
+                return probs.Find(probid);
+            }
+        }
+
+        public override async Task<ProblemModel?> FindProblemAsync(string probid, bool withStatement = false)
+        {
+            if (Contest.Kind == 2)
+            {
+                return await base.FindProblemAsync(probid, withStatement);
+            }
+            else
+            {
+                var probs = await ListProblemsAsync();
+                return probs.Find(probid);
+            }
+        }
     }
 }
