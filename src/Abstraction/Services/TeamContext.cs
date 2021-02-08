@@ -19,34 +19,34 @@ namespace Ccs.Services
         /// </summary>
         /// <param name="id">The affiliation ID.</param>
         /// <returns>The task for fetching affiliation.</returns>
-        Task<Affiliation?> FetchAffiliationAsync(int id);
+        Task<Affiliation?> FindAffiliationAsync(int id);
 
         /// <summary>
         /// Gets the specified affiliation.
         /// </summary>
         /// <param name="abbr">The affiliation ID.</param>
         /// <returns>The task for fetching affiliation.</returns>
-        Task<Affiliation?> FetchAffiliationAsync(string abbr);
+        Task<Affiliation?> FindAffiliationAsync(string abbr);
 
         /// <summary>
         /// Gets the specified category.
         /// </summary>
         /// <param name="id">The category ID.</param>
         /// <returns>The task for fetching category.</returns>
-        Task<Category?> FetchCategoryAsync(int id);
+        Task<Category?> FindCategoryAsync(int id);
 
         /// <summary>
         /// Gets the team members as a lookup dictionary.
         /// </summary>
         /// <returns>The task for getting this lookup.</returns>
-        Task<ILookup<int, string>> FetchTeamMembersAsync();
+        Task<ILookup<int, string>> GetTeamMembersAsync();
 
         /// <summary>
         /// Gets the team member for specified team.
         /// </summary>
         /// <param name="team">The team.</param>
         /// <returns>The task for getting member.</returns>
-        Task<IEnumerable<string>> FetchTeamMemberAsync(Team team);
+        Task<IEnumerable<string>> GetTeamMemberAsync(Team team);
 
         /// <summary>
         /// Creates a team with users.

@@ -9,51 +9,51 @@ namespace Ccs.Services
 {
     public partial class ImmediateContestContext : IRejudgingContext
     {
-        public virtual Task<Rejudging> CreateRejudgingAsync(Rejudging entity)
+        Task<Rejudging> IRejudgingContext.CreateAsync(Rejudging entity)
         {
             return Polygon.Rejudgings.CreateAsync(entity);
         }
 
-        public virtual Task DeleteRejudgingAsync(Rejudging entity)
+        Task IRejudgingContext.DeleteAsync(Rejudging entity)
         {
             return Polygon.Rejudgings.DeleteAsync(entity);
         }
 
-        public virtual Task<Rejudging?> FindRejudgingAsync(int id)
+        Task<Rejudging?> IRejudgingContext.FindAsync(int id)
         {
             return Polygon.Rejudgings.FindAsync(Contest.Id, id)!;
         }
 
-        public virtual Task<List<Rejudging>> FetchRejudgingsAsync(bool includeStat = true)
+        Task<List<Rejudging>> IRejudgingContext.ListAsync(bool includeStat)
         {
             return Polygon.Rejudgings.ListAsync(Contest.Id, includeStat);
         }
 
-        public virtual Task<List<Judgehost>> FetchJudgehostsAsync()
+        Task<List<Judgehost>> IRejudgingContext.GetJudgehostsAsync()
         {
             return Polygon.Judgehosts.ListAsync();
         }
 
-        public virtual Task<IEnumerable<RejudgingDifference>> ViewRejudgingAsync(
+        Task<IEnumerable<RejudgingDifference>> IRejudgingContext.ViewAsync(
             Rejudging rejudge,
-            Expression<Func<Judging, Judging, Submission, bool>>? filter = null)
+            Expression<Func<Judging, Judging, Submission, bool>>? filter)
         {
             return Polygon.Rejudgings.ViewAsync(rejudge, filter);
         }
 
-        public virtual Task<int> BatchRejudgeAsync(
+        Task<int> IRejudgingContext.RejudgeAsync(
             Expression<Func<Submission, Judging, bool>> predicate,
-            Rejudging? rejudge = null, bool fullTest = false)
+            Rejudging? rejudge, bool fullTest)
         {
             return Polygon.Rejudgings.BatchRejudgeAsync(predicate, rejudge, fullTest);
         }
 
-        public virtual Task CancelRejudgingAsync(Rejudging rejudge, int uid)
+        Task IRejudgingContext.CancelAsync(Rejudging rejudge, int uid)
         {
             return Polygon.Rejudgings.CancelAsync(rejudge, uid);
         }
 
-        public virtual Task ApplyRejudgingAsync(Rejudging rejudge, int uid)
+        Task IRejudgingContext.ApplyAsync(Rejudging rejudge, int uid)
         {
             return Polygon.Rejudgings.ApplyAsync(rejudge, uid);
         }

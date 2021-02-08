@@ -27,7 +27,7 @@ namespace Ccs.Registration
             return new InputModel
             {
                 Classes = await studentStore.ListClassesAsync(tenantId),
-                Categories = await context.FetchCategoriesAsync(false),
+                Categories = await context.ListCategoriesAsync(false),
             };
         }
 
@@ -66,7 +66,7 @@ namespace Ccs.Registration
                 .Select(t => t.TeamName)
                 .ToHashSet();
 
-            var members = await context.FetchTeamMembersAsync();
+            var members = await context.GetTeamMembersAsync();
             var memberBelong = members
                 .SelectMany(g => g, (g, c) => new { UserName = c, allTeams[g.Key].TeamName })
                 .ToDictionary(a => a.UserName, a => a.TeamName);

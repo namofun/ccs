@@ -58,10 +58,10 @@ namespace SatelliteSite.ContestModule.Controllers
         [HttpGet]
         public async Task<IActionResult> Home()
         {
-            var scb = await Context.FetchScoreboardAsync();
+            var scb = await Context.GetScoreboardAsync();
             var bq = scb.Data.GetValueOrDefault(Team.TeamId);
-            var cats = await Context.FetchCategoriesAsync();
-            var affs = await Context.FetchAffiliationsAsync();
+            var cats = await Context.ListCategoriesAsync();
+            var affs = await Context.ListAffiliationsAsync();
             var probs = await Context.ListProblemsAsync();
 
             int teamid = Team.TeamId;
@@ -69,7 +69,7 @@ namespace SatelliteSite.ContestModule.Controllers
                 c => (c.Sender == null && c.Recipient == null)
                 || c.Recipient == teamid || c.Sender == teamid);
 
-            var submits = await Context.FetchSolutionsAsync(
+            var submits = await Context.ListSolutionsAsync(
                 teamid: Team.TeamId,
                 selector: (s, j) => new SubmissionViewModel
                 {
@@ -217,7 +217,7 @@ namespace SatelliteSite.ContestModule.Controllers
 
             return Window(new TeamCodeSubmitModel
             {
-                Languages = await Context.FetchLanguagesAsync(),
+                Languages = await Context.ListLanguagesAsync(),
                 Problems = await Context.ListProblemsAsync(),
             });
         }
@@ -268,7 +268,7 @@ namespace SatelliteSite.ContestModule.Controllers
         {
             int teamid = Team.TeamId;
 
-            var model = await Context.FetchSolutionAsync(
+            var model = await Context.FindSolutionAsync(
                 submitid, (s, j) => new SubmissionViewModel
                 {
                     SubmissionId = s.Id,

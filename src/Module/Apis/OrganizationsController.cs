@@ -31,7 +31,7 @@ namespace SatelliteSite.ContestModule.Apis
             [FromQuery] string[] ids = null,
             [FromQuery] string country = null)
         {
-            var results = await Context.FetchAffiliationsAsync();
+            var results = await Context.ListAffiliationsAsync();
             return results.Values
                 .WhereIf(country != null, t => t.CountryCode == country)
                 .WhereIf(ids != null && ids.Length > 0, t => ids.Contains(t.Abbreviation))
@@ -51,7 +51,7 @@ namespace SatelliteSite.ContestModule.Apis
             [FromRoute] int cid,
             [FromRoute] string id)
         {
-            var org = await Context.FetchAffiliationAsync(id);
+            var org = await Context.FindAffiliationAsync(id);
             return org == null ? null : new Organization(org);
         }
     }

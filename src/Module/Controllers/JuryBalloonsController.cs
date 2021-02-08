@@ -23,7 +23,7 @@ namespace SatelliteSite.ContestModule.Controllers
         [HttpGet]
         public async Task<IActionResult> List()
         {
-            var model = await Context.FetchBalloonsAsync();
+            var model = await Context.ListAsync();
             return View(model);
         }
 
@@ -31,7 +31,7 @@ namespace SatelliteSite.ContestModule.Controllers
         [HttpGet("{id}/[action]")]
         public async Task<IActionResult> SetDone(int id)
         {
-            await Context.SetBalloonDoneAsync(id);
+            await Context.HandleAsync(id);
             return RedirectToAction(nameof(List));
         }
     }

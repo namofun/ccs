@@ -230,7 +230,7 @@ namespace SatelliteSite.ContestModule.Controllers
         [HttpGet("[action]")]
         public async Task<IActionResult> Edit()
         {
-            ViewBag.Categories = await Context.FetchCategoriesAsync(false);
+            ViewBag.Categories = await Context.ListCategoriesAsync(false);
             return View(new JuryEditModel(Contest));
         }
         
@@ -241,7 +241,7 @@ namespace SatelliteSite.ContestModule.Controllers
         public async Task<IActionResult> Edit(JuryEditModel model)
         {
             // check the category id
-            var cates = await Context.FetchCategoriesAsync(false);
+            var cates = await Context.ListCategoriesAsync(false);
             if (model.DefaultCategory != 0 && !cates.ContainsKey(model.DefaultCategory))
                 ModelState.AddModelError("xys::nocat", "No corresponding category found.");
 

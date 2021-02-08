@@ -37,7 +37,7 @@ namespace Ccs.Services
             return new PagedViewList<ProblemModel>(model, page, totalCount, count);
         }
 
-        public virtual Task<IPagedList<TSolution>> FetchSolutionsAsync<TSolution>(
+        public virtual Task<IPagedList<TSolution>> ListSolutionsAsync<TSolution>(
             Expression<Func<Submission, Judging, TSolution>> selector,
             Expression<Func<Submission, bool>> predicate,
             int page, int perpage)

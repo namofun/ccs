@@ -20,7 +20,7 @@ namespace Ccs.Services
         /// <param name="predicate">The conditions.</param>
         /// <param name="limits">The count to take.</param>
         /// <returns>The task for fetching solutions.</returns>
-        Task<List<T>> FetchSolutionsAsync<T>(
+        Task<List<T>> ListSolutionsAsync<T>(
             Expression<Func<Submission, Judging, T>> selector,
             Expression<Func<Submission, bool>>? predicate = null,
             int? limits = null);
@@ -29,6 +29,6 @@ namespace Ccs.Services
         /// Fetch the team names as a lookup dictionary.
         /// </summary>
         /// <returns>The task for getting this dictionary.</returns>
-        Task<IReadOnlyDictionary<int, Team>> FetchTeamsAsync();
+        Task<IReadOnlyDictionary<int, Team>> GetAnalyticalTeamsAsync();
     }
 }

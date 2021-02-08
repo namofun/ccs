@@ -47,16 +47,16 @@ namespace Ccs.Services
                 async () => await base.FindMemberByUserAsync(userId));
         }
 
-        public override Task<IReadOnlyDictionary<int, Affiliation>> FetchAffiliationsAsync(bool filtered)
+        public override Task<IReadOnlyDictionary<int, Affiliation>> ListAffiliationsAsync(bool filtered)
         {
             return CacheAsync($"Teams::Affiliations(Filtered={filtered})", _options.Teams,
-                async () => await base.FetchAffiliationsAsync(filtered));
+                async () => await base.ListAffiliationsAsync(filtered));
         }
 
-        public override Task<IReadOnlyDictionary<int, Category>> FetchCategoriesAsync(bool filtered)
+        public override Task<IReadOnlyDictionary<int, Category>> ListCategoriesAsync(bool filtered)
         {
             return CacheAsync($"Teams::Categories(Filtered={filtered})", _options.Teams,
-                async () => await base.FetchCategoriesAsync(filtered));
+                async () => await base.ListCategoriesAsync(filtered));
         }
 
         public override async Task UpdateTeamAsync(Team origin, Expression<Func<Team, Team>> expression)
@@ -65,13 +65,13 @@ namespace Ccs.Services
             ExpireTeamThings($"Teams::Id({origin.TeamId})");
         }
 
-        public override Task<IReadOnlyDictionary<int, string>> FetchTeamNamesAsync()
+        public override Task<IReadOnlyDictionary<int, string>> ListTeamNamesAsync()
         {
             return CacheAsync("Teams::Names", _options.Teams,
-                async () => await base.FetchTeamNamesAsync());
+                async () => await base.ListTeamNamesAsync());
         }
 
-        public override Task<IReadOnlyDictionary<int, Team>> FetchTeamsAsync()
+        public override Task<IReadOnlyDictionary<int, Team>> GetAnalyticalTeamsAsync()
         {
             if (((Microsoft.EntityFrameworkCore.DbContext)Db).ChangeTracker.AutoDetectChangesEnabled)
             {
@@ -81,7 +81,7 @@ namespace Ccs.Services
             }
 
             return CacheAsync("Teams::Analysis", TimeSpan.FromMinutes(2),
-                async () => await base.FetchTeamsAsync());
+                async () => await base.GetAnalyticalTeamsAsync());
         }
 
         public override async Task<Team> CreateTeamAsync(Team team, IEnumerable<IUser>? users)
@@ -95,39 +95,39 @@ namespace Ccs.Services
             return team;
         }
 
-        public override Task<ILookup<int, string>> FetchTeamMembersAsync()
+        public override Task<ILookup<int, string>> GetTeamMembersAsync()
         {
             return CacheAsync("Teams::Members", _options.Teams,
-                async () => await base.FetchTeamMembersAsync());
+                async () => await base.GetTeamMembersAsync());
         }
 
-        public override async Task<IEnumerable<string>> FetchTeamMemberAsync(Team team)
+        public override async Task<IEnumerable<string>> GetTeamMemberAsync(Team team)
         {
-            return (await FetchTeamMembersAsync())[team.TeamId];
+            return (await GetTeamMembersAsync())[team.TeamId];
         }
 
-        public override async Task<Affiliation?> FetchAffiliationAsync(int id)
+        public override async Task<Affiliation?> FindAffiliationAsync(int id)
         {
-            var results = await FetchAffiliationsAsync(true);
+            var results = await ListAffiliationsAsync(true);
             return results.GetValueOrDefault(id);
         }
 
-        public override async Task<Affiliation?> FetchAffiliationAsync(string id)
+        public override async Task<Affiliation?> FindAffiliationAsync(string id)
         {
-            var results = await FetchAffiliationsAsync(true);
+            var results = await ListAffiliationsAsync(true);
             return results.Values.FirstOrDefault(a => a.Abbreviation == id);
         }
 
-        public override async Task<Category?> FetchCategoryAsync(int id)
+        public override async Task<Category?> FindCategoryAsync(int id)
         {
-            var results = await FetchCategoriesAsync(true);
+            var results = await ListCategoriesAsync(true);
             return results.GetValueOrDefault(id);
         }
 
-        public override Task<ScoreboardModel> FetchScoreboardAsync()
+        public override Task<ScoreboardModel> GetScoreboardAsync()
         {
             return CacheAsync("Teams::Scoreboard", _options.Scoreboard,
-                async () => await base.FetchScoreboardAsync());
+                async () => await base.GetScoreboardAsync());
         }
 
         public override Task<IReadOnlyDictionary<int, (int, int)>> StatisticsAsync(Team? team)

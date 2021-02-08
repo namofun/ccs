@@ -124,9 +124,9 @@ namespace SatelliteSite.ContestModule.Controllers
             }
 
             var probs = await Context.ListProblemsAsync();
-            var scb = await Context.FetchScoreboardAsync();
-            var affs = await Context.FetchAffiliationsAsync();
-            var orgs = await Context.FetchCategoriesAsync();
+            var scb = await Context.GetScoreboardAsync();
+            var affs = await Context.ListAffiliationsAsync();
+            var orgs = await Context.ListCategoriesAsync();
 
             if (!isJury)
             {

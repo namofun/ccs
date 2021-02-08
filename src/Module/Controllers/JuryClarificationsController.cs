@@ -20,7 +20,7 @@ namespace SatelliteSite.ContestModule.Controllers
             {
                 AllClarifications = await Context.ListClarificationsAsync(c => c.Recipient == null),
                 Problems = await Context.ListProblemsAsync(),
-                TeamNames = await Context.FetchTeamNamesAsync(),
+                TeamNames = await Context.ListTeamNamesAsync(),
                 JuryName = User.GetUserName(),
             });
         }
@@ -88,7 +88,7 @@ namespace SatelliteSite.ContestModule.Controllers
         [HttpGet("{clarid}/[action]/{answered}")]
         public async Task<IActionResult> SetAnswered(int clarid, bool answered)
         {
-            var result = await Context.SetClarificationAnsweredAsync(clarid, answered);
+            var result = await Context.SetAnsweredAsync(clarid, answered);
 
             if (result && answered)
             {
@@ -128,7 +128,7 @@ namespace SatelliteSite.ContestModule.Controllers
                 Associated = query,
                 Main = query.First(),
                 Problems = await Context.ListProblemsAsync(),
-                Teams = await Context.FetchTeamNamesAsync(),
+                Teams = await Context.ListTeamNamesAsync(),
                 UserName = User.GetUserName(),
             });
         }
@@ -138,7 +138,7 @@ namespace SatelliteSite.ContestModule.Controllers
         public async Task<IActionResult> Claim(int cid, int clarid, bool claim)
         {
             var admin = User.GetUserName();
-            var result = await Context.ClaimClarificationAsync(clarid, admin, claim);
+            var result = await Context.ClaimAsync(clarid, admin, claim);
 
             if (result && claim)
             {

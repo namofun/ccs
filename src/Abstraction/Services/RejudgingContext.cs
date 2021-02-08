@@ -17,41 +17,41 @@ namespace Ccs.Services
         /// </summary>
         /// <param name="rejudging">The rejudging.</param>
         /// <returns>The created rejudging.</returns>
-        Task<Rejudging> CreateRejudgingAsync(Rejudging rejudging);
+        Task<Rejudging> CreateAsync(Rejudging rejudging);
 
         /// <summary>
         /// Deletes the instance of rejudging.
         /// </summary>
         /// <param name="rejudging">The rejudging.</param>
         /// <returns>The delete task.</returns>
-        Task DeleteRejudgingAsync(Rejudging rejudging);
+        Task DeleteAsync(Rejudging rejudging);
 
         /// <summary>
         /// Finds the rejudging for certain contest.
         /// </summary>
         /// <param name="id">The rejudging ID.</param>
         /// <returns>The task for fetching rejudging entity.</returns>
-        Task<Rejudging?> FindRejudgingAsync(int id);
+        Task<Rejudging?> FindAsync(int id);
 
         /// <summary>
         /// Lists the rejudging for certain contest.
         /// </summary>
         /// <param name="includeStat">Whether to include statistics about undone rejudging progress.</param>
         /// <returns>The task for fetching rejudging entities.</returns>
-        Task<List<Rejudging>> FetchRejudgingsAsync(bool includeStat = true);
+        Task<List<Rejudging>> ListAsync(bool includeStat = true);
 
         /// <summary>
         /// Count the judgings with predicate.
         /// </summary>
         /// <param name="predicate">The predicate.</param>
         /// <returns>The count task.</returns>
-        Task<int> CountJudgingAsync(Expression<Func<Judging, bool>> predicate);
+        Task<int> CountJudgingsAsync(Expression<Func<Judging, bool>> predicate);
 
         /// <summary>
         /// Lists the rejudging for certain contest.
         /// </summary>
         /// <returns>The task for fetching rejudging entities.</returns>
-        Task<List<Judgehost>> FetchJudgehostsAsync();
+        Task<List<Judgehost>> GetJudgehostsAsync();
 
         /// <summary>
         /// Views the rejudging difference.
@@ -59,7 +59,7 @@ namespace Ccs.Services
         /// <param name="rejudge">The rejudging entity.</param>
         /// <param name="filter">The fetching condition.</param>
         /// <returns>The task for fetching difference.</returns>
-        Task<IEnumerable<RejudgingDifference>> ViewRejudgingAsync(Rejudging rejudge, Expression<Func<Judging, Judging, Submission, bool>>? filter = null);
+        Task<IEnumerable<RejudgingDifference>> ViewAsync(Rejudging rejudge, Expression<Func<Judging, Judging, Submission, bool>>? filter = null);
 
         /// <summary>
         /// Rejudges several submissions with or without existing rejudging entity.
@@ -68,7 +68,7 @@ namespace Ccs.Services
         /// <param name="rejudge">The rejudging entity. If <c>null</c>, the submission won't be added to a rejudging.</param>
         /// <param name="fullTest">Whether to take a full test.</param>
         /// <returns>The task for batch rejudge submissions, returning the count of submissions being rejudged.</returns>
-        Task<int> BatchRejudgeAsync(Expression<Func<Submission, Judging, bool>> predicate, Rejudging? rejudge = null, bool fullTest = false);
+        Task<int> RejudgeAsync(Expression<Func<Submission, Judging, bool>> predicate, Rejudging? rejudge = null, bool fullTest = false);
 
         /// <summary>
         /// Cancels the rejudging.
@@ -76,7 +76,7 @@ namespace Ccs.Services
         /// <param name="rejudge">The rejudging entity.</param>
         /// <param name="uid">The operator user ID.</param>
         /// <returns>The task for cancelling.</returns>
-        Task CancelRejudgingAsync(Rejudging rejudge, int uid);
+        Task CancelAsync(Rejudging rejudge, int uid);
 
         /// <summary>
         /// Applies the rejudging.
@@ -84,6 +84,6 @@ namespace Ccs.Services
         /// <param name="rejudge">The rejudging entity.</param>
         /// <param name="uid">The operator user ID.</param>
         /// <returns>The task for applying.</returns>
-        Task ApplyRejudgingAsync(Rejudging rejudge, int uid);
+        Task ApplyAsync(Rejudging rejudge, int uid);
     }
 }

@@ -42,7 +42,7 @@ namespace SatelliteSite.ContestModule
             {
                 if (context.HttpContext.RequestAborted.IsCancellationRequested) break;
 
-                var events = await _ctx.FetchEventAsync(_type, after);
+                var events = await _ctx.ListEventsAsync(_type, after);
                 if (events.Count > 0) after = events[^1].Id;
                 var newline = Encoding.UTF8.GetBytes("\n");
 

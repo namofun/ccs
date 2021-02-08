@@ -35,7 +35,7 @@ namespace Ccs.Services
             return Polygon.Submissions.ListAsync(projection, predicate.Combine(s => s.ContestId == cid));
         }
 
-        public virtual Task<List<Solution>> FetchSolutionsAsync(int? probid = null, string? langid = null, int? teamid = null, bool all = false)
+        public virtual Task<List<Solution>> ListSolutionsAsync(int? probid = null, string? langid = null, int? teamid = null, bool all = false)
         {
             int cid = Contest.Id;
             var cond = Expr
@@ -48,20 +48,20 @@ namespace Ccs.Services
             return Polygon.Submissions.ListWithJudgingAsync(cond, true, limit);
         }
 
-        public virtual Task<IPagedList<Solution>> FetchSolutionsAsync(int page, int perPage)
+        public virtual Task<IPagedList<Solution>> ListSolutionsAsync(int page, int perPage)
         {
             int cid = Contest.Id;
             return Polygon.Submissions.ListWithJudgingAsync((page, perPage), s => s.ContestId == cid);
         }
 
-        public virtual async Task<Solution> FetchSolutionAsync(int submitid)
+        public virtual async Task<Solution> FindSolutionAsync(int submitid)
         {
             int cid = Contest.Id;
             var res = await Polygon.Submissions.ListWithJudgingAsync(s => s.ContestId == cid && s.Id == submitid, true, 1);
             return res.FirstOrDefault();
         }
 
-        public virtual Task<List<TSolution>> FetchSolutionsAsync<TSolution>(
+        public virtual Task<List<TSolution>> ListSolutionsAsync<TSolution>(
             Expression<Func<Submission, Judging, TSolution>> selector,
             int? probid = null,
             string? langid = null,
@@ -76,9 +76,9 @@ namespace Ccs.Services
             return Polygon.Submissions.ListWithJudgingAsync(selector, cond);
         }
 
-        public virtual async Task<TSolution> FetchSolutionAsync<TSolution>(
+        public virtual async Task<TSolution?> FindSolutionAsync<TSolution>(
             int submitid,
-            Expression<Func<Submission, Judging, TSolution>> selector)
+            Expression<Func<Submission, Judging, TSolution>> selector) where TSolution : class
         {
             int cid = Contest.Id;
             var res = await Polygon.Submissions.ListWithJudgingAsync(selector, s => s.ContestId == cid && s.Id == submitid, 1);
@@ -108,12 +108,12 @@ namespace Ccs.Services
                 fullJudge: Contest.RankingStrategy == 1);
         }
 
-        public Task<IEnumerable<(JudgingRun?, Testcase)>> FetchDetailsAsync(int problemId, int judgingId)
+        public Task<IEnumerable<(JudgingRun?, Testcase)>> GetDetailsAsync(int problemId, int judgingId)
         {
             return Polygon.Judgings.GetDetailsAsync(problemId, judgingId);
         }
 
-        public Task<IEnumerable<T>> FetchDetailsAsync<T>(
+        public Task<IEnumerable<T>> GetDetailsAsync<T>(
             Expression<Func<Testcase, JudgingRun, T>> selector,
             Expression<Func<Testcase, JudgingRun, bool>>? predicate = null,
             int? limit = null)
@@ -121,7 +121,7 @@ namespace Ccs.Services
             return Polygon.Judgings.GetDetailsAsync(selector, predicate, limit);
         }
 
-        public Task<int> CountJudgingAsync(Expression<Func<Judging, bool>> predicate)
+        public Task<int> CountJudgingsAsync(Expression<Func<Judging, bool>> predicate)
         {
             return Polygon.Judgings.CountAsync(predicate);
         }
@@ -132,12 +132,12 @@ namespace Ccs.Services
             return Polygon.Judgings.FindAsync(j => j.Id == id && j.s.ContestId == cid, j => j);
         }
 
-        public Task<List<Judging>> FetchJudgingsAsync(Expression<Func<Judging, bool>> predicate, int topCount)
+        public Task<List<Judging>> ListJudgingsAsync(Expression<Func<Judging, bool>> predicate, int topCount)
         {
             return Polygon.Judgings.ListAsync(predicate, topCount);
         }
 
-        public Task<SubmissionSource> FetchSourceAsync(Expression<Func<Submission, bool>> predicate)
+        public Task<SubmissionSource> GetSourceCodeAsync(Expression<Func<Submission, bool>> predicate)
         {
             var cid = Contest.Id;
             return Db.Submissions
@@ -148,7 +148,7 @@ namespace Ccs.Services
                 .FirstOrDefaultAsync();
         }
 
-        public Task<List<T>> FetchSolutionsAsync<T>(
+        public Task<List<T>> ListSolutionsAsync<T>(
             Expression<Func<Submission, Judging, T>> selector,
             Expression<Func<Submission, bool>>? predicate = null,
             int? limits = null)

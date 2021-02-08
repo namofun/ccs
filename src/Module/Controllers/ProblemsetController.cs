@@ -67,7 +67,7 @@ namespace SatelliteSite.ContestModule.Controllers
             start = start / PageCount + 1;
             int teamid = Team.TeamId, cid = Team.ContestId, probId = prob.ProblemId;
 
-            var model = await Context.FetchSolutionsAsync(
+            var model = await Context.ListSolutionsAsync(
                 selector: (s, j) => new { s.Id, s.Time, s.Language, j.Status, j.TotalScore },
                 predicate: s => s.ProblemId == probId && s.TeamId == teamid && s.ContestId == cid,
                 page: start, perpage: PageCount);
@@ -84,7 +84,7 @@ namespace SatelliteSite.ContestModule.Controllers
             if (prob == null) return NotFound();
 
             int cid = Team.ContestId, teamid = Team.TeamId, probId = prob.ProblemId;
-            var subs = await Context.FetchSolutionsAsync(
+            var subs = await Context.ListSolutionsAsync(
                 predicate: s => s.ProblemId == probId && s.ContestId == cid
                              && s.TeamId == teamid && s.Id == submitid,
                 selector: (s, j) => new CodeViewModel
@@ -105,7 +105,7 @@ namespace SatelliteSite.ContestModule.Controllers
             var sub = subs.SingleOrDefault();
             if (sub == null) return NotFound();
             sub.ProblemTitle = prob.Title;
-            sub.Details = await Context.FetchDetailsAsync(prob.ProblemId, sub.JudgingId);
+            sub.Details = await Context.GetDetailsAsync(prob.ProblemId, sub.JudgingId);
             return Window(sub);
         }
 
@@ -125,7 +125,7 @@ namespace SatelliteSite.ContestModule.Controllers
                     type: BootstrapColor.danger);
             }
 
-            ViewBag.Language = await Context.FetchLanguagesAsync();
+            ViewBag.Language = await Context.ListLanguagesAsync();
             return Window(new CodeSubmitModel
             {
                 Code = "",
@@ -150,7 +150,7 @@ namespace SatelliteSite.ContestModule.Controllers
             }
 
             // check language blocking
-            var langs = await Context.FetchLanguagesAsync();
+            var langs = await Context.ListLanguagesAsync();
             var lang = langs.FirstOrDefault(a => a.Id == model.Language);
             if (lang == null)
             {

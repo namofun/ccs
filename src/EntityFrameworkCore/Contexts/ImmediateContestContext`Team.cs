@@ -32,17 +32,17 @@ namespace Ccs.Services
                 .ToListAsync();
         }
 
-        public virtual Task<Affiliation?> FetchAffiliationAsync(int id)
+        public virtual Task<Affiliation?> FindAffiliationAsync(int id)
         {
             return Get<IAffiliationStore>().FindAsync(id)!;
         }
 
-        public virtual Task<Affiliation?> FetchAffiliationAsync(string id)
+        public virtual Task<Affiliation?> FindAffiliationAsync(string id)
         {
             return Get<IAffiliationStore>().FindAsync(id)!;
         }
 
-        public virtual Task<Category?> FetchCategoryAsync(int id)
+        public virtual Task<Category?> FindCategoryAsync(int id)
         {
             return Get<ICategoryStore>().FindAsync(id)!;
         }
@@ -63,7 +63,7 @@ namespace Ccs.Services
                 .SingleOrDefaultAsync()!;
         }
 
-        public virtual async Task<IReadOnlyDictionary<int, Affiliation>> FetchAffiliationsAsync(bool contestFiltered)
+        public virtual async Task<IReadOnlyDictionary<int, Affiliation>> ListAffiliationsAsync(bool contestFiltered)
         {
             List<Affiliation> results;
 
@@ -76,7 +76,7 @@ namespace Ccs.Services
             return results.ToDictionary(a => a.Id);
         }
 
-        public virtual async Task<IReadOnlyDictionary<int, Category>> FetchCategoriesAsync(bool contestFiltered)
+        public virtual async Task<IReadOnlyDictionary<int, Category>> ListCategoriesAsync(bool contestFiltered)
         {
             List<Category> results;
 
@@ -157,7 +157,7 @@ namespace Ccs.Services
             return list;
         }
 
-        public virtual async Task<IReadOnlyDictionary<int, string>> FetchTeamNamesAsync()
+        public virtual async Task<IReadOnlyDictionary<int, string>> ListTeamNamesAsync()
         {
             int cid = Contest.Id;
             return await Db.Teams
@@ -166,7 +166,7 @@ namespace Ccs.Services
                 .ToDictionaryAsync(a => a.TeamId, a => a.TeamName);
         }
 
-        public virtual async Task<ILookup<int, string>> FetchTeamMembersAsync()
+        public virtual async Task<ILookup<int, string>> GetTeamMembersAsync()
         {
             var cid = Contest.Id;
             var results = await Db.TeamMembers
@@ -176,7 +176,7 @@ namespace Ccs.Services
             return results.ToLookup(a => a.TeamId, a => a.UserName);
         }
 
-        public virtual async Task<IEnumerable<string>> FetchTeamMemberAsync(Team team)
+        public virtual async Task<IEnumerable<string>> GetTeamMemberAsync(Team team)
         {
             var (cid, teamid) = (team.ContestId, team.TeamId);
             return await Db.TeamMembers
@@ -185,11 +185,11 @@ namespace Ccs.Services
                 .ToListAsync();
         }
 
-        public virtual async Task<IReadOnlyDictionary<int, Team>> FetchTeamsAsync()
+        public virtual async Task<IReadOnlyDictionary<int, Team>> GetAnalyticalTeamsAsync()
         {
             var cid = Contest.Id;
-            var affs = await FetchAffiliationsAsync(true);
-            var cats = await FetchCategoriesAsync(true);
+            var affs = await ListAffiliationsAsync(true);
+            var cats = await ListCategoriesAsync(true);
 
             return await Db.Teams
                 .Where(t => t.ContestId == cid && t.Status == 1)
@@ -203,7 +203,7 @@ namespace Ccs.Services
                     });
         }
 
-        public virtual async Task<ScoreboardModel> FetchScoreboardAsync()
+        public virtual async Task<ScoreboardModel> GetScoreboardAsync()
         {
             int cid = Contest.Id;
             var value = await Db.Teams

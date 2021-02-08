@@ -30,7 +30,7 @@ namespace Ccs.Services
         /// <param name="page">The current page.</param>
         /// <param name="perpage">The count per page.</param>
         /// <returns>The task for fetching solutions.</returns>
-        Task<IPagedList<TSolution>> FetchSolutionsAsync<TSolution>(
+        Task<IPagedList<TSolution>> ListSolutionsAsync<TSolution>(
             Expression<Func<Submission, Judging, TSolution>> selector,
             Expression<Func<Submission, bool>> predicate,
             int page, int perpage);
@@ -43,7 +43,7 @@ namespace Ccs.Services
         /// <param name="predicate">The conditions.</param>
         /// <param name="limits">The count to take.</param>
         /// <returns>The task for fetching solutions.</returns>
-        Task<List<TSolution>> FetchSolutionsAsync<TSolution>(
+        Task<List<TSolution>> ListSolutionsAsync<TSolution>(
             Expression<Func<Submission, Judging, TSolution>> selector,
             Expression<Func<Submission, bool>>? predicate = null,
             int? limits = null);
@@ -55,7 +55,7 @@ namespace Ccs.Services
         /// <param name="problemId">The problem ID.</param>
         /// <param name="judgingId">The judging ID.</param>
         /// <returns>The task for fetching judging runs.</returns>
-        Task<IEnumerable<(JudgingRun?, Testcase)>> FetchDetailsAsync(int problemId, int judgingId);
+        Task<IEnumerable<(JudgingRun?, Testcase)>> GetDetailsAsync(int problemId, int judgingId);
 
         /// <summary>
         /// Statistics the submission status of team.

@@ -9,7 +9,7 @@ namespace Ccs.Services
 {
     public partial class ImmediateContestContext : IBalloonContext
     {
-        public virtual async Task<List<BalloonModel>> FetchBalloonsAsync()
+        async Task<List<BalloonModel>> IBalloonContext.ListAsync()
         {
             var problems = await ListProblemsAsync();
             int cid = Contest.Id;
@@ -47,7 +47,7 @@ namespace Ccs.Services
             return balloons;
         }
 
-        public virtual Task SetBalloonDoneAsync(int id)
+        Task IBalloonContext.HandleAsync(int id)
         {
             int cid = Contest.Id;
             return Db.Balloons.BatchUpdateJoinAsync(

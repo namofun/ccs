@@ -39,10 +39,10 @@ namespace SatelliteSite.ContestModule.Routing
         {
             Team? team = null;
             if (int.TryParse(context.User.GetUserId(), out int uid))
-                team = await feature.Context!.FindTeamByUserAsync(uid);
+                team = await feature.Context.FindTeamByUserAsync(uid);
 
             bool isJury = context.User.IsInRole("Administrator") ||
-                (await feature.Context!.FetchJuryAsync()).ContainsKey(uid);
+                (await feature.Context.ListJuriesAsync()).ContainsKey(uid);
 
             feature.Authenticate(team, isJury);
             await _next(context);

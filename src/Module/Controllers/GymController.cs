@@ -51,8 +51,8 @@ namespace SatelliteSite.ContestModule.Controllers
         public async Task<IActionResult> Standings(int page = 1)
         {
             if (page <= 0) return BadRequest();
-            var scb = await Context.FetchScoreboardAsync();
-            var orgs = await Context.FetchCategoriesAsync();
+            var scb = await Context.GetScoreboardAsync();
+            var orgs = await Context.ListCategoriesAsync();
             var orgid = orgs.Values.Where(o => o.IsPublic).Select(a => a.Id).ToHashSet();
 
             return View(new GymStandingViewModel
@@ -62,7 +62,7 @@ namespace SatelliteSite.ContestModule.Controllers
                 RankCache = scb.Data.Values,
                 UpdateTime = scb.RefreshTime,
                 Problems = await Context.ListProblemsAsync(),
-                TeamMembers = await Context.FetchTeamMembersAsync(),
+                TeamMembers = await Context.GetTeamMembersAsync(),
                 Statistics = await Context.StatisticsGlobalAsync(),
                 ContestId = Contest.Id,
                 RankingStrategy = Contest.RankingStrategy,
@@ -92,7 +92,7 @@ namespace SatelliteSite.ContestModule.Controllers
                 return Forbid();
             }
 
-            var model = await Context.FetchSolutionAsync(
+            var model = await Context.FindSolutionAsync(
                 sid, (s, j) => new SubmissionViewModel
                 {
                     SubmissionId = s.Id,
@@ -122,9 +122,9 @@ namespace SatelliteSite.ContestModule.Controllers
                 return Forbid();
             }
 
-            var teamNames = await Context.FetchTeamNamesAsync();
+            var teamNames = await Context.ListTeamNamesAsync();
             model.TeamName = teamNames.GetValueOrDefault(model.TeamId, "");
-            model.Runs = await Context.FetchDetailsAsync(model.ProblemId, model.JudgingId);
+            model.Runs = await Context.GetDetailsAsync(model.ProblemId, model.JudgingId);
             if (!model.Problem.Shared) model.Runs = model.Runs.Where(t => !t.Item2.IsSecret);
             return Window(model);
         }
@@ -142,7 +142,7 @@ namespace SatelliteSite.ContestModule.Controllers
             if (string.IsNullOrEmpty(view)) return NotFound();
             ViewData["Content"] = view;
 
-            var model = await Context.FetchSolutionsAsync(problem.ProblemId, null, Team?.TeamId ?? -1000, true);
+            var model = await Context.ListSolutionsAsync(problem.ProblemId, null, Team?.TeamId ?? -1000, true);
             return View(model);
         }
 
@@ -163,7 +163,7 @@ namespace SatelliteSite.ContestModule.Controllers
                 return Window(new TeamCodeSubmitModel
                 {
                     Problem = prob,
-                    Languages = await Context.FetchLanguagesAsync(),
+                    Languages = await Context.ListLanguagesAsync(),
                     Problems = await Context.ListProblemsAsync(),
                 });
             }
@@ -205,7 +205,7 @@ namespace SatelliteSite.ContestModule.Controllers
 
             //if (model.AsIndividual)
             //{
-                var affs = await Context.FetchAffiliationsAsync(false);
+                var affs = await Context.ListAffiliationsAsync(false);
                 string defaultAff = User.IsInRole("Student") ? "jlu" : "null";
                 var aff = affs.Values.FirstOrDefault(a => a.Abbreviation == defaultAff);
                 if (aff == null)
@@ -306,7 +306,7 @@ namespace SatelliteSite.ContestModule.Controllers
             var problem = await Context.FindProblemAsync(prob);
             if (problem == null) return NotFound();
 
-            var file = await Context.FetchTestcaseAsync(problem, tcid, filetype);
+            var file = await Context.GetTestcaseAsync(problem, tcid, filetype);
             if (file == null || !file.Exists) return NotFound();
 
             return File(
@@ -320,8 +320,8 @@ namespace SatelliteSite.ContestModule.Controllers
         public async Task<IActionResult> Submissions(int page = 1)
         {
             if (page <= 0) return BadRequest();
-            var model = await Context.FetchSolutionsAsync(page, 50);
-            var tn = await Context.FetchTeamNamesAsync();
+            var model = await Context.ListSolutionsAsync(page, 50);
+            var tn = await Context.ListTeamNamesAsync();
             foreach (var solu in model)
             {
                 solu.AuthorName = tn.GetValueOrDefault(solu.TeamId, string.Empty);

@@ -36,8 +36,8 @@ namespace Ccs.Registration
         {
             return new InputModel
             {
-                Affiliations = await context.FetchAffiliationsAsync(false),
-                Categories = await context.FetchCategoriesAsync(false),
+                Affiliations = await context.ListAffiliationsAsync(false),
+                Categories = await context.ListCategoriesAsync(false),
             };
         }
 

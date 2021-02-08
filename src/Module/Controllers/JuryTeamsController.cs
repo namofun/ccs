@@ -26,8 +26,8 @@ namespace SatelliteSite.ContestModule.Controllers
         public async Task<IActionResult> List()
         {
             var teams = await Context.ListTeamsAsync(t => t.Status != 3);
-            var affs = await Context.FetchAffiliationsAsync();
-            var cats = await Context.FetchCategoriesAsync();
+            var affs = await Context.ListAffiliationsAsync();
+            var cats = await Context.ListCategoriesAsync();
 
             return View(teams.Select(t => new JuryListTeamModel
             {
@@ -48,12 +48,12 @@ namespace SatelliteSite.ContestModule.Controllers
             var team = await Context.FindTeamByIdAsync(teamid);
             if (team == null) return NotFound();
 
-            var scb = await Context.FetchScoreboardAsync();
+            var scb = await Context.GetScoreboardAsync();
             var bq = scb.Data.GetValueOrDefault(teamid);
-            var cats = await Context.FetchCategoriesAsync();
-            var affs = await Context.FetchAffiliationsAsync();
-            var sols = await Context.FetchSolutionsAsync(teamid: teamid, all: all_submissions);
-            var members = await Context.FetchTeamMemberAsync(team);
+            var cats = await Context.ListCategoriesAsync();
+            var affs = await Context.ListAffiliationsAsync();
+            var sols = await Context.ListSolutionsAsync(teamid: teamid, all: all_submissions);
+            var members = await Context.GetTeamMemberAsync(team);
 
             return View(new JuryViewTeamModel
             {
@@ -102,7 +102,7 @@ namespace SatelliteSite.ContestModule.Controllers
                 }
             }
 
-            var affiliations = await Context.FetchAffiliationsAsync(false);
+            var affiliations = await Context.ListAffiliationsAsync(false);
             if (!affiliations.TryGetValue(model.AffiliationId, out _))
                 ModelState.AddModelError("xys::no_aff", "No such affiliation.");
 

@@ -42,7 +42,7 @@ namespace SatelliteSite.ContestModule.Apis
                 .CombineIf(submission_id.HasValue, j => j.SubmissionId == submission_id)
                 .CombineIf(r2 != Verdict.Unknown, j => j.Status == r2);
 
-            var js = await Context.FetchJudgingsAsync(cond, 100000);
+            var js = await Context.ListJudgingsAsync(cond, 100000);
             var contestTime = Contest.StartTime ?? DateTimeOffset.Now;
             return js.Select(judging => new Judgement(judging, contestTime)).ToArray();
         }

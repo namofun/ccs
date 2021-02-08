@@ -16,7 +16,7 @@ namespace Ccs.Services
 {
     public partial class ImmediateContestContext : IJuryContext
     {
-        public virtual async Task<IReadOnlyList<Language>> FetchLanguagesAsync()
+        public virtual async Task<IReadOnlyList<Language>> ListLanguagesAsync()
         {
             var langs = await Polygon.Languages.ListAsync(true);
             if (Contest.Settings.Languages != null)
@@ -33,7 +33,7 @@ namespace Ccs.Services
             return (await Ccs.FindAsync(Contest.Id))!;
         }
 
-        public virtual Task<Dictionary<int, string>> FetchJuryAsync()
+        public virtual Task<Dictionary<int, string>> ListJuriesAsync()
         {
             int cid = Contest.Id;
             return Db.ContestJuries
@@ -57,7 +57,7 @@ namespace Ccs.Services
                 .BatchDeleteAsync();
         }
 
-        public virtual Task<List<Event>> FetchEventAsync(string[]? type, int after)
+        public virtual Task<List<Event>> ListEventsAsync(string[]? type, int after)
         {
             int cid = Contest.Id;
             return Db.ContestEvents
@@ -66,7 +66,7 @@ namespace Ccs.Services
                 .ToListAsync();
         }
 
-        public virtual Task<int> MaxEventIdAsync()
+        public virtual Task<int> GetMaxEventIdAsync()
         {
             int cid = Contest.Id;
             return Db.ContestEvents

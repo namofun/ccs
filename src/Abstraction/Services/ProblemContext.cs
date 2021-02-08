@@ -43,13 +43,13 @@ namespace Ccs.Services
         /// <param name="probId">The problem ID.</param>
         /// <param name="user">The current user.</param>
         /// <returns>The task for getting availability.</returns>
-        Task<CheckResult> CheckProblemAvailabilityAsync(int probId, ClaimsPrincipal user);
+        Task<CheckResult> CheckProblemAsync(int probId, ClaimsPrincipal user);
 
         /// <summary>
         /// Gets the raw statements of current contest.
         /// </summary>
         /// <returns>The task for enlisting statements.</returns>
-        Task<List<Statement>> FetchRawStatementsAsync();
+        Task<List<Statement>> GetStatementsAsync();
 
         /// <summary>
         /// Gets the testcase of the <paramref name="problem"/>.
@@ -58,6 +58,6 @@ namespace Ccs.Services
         /// <param name="testcaseId">The testcase ID.</param>
         /// <param name="filetype">The file type.</param>
         /// <returns>The task for getting file info.</returns>
-        Task<IFileInfo?> FetchTestcaseAsync(ProblemModel problem, int testcaseId, string filetype);
+        Task<IFileInfo?> GetTestcaseAsync(ProblemModel problem, int testcaseId, string filetype);
     }
 }

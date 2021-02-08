@@ -27,7 +27,7 @@ namespace Ccs.Services
                 .SingleOrDefaultAsync();
         }
 
-        public virtual async Task<Clarification> ClarifyAsync(Clarification clar, Clarification? replyTo = null)
+        public virtual async Task<Clarification> ClarifyAsync(Clarification clar, Clarification? replyTo)
         {
             var cl = Db.Clarifications.Add(clar);
 
@@ -41,7 +41,7 @@ namespace Ccs.Services
             return cl.Entity;
         }
 
-        public virtual async Task<bool> SetClarificationAnsweredAsync(int id, bool answered)
+        async Task<bool> IClarificationContext.SetAnsweredAsync(int id, bool answered)
         {
             int cid = Contest.Id;
             return 1 == await Db.Clarifications
@@ -49,7 +49,7 @@ namespace Ccs.Services
                 .BatchUpdateAsync(c => new Clarification { Answered = answered });
         }
 
-        public virtual async Task<bool> ClaimClarificationAsync(int id, string jury, bool claim)
+        async Task<bool> IClarificationContext.ClaimAsync(int id, string jury, bool claim)
         {
             int cid = Contest.Id;
             var (from, to) = claim ? (default(string), jury) : (jury, default(string));

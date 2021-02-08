@@ -29,13 +29,13 @@ namespace Ccs.Services
         /// Fetch the contest scoreboard.
         /// </summary>
         /// <returns>The task for fetching scoreboard model.</returns>
-        Task<ScoreboardModel> FetchScoreboardAsync();
+        Task<ScoreboardModel> GetScoreboardAsync();
 
         /// <summary>
         /// Fetch the available languages.
         /// </summary>
         /// <returns>The task for fetching languages.</returns>
-        Task<IReadOnlyList<Language>> FetchLanguagesAsync();
+        Task<IReadOnlyList<Language>> ListLanguagesAsync();
 
         /// <summary>
         /// Finds the specified language.
@@ -71,20 +71,20 @@ namespace Ccs.Services
         /// </summary>
         /// <param name="contestFiltered">Whether filtering the entities only used in this contest.</param>
         /// <returns>The task for fetching affiliations.</returns>
-        Task<IReadOnlyDictionary<int, Affiliation>> FetchAffiliationsAsync(bool contestFiltered = true);
+        Task<IReadOnlyDictionary<int, Affiliation>> ListAffiliationsAsync(bool contestFiltered = true);
 
         /// <summary>
         /// Gets all the categories used in contest.
         /// </summary>
         /// <param name="contestFiltered">Whether filtering the entities only used in this contest.</param>
         /// <returns>The task for fetching categories.</returns>
-        Task<IReadOnlyDictionary<int, Category>> FetchCategoriesAsync(bool contestFiltered = true);
+        Task<IReadOnlyDictionary<int, Category>> ListCategoriesAsync(bool contestFiltered = true);
 
         /// <summary>
         /// Gets all the team names as a lookup dictionary.
         /// </summary>
         /// <returns>The task for getting this dictionary.</returns>
-        Task<IReadOnlyDictionary<int, string>> FetchTeamNamesAsync();
+        Task<IReadOnlyDictionary<int, string>> ListTeamNamesAsync();
 
         /// <summary>
         /// Finds team by team ID.
@@ -111,20 +111,7 @@ namespace Ccs.Services
         /// Get the jury list.
         /// </summary>
         /// <returns>The task for fetching jury list.</returns>
-        Task<Dictionary<int, string>> FetchJuryAsync();
-
-        /// <summary>
-        /// Fetch solution with contest.
-        /// </summary>
-        /// <typeparam name="TSolution">The solution type.</typeparam>
-        /// <param name="selector">The result selector.</param>
-        /// <param name="probid">The problem ID.</param>
-        /// <param name="langid">The language ID.</param>
-        /// <param name="teamid">The team ID.</param>
-        /// <returns>The task for fetching solution list.</returns>
-        Task<List<TSolution>> FetchSolutionsAsync<TSolution>(
-            Expression<Func<Submission, Judging, TSolution>> selector,
-            int? probid = null, string? langid = null, int? teamid = null);
+        Task<Dictionary<int, string>> ListJuriesAsync();
 
         /// <summary>
         /// Fetch solution with contest.
@@ -133,9 +120,10 @@ namespace Ccs.Services
         /// <param name="submitid">The submission ID.</param>
         /// <param name="selector">The result selector.</param>
         /// <returns>The task for fetching solution list.</returns>
-        Task<TSolution> FetchSolutionAsync<TSolution>(
+        Task<TSolution?> FindSolutionAsync<TSolution>(
             int submitid,
-            Expression<Func<Submission, Judging, TSolution>> selector);
+            Expression<Func<Submission, Judging, TSolution>> selector)
+            where TSolution : class;
 
         /// <summary>
         /// Fetch solutions with contest.
@@ -145,7 +133,7 @@ namespace Ccs.Services
         /// <param name="teamid">The team ID.</param>
         /// <param name="all">Whether to show all solutions.</param>
         /// <returns>The task for fetching solution list.</returns>
-        Task<List<Polygon.Models.Solution>> FetchSolutionsAsync(
+        Task<List<Polygon.Models.Solution>> ListSolutionsAsync(
             int? probid = null, string? langid = null, int? teamid = null, bool all = false);
 
         /// <summary>

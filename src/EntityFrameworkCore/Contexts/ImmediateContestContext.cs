@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Ccs.Services
 {
-    public partial class ImmediateContestContext : IContestContext, ISupportDbContext, IContestQueryableStore
+    public partial class ImmediateContestContext : IContestContext, ISupportDbContext, IContestQueryableStore, IDomContext, IGymContext
     {
         private readonly IServiceProvider _services;
         private readonly ContestWrapper _contest;

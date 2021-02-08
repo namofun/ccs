@@ -36,8 +36,8 @@ namespace SatelliteSite.ContestModule.Controllers
         [HttpGet("public")]
         public async Task<IActionResult> Info()
         {
-            ViewBag.Affiliations = await Context.FetchAffiliationsAsync();
-            ViewBag.Categories = await Context.FetchCategoriesAsync();
+            ViewBag.Affiliations = await Context.ListAffiliationsAsync();
+            ViewBag.Categories = await Context.ListCategoriesAsync();
             ViewBag.Markdown = await Context.GetReadmeAsync();
             return View();
         }

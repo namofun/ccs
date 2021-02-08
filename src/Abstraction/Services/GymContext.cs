@@ -12,7 +12,7 @@ namespace Ccs.Services
     /// <summary>
     /// Provides contract for gym.
     /// </summary>
-    public interface IGymContext : IContestContext, ISupportClarificationContext
+    public interface IGymContext : ICompeteContext
     {
         /// <summary>
         /// Fetch the details pair.
@@ -21,7 +21,7 @@ namespace Ccs.Services
         /// <param name="problemId">The problem ID.</param>
         /// <param name="judgingId">The judging ID.</param>
         /// <returns>The task for fetching judging runs.</returns>
-        Task<IEnumerable<(JudgingRun?, Testcase)>> FetchDetailsAsync(int problemId, int judgingId);
+        Task<IEnumerable<(JudgingRun?, Testcase)>> GetDetailsAsync(int problemId, int judgingId);
 
         /// <summary>
         /// Fetch solutions with contest.
@@ -29,7 +29,7 @@ namespace Ccs.Services
         /// <param name="page">The page.</param>
         /// <param name="perPage">The count per page.</param>
         /// <returns>The task for fetching solution list.</returns>
-        Task<IPagedList<Solution>> FetchSolutionsAsync(int page, int perPage);
+        Task<IPagedList<Solution>> ListSolutionsAsync(int page, int perPage);
 
         /// <summary>
         /// Gets the testcase of the <paramref name="problem"/>.
@@ -38,7 +38,7 @@ namespace Ccs.Services
         /// <param name="testcaseId">The testcase ID.</param>
         /// <param name="filetype">The file type.</param>
         /// <returns>The task for getting file info.</returns>
-        Task<IFileInfo?> FetchTestcaseAsync(ProblemModel problem, int testcaseId, string filetype);
+        Task<IFileInfo?> GetTestcaseAsync(ProblemModel problem, int testcaseId, string filetype);
 
         /// <summary>
         /// Statistics the submission status of team.
@@ -57,6 +57,6 @@ namespace Ccs.Services
         /// Gets the team members as a lookup dictionary.
         /// </summary>
         /// <returns>The task for getting this lookup.</returns>
-        Task<ILookup<int, string>> FetchTeamMembersAsync();
+        Task<ILookup<int, string>> GetTeamMembersAsync();
     }
 }

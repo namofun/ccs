@@ -32,9 +32,9 @@ namespace SatelliteSite.ContestModule.Apis
         {
             if (!Contest.StartTime.HasValue || Contest.Kind == 2)
                 return null;
-            var scb = await Context.FetchScoreboardAsync();
-            var affs = await Context.FetchAffiliationsAsync();
-            var orgs = await Context.FetchCategoriesAsync();
+            var scb = await Context.GetScoreboardAsync();
+            var affs = await Context.ListAffiliationsAsync();
+            var orgs = await Context.ListCategoriesAsync();
             var probs = await Context.ListProblemsAsync();
 
             var board = new FullBoardViewModel
@@ -63,7 +63,7 @@ namespace SatelliteSite.ContestModule.Apis
                     Problems = opt.Select(i => MakeProblem(t.Problems[i], probs[i]))
                 });
 
-            var maxEventId = await Context.MaxEventIdAsync();
+            var maxEventId = await Context.GetMaxEventIdAsync();
             return new Scoreboard
             {
                 Time = Contest.StartTime.Value,

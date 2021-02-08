@@ -3,8 +3,8 @@
     Layout = "_WindowLayout";
     ViewData["Title"] = $"Edit team t{Model.TeamId}";
     ViewData["FormAjaxUpload"] = Url.Action("Edit");
-    var affs = await Contest.Context.FetchAffiliationsAsync(false);
-    var cats = await Contest.Context.FetchCategoriesAsync(false);
+    var affs = await Contest.Context.ListAffiliationsAsync(false);
+    var cats = await Contest.Context.ListCategoriesAsync(false);
 }
 
 <input type="hidden" asp-for="TeamId" />

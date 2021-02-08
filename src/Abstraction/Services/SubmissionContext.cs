@@ -1,10 +1,8 @@
-﻿using Ccs.Entities;
-using Ccs.Models;
+﻿using Ccs.Models;
 using Polygon.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Net;
 using System.Threading.Tasks;
 
 namespace Ccs.Services
@@ -30,10 +28,23 @@ namespace Ccs.Services
         /// <param name="predicate">The conditions.</param>
         /// <param name="limits">The count to take.</param>
         /// <returns>The task for fetching solutions.</returns>
-        Task<List<T>> FetchSolutionsAsync<T>(
+        Task<List<T>> ListSolutionsAsync<T>(
             Expression<Func<Submission, Judging, T>> selector,
             Expression<Func<Submission, bool>>? predicate = null,
             int? limits = null);
+
+        /// <summary>
+        /// Fetch solution with contest.
+        /// </summary>
+        /// <typeparam name="TSolution">The solution type.</typeparam>
+        /// <param name="selector">The result selector.</param>
+        /// <param name="probid">The problem ID.</param>
+        /// <param name="langid">The language ID.</param>
+        /// <param name="teamid">The team ID.</param>
+        /// <returns>The task for fetching solution list.</returns>
+        Task<List<TSolution>> ListSolutionsAsync<TSolution>(
+            Expression<Func<Submission, Judging, TSolution>> selector,
+            int? probid = null, string? langid = null, int? teamid = null);
 
         /// <summary>
         /// Fetch solutions with contest.
@@ -41,14 +52,14 @@ namespace Ccs.Services
         /// <param name="page">The page.</param>
         /// <param name="perPage">The count per page.</param>
         /// <returns>The task for fetching solution list.</returns>
-        Task<IPagedList<Polygon.Models.Solution>> FetchSolutionsAsync(int page, int perPage);
+        Task<IPagedList<Polygon.Models.Solution>> ListSolutionsAsync(int page, int perPage);
 
         /// <summary>
-        /// Fetch solutions with contest.
+        /// Finds the specified solutions in this contest.
         /// </summary>
         /// <param name="submitid">The submission ID.</param>
-        /// <returns>The task for fetching solution list.</returns>
-        Task<Polygon.Models.Solution> FetchSolutionAsync(int submitid);
+        /// <returns>The task for fetching solution.</returns>
+        Task<Polygon.Models.Solution> FindSolutionAsync(int submitid);
 
         /// <summary>
         /// List the submissions.
@@ -68,7 +79,7 @@ namespace Ccs.Services
         /// <param name="problemId">The problem ID.</param>
         /// <param name="judgingId">The judging ID.</param>
         /// <returns>The task for fetching judging runs.</returns>
-        Task<IEnumerable<(JudgingRun?, Testcase)>> FetchDetailsAsync(int problemId, int judgingId);
+        Task<IEnumerable<(JudgingRun?, Testcase)>> GetDetailsAsync(int problemId, int judgingId);
 
         /// <summary>
         /// Fetch the details DTO.
@@ -79,7 +90,7 @@ namespace Ccs.Services
         /// <param name="predicate">The condition.</param>
         /// <param name="limit">The count of selects.</param>
         /// <returns>The task for fetching judging runs.</returns>
-        Task<IEnumerable<T>> FetchDetailsAsync<T>(
+        Task<IEnumerable<T>> GetDetailsAsync<T>(
             Expression<Func<Testcase, JudgingRun, T>> selector,
             Expression<Func<Testcase, JudgingRun, bool>>? predicate = null,
             int? limit = null);
@@ -89,7 +100,7 @@ namespace Ccs.Services
         /// </summary>
         /// <param name="predicate">The predicate.</param>
         /// <returns>The count task.</returns>
-        Task<int> CountJudgingAsync(Expression<Func<Judging, bool>> predicate);
+        Task<int> CountJudgingsAsync(Expression<Func<Judging, bool>> predicate);
 
         /// <summary>
         /// Find the judging for the id.
@@ -105,13 +116,13 @@ namespace Ccs.Services
         /// <param name="predicate">The predicate.</param>
         /// <param name="topCount">The top count.</param>
         /// <returns>The list task.</returns>
-        Task<List<Judging>> FetchJudgingsAsync(Expression<Func<Judging, bool>> predicate, int topCount);
+        Task<List<Judging>> ListJudgingsAsync(Expression<Func<Judging, bool>> predicate, int topCount);
 
         /// <summary>
         /// Fetch the first submission source.
         /// </summary>
         /// <param name="predicate">The submission condition.</param>
         /// <returns>The task for fetching source code.</returns>
-        Task<SubmissionSource> FetchSourceAsync(Expression<Func<Submission, bool>> predicate);
+        Task<SubmissionSource> GetSourceCodeAsync(Expression<Func<Submission, bool>> predicate);
     }
 }

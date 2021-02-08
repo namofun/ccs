@@ -12,15 +12,15 @@ namespace Ccs.Services
 {
     public partial class CachedContestContext
     {
-        public override Task<IReadOnlyList<Language>> FetchLanguagesAsync()
+        public override Task<IReadOnlyList<Language>> ListLanguagesAsync()
         {
             return CacheAsync("Languages", _options.Language,
-                async () => await base.FetchLanguagesAsync());
+                async () => await base.ListLanguagesAsync());
         }
 
         public override async Task<Language?> FindLanguageAsync(string? langid)
         {
-            var langs = await FetchLanguagesAsync();
+            var langs = await ListLanguagesAsync();
             return langs.FirstOrDefault(l => l.Id == langid);
         }
 
@@ -54,10 +54,10 @@ namespace Ccs.Services
             Expire("Jury");
         }
 
-        public override Task<Dictionary<int, string>> FetchJuryAsync()
+        public override Task<Dictionary<int, string>> ListJuriesAsync()
         {
             return CacheAsync("Jury", _options.Contest,
-                async () => await base.FetchJuryAsync());
+                async () => await base.ListJuriesAsync());
         }
 
         public override Task<string> GetReadmeAsync(bool source)

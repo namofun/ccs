@@ -58,7 +58,7 @@ namespace SatelliteSite.ContestModule.Controllers
                 return;
             }
 
-            Teams = await Context.FetchTeamsAsync();
+            Teams = await Context.GetAnalyticalTeamsAsync();
         }
 
 
@@ -69,7 +69,7 @@ namespace SatelliteSite.ContestModule.Controllers
             var startTime = Contest.StartTime.Value;
             var endTime = startTime + Contest.EndTime.Value;
 
-            var result = await Context.FetchSolutionsAsync(
+            var result = await Context.ListSolutionsAsync(
                 predicate: s => s.ContestId == cid && s.Time >= startTime && s.Time <= endTime,
                 selector: (s, j) => new { s.Time, j.Status, s.ProblemId, s.TeamId, s.Language });
 
@@ -129,7 +129,7 @@ namespace SatelliteSite.ContestModule.Controllers
             var startTime = Contest.StartTime.Value;
             var endTime = startTime + Contest.EndTime.Value;
 
-            var result = await Context.FetchSolutionsAsync(
+            var result = await Context.ListSolutionsAsync(
                 predicate: s => s.ContestId == cid && s.Time >= startTime && s.Time <= endTime && s.ProblemId == probid,
                 selector: (s, j) => new { s.Time, SubmissionId = s.Id, j.Status, s.TeamId, s.Language, JudgingId = j.Id, j.ExecuteTime });
 

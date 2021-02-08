@@ -70,16 +70,16 @@ namespace Ccs.Registration
         /// </summary>
         /// <param name="contestFiltered">Whether filtering the entities only used in this contest.</param>
         /// <returns>The task for fetching affiliations.</returns>
-        public Task<IReadOnlyDictionary<int, Affiliation>> FetchAffiliationsAsync(bool contestFiltered = true)
-            => _teamContext.FetchAffiliationsAsync(contestFiltered);
+        public Task<IReadOnlyDictionary<int, Affiliation>> ListAffiliationsAsync(bool contestFiltered = true)
+            => _teamContext.ListAffiliationsAsync(contestFiltered);
 
         /// <summary>
         /// Fetch the categories used in contest.
         /// </summary>
         /// <param name="contestFiltered">Whether filtering the entities only used in this contest.</param>
         /// <returns>The task for fetching affiliations.</returns>
-        public Task<IReadOnlyDictionary<int, Category>> FetchCategoriesAsync(bool contestFiltered = true)
-            => _teamContext.FetchCategoriesAsync(contestFiltered);
+        public Task<IReadOnlyDictionary<int, Category>> ListCategoriesAsync(bool contestFiltered = true)
+            => _teamContext.ListCategoriesAsync(contestFiltered);
 
         /// <summary>
         /// Attach a user to the team if not attached.
@@ -95,8 +95,8 @@ namespace Ccs.Registration
         /// Fetch the team members as a lookup dictionary.
         /// </summary>
         /// <returns>The task for getting this lookup.</returns>
-        public Task<ILookup<int, string>> FetchTeamMembersAsync()
-            => _teamContext.FetchTeamMembersAsync();
+        public Task<ILookup<int, string>> GetTeamMembersAsync()
+            => _teamContext.GetTeamMembersAsync();
 
         /// <summary>
         /// List the teams with selected conditions.

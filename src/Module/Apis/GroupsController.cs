@@ -31,7 +31,7 @@ namespace SatelliteSite.ContestModule.Apis
             [FromQuery] int[] ids = null,
             [FromQuery] bool @public = false)
         {
-            var cats = await Context.FetchCategoriesAsync();
+            var cats = await Context.ListCategoriesAsync();
             return cats.Values
                 .WhereIf(@public, c => c.IsPublic)
                 .WhereIf(ids != null && ids.Length > 0, c => ids.Contains(c.Id))
@@ -51,7 +51,7 @@ namespace SatelliteSite.ContestModule.Apis
             [FromRoute] int cid,
             [FromRoute] int id)
         {
-            var cat = await Context.FetchCategoryAsync(id);
+            var cat = await Context.FindCategoryAsync(id);
             return cat == null ? null : new Group(cat);
         }
     }

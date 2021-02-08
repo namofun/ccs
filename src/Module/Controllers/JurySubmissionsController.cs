@@ -16,8 +16,8 @@ namespace SatelliteSite.ContestModule.Controllers
         [HttpGet]
         public async Task<IActionResult> List(bool all = false)
         {
-            var model = await Context.FetchSolutionsAsync(all: all);
-            var teamNames = await Context.FetchTeamNamesAsync();
+            var model = await Context.ListSolutionsAsync(all: all);
+            var teamNames = await Context.ListTeamNamesAsync();
             model.ForEach(a => a.AuthorName = teamNames.GetValueOrDefault(a.TeamId));
             return View(model);
         }
@@ -43,7 +43,7 @@ namespace SatelliteSite.ContestModule.Controllers
                 Submission = submit,
                 Judging = judging,
                 AllJudgings = judgings,
-                DetailsV2 = await Context.FetchDetailsAsync(submit.ProblemId, judging.Id),
+                DetailsV2 = await Context.GetDetailsAsync(submit.ProblemId, judging.Id),
                 Team = await Context.FindTeamByIdAsync(submit.TeamId),
                 Problem = prob,
                 Language = await Context.FindLanguageAsync(submit.Language),
@@ -55,7 +55,7 @@ namespace SatelliteSite.ContestModule.Controllers
         public async Task<IActionResult> Source(int submitid, int? last = null)
         {
             int cid = Contest.Id;
-            var submit = await Context.FetchSourceAsync(s => s.ContestId == cid && s.Id == submitid);
+            var submit = await Context.GetSourceCodeAsync(s => s.ContestId == cid && s.Id == submitid);
             if (submit == null) return NotFound();
 
             var cond = Expr
@@ -64,7 +64,7 @@ namespace SatelliteSite.ContestModule.Controllers
                 .CombineIf(last.HasValue, s => s.Id == last)
                 .CombineIf(!last.HasValue, s => s.Id < submitid);
 
-            var lastSubmit = await Context.FetchSourceAsync(cond);
+            var lastSubmit = await Context.GetSourceCodeAsync(cond);
 
             return View(new SubmissionSourceModel
             {

@@ -118,7 +118,7 @@ namespace Ccs.Services
             await FixProblemCountAsync(Contest.Id);
         }
 
-        public virtual async Task<List<Statement>> FetchRawStatementsAsync()
+        public virtual async Task<List<Statement>> GetStatementsAsync()
         {
             int cid = Contest.Id;
             var problems = await ListProblemsAsync();
@@ -143,7 +143,7 @@ namespace Ccs.Services
             return stmts;
         }
 
-        public async Task<CheckResult> CheckProblemAvailabilityAsync(int probid, ClaimsPrincipal user)
+        public async Task<CheckResult> CheckProblemAsync(int probid, ClaimsPrincipal user)
         {
             int cid = Contest.Id;
             int? userId = user.IsInRole("Administrator") ? default(int?) : int.Parse(user.GetUserId() ?? "-110");
@@ -167,7 +167,7 @@ namespace Ccs.Services
             return CheckResult.Succeed(prob.Title);
         }
 
-        public virtual async Task<IFileInfo?> FetchTestcaseAsync(ProblemModel problem, int testcaseId, string filetype)
+        public virtual async Task<IFileInfo?> GetTestcaseAsync(ProblemModel problem, int testcaseId, string filetype)
         {
             var testcase = await Polygon.Testcases.FindAsync(testcaseId, problem.ProblemId);
             if (testcase == null || (!problem.Shared && testcase.IsSecret)) return null;

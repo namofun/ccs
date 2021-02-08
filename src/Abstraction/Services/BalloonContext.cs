@@ -13,13 +13,13 @@ namespace Ccs.Services
         /// Lists the balloon and fill in problem related informations.
         /// </summary>
         /// <returns>The task for balloon models.</returns>
-        Task<List<BalloonModel>> FetchBalloonsAsync();
+        Task<List<BalloonModel>> ListAsync();
 
         /// <summary>
         /// Sets the balloon in contest as done.
         /// </summary>
         /// <param name="id">The balloon ID.</param>
         /// <returns>The task for setting done.</returns>
-        Task SetBalloonDoneAsync(int id);
+        Task HandleAsync(int id);
     }
 }

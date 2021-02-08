@@ -33,8 +33,8 @@ namespace SatelliteSite.ContestModule.Controllers
         {
             var prob = await Context.FindProblemAsync(probid);
             if (prob == null) return NotFound();
-            var sols = await Context.FetchSolutionsAsync(probid: probid, all: all);
-            var tn = await Context.FetchTeamNamesAsync();
+            var sols = await Context.ListSolutionsAsync(probid: probid, all: all);
+            var tn = await Context.ListTeamNamesAsync();
             sols.ForEach(a => a.AuthorName = tn.GetValueOrDefault(a.TeamId));
             return View(new JuryViewProblemModel(sols, prob));
         }
@@ -47,7 +47,7 @@ namespace SatelliteSite.ContestModule.Controllers
             if (null != await Context.FindProblemAsync(model.ShortName))
                 ModelState.AddModelError("xys::duplicate", "Duplicate short name for problem.");
 
-            var probDetect = await Context.CheckProblemAvailabilityAsync(model.ProblemId, User);
+            var probDetect = await Context.CheckProblemAsync(model.ProblemId, User);
             if (!probDetect.Success)
                 ModelState.AddModelError("xys::prob", probDetect.Message);
 
@@ -75,7 +75,7 @@ namespace SatelliteSite.ContestModule.Controllers
         [HttpGet("[action]/{probid}")]
         public async Task<IActionResult> Find(int probid)
         {
-            var result = await Context.CheckProblemAvailabilityAsync(probid, User);
+            var result = await Context.CheckProblemAsync(probid, User);
             return Content(result.Message);
         }
 
@@ -154,7 +154,7 @@ namespace SatelliteSite.ContestModule.Controllers
         {
             if (Contest.Kind == 2) return StatusCode(503);
 
-            var stmts = await Context.FetchRawStatementsAsync();
+            var stmts = await Context.GetStatementsAsync();
             var startTime = Contest.StartTime ?? DateTimeOffset.Now;
             var startDate = startTime.ToString("dddd, MMMM d, yyyy", CultureInfo.GetCultureInfo(1033));
 

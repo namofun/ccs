@@ -45,7 +45,7 @@ namespace SatelliteSite.ContestModule.Apis
                 .CombineIf(@public, t => t.Category.IsPublic);
 
             var teams = await Context.ListTeamsAsync(cond);
-            var affs = await Context.FetchAffiliationsAsync(true);
+            var affs = await Context.ListAffiliationsAsync(true);
             return teams.Select(t => new Team(t, affs[t.AffiliationId])).ToList();
         }
 
@@ -62,7 +62,7 @@ namespace SatelliteSite.ContestModule.Apis
             [FromRoute] int id)
         {
             var team = await Context.FindTeamByIdAsync(id);
-            var aff = await Context.FetchAffiliationAsync(team.AffiliationId);
+            var aff = await Context.FindAffiliationAsync(team.AffiliationId);
             return new Team(team, aff);
         }
     }

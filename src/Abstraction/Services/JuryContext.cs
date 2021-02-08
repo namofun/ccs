@@ -30,7 +30,7 @@ namespace Ccs.Services
         /// Fetch the ID of the latest event.
         /// </summary>
         /// <returns>The task for ID of event.</returns>
-        Task<int> MaxEventIdAsync();
+        Task<int> GetMaxEventIdAsync();
 
         /// <summary>
         /// Fetch the event for a contest after some ID.
@@ -38,7 +38,7 @@ namespace Ccs.Services
         /// <param name="type">The endpoint type.</param>
         /// <param name="after">The first event ID.</param>
         /// <returns>The task for fetching new events.</returns>
-        Task<List<Event>> FetchEventAsync(string[]? type = null, int after = 0);
+        Task<List<Event>> ListEventsAsync(string[]? type = null, int after = 0);
 
         /// <summary>
         /// Assign jury user to contest.

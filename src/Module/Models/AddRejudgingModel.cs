@@ -52,9 +52,9 @@ namespace SatelliteSite.ContestModule.Models
         [Obsolete("Problem listing need refactor")]
         public async Task<AddRejudgingModel> LoadAsync(IRejudgingContext context)
         {
-            AllowedTeamNames ??= await context.FetchTeamNamesAsync();
-            AllowedJudgehosts ??= await context.FetchJudgehostsAsync();
-            AllowedLanguages ??= await context.FetchLanguagesAsync();
+            AllowedTeamNames ??= await context.ListTeamNamesAsync();
+            AllowedJudgehosts ??= await context.GetJudgehostsAsync();
+            AllowedLanguages ??= await context.ListLanguagesAsync();
             AllowedProblems ??= await context.ListProblemsAsync();
             return this;
         }
