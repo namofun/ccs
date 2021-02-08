@@ -41,18 +41,18 @@ namespace SatelliteSite.ContestModule.Controllers
             [FromQuery(Name = "affiliations[]")] int[] affiliations,
             [FromQuery(Name = "categories[]")] int[] categories,
             [FromQuery(Name = "clear")] string clear = "")
-            => Scoreboard(isPublic: !TooLate, isJury: false, clear == "clear", affiliations, categories);
+            => CommonActions.DomScoreboard(this, !TooLate, false, clear == "clear", affiliations, categories);
 
 
         [HttpGet("[action]")]
-        public new IActionResult Print()
-            => base.Print();
+        public IActionResult Print()
+            => CommonActions.GetPrint(this);
 
 
         [HttpPost("[action]")]
         [AuditPoint(AuditlogType.Printing)]
-        public new Task<IActionResult> Print(AddPrintModel model)
-            => base.Print(model);
+        public Task<IActionResult> Print(AddPrintModel model)
+            => CommonActions.PostPrint(this, model);
 
 
         [HttpGet]

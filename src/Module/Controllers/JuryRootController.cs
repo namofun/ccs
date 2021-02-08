@@ -15,15 +15,15 @@ namespace SatelliteSite.ContestModule.Controllers
     public class JuryController : JuryControllerBase<IJuryContext>
     {
         [HttpGet("/[area]/{cid:c(1)}/[controller]/[action]")]
-        public new IActionResult Print()
-            => base.Print();
+        public IActionResult Print()
+            => CommonActions.GetPrint(this);
 
 
         [HttpPost("/[area]/{cid:c(1)}/[controller]/[action]")]
         [ValidateAntiForgeryToken]
         [AuditPoint(AuditlogType.Printing)]
-        public new Task<IActionResult> Print(AddPrintModel model)
-            => base.Print(model);
+        public Task<IActionResult> Print(AddPrintModel model)
+            => CommonActions.PostPrint(this, model);
 
 
         [HttpGet("/[area]/{cid:c(1)}/[controller]/[action]")]
@@ -31,7 +31,7 @@ namespace SatelliteSite.ContestModule.Controllers
             [FromQuery(Name = "affiliations[]")] int[] affiliations,
             [FromQuery(Name = "categories[]")] int[] categories,
             [FromQuery(Name = "clear")] string clear = "")
-            => Scoreboard(false, true, clear == "clear", affiliations, categories);
+            => CommonActions.DomScoreboard(this, false, true, clear == "clear", affiliations, categories);
 
 
         [HttpGet]

@@ -7,7 +7,7 @@ namespace SatelliteSite.ContestModule.Controllers
 {
     [Area("Contest")]
     [Route("[area]/{cid:c(3)}/jury/printings")]
-    public class JuryPrintingsController : JuryControllerBase
+    public class JuryPrintingsController : JuryControllerBase<IContestContext>
     {
         IPrintingService Store { get; }
 

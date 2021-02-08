@@ -9,7 +9,8 @@ namespace SatelliteSite.ContestModule.Controllers
     /// </summary>
     [Authorize]
     [Authorize(Policy = "ContestIsJury")]
-    public abstract class JuryControllerBase : ContestControllerBase
+    public abstract class JuryControllerBase<TContestContext> : ContestControllerBase<TContestContext>
+        where TContestContext : class, Ccs.Services.IContestContext
     {
         /// <inheritdoc />
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -31,23 +32,6 @@ namespace SatelliteSite.ContestModule.Controllers
         {
             StatusMessage = message;
             return RedirectToAction(action, controller);
-        }
-    }
-
-    /// <summary>
-    /// Context-typed base controller for jury related things.
-    /// </summary>
-    public abstract class JuryControllerBase<TContext> : JuryControllerBase
-        where TContext : class, Ccs.Services.IContestContext
-    {
-        /// <inheritdoc cref="ContestControllerBase.Context" />
-        protected new TContext Context => base.Context as TContext;
-
-        /// <inheritdoc />
-        public override void OnActionExecuting(ActionExecutingContext context)
-        {
-            base.OnActionExecuting(context);
-            if (Context == null) context.Result = NotFound();
         }
     }
 }

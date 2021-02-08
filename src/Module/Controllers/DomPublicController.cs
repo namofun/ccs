@@ -1,11 +1,8 @@
 ﻿using Ccs;
-using Ccs.Entities;
+using Ccs.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SatelliteSite.ContestModule.Controllers
@@ -14,7 +11,7 @@ namespace SatelliteSite.ContestModule.Controllers
     [Route("[area]/{cid:c(1)}")]
     [Authorize(Policy = "ContestVisible")]
     [SupportStatusCodePage]
-    public class DomPublicController : ContestControllerBase
+    public class DomPublicController : ContestControllerBase<IDomContext>
     {
         public override void OnActionExecuting(ActionExecutingContext context)
         {
@@ -65,6 +62,6 @@ namespace SatelliteSite.ContestModule.Controllers
             [FromQuery(Name = "affiliations[]")] int[] affiliations,
             [FromQuery(Name = "categories[]")] int[] categories,
             [FromQuery(Name = "clear")] string clear = "")
-            => Scoreboard(isPublic: !TooLate, isJury: false, clear == "clear", affiliations, categories);
+            => CommonActions.DomScoreboard(this, !TooLate, false, clear == "clear", affiliations, categories);
     }
 }
