@@ -7,7 +7,7 @@ using System.Linq.Expressions;
 using System.Net;
 using System.Threading.Tasks;
 
-namespace Ccs
+namespace Ccs.Services
 {
     /// <summary>
     /// The context interface for fetching the information of a contest.

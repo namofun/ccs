@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Ccs
+namespace Ccs.Services
 {
     /// <summary>
     /// The context interface for fetching the information of a contest.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This context should be constructed by <see cref="Services.IContestContextFactory"/>.
+    /// This context should be constructed by <see cref="IContestContextFactory"/>.
     /// </para>
     /// </remarks>
     public partial interface IContestContext
@@ -30,19 +30,5 @@ namespace Ccs
         /// </summary>
         /// <returns>The task for fetching languages.</returns>
         Task<IReadOnlyList<Polygon.Entities.Language>> FetchLanguagesAsync();
-
-        /// <summary>
-        /// Get the auditlogs.
-        /// </summary>
-        /// <param name="page">The page to show.</param>
-        /// <param name="pageCount">The count of pages to show.</param>
-        /// <returns>The task with auditlogs.</returns>
-        Task<IPagedList<SatelliteSite.Entities.Auditlog>> ViewLogsAsync(int page, int pageCount);
-
-        /// <summary>
-        /// Get the ajax update overview.
-        /// </summary>
-        /// <returns>The object for update results.</returns>
-        Task<object> GetUpdatesAsync();
     }
 }

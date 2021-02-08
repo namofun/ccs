@@ -1,5 +1,6 @@
 ﻿using Ccs;
 using Ccs.Entities;
+using Ccs.Services;
 using System;
 
 namespace SatelliteSite.ContestModule
@@ -7,7 +8,7 @@ namespace SatelliteSite.ContestModule
     /// <summary>
     /// The contest feature.
     /// </summary>
-    public interface IContestFeature : IContestContextBase
+    public interface IContestFeature : IContestContextAccessor
     {
         internal bool Contextualized { get; }
 
@@ -82,10 +83,10 @@ namespace SatelliteSite.ContestModule
         int IContestInformation.RankingStrategy => Context.Contest.RankingStrategy;
         bool IContestInformation.IsPublic => Context.Contest.IsPublic;
         int IContestInformation.Kind => Context.Contest.Kind;
-        TimeSpan? IContestTime.FreezeTime => ((IContestInformation)Context.Contest).FreezeTime;
-        TimeSpan? IContestTime.EndTime => ((IContestInformation)Context.Contest).EndTime;
-        TimeSpan? IContestTime.UnfreezeTime => ((IContestInformation)Context.Contest).UnfreezeTime;
-        IContestSettings IContestInformation.Settings => ((IContestInformation)Context.Contest).Settings;
+        TimeSpan? IContestTime.FreezeTime => Context.Contest.FreezeTime;
+        TimeSpan? IContestTime.EndTime => Context.Contest.EndTime;
+        TimeSpan? IContestTime.UnfreezeTime => Context.Contest.UnfreezeTime;
+        IContestSettings IContestInformation.Settings => Context.Contest.Settings;
         IContestContextAccessor IContestFeature.AsAccessor() => this;
         IProblemsetContext IContestFeature.AsProblemset() => (IProblemsetContext)Context;
     }

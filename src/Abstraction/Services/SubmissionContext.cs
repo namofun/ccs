@@ -114,10 +114,7 @@ namespace Ccs.Services
         /// <returns>The task for fetching source code.</returns>
         Task<SubmissionSource> FetchSourceAsync(Expression<Func<Submission, bool>> predicate);
     }
-}
 
-namespace Ccs
-{
     public partial interface IContestContext
     {
         /// <summary>

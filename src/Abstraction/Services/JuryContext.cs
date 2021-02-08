@@ -60,11 +60,22 @@ namespace Ccs.Services
         /// <param name="source">The original source code.</param>
         /// <returns>The task for saving readme.</returns>
         Task SetReadmeAsync(string source);
-    }
-}
 
-namespace Ccs
-{
+        /// <summary>
+        /// Get the ajax update overview.
+        /// </summary>
+        /// <returns>The object for update results.</returns>
+        Task<object> GetUpdatesAsync();
+
+        /// <summary>
+        /// Get the auditlogs.
+        /// </summary>
+        /// <param name="page">The page to show.</param>
+        /// <param name="pageCount">The count of pages to show.</param>
+        /// <returns>The task with auditlogs.</returns>
+        Task<IPagedList<SatelliteSite.Entities.Auditlog>> ViewLogsAsync(int page, int pageCount);
+    }
+
     public partial interface IContestContext
     {
         /// <summary>

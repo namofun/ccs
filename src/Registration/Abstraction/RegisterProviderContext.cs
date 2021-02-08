@@ -49,7 +49,7 @@ namespace Ccs.Registration
         /// <summary>
         /// Provides contest feature.
         /// </summary>
-        public IContestContextBase Contest { get; }
+        public IContestContextAccessor Contest { get; }
 
         /// <summary>
         /// Provides contest team.
@@ -112,7 +112,7 @@ namespace Ccs.Registration
         /// <param name="context">The contest context.</param>
         /// <param name="userManager">The user manager.</param>
         /// <param name="httpContext">The http context.</param>
-        public RegisterProviderContext(IContestContextBase context, HttpContext httpContext, IUserManager? userManager = null)
+        public RegisterProviderContext(IContestContextAccessor context, HttpContext httpContext, IUserManager? userManager = null)
         {
             Contest = context;
             _userManager = userManager;

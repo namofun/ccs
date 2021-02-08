@@ -7,7 +7,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Tenant.Entities;
 
-namespace Ccs
+namespace Ccs.Services
 {
     public partial interface IContestContext
     {
@@ -72,10 +72,7 @@ namespace Ccs
         /// <returns>The task for getting this lookup.</returns>
         Task<ILookup<int, string>> FetchTeamMembersAsync();
     }
-}
 
-namespace Ccs.Services
-{
     /// <summary>
     /// Provides contract for team controlling.
     /// </summary>

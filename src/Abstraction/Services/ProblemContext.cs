@@ -8,7 +8,7 @@ using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace Ccs
+namespace Ccs.Services
 {
     public partial interface IContestContext
     {
@@ -35,10 +35,7 @@ namespace Ccs
         /// <returns>The task for fetching model.</returns>
         Task<ProblemModel?> FindProblemAsync(int probid, bool withStatement = false);
     }
-}
 
-namespace Ccs.Services
-{
     /// <summary>
     /// Provides contract for problem controlling.
     /// </summary>

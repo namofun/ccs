@@ -1,18 +1,11 @@
 ﻿using Ccs.Entities;
 
-namespace Ccs
+namespace Ccs.Services
 {
     /// <summary>
     /// The accessor to contest informations.
     /// </summary>
-    public interface IContestContextAccessor : IContestContextBase
-    {
-    }
-
-    /// <summary>
-    /// The contest information basis.
-    /// </summary>
-    public interface IContestContextBase : IContestInformation
+    public interface IContestContextAccessor : IContestInformation
     {
         /// <summary>The context service</summary>
         IContestContext Context { get; }
