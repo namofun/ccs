@@ -5,7 +5,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Polygon.Entities;
+using Polygon.Models;
 using Polygon.Storages;
+using SatelliteSite.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,10 +29,23 @@ namespace Ccs.Services
             return langs;
         }
 
+        public virtual async Task<Language?> FindLanguageAsync(string? langid)
+        {
+            if (langid == null) return null;
+            var lang = await Polygon.Languages.FindAsync(langid);
+            return lang.AllowSubmit ? lang : null;
+        }
+
         public virtual async Task<ContestWrapper> UpdateContestAsync(Expression<Func<Contest, Contest>> updateExpression)
         {
             await Ccs.UpdateAsync(Contest.Id, updateExpression);
             return (await Ccs.FindAsync(Contest.Id))!;
+        }
+
+        public virtual async Task<ServerStatus> GetJudgeQueueAsync()
+        {
+            var lists = await Polygon.Judgings.GetJudgeQueueAsync(Contest.Id);
+            return lists.SingleOrDefault() ?? new ServerStatus { ContestId = Contest.Id };
         }
 
         public virtual Task<Dictionary<int, string>> ListJuriesAsync()
@@ -92,6 +107,27 @@ namespace Ccs.Services
 
             await io.WriteStringAsync($"c{Contest.Id}/readme.md", source);
             await io.WriteStringAsync($"c{Contest.Id}/readme.html", md.RenderAsHtml(document));
+        }
+
+        public virtual async Task<IReadOnlyDictionary<string, object>> GetUpdatesAsync()
+        {
+            int cid = Contest.Id;
+            var clarifications = await Db.Clarifications.CountAsync(c => c.ContestId == cid && !c.Answered);
+            var rejudgings = await Polygon.Rejudgings.CountUndoneAsync(Contest.Id);
+            var teams = await Db.Teams.CountAsync(t => t.ContestId == cid && t.Status == 0);
+
+            return new Dictionary<string, object>
+            {
+                [nameof(clarifications)] = clarifications,
+                [nameof(teams)] = teams,
+                [nameof(rejudgings)] = rejudgings
+            };
+        }
+
+        public Task<IPagedList<Auditlog>> ViewLogsAsync(int page, int pageCount)
+        {
+            return Get<SatelliteSite.Services.IAuditlogger>()
+                .ViewLogsAsync(Contest.Id, page, pageCount);
         }
     }
 }

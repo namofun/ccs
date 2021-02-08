@@ -122,7 +122,7 @@ namespace SatelliteSite.ContestModule.Controllers
                 return Forbid();
             }
 
-            var teamNames = await Context.ListTeamNamesAsync();
+            var teamNames = await Context.GetTeamNamesAsync();
             model.TeamName = teamNames.GetValueOrDefault(model.TeamId, "");
             model.Runs = await Context.GetDetailsAsync(model.ProblemId, model.JudgingId);
             if (!model.Problem.Shared) model.Runs = model.Runs.Where(t => !t.Item2.IsSecret);
@@ -321,7 +321,7 @@ namespace SatelliteSite.ContestModule.Controllers
         {
             if (page <= 0) return BadRequest();
             var model = await Context.ListSolutionsAsync(page, 50);
-            var tn = await Context.ListTeamNamesAsync();
+            var tn = await Context.GetTeamNamesAsync();
             foreach (var solu in model)
             {
                 solu.AuthorName = tn.GetValueOrDefault(solu.TeamId, string.Empty);

@@ -34,7 +34,7 @@ namespace SatelliteSite.ContestModule.Controllers
             var prob = await Context.FindProblemAsync(probid);
             if (prob == null) return NotFound();
             var sols = await Context.ListSolutionsAsync(probid: probid, all: all);
-            var tn = await Context.ListTeamNamesAsync();
+            var tn = await Context.GetTeamNamesAsync();
             sols.ForEach(a => a.AuthorName = tn.GetValueOrDefault(a.TeamId));
             return View(new JuryViewProblemModel(sols, prob));
         }

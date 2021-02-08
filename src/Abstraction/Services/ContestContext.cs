@@ -84,7 +84,7 @@ namespace Ccs.Services
         /// Gets all the team names as a lookup dictionary.
         /// </summary>
         /// <returns>The task for getting this dictionary.</returns>
-        Task<IReadOnlyDictionary<int, string>> ListTeamNamesAsync();
+        Task<IReadOnlyDictionary<int, string>> GetTeamNamesAsync();
 
         /// <summary>
         /// Finds team by team ID.

@@ -36,16 +36,10 @@ namespace Ccs.Services
                 async () => (await Ccs.FindAsync(Contest.Id))!);
         }
 
-        public override Task<object> GetUpdatesAsync()
+        public override Task<Dictionary<int, string>> ListJuriesAsync()
         {
-            return CacheAsync("Updates", TimeSpan.FromSeconds(10),
-                async () => await base.GetUpdatesAsync());
-        }
-
-        public override async Task UnassignJuryAsync(IUser user)
-        {
-            await base.UnassignJuryAsync(user);
-            Expire("Jury");
+            return CacheAsync("Jury", _options.Contest,
+                async () => await base.ListJuriesAsync());
         }
 
         public override async Task AssignJuryAsync(IUser user)
@@ -54,10 +48,10 @@ namespace Ccs.Services
             Expire("Jury");
         }
 
-        public override Task<Dictionary<int, string>> ListJuriesAsync()
+        public override async Task UnassignJuryAsync(IUser user)
         {
-            return CacheAsync("Jury", _options.Contest,
-                async () => await base.ListJuriesAsync());
+            await base.UnassignJuryAsync(user);
+            Expire("Jury");
         }
 
         public override Task<string> GetReadmeAsync(bool source)
@@ -71,6 +65,12 @@ namespace Ccs.Services
         {
             await base.SetReadmeAsync(source);
             Expire("Readme");
+        }
+
+        public override Task<IReadOnlyDictionary<string, object>> GetUpdatesAsync()
+        {
+            return CacheAsync("Updates", TimeSpan.FromSeconds(10),
+                async () => await base.GetUpdatesAsync());
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿@model AddClarificationModel
 @{
     ViewData["Title"] = "Send clarification";
-    var teams = await Contest.Context.ListTeamNamesAsync();
+    var teams = await Contest.Context.GetTeamNamesAsync();
     var problems = await Contest.Context.ListProblemsAsync();
     Model.Body = !string.IsNullOrWhiteSpace(Model.Body) ? string.Join('\n', Model.Body.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).Select(c => "> " + c)) + '\n' : "";
     bool useCanned = ViewData.ContainsKey("UseCanned");

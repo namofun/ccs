@@ -24,15 +24,22 @@ namespace Ccs.Services
             Expire("Teams::Members");
         }
 
-        public override async Task<IReadOnlyList<Member>> DeleteTeamAsync(Team origin)
+        public override async Task<Affiliation?> FindAffiliationAsync(int id)
         {
-            var members = await base.DeleteTeamAsync(origin);
+            var results = await ListAffiliationsAsync(true);
+            return results.GetValueOrDefault(id);
+        }
 
-            ExpireTeamThings(
-                $"Teams::Id({origin.TeamId})",
-                members.Select(m => $"Teams::User({m.UserId})"));
+        public override async Task<Affiliation?> FindAffiliationAsync(string id)
+        {
+            var results = await ListAffiliationsAsync(true);
+            return results.Values.FirstOrDefault(a => a.Abbreviation == id);
+        }
 
-            return members;
+        public override async Task<Category?> FindCategoryAsync(int id)
+        {
+            var results = await ListCategoriesAsync(true);
+            return results.GetValueOrDefault(id);
         }
 
         public override Task<Team?> FindTeamByIdAsync(int teamId)
@@ -59,31 +66,6 @@ namespace Ccs.Services
                 async () => await base.ListCategoriesAsync(filtered));
         }
 
-        public override async Task UpdateTeamAsync(Team origin, Expression<Func<Team, Team>> expression)
-        {
-            await base.UpdateTeamAsync(origin, expression);
-            ExpireTeamThings($"Teams::Id({origin.TeamId})");
-        }
-
-        public override Task<IReadOnlyDictionary<int, string>> ListTeamNamesAsync()
-        {
-            return CacheAsync("Teams::Names", _options.Teams,
-                async () => await base.ListTeamNamesAsync());
-        }
-
-        public override Task<IReadOnlyDictionary<int, Team>> GetAnalyticalTeamsAsync()
-        {
-            if (((Microsoft.EntityFrameworkCore.DbContext)Db).ChangeTracker.AutoDetectChangesEnabled)
-            {
-                throw new InvalidOperationException(
-                    "This function requires EFCore auto change-detect disabled. " +
-                    "For more information, please refer to \"ChangeTracker.AutoDetectChangesEnabled\".");
-            }
-
-            return CacheAsync("Teams::Analysis", TimeSpan.FromMinutes(2),
-                async () => await base.GetAnalyticalTeamsAsync());
-        }
-
         public override async Task<Team> CreateTeamAsync(Team team, IEnumerable<IUser>? users)
         {
             team = await base.CreateTeamAsync(team, users);
@@ -93,6 +75,29 @@ namespace Ccs.Services
                 users?.Select(m => $"Teams::User({m.Id})"));
 
             return team;
+        }
+
+        public override async Task UpdateTeamAsync(Team origin, Expression<Func<Team, Team>> expression)
+        {
+            await base.UpdateTeamAsync(origin, expression);
+            ExpireTeamThings($"Teams::Id({origin.TeamId})");
+        }
+
+        public override async Task<IReadOnlyList<Member>> DeleteTeamAsync(Team origin)
+        {
+            var members = await base.DeleteTeamAsync(origin);
+
+            ExpireTeamThings(
+                $"Teams::Id({origin.TeamId})",
+                members.Select(m => $"Teams::User({m.UserId})"));
+
+            return members;
+        }
+
+        public override Task<IReadOnlyDictionary<int, string>> GetTeamNamesAsync()
+        {
+            return CacheAsync("Teams::Names", _options.Teams,
+                async () => await base.GetTeamNamesAsync());
         }
 
         public override Task<ILookup<int, string>> GetTeamMembersAsync()
@@ -106,22 +111,17 @@ namespace Ccs.Services
             return (await GetTeamMembersAsync())[team.TeamId];
         }
 
-        public override async Task<Affiliation?> FindAffiliationAsync(int id)
+        public override Task<IReadOnlyDictionary<int, Team>> GetAnalyticalTeamsAsync()
         {
-            var results = await ListAffiliationsAsync(true);
-            return results.GetValueOrDefault(id);
-        }
+            if (((Microsoft.EntityFrameworkCore.DbContext)Db).ChangeTracker.AutoDetectChangesEnabled)
+            {
+                throw new InvalidOperationException(
+                    "This function requires EFCore auto change-detect disabled. " +
+                    "For more information, please refer to \"ChangeTracker.AutoDetectChangesEnabled\".");
+            }
 
-        public override async Task<Affiliation?> FindAffiliationAsync(string id)
-        {
-            var results = await ListAffiliationsAsync(true);
-            return results.Values.FirstOrDefault(a => a.Abbreviation == id);
-        }
-
-        public override async Task<Category?> FindCategoryAsync(int id)
-        {
-            var results = await ListCategoriesAsync(true);
-            return results.GetValueOrDefault(id);
+            return CacheAsync("Teams::Analysis", TimeSpan.FromMinutes(2),
+                async () => await base.GetAnalyticalTeamsAsync());
         }
 
         public override Task<ScoreboardModel> GetScoreboardAsync()

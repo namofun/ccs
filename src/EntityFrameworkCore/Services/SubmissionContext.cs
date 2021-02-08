@@ -15,12 +15,6 @@ namespace Ccs.Services
 {
     public partial class ImmediateContestContext : ISubmissionContext
     {
-        public virtual async Task<ServerStatus> GetJudgeQueueAsync()
-        {
-            var lists = await Polygon.Judgings.GetJudgeQueueAsync(Contest.Id);
-            return lists.SingleOrDefault() ?? new ServerStatus { ContestId = Contest.Id };
-        }
-
         public virtual async Task<Submission?> FindSubmissionAsync(int submissionId, bool includeJudgings = false)
         {
             var result = await Polygon.Submissions.FindAsync(submissionId, includeJudgings);
@@ -59,6 +53,14 @@ namespace Ccs.Services
             int cid = Contest.Id;
             var res = await Polygon.Submissions.ListWithJudgingAsync(s => s.ContestId == cid && s.Id == submitid, true, 1);
             return res.FirstOrDefault();
+        }
+
+        public virtual Task<IPagedList<TSolution>> ListSolutionsAsync<TSolution>(
+            Expression<Func<Submission, Judging, TSolution>> selector,
+            Expression<Func<Submission, bool>> predicate,
+            int page, int perpage)
+        {
+            return Polygon.Submissions.ListWithJudgingAsync((page, perpage), selector, predicate);
         }
 
         public virtual Task<List<TSolution>> ListSolutionsAsync<TSolution>(

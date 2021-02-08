@@ -1,7 +1,6 @@
 ﻿using Ccs.Entities;
 using Ccs.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Polygon.Entities;
 using Polygon.Models;
@@ -60,6 +59,19 @@ namespace Ccs.Services
                 await QueryScores(Contest.Id).ToDictionaryAsync(k => k.Id, e => (e.Count, e.Score)));
 
             return _readed_problem_collection = res;
+        }
+
+        public virtual async Task<IPagedList<ProblemModel>> ListProblemsAsync(int page, int count)
+        {
+            int totalCount = _contest.ProblemCount;
+            int cid = Contest.Id;
+
+            var model = await QueryProblems(Db.ContestProblems
+                .Where(cp => cp.ContestId == cid)
+                .OrderBy(cp => cp.ShortName))
+                .ToListAsync();
+
+            return new PagedViewList<ProblemModel>(model, page, totalCount, count);
         }
 
         private async Task<ProblemModel?> FindProblemAsync(Expression<Func<ContestProblem, bool>> predicate, bool withStatement = false)
@@ -129,7 +141,7 @@ namespace Ccs.Services
                 .Join(Db.Problems, cp => cp.ProblemId, p => p.Id, (cp, p) => p)
                 .ToListAsync();
 
-            var provider = _services.GetRequiredService<Polygon.Packaging.IStatementProvider>();
+            var provider = Get<Polygon.Packaging.IStatementProvider>();
 
             var stmts = new List<Statement>();
             foreach (var prob in raw)

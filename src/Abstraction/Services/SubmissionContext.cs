@@ -34,6 +34,20 @@ namespace Ccs.Services
             int? limits = null);
 
         /// <summary>
+        /// Fetch the solutions with given selector and predicate.
+        /// </summary>
+        /// <typeparam name="TSolution">The solution type.</typeparam>
+        /// <param name="selector">The selector to shape model.</param>
+        /// <param name="predicate">The predicate to filter model.</param>
+        /// <param name="page">The current page.</param>
+        /// <param name="perpage">The count per page.</param>
+        /// <returns>The task for fetching solutions.</returns>
+        Task<IPagedList<TSolution>> ListSolutionsAsync<TSolution>(
+            Expression<Func<Submission, Judging, TSolution>> selector,
+            Expression<Func<Submission, bool>> predicate,
+            int page, int perpage);
+
+        /// <summary>
         /// Fetch solution with contest.
         /// </summary>
         /// <typeparam name="TSolution">The solution type.</typeparam>

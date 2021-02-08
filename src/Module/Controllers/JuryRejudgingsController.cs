@@ -33,7 +33,7 @@ namespace SatelliteSite.ContestModule.Controllers
 
             var uids = new[] { model.OperatedBy, model.IssuedBy }.NotNulls().Distinct();
             var userNames = await UserManager.FindUserNamesAsync(uids);
-            var teamNames = await Context.ListTeamNamesAsync();
+            var teamNames = await Context.GetTeamNamesAsync();
             var difference = await Context.ViewAsync(model);
 
             return View(new JuryViewRejudgingModel

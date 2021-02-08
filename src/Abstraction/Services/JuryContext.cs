@@ -65,7 +65,7 @@ namespace Ccs.Services
         /// Get the ajax update overview.
         /// </summary>
         /// <returns>The object for update results.</returns>
-        Task<object> GetUpdatesAsync();
+        Task<IReadOnlyDictionary<string, object>> GetUpdatesAsync();
 
         /// <summary>
         /// Get the auditlogs.

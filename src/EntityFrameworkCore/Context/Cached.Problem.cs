@@ -17,26 +17,6 @@ namespace Ccs.Services
                 async () => await base.ListProblemsAsync(true));
         }
 
-        public override async Task UpdateProblemAsync(
-            ProblemModel origin,
-            Expression<Func<ContestProblem, ContestProblem>> expression)
-        {
-            await base.UpdateProblemAsync(origin, expression);
-            Expire("Problems");
-        }
-
-        public override async Task CreateProblemAsync(ContestProblem entity)
-        {
-            await base.CreateProblemAsync(entity);
-            Expire("Problems");
-        }
-
-        public override async Task DeleteProblemAsync(ProblemModel problem)
-        {
-            await base.DeleteProblemAsync(problem);
-            Expire("Problems");
-        }
-
         public override async Task<ProblemModel?> FindProblemAsync(int probid, bool withStatement = false)
         {
             if (Contest.Kind == 2)
@@ -73,6 +53,26 @@ namespace Ccs.Services
 
                 return model;
             }
+        }
+
+        public override async Task UpdateProblemAsync(
+            ProblemModel origin,
+            Expression<Func<ContestProblem, ContestProblem>> expression)
+        {
+            await base.UpdateProblemAsync(origin, expression);
+            Expire("Problems");
+        }
+
+        public override async Task CreateProblemAsync(ContestProblem entity)
+        {
+            await base.CreateProblemAsync(entity);
+            Expire("Problems");
+        }
+
+        public override async Task DeleteProblemAsync(ProblemModel problem)
+        {
+            await base.DeleteProblemAsync(problem);
+            Expire("Problems");
         }
     }
 }

@@ -20,7 +20,7 @@ namespace SatelliteSite.ContestModule.Controllers
             {
                 AllClarifications = await Context.ListClarificationsAsync(c => c.Recipient == null),
                 Problems = await Context.ListProblemsAsync(),
-                TeamNames = await Context.ListTeamNamesAsync(),
+                TeamNames = await Context.GetTeamNamesAsync(),
                 JuryName = User.GetUserName(),
             });
         }
@@ -128,7 +128,7 @@ namespace SatelliteSite.ContestModule.Controllers
                 Associated = query,
                 Main = query.First(),
                 Problems = await Context.ListProblemsAsync(),
-                Teams = await Context.ListTeamNamesAsync(),
+                Teams = await Context.GetTeamNamesAsync(),
                 UserName = User.GetUserName(),
             });
         }

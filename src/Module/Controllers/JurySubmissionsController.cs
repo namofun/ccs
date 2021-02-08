@@ -17,7 +17,7 @@ namespace SatelliteSite.ContestModule.Controllers
         public async Task<IActionResult> List(bool all = false)
         {
             var model = await Context.ListSolutionsAsync(all: all);
-            var teamNames = await Context.ListTeamNamesAsync();
+            var teamNames = await Context.GetTeamNamesAsync();
             model.ForEach(a => a.AuthorName = teamNames.GetValueOrDefault(a.TeamId));
             return View(model);
         }

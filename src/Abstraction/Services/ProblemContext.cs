@@ -16,6 +16,14 @@ namespace Ccs.Services
     public interface IProblemContext : IContestContext
     {
         /// <summary>
+        /// Lists the problems in the problemset.
+        /// </summary>
+        /// <param name="page">The page.</param>
+        /// <param name="count">The count per page.</param>
+        /// <returns>The task for fetching model.</returns>
+        Task<IPagedList<ProblemModel>> ListProblemsAsync(int page, int count);
+
+        /// <summary>
         /// Creates problems by entity.
         /// </summary>
         /// <param name="entity">The contest problem to create.</param>

@@ -12,12 +12,12 @@ using Tenant.Services;
 
 namespace Ccs.Services
 {
-    public partial class ImmediateContestContext : IAnalysisContext, ITeamContext
+    public partial class ImmediateContestContext : ITeamContext
     {
         private static readonly ConcurrentAsyncLock _teamLock = new ConcurrentAsyncLock();
         protected static readonly IReadOnlyDictionary<int, (int, int)> _emptyStat = new Dictionary<int, (int, int)>();
 
-        private Task FixTeamCountAsync(int cid)
+        protected Task FixTeamCountAsync(int cid)
             => Db.Contests
                 .Where(c => c.Id == cid)
                 .BatchUpdateAsync(c => new Contest { TeamCount =
@@ -157,7 +157,7 @@ namespace Ccs.Services
             return list;
         }
 
-        public virtual async Task<IReadOnlyDictionary<int, string>> ListTeamNamesAsync()
+        public virtual async Task<IReadOnlyDictionary<int, string>> GetTeamNamesAsync()
         {
             int cid = Contest.Id;
             return await Db.Teams
@@ -168,7 +168,7 @@ namespace Ccs.Services
 
         public virtual async Task<ILookup<int, string>> GetTeamMembersAsync()
         {
-            var cid = Contest.Id;
+            int cid = Contest.Id;
             var results = await Db.TeamMembers
                 .Where(t => t.ContestId == cid)
                 .Join(Db.Users, m => m.UserId, u => u.Id, (m, u) => new { m.TeamId, u.UserName })
@@ -178,7 +178,7 @@ namespace Ccs.Services
 
         public virtual async Task<IEnumerable<string>> GetTeamMemberAsync(Team team)
         {
-            var (cid, teamid) = (team.ContestId, team.TeamId);
+            int cid = team.ContestId, teamid = team.TeamId;
             return await Db.TeamMembers
                 .Where(t => t.ContestId == cid && t.TeamId == teamid)
                 .Join(Db.Users, m => m.UserId, u => u.Id, (m, u) => u.UserName)
@@ -187,7 +187,7 @@ namespace Ccs.Services
 
         public virtual async Task<IReadOnlyDictionary<int, Team>> GetAnalyticalTeamsAsync()
         {
-            var cid = Contest.Id;
+            int cid = Contest.Id;
             var affs = await ListAffiliationsAsync(true);
             var cats = await ListCategoriesAsync(true);
 
@@ -217,7 +217,7 @@ namespace Ccs.Services
         public virtual async Task<IReadOnlyDictionary<int, (int, int)>> StatisticsAsync(Team? team)
         {
             if (team == null) return _emptyStat;
-            var (cid, teamid) = (team.ContestId, team.TeamId);
+            int cid = team.ContestId, teamid = team.TeamId;
             return await Db.SubmissionStatistics
                 .Where(t => t.ContestId == cid && t.TeamId == teamid)
                 .ToDictionaryAsync(s => s.ProblemId, s => (s.AcceptedSubmission, s.TotalSubmission));
