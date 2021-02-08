@@ -1,4 +1,4 @@
-﻿using Ccs;
+﻿using Ccs.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,7 +10,7 @@ namespace SatelliteSite.ContestModule
     /// </summary>
     public class EventFeedResult : IActionResult
     {
-        private readonly IContestContext _ctx;
+        private readonly IJuryContext _ctx;
         private readonly string[] _type;
         private readonly bool _keepAlive;
         private int after, step;
@@ -22,7 +22,7 @@ namespace SatelliteSite.ContestModule
         /// <param name="type">Allowed endpoint types.</param>
         /// <param name="stream">Whether to stream output.</param>
         /// <param name="sinceid">The first event ID.</param>
-        public EventFeedResult(IContestContext context, string[] type, bool stream, int sinceid)
+        public EventFeedResult(IJuryContext context, string[] type, bool stream, int sinceid)
         {
             _ctx = context;
             _type = type;

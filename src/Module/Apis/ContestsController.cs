@@ -18,7 +18,7 @@ namespace SatelliteSite.ContestModule.Apis
     [Authorize(AuthenticationSchemes = "Basic")]
     [Authorize(Roles = "CDS,Administrator")]
     [Produces("application/json")]
-    public class ContestsController : ApiControllerBase
+    public class ContestsController : ApiControllerBase<IJuryContext>
     {
         /// <summary>
         /// Get the given contest
@@ -113,7 +113,7 @@ namespace SatelliteSite.ContestModule.Apis
         public async Task<ActionResult<ServerStatus>> Status(
             [FromRoute] int cid)
         {
-            return await ((ISubmissionContext)Context).GetJudgeQueueAsync();
+            return await Context.GetJudgeQueueAsync();
         }
     }
 }

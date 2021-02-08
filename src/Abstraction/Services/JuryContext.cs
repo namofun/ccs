@@ -6,10 +6,19 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
-namespace Ccs
+namespace Ccs.Services
 {
-    public partial interface IContestContext
+    /// <summary>
+    /// Provides contract for jury.
+    /// </summary>
+    public interface IJuryContext : IContestContext
     {
+        /// <summary>
+        /// Get the status of judge queue.
+        /// </summary>
+        /// <returns>The list of judge queues.</returns>
+        Task<Polygon.Models.ServerStatus> GetJudgeQueueAsync();
+
         /// <summary>
         /// Asynchronously update the contest.
         /// </summary>
@@ -32,13 +41,6 @@ namespace Ccs
         Task<List<Event>> FetchEventAsync(string[]? type = null, int after = 0);
 
         /// <summary>
-        /// Get the jury list.
-        /// </summary>
-        /// <returns>The task for fetching jury list.</returns>
-        /// <remarks>Implementation should take a <see cref="HashSet{T}"/> as resulting type.</remarks>
-        Task<Dictionary<int, string>> FetchJuryAsync();
-
-        /// <summary>
         /// Assign jury user to contest.
         /// </summary>
         /// <param name="user">The jury user.</param>
@@ -55,15 +57,27 @@ namespace Ccs
         /// <summary>
         /// Get the readme content.
         /// </summary>
+        /// <param name="source">The original source code.</param>
+        /// <returns>The task for saving readme.</returns>
+        Task SetReadmeAsync(string source);
+    }
+}
+
+namespace Ccs
+{
+    public partial interface IContestContext
+    {
+        /// <summary>
+        /// Get the readme content.
+        /// </summary>
         /// <param name="source">The source code.</param>
         /// <returns>The task for reading me.</returns>
         Task<string> GetReadmeAsync(bool source = false);
 
         /// <summary>
-        /// Get the readme content.
+        /// Get the jury list.
         /// </summary>
-        /// <param name="source">The original source code.</param>
-        /// <returns>The task for saving readme.</returns>
-        Task SetReadmeAsync(string source);
+        /// <returns>The task for fetching jury list.</returns>
+        Task<Dictionary<int, string>> FetchJuryAsync();
     }
 }

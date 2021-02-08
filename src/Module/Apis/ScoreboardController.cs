@@ -17,7 +17,7 @@ namespace SatelliteSite.ContestModule.Apis
     [Authorize(AuthenticationSchemes = "Basic")]
     [Authorize(Roles = "CDS,Administrator")]
     [Produces("application/json")]
-    public class ScoreboardController : ApiControllerBase<ITeamContext>
+    public class ScoreboardController : ApiControllerBase<IJuryContext>
     {
         /// <summary>
         /// Get the scoreboard for this contest

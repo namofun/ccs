@@ -15,12 +15,6 @@ namespace Ccs.Services
     public interface ISubmissionContext : IContestContext
     {
         /// <summary>
-        /// Get the status of judge queue.
-        /// </summary>
-        /// <returns>The list of judge queues.</returns>
-        Task<Polygon.Models.ServerStatus> GetJudgeQueueAsync();
-
-        /// <summary>
         /// Find the submission.
         /// </summary>
         /// <param name="submissionId">The submission ID.</param>

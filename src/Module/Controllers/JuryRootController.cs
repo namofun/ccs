@@ -1,6 +1,7 @@
 ﻿using Ccs;
 using Ccs.Entities;
 using Ccs.Models;
+using Ccs.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SatelliteSite.ContestModule.Models;
@@ -11,7 +12,7 @@ namespace SatelliteSite.ContestModule.Controllers
 {
     [Area("Contest")]
     [Route("[area]/{cid:c(7)}/[controller]")]
-    public class JuryController : JuryControllerBase
+    public class JuryController : JuryControllerBase<IJuryContext>
     {
         [HttpGet("/[area]/{cid:c(1)}/[controller]/[action]")]
         public new IActionResult Print()
