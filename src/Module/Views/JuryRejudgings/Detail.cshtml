@@ -4,6 +4,7 @@
     ViewData["RefreshAfter"] = "updateMatrix";
     ViewData["RefreshSpan"] = 15;
     if (ViewData.ContainsKey("InAjax")) { Layout = null; }
+    var problems = await Contest.Context.ListProblemsAsync();
 }
 
 @functions {
@@ -173,7 +174,7 @@
                     <td use-a>s@(s.OldJudging.SubmissionId)</td>
                     <td use-a>@s.SubmitTime</td>
                     <td use-a>@Model.TeamNames.GetValueOrDefault(s.TeamId) (t@(s.TeamId))</td>
-                    <td use-a class="probid">@Contest.Problems.Find(s.ProblemId)?.ShortName</td>
+                    <td use-a class="probid">@problems.Find(s.ProblemId)?.ShortName</td>
                     <td use-a class="langid">@s.Language</td>
                     <td use-a>@(s.NewJudging.TotalScore ?? 0) - <verdict value="@(s.NewJudging.Status)" /></td>
                     <td use-a>@(s.OldJudging.TotalScore ?? 0) - <verdict value="@s.OldJudging.Status" /></td>

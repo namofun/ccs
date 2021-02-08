@@ -45,6 +45,11 @@ namespace Ccs.Services
                 .BatchUpdateAsync(c => new Contest { ProblemCount =
                     Db.ContestProblems.Count(cp => cp.ContestId == c.Id) });
 
+        protected virtual async Task LoadStatementAsync(ProblemModel problem)
+        {
+            problem.Statement ??= await Polygon.Problems.ReadCompiledHtmlAsync(problem.ProblemId);
+        }
+
         public virtual async Task<ProblemCollection> ListProblemsAsync(bool nonCached = false)
         {
             if (_readed_problem_collection != null && !nonCached)
@@ -53,9 +58,6 @@ namespace Ccs.Services
             var res = new ProblemCollection(
                 await QueryProblems(Contest.Id).ToListAsync(),
                 await QueryScores(Contest.Id).ToDictionaryAsync(k => k.Id, e => (e.Count, e.Score)));
-
-            for (int i = 0; i < res.Count; i++)
-                res[i].Statement = await Polygon.Problems.ReadCompiledHtmlAsync(res[i].ProblemId);
 
             return _readed_problem_collection = res;
         }
@@ -74,11 +76,7 @@ namespace Ccs.Services
                 if (model.Score == 0) model.Score = score.Score;
             }
 
-            if (withStatement)
-            {
-                model.Statement = await Polygon.Problems.ReadCompiledHtmlAsync(model.ProblemId);
-            }
-
+            if (withStatement) await LoadStatementAsync(model);
             return model;
         }
 

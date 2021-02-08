@@ -46,7 +46,13 @@ namespace Ccs.Services
             else
             {
                 var probs = await ListProblemsAsync();
-                return probs.Find(probid);
+                var model = probs.Find(probid);
+                if (model != null && withStatement)
+                {
+                    await LoadStatementAsync(model);
+                }
+
+                return model;
             }
         }
 
@@ -59,7 +65,13 @@ namespace Ccs.Services
             else
             {
                 var probs = await ListProblemsAsync();
-                return probs.Find(probid);
+                var model = probs.Find(probid);
+                if (model != null && withStatement)
+                {
+                    await LoadStatementAsync(model);
+                }
+
+                return model;
             }
         }
     }

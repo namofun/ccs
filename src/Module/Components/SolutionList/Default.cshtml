@@ -103,7 +103,10 @@
         WriteLiteral("</td>");
     }
 }
-@{ total = correct = 0; }
+@{
+    total = correct = 0;
+    var problems = await Contest.Context.ListProblemsAsync();
+}
 
 <table class="data-table table table-hover table-striped table-sm submissions-table">
     <thead class="thead-light">
@@ -122,7 +125,7 @@
         @foreach (var sub in Model)
         {
             if (sub.Verdict == Verdict.Accepted) { correct++; }
-            var prob = Contest.Problems.Find(sub.ProblemId);
+            var prob = problems.Find(sub.ProblemId);
             currentUrl = Url.Action("Detail", "JurySubmissions", new { area = "Contest", submitid = sub.SubmissionId });
             total++;
             WriteLiteral("<tr data-problem-id=\"");

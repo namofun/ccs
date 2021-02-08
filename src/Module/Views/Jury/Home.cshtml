@@ -1,6 +1,7 @@
 ﻿@{
     ViewData["Title"] = "Jury";
     var state = Contest.GetState();
+    var problems = await Contest.Context.ListProblemsAsync();
 }
 
 @functions {
@@ -123,7 +124,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var prob in Contest.Problems)
+                        @foreach (var prob in problems)
                         {
                             <tr asp-controller="JuryProblems" asp-action="Detail" asp-route-probid="@prob.ProblemId" data-toggle="gotoUrl">
                                 <td use-a>p@(prob.ProblemId)</td>
