@@ -1,4 +1,5 @@
-﻿using Ccs.Specifications;
+﻿using Ccs.Services;
+using Ccs.Specifications;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
@@ -13,7 +14,7 @@ namespace SatelliteSite.ContestModule.Apis
     [Authorize(AuthenticationSchemes = "Basic")]
     [Authorize(Roles = "CDS,Administrator")]
     [Produces("application/json")]
-    public class JudgementTypesController : ApiControllerBase
+    public class JudgementTypesController : ApiControllerBase<IContestContext>
     {
         /// <summary>
         /// Get all the judgement types for this contest

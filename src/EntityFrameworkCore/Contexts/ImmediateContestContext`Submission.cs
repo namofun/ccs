@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Ccs.Services
 {
-    public partial class ImmediateContestContext
+    public partial class ImmediateContestContext : ISubmissionContext
     {
         public virtual async Task<ServerStatus> GetJudgeQueueAsync()
         {

@@ -2,6 +2,7 @@
 using Ccs.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Polygon.Entities;
 using Polygon.Storages;
 using SatelliteSite.Entities;
 using SatelliteSite.Services;
@@ -59,6 +60,13 @@ namespace Ccs.Services
             var rejudgings = await Polygon.Rejudgings.CountUndoneAsync(Contest.Id);
             var teams = await Db.Teams.CountAsync(t => t.ContestId == cid && t.Status == 0);
             return new { clarifications, teams, rejudgings };
+        }
+
+        public virtual async Task<Language?> FindLanguageAsync(string? langid)
+        {
+            if (langid == null) return null;
+            var lang = await Polygon.Languages.FindAsync(langid);
+            return lang.AllowSubmit ? lang : null;
         }
     }
 }

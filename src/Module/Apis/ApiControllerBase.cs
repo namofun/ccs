@@ -11,12 +11,13 @@ namespace SatelliteSite.ContestModule.Apis
     /// <summary>
     /// The endpoints controller base to connect to CDS.
     /// </summary>
-    public class ApiControllerBase : Microsoft.AspNetCore.Mvc.ApiControllerBase
+    public class ApiControllerBase<TContestContext> : Microsoft.AspNetCore.Mvc.ApiControllerBase
+        where TContestContext : class, IContestContext
     {
         /// <summary>
         /// Context for contests
         /// </summary>
-        protected IContestContext Context { get; private set; }
+        protected TContestContext Context { get; private set; }
 
         /// <summary>
         /// Contest entity
@@ -41,7 +42,7 @@ namespace SatelliteSite.ContestModule.Apis
                 && int.TryParse((string)__cid, out int cid))
             {
                 var factory = HttpContext.RequestServices.GetRequiredService<ScopedContestContextFactory>();
-                Context = await factory.CreateAsync(cid, false);
+                Context = (TContestContext)await factory.CreateAsync(cid, false);
                 if (Context != null)
                 {
                     HttpContext.Items[nameof(cid)] = cid;
@@ -51,24 +52,6 @@ namespace SatelliteSite.ContestModule.Apis
             }
 
             context.Result = NotFound();
-        }
-    }
-
-
-    /// <summary>
-    /// The strong-typed endpoints controller base to connect to CDS.
-    /// </summary>
-    public class ApiControllerBase<TContext> : ApiControllerBase
-        where TContext : class, IContestContext
-    {
-        /// <inheritdoc cref="ApiControllerBase.Context" />
-        protected new TContext Context => base.Context as TContext;
-
-        /// <inheritdoc />
-        public override async Task OnActionExecuting(ActionExecutingContext context)
-        {
-            await base.OnActionExecuting(context);
-            if (Context == null) context.Result = NotFound();
         }
     }
 }

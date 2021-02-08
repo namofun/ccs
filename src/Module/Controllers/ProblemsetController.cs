@@ -1,12 +1,11 @@
 ﻿using Ccs;
 using Ccs.Entities;
+using Ccs.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.DataTables;
 using Microsoft.AspNetCore.Mvc.Filters;
 using SatelliteSite.ContestModule.Models;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -16,22 +15,11 @@ namespace SatelliteSite.ContestModule.Controllers
     [Route("[controller]/{cid:c(4)}")]
     [Authorize(Policy = "ContestVisible")]
     [SupportStatusCodePage]
-    public class ProblemsetController : ViewControllerBase
+    public class ProblemsetController : ContestControllerBase<IProblemsetContext>
     {
-        private IProblemsetContext _context;
-        private Team _team;
-
-        private DataTableAjaxResult<T> DataTableAjax<T>(IEnumerable<T> models, int draw, int count)
-        {
-            return new DataTableAjaxResult<T>(models, draw, count);
-        }
-
         public override void OnActionExecuting(ActionExecutingContext context)
         {
-            var feature = HttpContext.Features.Get<IContestFeature>();
-            _context = feature.AsProblemset();
-            _team = feature.Team;
-            ViewData["BigTitle"] = _context.Contest.ShortName;
+            ViewData["BigTitle"] = Contest.ShortName;
             ViewData["NavbarName"] = CcsDefaults.ProblemsetNavbar;
             ViewData["BigUrl"] = Url.Action("List", "Problemset");
             base.OnActionExecuting(context);
@@ -42,9 +30,9 @@ namespace SatelliteSite.ContestModule.Controllers
         public async Task<IActionResult> List(int page = 1)
         {
             if (page < 1) return BadRequest();
-            var model = await _context.ListProblemsetAsync(page, 50);
-            ViewBag.Statistics = await _context.StatisticsAsync(_team);
-            ViewBag.GlobalStatistics = await _context.StatisticsGlobalAsync();
+            var model = await Context.ListProblemsAsync(page, 50);
+            ViewBag.Statistics = await Context.StatisticsAsync(Team);
+            ViewBag.GlobalStatistics = await Context.StatisticsGlobalAsync();
             return View(model);
         }
 
@@ -53,7 +41,7 @@ namespace SatelliteSite.ContestModule.Controllers
         [ActionName("View")]
         public async Task<IActionResult> ViewProblem(string probid)
         {
-            var prob = await _context.FindProblemsetAsync(probid, true);
+            var prob = await Context.FindProblemAsync(probid, true);
             if (prob == null) return NotFound();
 
             if (string.IsNullOrEmpty(prob.Statement))
@@ -70,16 +58,16 @@ namespace SatelliteSite.ContestModule.Controllers
         public async Task<IActionResult> Submissions(string probid, int draw, int start, int length)
         {
             const int PageCount = 15;
-            var prob = await _context.FindProblemsetAsync(probid);
+            var prob = await Context.FindProblemAsync(probid);
             if (prob == null) return NotFound();
-            if (_team == null) return DataTableAjax(Array.Empty<object>(), draw, 0);
+            if (Team == null) return DataTableAjax(Array.Empty<object>(), draw, 0);
 
             if (length != PageCount || start % PageCount != 0)
                 return BadRequest();
             start = start / PageCount + 1;
-            int teamid = _team.TeamId, cid = _team.ContestId, probId = prob.ProblemId;
+            int teamid = Team.TeamId, cid = Team.ContestId, probId = prob.ProblemId;
 
-            var model = await _context.FetchSolutionsAsync(
+            var model = await Context.FetchSolutionsAsync(
                 selector: (s, j) => new { s.Id, s.Time, s.Language, j.Status, j.TotalScore },
                 predicate: s => s.ProblemId == probId && s.TeamId == teamid && s.ContestId == cid,
                 page: start, perpage: PageCount);
@@ -92,11 +80,11 @@ namespace SatelliteSite.ContestModule.Controllers
         [Authorize(Policy = "ContestHasTeam")]
         public async Task<IActionResult> Submission(string probid, int submitid)
         {
-            var prob = await _context.FindProblemsetAsync(probid);
+            var prob = await Context.FindProblemAsync(probid);
             if (prob == null) return NotFound();
 
-            int cid = _team.ContestId, teamid = _team.TeamId, probId = prob.ProblemId;
-            var subs = await _context.FetchSolutionsAsync(
+            int cid = Team.ContestId, teamid = Team.TeamId, probId = prob.ProblemId;
+            var subs = await Context.FetchSolutionsAsync(
                 predicate: s => s.ProblemId == probId && s.ContestId == cid
                              && s.TeamId == teamid && s.Id == submitid,
                 selector: (s, j) => new CodeViewModel
@@ -117,7 +105,7 @@ namespace SatelliteSite.ContestModule.Controllers
             var sub = subs.SingleOrDefault();
             if (sub == null) return NotFound();
             sub.ProblemTitle = prob.Title;
-            sub.Details = await _context.FetchDetailsAsync(prob.ProblemId, sub.JudgingId);
+            sub.Details = await Context.FetchDetailsAsync(prob.ProblemId, sub.JudgingId);
             return Window(sub);
         }
 
@@ -126,7 +114,7 @@ namespace SatelliteSite.ContestModule.Controllers
         [Authorize(Policy = "ContestHasTeam")]
         public async Task<IActionResult> Submit(string probid)
         {
-            var prob = await _context.FindProblemsetAsync(probid);
+            var prob = await Context.FindProblemAsync(probid);
             if (prob == null) return NotFound();
 
             if (!prob.AllowSubmit)
@@ -137,7 +125,7 @@ namespace SatelliteSite.ContestModule.Controllers
                     type: BootstrapColor.danger);
             }
 
-            ViewBag.Language = await _context.FetchLanguagesAsync();
+            ViewBag.Language = await Context.FetchLanguagesAsync();
             return Window(new CodeSubmitModel
             {
                 Code = "",
@@ -153,7 +141,7 @@ namespace SatelliteSite.ContestModule.Controllers
         public async Task<IActionResult> Submit(string probid, CodeSubmitModel model)
         {
             if (model.ProblemId != probid) return BadRequest();
-            var prob = await _context.FindProblemsetAsync(probid);
+            var prob = await Context.FindProblemAsync(probid);
             if (prob == null) return NotFound();
 
             if (!prob.AllowSubmit)
@@ -162,7 +150,7 @@ namespace SatelliteSite.ContestModule.Controllers
             }
 
             // check language blocking
-            var langs = await _context.FetchLanguagesAsync();
+            var langs = await Context.FetchLanguagesAsync();
             var lang = langs.FirstOrDefault(a => a.Id == model.Language);
             if (lang == null)
             {
@@ -176,11 +164,11 @@ namespace SatelliteSite.ContestModule.Controllers
             }
             else
             {
-                await _context.SubmitAsync(
+                await Context.SubmitAsync(
                     code: model.Code,
                     language: lang,
                     problem: prob,
-                    team: _team,
+                    team: Team,
                     ipAddr: HttpContext.Connection.RemoteIpAddress,
                     via: "problem-list",
                     username: User.GetUserName());

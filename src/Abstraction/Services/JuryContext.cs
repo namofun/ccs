@@ -75,20 +75,4 @@ namespace Ccs.Services
         /// <returns>The task with auditlogs.</returns>
         Task<IPagedList<SatelliteSite.Entities.Auditlog>> ViewLogsAsync(int page, int pageCount);
     }
-
-    public partial interface IContestContext
-    {
-        /// <summary>
-        /// Get the readme content.
-        /// </summary>
-        /// <param name="source">The source code.</param>
-        /// <returns>The task for reading me.</returns>
-        Task<string> GetReadmeAsync(bool source = false);
-
-        /// <summary>
-        /// Get the jury list.
-        /// </summary>
-        /// <returns>The task for fetching jury list.</returns>
-        Task<Dictionary<int, string>> FetchJuryAsync();
-    }
 }

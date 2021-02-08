@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace Ccs.Services
 {
-    public partial interface IContestContext
+    /// <summary>
+    /// Provides contract for clarification controlling.
+    /// </summary>
+    public interface ISupportClarificationContext : IContestContext
     {
         /// <summary>
         /// Lists the clarifications via predicate.
@@ -34,7 +37,7 @@ namespace Ccs.Services
     /// <summary>
     /// Provides contract for clarification controlling.
     /// </summary>
-    public interface IClarificationContext : IContestContext
+    public interface IClarificationContext : ISupportClarificationContext
     {
         /// <summary>
         /// Marks the clarification as <paramref name="answered"/> directly.

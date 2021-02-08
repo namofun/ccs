@@ -4,6 +4,7 @@ using Microsoft.Extensions.FileProviders;
 using Polygon.Entities;
 using Polygon.Models;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Ccs.Services
@@ -11,7 +12,7 @@ namespace Ccs.Services
     /// <summary>
     /// Provides contract for gym.
     /// </summary>
-    public interface IGymContext : IContestContext
+    public interface IGymContext : IContestContext, ISupportClarificationContext
     {
         /// <summary>
         /// Fetch the details pair.
@@ -52,5 +53,10 @@ namespace Ccs.Services
         /// <returns>The task for statistical result of submissions (Accepted, Total, AcceptedTeam, TotalTeam).</returns>
         Task<IReadOnlyDictionary<int, (int, int, int, int)>> StatisticsGlobalAsync();
 
+        /// <summary>
+        /// Gets the team members as a lookup dictionary.
+        /// </summary>
+        /// <returns>The task for getting this lookup.</returns>
+        Task<ILookup<int, string>> FetchTeamMembersAsync();
     }
 }

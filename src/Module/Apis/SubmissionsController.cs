@@ -89,8 +89,7 @@ namespace SatelliteSite.ContestModule.Apis
             [FromForm] DateTimeOffset? time)
         {
             var team = await Context.FindTeamByIdAsync(teamid);
-            var langs = await Context.FetchLanguagesAsync();
-            var lang = langs.FirstOrDefault(lang => lang.Id == langid);
+            var lang = await Context.FindLanguageAsync(langid);
             var prob = await Context.FindProblemAsync(probid);
             if (team == null || lang == null || prob == null) return BadRequest();
 

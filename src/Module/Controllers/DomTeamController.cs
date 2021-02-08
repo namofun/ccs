@@ -1,4 +1,5 @@
 ﻿using Ccs.Entities;
+using Ccs.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -15,7 +16,7 @@ namespace SatelliteSite.ContestModule.Controllers
     [Route("[area]/{cid:c(1)}/team")]
     [Authorize]
     [Authorize(Policy = "ContestHasTeam")]
-    public class DomTeamController : ContestControllerBase
+    public class DomTeamController : ContestControllerBase<IDomContext>
     {
         public override void OnActionExecuting(ActionExecutingContext context)
         {
@@ -241,8 +242,7 @@ namespace SatelliteSite.ContestModule.Controllers
                 return RedirectToAction(nameof(Home));
             }
 
-            var langs = await Context.FetchLanguagesAsync();
-            var lang = langs.FirstOrDefault(l => l.Id == model.Language);
+            var lang = await Context.FindLanguageAsync(model.Language);
             if (lang == null)
             {
                 StatusMessage = "Error language not found.";
@@ -283,10 +283,8 @@ namespace SatelliteSite.ContestModule.Controllers
 
             if (model == null) return NotFound();
 
-            var langs = await Context.FetchLanguagesAsync();
             model.Problem = await Context.FindProblemAsync(model.ProblemId);
-            model.Language = langs.FirstOrDefault(l => l.Id == model.LanguageId);
-
+            model.Language = await Context.FindLanguageAsync(model.LanguageId);
             return Window(model);
         }
     }

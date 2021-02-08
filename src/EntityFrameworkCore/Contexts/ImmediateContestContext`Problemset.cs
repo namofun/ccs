@@ -24,7 +24,7 @@ namespace Ccs.Services
             return model;
         }
 
-        public virtual async Task<IPagedList<ProblemModel>> ListProblemsetAsync(int page, int count)
+        public virtual async Task<IPagedList<ProblemModel>> ListProblemsAsync(int page, int count)
         {
             int totalCount = _contest.ProblemCount;
             int cid = Contest.Id;

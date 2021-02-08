@@ -6,9 +6,11 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.DataTables;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -162,6 +164,20 @@ namespace SatelliteSite.ContestModule.Controllers
             return View("Scoreboard", board);
         }
 
+        /// <summary>
+        /// Returns a data table ajax result.
+        /// </summary>
+        /// <typeparam name="T">The display type.</typeparam>
+        /// <param name="models">The list of entities.</param>
+        /// <param name="draw">The draw ID.</param>
+        /// <param name="count">The count of total.</param>
+        /// <returns>The data table result.</returns>
+        [NonAction]
+        protected DataTableAjaxResult<T> DataTableAjax<T>(IEnumerable<T> models, int draw, int count)
+        {
+            return new DataTableAjaxResult<T>(models, draw, count);
+        }
+
         /// <inheritdoc />
         [NonAction]
         public override async Task OnActionExecutionAsync(
@@ -169,7 +185,7 @@ namespace SatelliteSite.ContestModule.Controllers
         {
             var feature = HttpContext.Features.Get<IContestFeature>();
 
-            _accessor = feature.AsAccessor();
+            _accessor = feature;
             ViewData["Contest"] = Contest;
             ViewData["Team"] = Team;
             if (_accessor.Team != null) ViewData["HasTeam"] = true;

@@ -10,32 +10,6 @@ using System.Threading.Tasks;
 
 namespace Ccs.Services
 {
-    public partial interface IContestContext
-    {
-        /// <summary>
-        /// Lists the contest problems.
-        /// </summary>
-        /// <param name="nonCached">Whether to fetch the non-cached result.</param>
-        /// <returns>The task for fetching problems.</returns>
-        Task<ProblemCollection> ListProblemsAsync(bool nonCached = false);
-
-        /// <summary>
-        /// Finds the problem in current problemset.
-        /// </summary>
-        /// <param name="probid">The problem ID.</param>
-        /// <param name="withStatement">Whether to include statement.</param>
-        /// <returns>The task for fetching model.</returns>
-        Task<ProblemModel?> FindProblemAsync(string probid, bool withStatement = false);
-
-        /// <summary>
-        /// Finds the problem in current problemset.
-        /// </summary>
-        /// <param name="probid">The problem ID.</param>
-        /// <param name="withStatement">Whether to include statement.</param>
-        /// <returns>The task for fetching model.</returns>
-        Task<ProblemModel?> FindProblemAsync(int probid, bool withStatement = false);
-    }
-
     /// <summary>
     /// Provides contract for problem controlling.
     /// </summary>

@@ -9,7 +9,10 @@ using Tenant.Entities;
 
 namespace Ccs.Services
 {
-    public partial interface IContestContext
+    /// <summary>
+    /// Provides contract for team controlling.
+    /// </summary>
+    public interface ITeamContext : IContestContext
     {
         /// <summary>
         /// Gets the specified affiliation.
@@ -33,51 +36,11 @@ namespace Ccs.Services
         Task<Category?> FetchCategoryAsync(int id);
 
         /// <summary>
-        /// Gets all the affiliations used in contest.
-        /// </summary>
-        /// <param name="contestFiltered">Whether filtering the entities only used in this contest.</param>
-        /// <returns>The task for fetching affiliations.</returns>
-        Task<IReadOnlyDictionary<int, Affiliation>> FetchAffiliationsAsync(bool contestFiltered = true);
-
-        /// <summary>
-        /// Gets all the categories used in contest.
-        /// </summary>
-        /// <param name="contestFiltered">Whether filtering the entities only used in this contest.</param>
-        /// <returns>The task for fetching categories.</returns>
-        Task<IReadOnlyDictionary<int, Category>> FetchCategoriesAsync(bool contestFiltered = true);
-
-        /// <summary>
-        /// Finds team by team ID.
-        /// </summary>
-        /// <param name="teamId">The team ID.</param>
-        /// <returns>The task for fetching team entity.</returns>
-        Task<Team?> FindTeamByIdAsync(int teamId);
-
-        /// <summary>
-        /// Finds team by user ID.
-        /// </summary>
-        /// <param name="userId">The user ID.</param>
-        /// <returns>The task for fetching team member entity.</returns>
-        Task<Member?> FindMemberByUserAsync(int userId);
-
-        /// <summary>
-        /// Gets all the team names as a lookup dictionary.
-        /// </summary>
-        /// <returns>The task for getting this dictionary.</returns>
-        Task<IReadOnlyDictionary<int, string>> FetchTeamNamesAsync();
-
-        /// <summary>
         /// Gets the team members as a lookup dictionary.
         /// </summary>
         /// <returns>The task for getting this lookup.</returns>
         Task<ILookup<int, string>> FetchTeamMembersAsync();
-    }
 
-    /// <summary>
-    /// Provides contract for team controlling.
-    /// </summary>
-    public interface ITeamContext : IContestContext
-    {
         /// <summary>
         /// Gets the team member for specified team.
         /// </summary>

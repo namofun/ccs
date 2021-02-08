@@ -1,4 +1,5 @@
-﻿using Ccs.Specifications;
+﻿using Ccs.Services;
+using Ccs.Specifications;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -15,7 +16,7 @@ namespace SatelliteSite.ContestModule.Apis
     [Authorize(AuthenticationSchemes = "Basic")]
     [Authorize(Roles = "CDS,Administrator")]
     [Produces("application/json")]
-    public class LanguagesController : ApiControllerBase
+    public class LanguagesController : ApiControllerBase<IContestContext>
     {
         /// <summary>
         /// Get all the languages for this contest
@@ -46,10 +47,7 @@ namespace SatelliteSite.ContestModule.Apis
             [FromRoute] int cid,
             [FromRoute] string id)
         {
-            var langs = await Context.FetchLanguagesAsync();
-            var ll = langs
-                .Where(l => l.Id == id && l.AllowSubmit)
-                .FirstOrDefault();
+            var ll = await Context.FindLanguageAsync(id);
             return ll == null ? null : new Language(ll);
         }
     }

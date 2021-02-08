@@ -38,7 +38,6 @@ namespace SatelliteSite.ContestModule.Controllers
                 : judgings.SingleOrDefault(j => j.Active);
             if (judging == null) return NotFound();
 
-            var langs = await Context.FetchLanguagesAsync();
             return View(new JuryViewSubmissionModel
             {
                 Submission = submit,
@@ -47,7 +46,7 @@ namespace SatelliteSite.ContestModule.Controllers
                 DetailsV2 = await Context.FetchDetailsAsync(submit.ProblemId, judging.Id),
                 Team = await Context.FindTeamByIdAsync(submit.TeamId),
                 Problem = prob,
-                Language = langs.First(l => l.Id == submit.Language),
+                Language = await Context.FindLanguageAsync(submit.Language),
             });
         }
 
@@ -66,7 +65,6 @@ namespace SatelliteSite.ContestModule.Controllers
                 .CombineIf(!last.HasValue, s => s.Id < submitid);
 
             var lastSubmit = await Context.FetchSourceAsync(cond);
-            var langs = await Context.FetchLanguagesAsync();
 
             return View(new SubmissionSourceModel
             {
@@ -74,10 +72,10 @@ namespace SatelliteSite.ContestModule.Controllers
                 TeamId = submit.TeamId,
                 NewCode = submit.SourceCode,
                 NewId = submit.Id,
-                NewLang = langs.FirstOrDefault(l => l.Id == submit.Language),
+                NewLang = await Context.FindLanguageAsync(submit.Language),
                 OldCode = lastSubmit?.SourceCode,
                 OldId = lastSubmit?.Id,
-                OldLang = langs.FirstOrDefault(l => l.Id == lastSubmit?.Language),
+                OldLang = await Context.FindLanguageAsync(lastSubmit?.Language),
             });
         }
 

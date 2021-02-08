@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Polygon.Entities;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
@@ -15,6 +16,12 @@ namespace Ccs.Services
         {
             return CacheAsync("Languages", _options.Language,
                 async () => await base.FetchLanguagesAsync());
+        }
+
+        public override async Task<Language?> FindLanguageAsync(string? langid)
+        {
+            var langs = await FetchLanguagesAsync();
+            return langs.FirstOrDefault(l => l.Id == langid);
         }
 
         public override async Task<ContestWrapper> UpdateContestAsync(

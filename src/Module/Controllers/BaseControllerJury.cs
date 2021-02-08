@@ -38,7 +38,7 @@ namespace SatelliteSite.ContestModule.Controllers
     /// Context-typed base controller for jury related things.
     /// </summary>
     public abstract class JuryControllerBase<TContext> : JuryControllerBase
-        where TContext : class, Ccs.IContestContext
+        where TContext : class, Ccs.Services.IContestContext
     {
         /// <inheritdoc cref="ContestControllerBase.Context" />
         protected new TContext Context => base.Context as TContext;

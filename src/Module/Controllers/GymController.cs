@@ -111,8 +111,7 @@ namespace SatelliteSite.ContestModule.Controllers
 
             if (model == null) return NotFound();
             model.Problem = await Context.FindProblemAsync(model.ProblemId);
-            var langs = await Context.FetchLanguagesAsync();
-            model.Language = langs.FirstOrDefault(l => l.Id == model.LanguageId);
+            model.Language = await Context.FindLanguageAsync(model.LanguageId);
 
             if (model.Problem == null
                 || model.Language == null
@@ -276,8 +275,7 @@ namespace SatelliteSite.ContestModule.Controllers
                 return GoBackHome("Error problem not found.");
             }
 
-            var langs = await Context.FetchLanguagesAsync();
-            var lang = langs.FirstOrDefault(l => l.Id == model.Language);
+            var lang = await Context.FindLanguageAsync(model.Language);
             if (lang == null)
             {
                 return GoBackHome("Error language not found.");
