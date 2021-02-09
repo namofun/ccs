@@ -64,7 +64,7 @@
         WriteLiteral("<td><a href=\"");
         WriteLiteral(currentUrl);
         WriteLiteral("\">");
-        if (Contest.RankingStrategy == 1)
+        if (Contest.RankingStrategy == Ccs.CcsDefaults.RuleIOI)
         {
             WriteLiteral("<span>");
             WriteLiteral(sub.TotalScore?.ToString() ?? "n/a");

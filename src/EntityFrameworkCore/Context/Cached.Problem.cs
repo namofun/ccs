@@ -10,8 +10,15 @@ namespace Ccs.Services
     {
         public override Task<ProblemCollection> ListProblemsAsync(bool nonCached = false)
         {
+            if (Contest.Kind == CcsDefaults.KindProblemset)
+            {
+                Logger.ImproperCall("ListProblemsAsync(bool) -> Task<ProblemCollection>", Contest);
+            }
+
             if (nonCached)
+            {
                 return base.ListProblemsAsync(true);
+            }
 
             return CacheAsync("Problems", _options.Problem,
                 async () => await base.ListProblemsAsync(true));
@@ -19,7 +26,7 @@ namespace Ccs.Services
 
         public override async Task<ProblemModel?> FindProblemAsync(int probid, bool withStatement = false)
         {
-            if (Contest.Kind == 2)
+            if (Contest.Kind == CcsDefaults.KindProblemset)
             {
                 return await base.FindProblemAsync(probid, withStatement);
             }
@@ -38,7 +45,7 @@ namespace Ccs.Services
 
         public override async Task<ProblemModel?> FindProblemAsync(string probid, bool withStatement = false)
         {
-            if (Contest.Kind == 2)
+            if (Contest.Kind == CcsDefaults.KindProblemset)
             {
                 return await base.FindProblemAsync(probid, withStatement);
             }

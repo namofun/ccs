@@ -111,7 +111,7 @@ namespace SatelliteSite.ContestModule
                     .HasLink("/api/doc/ccsapi");
             });
 
-            menus.Menu(CcsDefaults.JuryNavbar, menu =>
+            menus.Menu(CcsDefaults.NavbarJury, menu =>
             {
                 menu.HasEntry(100)
                     .HasLink("Contest", "JuryTeams", "List")
@@ -143,20 +143,20 @@ namespace SatelliteSite.ContestModule
                     .HasLink("Contest", "Jury", "Scoreboard")
                     .HasTitle("fas fa-list-ol", "Scoreboard")
                     .ActiveWhenAction("Scoreboard")
-                    .RequireThat(ctx => Feature(ctx).Kind == 0);
+                    .RequireThat(ctx => Feature(ctx).Kind == CcsDefaults.KindDom);
 
                 menu.HasEntry(600)
                     .HasLink("Contest", "DomTeam", "Home")
                     .HasTitle("fas fa-arrow-right", "Team")
-                    .RequireThat(ctx => Feature(ctx).Kind == 0 && Feature(ctx).HasTeam);
+                    .RequireThat(ctx => Feature(ctx).Kind == CcsDefaults.KindDom && Feature(ctx).HasTeam);
 
                 menu.HasEntry(601)
                     .HasLink("Contest", "Gym", "Home")
                     .HasTitle("fas fa-arrow-right", "Gym")
-                    .RequireThat(ctx => Feature(ctx).Kind == 1);
+                    .RequireThat(ctx => Feature(ctx).Kind == CcsDefaults.KindGym);
             });
 
-            menus.Menu(CcsDefaults.GymNavbar, menu =>
+            menus.Menu(CcsDefaults.NavbarGym, menu =>
             {
                 menu.HasEntry(100)
                     .HasLink("Contest", "Gym", "Home")
@@ -179,7 +179,7 @@ namespace SatelliteSite.ContestModule
                     .RequireThat(ctx => Feature(ctx).IsJury);
             });
 
-            menus.Menu(CcsDefaults.PublicNavbar, menu =>
+            menus.Menu(CcsDefaults.NavbarPublic, menu =>
             {
                 menu.HasEntry(100)
                     .HasLink("Contest", "DomPublic", "Info")
@@ -202,7 +202,7 @@ namespace SatelliteSite.ContestModule
                     .RequireThat(ctx => Feature(ctx).HasTeam);
             });
 
-            menus.Menu(CcsDefaults.TeamNavbar, menu =>
+            menus.Menu(CcsDefaults.NavbarTeam, menu =>
             {
                 menu.HasEntry(100)
                     .HasLink("Contest", "DomTeam", "Home")
@@ -231,7 +231,7 @@ namespace SatelliteSite.ContestModule
                     .RequireThat(ctx => Feature(ctx).IsJury);
             });
 
-            menus.Menu(CcsDefaults.ProblemsetNavbar, menu =>
+            menus.Menu(CcsDefaults.NavbarProblemset, menu =>
             {
                 menu.HasEntry(100)
                     .HasLink("Contest", "Problemset", "List")

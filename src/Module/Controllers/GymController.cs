@@ -34,7 +34,7 @@ namespace SatelliteSite.ContestModule.Controllers
                 context.Result = NotStarted();
             }
 
-            ViewData["NavbarName"] = Ccs.CcsDefaults.GymNavbar;
+            ViewData["NavbarName"] = Ccs.CcsDefaults.NavbarGym;
             ViewData["BigUrl"] = Url.Action("Home", "Gym");
             ViewData["UseLightTheme"] = true;
             await base.OnActionExecutingAsync(context);

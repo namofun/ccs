@@ -37,13 +37,13 @@
                 continue;
             }
             WriteLiteral("<td class=\"text-center\"><a><span class=\"font-weight-bold");
-            WriteLiteral(Contest.RankingStrategy == 0 || Contest.RankingStrategy == 2 ? penalty.Score.HasValue ? " text-success" : " text-danger" : "");
+            WriteLiteral(Contest.RankingStrategy == CcsDefaults.RuleXCPC || Contest.RankingStrategy == CcsDefaults.RuleCodeforces ? penalty.Score.HasValue ? " text-success" : " text-danger" : "");
             WriteLiteral("\">");
             WriteLiteral(Contest.RankingStrategy switch
             {
-                0 => penalty.Score.HasValue ? penalty.JudgedCount == 1 ? "+" : $"+{penalty.JudgedCount - 1}" : $"-{penalty.JudgedCount}",
-                1 => penalty.Score ?? 0,
-                2 => penalty.Score.HasValue ? $"{penalty.Score}" : $"-{penalty.JudgedCount}",
+                CcsDefaults.RuleXCPC => penalty.Score.HasValue ? penalty.JudgedCount == 1 ? "+" : $"+{penalty.JudgedCount - 1}" : $"-{penalty.JudgedCount}",
+                CcsDefaults.RuleIOI => penalty.Score ?? 0,
+                CcsDefaults.RuleCodeforces => penalty.Score.HasValue ? $"{penalty.Score}" : $"-{penalty.JudgedCount}",
                 _ => "",
             });
             WriteLiteral(penalty.PendingCount > 0 ? "?" : "");

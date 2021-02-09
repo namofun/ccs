@@ -1,5 +1,6 @@
 ﻿using Ccs.Models;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Polygon.Storages;
 using System;
 
@@ -22,10 +23,13 @@ namespace Ccs.Services
 
         protected T Get<T>() => _services.GetRequiredService<T>();
 
+        protected ILogger<IContestContext> Logger { get; }
+
         public ImmediateContestContext(ContestWrapper contest, IServiceProvider serviceProvider)
         {
             _contest = contest;
             _services = serviceProvider;
+            Logger = serviceProvider.GetRequiredService<ILogger<IContestContext>>();
         }
     }
 }

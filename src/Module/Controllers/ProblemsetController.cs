@@ -20,7 +20,7 @@ namespace SatelliteSite.ContestModule.Controllers
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             ViewData["BigTitle"] = Contest.ShortName;
-            ViewData["NavbarName"] = CcsDefaults.ProblemsetNavbar;
+            ViewData["NavbarName"] = CcsDefaults.NavbarProblemset;
             ViewData["BigUrl"] = Url.Action("List", "Problemset");
             base.OnActionExecuting(context);
         }

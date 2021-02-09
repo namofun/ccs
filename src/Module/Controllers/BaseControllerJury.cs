@@ -16,7 +16,7 @@ namespace SatelliteSite.ContestModule.Controllers
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             ViewData["InJury"] = true;
-            ViewData["NavbarName"] = Ccs.CcsDefaults.JuryNavbar;
+            ViewData["NavbarName"] = Ccs.CcsDefaults.NavbarJury;
             ViewData["BigUrl"] = Url.Action("Home", "Jury");
             base.OnActionExecuting(context);
         }

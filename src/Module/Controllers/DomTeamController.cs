@@ -29,7 +29,7 @@ namespace SatelliteSite.ContestModule.Controllers
                     : View("AccessDenied");
             }
 
-            ViewData["NavbarName"] = Ccs.CcsDefaults.TeamNavbar;
+            ViewData["NavbarName"] = Ccs.CcsDefaults.NavbarTeam;
             ViewData["BigUrl"] = Url.Action("Home", "DomTeam");
             ViewData["ExtraMenu"] = "_NavButton";
             base.OnActionExecuting(context);

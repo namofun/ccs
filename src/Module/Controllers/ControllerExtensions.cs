@@ -79,7 +79,7 @@ namespace SatelliteSite.ContestModule.Controllers
             int[] filtered_affiliations, int[] filtered_categories)
             where T : class, IContestContext
         {
-            if (that.Contest.Kind == 2)
+            if (that.Contest.Kind != Ccs.CcsDefaults.KindDom)
             {
                 throw new NotSupportedException();
             }

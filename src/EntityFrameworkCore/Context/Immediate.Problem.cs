@@ -51,8 +51,15 @@ namespace Ccs.Services
 
         public virtual async Task<ProblemCollection> ListProblemsAsync(bool nonCached = false)
         {
+            if (Contest.Kind == CcsDefaults.KindProblemset)
+            {
+                Logger.ImproperCall("ListProblemsAsync(bool) -> Task<ProblemCollection>", Contest);
+            }
+
             if (_readed_problem_collection != null && !nonCached)
+            {
                 return _readed_problem_collection;
+            }
 
             var res = new ProblemCollection(
                 await QueryProblems(Contest.Id).ToListAsync(),

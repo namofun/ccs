@@ -68,7 +68,7 @@ namespace Ccs.Scoreboard
         /// <inheritdoc />
         public Task Handle(ScoreboardRefreshEvent notification, CancellationToken cancellationToken)
         {
-            if (notification.Contest.Kind == 2) return Task.CompletedTask;
+            if (notification.Contest.Kind == CcsDefaults.KindProblemset) return Task.CompletedTask;
             return Select(notification.Contest).RefreshCache(Store, notification);
         }
 
@@ -77,7 +77,7 @@ namespace Ccs.Scoreboard
         {
             if (notification.Submission.ContestId == 0) return;
             var context = await Factory.CreateAsync(notification.Submission.ContestId);
-            if (context == null || context.Contest.Kind == 2) return;
+            if (context == null || context.Contest.Kind == CcsDefaults.KindProblemset) return;
             var contest = context.Contest;
             if (contest.GetState(notification.Submission.Time) >= ContestState.Ended) return;
             await Select(contest).Pending(Store, contest, notification);
@@ -89,11 +89,11 @@ namespace Ccs.Scoreboard
             if (notification.ContestId == null) return;
             if (!notification.Judging.Active) return;
             var context = await Factory.CreateAsync(notification.ContestId.Value);
-            if (context == null || context.Contest.Kind == 2) return;
+            if (context == null || context.Contest.Kind == CcsDefaults.KindProblemset) return;
             var contest = context.Contest;
             if (contest.GetState(notification.SubmitTime) >= ContestState.Ended) return;
 
-            if (contest.RankingStrategy == 2 && notification.Judging.Status == Verdict.Accepted)
+            if (contest.RankingStrategy == CcsDefaults.RuleCodeforces && notification.Judging.Status == Verdict.Accepted)
             {
                 var problem = await context.FindProblemAsync(notification.ProblemId);
                 var cfscore = problem?.Score ?? 0;

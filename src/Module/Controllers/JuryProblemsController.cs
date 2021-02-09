@@ -152,7 +152,7 @@ namespace SatelliteSite.ContestModule.Controllers
         public async Task<IActionResult> GenerateStatement(
             [FromServices] IStatementWriter writer)
         {
-            if (Contest.Kind == 2) return StatusCode(503);
+            if (Contest.Kind == Ccs.CcsDefaults.KindProblemset) return StatusCode(503);
 
             var stmts = await Context.GetStatementsAsync();
             var startTime = Contest.StartTime ?? DateTimeOffset.Now;

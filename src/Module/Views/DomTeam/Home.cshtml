@@ -66,7 +66,7 @@ else
                                 <td use-a>@t.ToString("HH:mm")</td>
                                 <td use-a class="probid" title="@p.TimeLimit">@p.ShortName</td>
                                 <td use-a class="langid">@submit.Language</td>
-                                <td use-a><span asp-show-if="Contest.RankingStrategy == 1">@submit.Points - </span><verdict value="@submit.Verdict" too-late="!b" /></td>
+                                <td use-a><span asp-show-if="Contest.RankingStrategy == CcsDefaults.RuleIOI">@submit.Points - </span><verdict value="@submit.Verdict" too-late="!b" /></td>
                             </tr>
                         }
                     </tbody>

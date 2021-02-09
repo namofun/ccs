@@ -3,31 +3,61 @@
     /// <summary>
     /// The ccs defaults.
     /// </summary>
-    public class CcsDefaults
+    public static class CcsDefaults
     {
         /// <summary>
         /// The menu for ccs jury navbar
         /// </summary>
-        public const string JuryNavbar = "Menu_CcsNavbar_Jury";
+        public const string NavbarJury = "Menu_CcsNavbar_Jury";
 
         /// <summary>
         /// The menu for ccs jury navbar
         /// </summary>
-        public const string GymNavbar = "Menu_CcsNavbar_Gym";
+        public const string NavbarGym = "Menu_CcsNavbar_Gym";
 
         /// <summary>
         /// The menu for ccs jury navbar
         /// </summary>
-        public const string TeamNavbar = "Menu_CcsNavbar_Team";
+        public const string NavbarTeam = "Menu_CcsNavbar_Team";
 
         /// <summary>
         /// The menu for ccs problemset navbar
         /// </summary>
-        public const string ProblemsetNavbar = "Menu_CcsNavbar_Problemset";
+        public const string NavbarProblemset = "Menu_CcsNavbar_Problemset";
 
         /// <summary>
         /// The menu for ccs jury navbar
         /// </summary>
-        public const string PublicNavbar = "Menu_CcsNavbar_Public";
+        public const string NavbarPublic = "Menu_CcsNavbar_Public";
+
+        /// <summary>
+        /// The kind for contests
+        /// </summary>
+        public const int KindDom = 0;
+
+        /// <summary>
+        /// The kind for practices
+        /// </summary>
+        public const int KindGym = 1;
+
+        /// <summary>
+        /// The kind for problemsets
+        /// </summary>
+        public const int KindProblemset = 2;
+
+        /// <summary>
+        /// The ranking strategy for XCPC
+        /// </summary>
+        public const int RuleXCPC = 0;
+
+        /// <summary>
+        /// The ranking strategy for IOI
+        /// </summary>
+        public const int RuleIOI = 1;
+
+        /// <summary>
+        /// The ranking strategy for Codeforces
+        /// </summary>
+        public const int RuleCodeforces = 2;
     }
 }

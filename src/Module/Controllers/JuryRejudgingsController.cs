@@ -93,7 +93,7 @@ namespace SatelliteSite.ContestModule.Controllers
                 .CombineIf(ta, (s, j) => s.Time <= tat)
                 .CombineIf(tb, (s, j) => s.Time <= tbt);
 
-            int tok = await Context.RejudgeAsync(cond, r, fullTest: Contest.RankingStrategy == 1);
+            int tok = await Context.RejudgeAsync(cond, r, fullTest: Contest.RankingStrategy == Ccs.CcsDefaults.RuleIOI);
 
             if (tok == 0)
             {

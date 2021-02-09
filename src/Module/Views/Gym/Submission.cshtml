@@ -21,7 +21,7 @@
     <div class="p-2">Language: <b>@Model.Language.Name</b></div>
     <div class="p-2">Time: @(Model.ExecuteTime.HasValue ? $"{Model.ExecuteTime.Value / 1000.0}s" : "N/A")</div>
     <div class="p-2">Memory: @(Model.ExecuteMemory.HasValue ? $"{Model.ExecuteMemory.Value / 1024}MB" : "N/A")</div>
-    <div asp-show-if="Contest.RankingStrategy == 1" class="p-2">Score: @Model.Points</div>
+    <div asp-show-if="Contest.RankingStrategy == CcsDefaults.RuleIOI" class="p-2">Score: @Model.Points</div>
 </div>
 
 <ace value="@Model.SourceCode.UnBase64()" file="Main.@Model.Language.FileExtension" />

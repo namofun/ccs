@@ -15,7 +15,7 @@ namespace SatelliteSite.ContestModule.Controllers
     {
         public override void OnActionExecuting(ActionExecutingContext context)
         {
-            ViewData["NavbarName"] = CcsDefaults.PublicNavbar;
+            ViewData["NavbarName"] = CcsDefaults.NavbarPublic;
             ViewData["BigUrl"] = Url.Action("Info", "DomPublic");
             ViewData["UseLightTheme"] = true;
             base.OnActionExecuting(context);

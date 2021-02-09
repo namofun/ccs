@@ -61,7 +61,7 @@ namespace SatelliteSite.ContestModule.Controllers
                 RankingStrategy = Contest.RankingStrategy,
                 Kind = Contest.Kind,
                 // For problemsets, don't show problems.
-                Problems = Contest.Kind == 2 ? null : await Context.ListProblemsAsync(),
+                Problems = Contest.Kind == Ccs.CcsDefaults.KindProblemset ? null : await Context.ListProblemsAsync(),
                 Affiliation = affs[team.AffiliationId],
                 Category = cats[team.CategoryId],
                 Solutions = sols,

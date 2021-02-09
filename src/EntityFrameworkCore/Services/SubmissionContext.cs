@@ -107,7 +107,7 @@ namespace Ccs.Services
                 via: via,
                 username: username,
                 time: time,
-                fullJudge: Contest.RankingStrategy == 1);
+                fullJudge: Contest.RankingStrategy == CcsDefaults.RuleIOI);
         }
 
         public Task<IEnumerable<(JudgingRun?, Testcase)>> GetDetailsAsync(int problemId, int judgingId)
