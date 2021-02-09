@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using Ccs.Models;
+using MediatR;
 using System;
 
 namespace Ccs.Events

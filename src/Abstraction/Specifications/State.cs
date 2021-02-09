@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Ccs.Models;
+using System;
 using System.Text.Json.Serialization;
 
 namespace Ccs.Specifications

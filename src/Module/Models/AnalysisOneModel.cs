@@ -1,5 +1,5 @@
-﻿using Ccs;
-using Ccs.Entities;
+﻿using Ccs.Entities;
+using Ccs.Models;
 using System.Collections.Generic;
 
 namespace SatelliteSite.ContestModule.Models

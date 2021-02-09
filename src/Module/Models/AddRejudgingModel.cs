@@ -1,4 +1,4 @@
-﻿using Ccs;
+﻿using Ccs.Models;
 using Ccs.Services;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;

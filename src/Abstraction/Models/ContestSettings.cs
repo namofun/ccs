@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Ccs
+namespace Ccs.Models
 {
     /// <summary>
     /// The interface for contest settings.

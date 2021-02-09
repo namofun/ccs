@@ -1,10 +1,9 @@
 ﻿using Ccs.Entities;
-using Ccs.Models;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Ccs
+namespace Ccs.Models
 {
     /// <summary>
     /// Represents a read-only collection of contest problems.

@@ -1,5 +1,5 @@
-﻿using Ccs;
-using Ccs.Entities;
+﻿using Ccs.Entities;
+using Ccs.Models;
 using Ccs.Services;
 using MediatR;
 using Microsoft.AspNetCore.Http;

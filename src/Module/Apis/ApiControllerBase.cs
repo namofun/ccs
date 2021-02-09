@@ -1,4 +1,4 @@
-﻿using Ccs;
+﻿using Ccs.Models;
 using Ccs.Services;
 using MediatR;
 using Microsoft.AspNetCore.Mvc.Filters;

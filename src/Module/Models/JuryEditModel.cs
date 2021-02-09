@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Ccs.Models;
+using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
@@ -61,7 +62,7 @@ namespace SatelliteSite.ContestModule.Models
 
         public JuryEditModel() { }
 
-        public JuryEditModel(Ccs.IContestInformation cont)
+        public JuryEditModel(IContestInformation cont)
         {
             var startTime = cont.StartTime?.ToString("yyyy-MM-dd HH:mm:ss zzz") ?? "";
             var stopTime = cont.EndTime?.ToDeltaString() ?? "";

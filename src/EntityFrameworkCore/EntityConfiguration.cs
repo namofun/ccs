@@ -241,13 +241,13 @@ namespace Ccs.Entities
                 .IsRequired();
 
             entity.Property(e => e.EndTimeSeconds)
-                .HasColumnName(nameof(IContestInformation.EndTime));
+                .HasColumnName("EndTime");
 
             entity.Property(e => e.FreezeTimeSeconds)
-                .HasColumnName(nameof(IContestInformation.FreezeTime));
+                .HasColumnName("FreezeTime");
 
             entity.Property(e => e.UnfreezeTimeSeconds)
-                .HasColumnName(nameof(IContestInformation.UnfreezeTime));
+                .HasColumnName("UnfreezeTime");
         }
 
         public void Configure(EntityTypeBuilder<Member> entity)

@@ -1,12 +1,11 @@
-﻿using Ccs.Services;
-using System;
+﻿using System;
 
-namespace Ccs
+namespace Ccs.Services
 {
     /// <summary>
     /// Extension methods for ccs related things.
     /// </summary>
-    public static class CcsContextsExtensions
+    public static class ServicingExtensions
     {
         /// <summary>
         /// Converts the store as a <see cref="IContestQueryableStore"/>.

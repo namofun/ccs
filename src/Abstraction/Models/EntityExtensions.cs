@@ -1,7 +1,7 @@
 ﻿using Ccs.Entities;
 using System;
 
-namespace Ccs
+namespace Ccs.Models
 {
     /// <summary>
     /// The extensions for entity interfaces.

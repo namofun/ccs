@@ -1,5 +1,5 @@
-﻿using Ccs;
-using Ccs.Events;
+﻿using Ccs.Events;
+using Ccs.Models;
 using Ccs.Services;
 using Ccs.Specifications;
 using Microsoft.AspNetCore.Authorization;

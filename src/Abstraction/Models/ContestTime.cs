@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Ccs
+namespace Ccs.Models
 {
     /// <summary>
     /// The contest time.

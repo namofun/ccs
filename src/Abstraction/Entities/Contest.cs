@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Ccs.Models;
+using System;
 
 namespace Ccs.Entities
 {
