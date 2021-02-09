@@ -13,10 +13,9 @@ using System.Threading.Tasks;
 namespace SatelliteSite.ContestModule.Controllers
 {
     [Area("Contest")]
-    [Authorize]
     [Route("[area]/{cid:c(7)}/jury/teams")]
     [AuditPoint(AuditlogType.Team)]
-    public partial class JuryTeamsController : JuryControllerBase<ITeamContext>
+    public class JuryTeamsController : JuryControllerBase<ITeamContext>
     {
         private RegisterProviderContext CreateRegisterProviderContext()
             => new RegisterProviderContext(Contest, HttpContext, UserManager);

@@ -19,6 +19,7 @@ namespace Ccs.Entities
         IEntityTypeConfiguration<Member>,
         IEntityTypeConfiguration<ContestProblem>,
         IEntityTypeConfiguration<Rejudging>,
+        IEntityTypeConfiguration<Visibility>,
         IEntityTypeConfiguration<Jury>
         where TUser : User
         where TRole : Role
@@ -320,6 +321,23 @@ namespace Ccs.Entities
             entity.HasOne<Contest>()
                 .WithMany()
                 .HasForeignKey(e => e.ContestId)
+                .OnDelete(DeleteBehavior.Cascade);
+        }
+
+        public void Configure(EntityTypeBuilder<Visibility> entity)
+        {
+            entity.ToTable("ContestTenants");
+
+            entity.HasKey(e => new { e.ContestId, e.AffiliationId });
+
+            entity.HasOne<Contest>()
+                .WithMany()
+                .HasForeignKey(e => e.ContestId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne<Affiliation>()
+                .WithMany()
+                .HasForeignKey(e => e.AffiliationId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

@@ -159,5 +159,29 @@ namespace Ccs.Services
 
             return result;
         }
+
+        public override Task<HashSet<int>> GetVisibleTenantsAsync()
+        {
+            return CacheAsync("Tenants", _options.Contest,
+                async () => await base.GetVisibleTenantsAsync());
+        }
+
+        public override async Task AllowTenantAsync(Affiliation affiliation)
+        {
+            await base.AllowTenantAsync(affiliation);
+            Expire("Tenants");
+        }
+
+        public override async Task DisallowTenantAsync(Affiliation affiliation)
+        {
+            await base.DisallowTenantAsync(affiliation);
+            Expire("Tenants");
+        }
+
+        public override async Task<bool> IsTenantVisibleAsync(IEnumerable<int> tenants)
+        {
+            var allowed = await GetVisibleTenantsAsync();
+            return tenants.Any(a => allowed.Contains(a));
+        }
     }
 }

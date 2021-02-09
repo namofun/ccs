@@ -70,6 +70,11 @@ namespace Ccs.Services
         DbSet<ScoreCache> ScoreCache { get; set; }
 
         /// <summary>
+        /// Gets the database set for <see cref="Visibility"/>.
+        /// </summary>
+        DbSet<Visibility> ContestTenants { get; set; }
+
+        /// <summary>
         /// Gets the queryable for <see cref="Submission"/>.
         /// </summary>
         IQueryable<Submission> Submissions { get; }

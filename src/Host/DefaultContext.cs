@@ -54,6 +54,7 @@ namespace SatelliteSite
         public virtual DbSet<Rejudging> Rejudgings { get; set; }
         public virtual DbSet<SubmissionStatistics> SubmissionStatistics { get; set; }
         public virtual DbSet<ProblemAuthor> ProblemAuthors { get; set; }
+        public virtual DbSet<Visibility> ContestTenants { get; set; }
 
         IQueryable<IUser> IContestDbContext.Users => Users;
         IQueryable<Submission> IContestDbContext.Submissions => Submissions;

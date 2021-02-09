@@ -262,5 +262,38 @@ namespace Ccs.Services
 
             return members;
         }
+
+        public virtual Task<HashSet<int>> GetVisibleTenantsAsync()
+        {
+            int cid = Contest.Id;
+            return Db.ContestTenants
+                .Where(c => c.ContestId == cid)
+                .Select(c => c.AffiliationId)
+                .ToHashSetAsync();
+        }
+
+        public virtual Task AllowTenantAsync(Affiliation affiliation)
+        {
+            int cid = Contest.Id, affid = affiliation.Id;
+            return Db.ContestTenants.UpsertAsync(
+                source: new { cid, affid },
+                insertExpression: s => new Visibility { AffiliationId = affid, ContestId = cid });
+        }
+
+        public virtual Task DisallowTenantAsync(Affiliation affiliation)
+        {
+            int cid = Contest.Id, affid = affiliation.Id;
+            return Db.ContestTenants
+                .Where(c => c.ContestId == cid && c.AffiliationId == affid)
+                .BatchDeleteAsync();
+        }
+
+        public virtual Task<bool> IsTenantVisibleAsync(IEnumerable<int> tenants)
+        {
+            int cid = Contest.Id;
+            return Db.ContestTenants
+                .Where(c => c.ContestId == cid && tenants.Contains(c.AffiliationId))
+                .AnyAsync();
+        }
     }
 }

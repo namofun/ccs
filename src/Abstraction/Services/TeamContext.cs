@@ -114,5 +114,25 @@ namespace Ccs.Services
         /// <param name="userManager">The user manager.</param>
         /// <returns>The task for locking out.</returns>
         Task<List<Member>> LockOutTemporaryAsync(IUserManager userManager);
+
+        /// <summary>
+        /// Gets the visible tenants.
+        /// </summary>
+        /// <returns>The task for getting tenants.</returns>
+        Task<HashSet<int>> GetVisibleTenantsAsync();
+
+        /// <summary>
+        /// Allows the tenant.
+        /// </summary>
+        /// <param name="affiliation">The tenant entity.</param>
+        /// <returns>The task for allowing tenant.</returns>
+        Task AllowTenantAsync(Affiliation affiliation);
+
+        /// <summary>
+        /// Disallows the tenant.
+        /// </summary>
+        /// <param name="affiliation">The tenant entity.</param>
+        /// <returns>The task for disallowing tenant.</returns>
+        Task DisallowTenantAsync(Affiliation affiliation);
     }
 }

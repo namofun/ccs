@@ -114,6 +114,12 @@ namespace Ccs.Services
         Task<Dictionary<int, string>> ListJuriesAsync();
 
         /// <summary>
+        /// Checks the tenant visiblity.
+        /// </summary>
+        /// <returns>The task for checking.</returns>
+        Task<bool> IsTenantVisibleAsync(IEnumerable<int> tenants);
+
+        /// <summary>
         /// Fetch solution with contest.
         /// </summary>
         /// <typeparam name="TSolution">The solution type.</typeparam>

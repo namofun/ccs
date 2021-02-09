@@ -30,5 +30,6 @@ namespace Ccs.Services
         IQueryable<Printing> IContestQueryableStore.Printings => Db.Printings;
         IQueryable<RankCache> IContestQueryableStore.RankCache => Db.RankCache;
         IQueryable<ScoreCache> IContestQueryableStore.ScoreCache => Db.ScoreCache;
+        IQueryable<Visibility> IContestQueryableStore.ContestTenants => Db.ContestTenants;
     }
 }

@@ -62,5 +62,10 @@ namespace Ccs.Services
         /// Gets the queryable for <see cref="Entities.ScoreCache"/>.
         /// </summary>
         IQueryable<ScoreCache> ScoreCache { get; }
+
+        /// <summary>
+        /// Gets the queryable for <see cref="Visibility"/>.
+        /// </summary>
+        IQueryable<Visibility> ContestTenants { get; }
     }
 }
