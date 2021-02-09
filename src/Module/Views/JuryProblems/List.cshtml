@@ -1,0 +1,84 @@
+﻿@model IPagedList<ProblemModel>
+@{
+    ViewData["Title"] = "Problems";
+}
+
+<h2 class="mt-2">@ViewData["Title"]</h2>
+
+<div class="d-none" id="paging">
+    <pagination bs-total-page="Model.TotalPage" bs-current-page="Model.CurrentPage" />
+</div>
+
+<div class="table-wrapper">
+    <table class="data-table table table-sm table-striped" style="width:auto">
+        <thead class="">
+            <tr>
+                <th scope="col" class="sortable searchable">ID</th>
+                <th scope="col" class="sortable searchable">abbr.</th>
+                <th scope="col" class="sortable searchable">name</th>
+                <th scope="col" class="sortable searchable">limit</th>
+                <th scope="col" class="sortable searchable" style="min-width:4em">tag</th>
+                <th scope="col" class="sortable searchable">submit?</th>
+                <th scope="col" class="sortable searchable">judge?</th>
+                <th asp-show-if="Contest.RankingStrategy != CcsDefaults.RuleXCPC" scope="col" class="sortable searchable">score</th>
+                <th scope="col" class="sortable searchable"># testcases</th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var prob in Model)
+            {
+            <tr asp-action="Detail" asp-route-probid="@prob.ProblemId" data-toggle="gotoUrl">
+                <td use-a>@prob.ProblemId</td>
+                <td use-a><div class="circle" style="background-color: @prob.Color"></div> <span class="text-monospace">@prob.ShortName</span></td>
+                <td use-a>@prob.Title</td>
+                <td data-order="@prob.TimeLimit" use-a>@(prob.TimeLimit / 1000.0)s / @(prob.MemoryLimit / 1024) MB</td>
+                <td class="@(string.IsNullOrEmpty(prob.TagName) ? "disabled" : "")" use-a>@(string.IsNullOrEmpty(prob.TagName) ? "empty" : prob.TagName)</td>
+                <td use-a>@(prob.AllowSubmit ? "Yes" : "No")</td>
+                <td use-a>@(prob.AllowJudge ? "Yes" : "No")</td>
+                <td asp-show-if="Contest.RankingStrategy != CcsDefaults.RuleXCPC" use-a>@prob.Score</td>
+                <td use-a>@prob.TestcaseCount</td>
+                <td><a asp-action="Description" asp-route-probid="@prob.ProblemId" title="view description"><i class="fas fa-file-pdf"></i></a></td>
+                <td><a asp-action="Edit" asp-route-probid="@prob.ProblemId" data-toggle="ajaxWindow" data-target="editProb"><i class="fas fa-edit"></i></a></td>
+                <td><a asp-action="Delete" asp-route-probid="@prob.ProblemId" data-toggle="ajaxWindow" data-target="deleteProb"><i class="fas fa-trash-alt"></i></a></td>
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<script>
+    $().ready(function () {
+        $('.data-table').DataTable({
+            "paging": false,
+            "searching": true,
+            "ordering": true,
+            "order": [[1, 'asc']],
+            "info": false,
+            "autoWidth": true,
+            "language": {
+                "searchPlaceholder": "filter table",
+                "search": "_INPUT_",
+            },
+            'aoColumnDefs': [
+                { aTargets: ['sortable'], bSortable: true },
+                { aTargets: ['searchable'], bSearchable: true },
+                { aTargets: ['_all'], bSortable: false, bSearchable: false }
+            ],
+        });
+
+        $('.dataTables_wrapper .row:first-child .col-md-6:first-child').html($('#paging').html());
+        $('.dataTables_wrapper .pagination-sm').addClass('mb-0');
+    });
+</script>
+
+<p>
+    <a asp-action="Add" data-toggle="ajaxWindow" data-target="addProb" class="btn btn-primary" title="Add new problem">
+        <i class="fas fa-plus"></i>&nbsp;Attach existing
+    </a>
+    <a asp-in-roles="Administrator,Problem" asp-area="Dashboard" asp-controller="Problems" asp-action="List" class="btn btn-secondary" title="polygon">
+        <i class="fas fa-book-open"></i>&nbsp;Polygon
+    </a>
+</p>

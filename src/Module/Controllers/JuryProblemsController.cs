@@ -17,6 +17,16 @@ namespace SatelliteSite.ContestModule.Controllers
     [AuditPoint(AuditlogType.Problem)]
     public class JuryProblemsController : JuryControllerBase<IProblemContext>
     {
+        [HttpGet]
+        public async Task<IActionResult> List(int page = 1)
+        {
+            const int perPage = 50;
+            if (page < 1) return BadRequest();
+            var probs = await Context.ListProblemsAsync(page, perPage, true);
+            return View(probs);
+        }
+
+
         [HttpGet("[action]")]
         public IActionResult Add()
         {
@@ -37,6 +47,14 @@ namespace SatelliteSite.ContestModule.Controllers
             var tn = await Context.GetTeamNamesAsync();
             sols.ForEach(a => a.AuthorName = tn.GetValueOrDefault(a.TeamId));
             return View(new JuryViewProblemModel(sols, prob));
+        }
+
+
+        [HttpGet("{probid}/[action]")]
+        public async Task<IActionResult> Description(int probid)
+        {
+            var prob = await Context.FindProblemAsync(probid, true);
+            return View(prob);
         }
 
 
@@ -68,7 +86,7 @@ namespace SatelliteSite.ContestModule.Controllers
 
             await HttpContext.AuditAsync("attached", $"{model.ProblemId}");
             StatusMessage = $"Problem {model.ShortName} saved.";
-            return RedirectToAction("Home", "Jury");
+            return RedirectToAction(nameof(List));
         }
 
 
@@ -115,7 +133,8 @@ namespace SatelliteSite.ContestModule.Controllers
                 });
 
             await HttpContext.AuditAsync("updated", $"{probid}");
-            return GoBackHome($"Problem {model.ShortName} saved.");
+            StatusMessage = $"Problem {model.ShortName} saved.";
+            return RedirectToAction(nameof(List));
         }
 
 
@@ -144,7 +163,7 @@ namespace SatelliteSite.ContestModule.Controllers
             await HttpContext.AuditAsync("detached", $"{probid}");
 
             StatusMessage = $"Contest problem {prob.ShortName} has been deleted.";
-            return RedirectToAction("Home", "Jury");
+            return RedirectToAction(nameof(List));
         }
 
 

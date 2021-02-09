@@ -20,8 +20,9 @@ namespace Ccs.Services
         /// </summary>
         /// <param name="page">The page.</param>
         /// <param name="count">The count per page.</param>
+        /// <param name="withDetail">Whether to include testcase count and scores.</param>
         /// <returns>The task for fetching model.</returns>
-        Task<IPagedList<ProblemModel>> ListProblemsAsync(int page, int count);
+        Task<IPagedList<ProblemModel>> ListProblemsAsync(int page, int count, bool withDetail = false);
 
         /// <summary>
         /// Creates problems by entity.

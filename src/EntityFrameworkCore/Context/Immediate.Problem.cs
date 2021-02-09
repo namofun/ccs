@@ -68,7 +68,7 @@ namespace Ccs.Services
             return _readed_problem_collection = res;
         }
 
-        public virtual async Task<IPagedList<ProblemModel>> ListProblemsAsync(int page, int count)
+        public virtual async Task<IPagedList<ProblemModel>> ListProblemsAsync(int page, int count, bool withDetail = false)
         {
             int totalCount = _contest.ProblemCount;
             int cid = Contest.Id;
@@ -76,7 +76,28 @@ namespace Ccs.Services
             var model = await QueryProblems(Db.ContestProblems
                 .Where(cp => cp.ContestId == cid)
                 .OrderBy(cp => cp.ShortName))
+                .Skip((page - 1) * count)
+                .Take(count)
                 .ToListAsync();
+
+            if (withDetail && model.Count > 0)
+            {
+                var innerQuery = await QueryScores(Db.ContestProblems
+                    .Where(cp => cp.ContestId == cid)
+                    .OrderBy(cp => cp.ShortName)
+                    .Skip((page - 1) * count)
+                    .Take(count))
+                    .ToDictionaryAsync(k => k.Id, e => (e.Count, e.Score));
+
+                for (int i = 0; i < model.Count; i++)
+                {
+                    if (innerQuery.TryGetValue(model[i].ProblemId, out var res))
+                    {
+                        model[i].TestcaseCount = res.Count;
+                        if (model[i].Score == 0) model[i].Score = res.Score;
+                    }
+                }
+            }
 
             return new PagedViewList<ProblemModel>(model, page, totalCount, count);
         }

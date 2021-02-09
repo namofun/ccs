@@ -35,14 +35,13 @@
                 <th>Memory limit</th>
                 <td>
                     @(Model.MemoryLimit) kB
-                    @if (Model.MemoryLimit == 524288)
-                    {@("(default)")}
+                    @(Model.MemoryLimit == 524288 ? "(default)" : "")
                 </td>
             </tr>
             <tr>
                 <th>Problem text</th>
                 <td>
-                    <a asp-area="Polygon" asp-route-pid="@Model.ProblemId" asp-controller="Description" asp-action="Preview">
+                    <a asp-action="Description" asp-route-probid="@Model.ProblemId">
                         <i title="view problem description" class="fas fa-file-pdf"></i>
                     </a>
                 </td>
