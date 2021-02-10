@@ -4,9 +4,9 @@ using Tenant.Entities;
 
 namespace SatelliteSite.ContestModule.Models
 {
-    public class JuryViewAffiliationModel
+    public class JuryViewCategoryModel
     {
-        public Affiliation Affiliation { get; set; }
+        public Category Category { get; set; }
 
         public List<Team> Teams { get; set; }
     }

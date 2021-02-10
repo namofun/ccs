@@ -29,14 +29,11 @@ namespace SatelliteSite.ContestModule.Controllers
             var aff = await Context.FindAffiliationAsync(affid, false);
             if (aff == null) return NotFound();
 
-            var teams = await Context.ListTeamsAsync(t => t.Status == 1 && t.AffiliationId == affid);
-            var model = new JuryViewAffiliationModel
+            return View(new JuryViewAffiliationModel
             {
                 Affiliation = aff,
-                Teams = teams,
-            };
-
-            return View(model);
+                Teams = await Context.ListTeamsAsync(t => t.Status == 1 && t.AffiliationId == affid),
+            });
         }
 
 
