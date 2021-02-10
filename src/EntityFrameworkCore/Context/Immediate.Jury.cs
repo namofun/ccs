@@ -18,10 +18,10 @@ namespace Ccs.Services
 {
     public partial class ImmediateContestContext : IJuryContext
     {
-        public virtual async Task<IReadOnlyList<Language>> ListLanguagesAsync()
+        public virtual async Task<IReadOnlyList<Language>> ListLanguagesAsync(bool filtered = true)
         {
-            var langs = await Polygon.Languages.ListAsync(true);
-            if (Contest.Settings.Languages != null)
+            var langs = await Polygon.Languages.ListAsync(filtered ? true : default(bool?));
+            if (filtered && Contest.Settings.Languages != null)
             {
                 langs = langs.Where(l => Contest.Settings.Languages.Contains(l.Id)).ToList();
             }
@@ -29,11 +29,20 @@ namespace Ccs.Services
             return langs;
         }
 
-        public virtual async Task<Language?> FindLanguageAsync(string? langid)
+        public virtual async Task<Language?> FindLanguageAsync(string? langid, bool filtered = true)
         {
             if (langid == null) return null;
             var lang = await Polygon.Languages.FindAsync(langid);
-            return lang.AllowSubmit ? lang : null;
+            if (lang == null) return null;
+
+            if (filtered && Contest.Settings.Languages != null)
+            {
+                return lang.AllowSubmit && Contest.Settings.Languages.Contains(lang.Id) ? lang : null;
+            }
+            else
+            {
+                return lang;
+            }
         }
 
         public virtual async Task<ContestWrapper> UpdateContestAsync(Expression<Func<Contest, Contest>> updateExpression)

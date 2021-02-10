@@ -34,14 +34,17 @@ namespace Ccs.Services
         /// <summary>
         /// Fetch the available languages.
         /// </summary>
+        /// <param name="contestFiltered">Whether filtering the entities only used in this contest.</param>
         /// <returns>The task for fetching languages.</returns>
-        Task<IReadOnlyList<Language>> ListLanguagesAsync();
+        Task<IReadOnlyList<Language>> ListLanguagesAsync(bool contestFiltered = true);
 
         /// <summary>
         /// Finds the specified language.
         /// </summary>
+        /// <param name="langid">The language ID.</param>
+        /// <param name="contestFiltered">Whether filtering the entities only used in this contest.</param>
         /// <returns>The task for finding language.</returns>
-        Task<Language?> FindLanguageAsync(string? langid);
+        Task<Language?> FindLanguageAsync(string? langid, bool contestFiltered = true);
 
         /// <summary>
         /// Lists the contest problems.

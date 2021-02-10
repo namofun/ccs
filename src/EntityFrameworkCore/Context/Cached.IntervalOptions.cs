@@ -6,7 +6,7 @@ namespace Ccs.Services
     {
         public TimeSpan Contest { get; set; } = TimeSpan.FromMinutes(5);
 
-        public TimeSpan Language { get; set; } = TimeSpan.FromSeconds(10);
+        public TimeSpan Language { get; set; } = TimeSpan.FromMinutes(5);
 
         public TimeSpan Problem { get; set; } = TimeSpan.FromMinutes(10);
 

@@ -12,16 +12,30 @@ namespace Ccs.Services
 {
     public partial class CachedContestContext
     {
-        public override Task<IReadOnlyList<Language>> ListLanguagesAsync()
+        public override Task<IReadOnlyList<Language>> ListLanguagesAsync(bool filtered = true)
         {
-            return CacheAsync("Languages", _options.Language,
-                async () => await base.ListLanguagesAsync());
+            if (filtered)
+            {
+                return CacheAsync("Languages", _options.Language,
+                    async () => await base.ListLanguagesAsync(true));
+            }
+            else
+            {
+                return base.ListLanguagesAsync(false);
+            }
         }
 
-        public override async Task<Language?> FindLanguageAsync(string? langid)
+        public override async Task<Language?> FindLanguageAsync(string? langid, bool filtered = true)
         {
-            var langs = await ListLanguagesAsync();
-            return langs.FirstOrDefault(l => l.Id == langid);
+            if (filtered)
+            {
+                var langs = await ListLanguagesAsync();
+                return langs.FirstOrDefault(l => l.Id == langid);
+            }
+            else
+            {
+                return await base.FindLanguageAsync(langid, false);
+            }
         }
 
         public override async Task<ContestWrapper> UpdateContestAsync(

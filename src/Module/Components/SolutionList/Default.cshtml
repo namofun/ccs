@@ -115,7 +115,7 @@
             <th scope="col">time</th>
 @if (Model.ShowTeams) {<th scope="col">team</th>}
 @if (Model.ShowProblems) {<th scope="col">problem</th>}
-            <th scope="col">lang</th>
+@if (Model.ShowLanguages) {<th scope="col">lang</th>}
             <th scope="col">result</th>
             <th scope="col" class="not-sortable not-searchable">test results</th>
 @if (Model.ShowIp) {<th scope="col">ip</th>}
@@ -141,7 +141,7 @@
             WriteCell((sub.Time - Contest.StartTime).GetValueOrDefault().ToDeltaString(), title: sub.Time.ToString());
             WriteCell($"{sub.AuthorName} (t{sub.TeamId})", write: Model.ShowTeams);
             WriteCell(prob?.ShortName ?? string.Empty, _class: "probid", write: Model.ShowProblems);
-            WriteCell(sub.Language, _class: "langid");
+            WriteCell(sub.Language, _class: "langid", write: Model.ShowLanguages);
             WriteVerdictLine(sub);
             WriteStatusLine(sub, prob?.TestcaseCount ?? 1);
             WriteCell(sub.Ip, write: Model.ShowIp);

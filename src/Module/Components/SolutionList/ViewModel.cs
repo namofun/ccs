@@ -23,5 +23,7 @@ namespace SatelliteSite.ContestModule.Components.SolutionList
         public bool ShowProblems { get; set; }
 
         public bool ShowIp { get; set; }
+
+        public bool ShowLanguages { get; set; }
     }
 }
