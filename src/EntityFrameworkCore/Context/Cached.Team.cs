@@ -24,21 +24,21 @@ namespace Ccs.Services
             Expire("Teams::Members");
         }
 
-        public override async Task<Affiliation?> FindAffiliationAsync(int id)
+        public override async Task<Affiliation?> FindAffiliationAsync(int id, bool filtered = true)
         {
-            var results = await ListAffiliationsAsync(true);
+            var results = await ListAffiliationsAsync(filtered);
             return results.GetValueOrDefault(id);
         }
 
-        public override async Task<Affiliation?> FindAffiliationAsync(string id)
+        public override async Task<Affiliation?> FindAffiliationAsync(string id, bool filtered = true)
         {
-            var results = await ListAffiliationsAsync(true);
+            var results = await ListAffiliationsAsync(filtered);
             return results.Values.FirstOrDefault(a => a.Abbreviation == id);
         }
 
-        public override async Task<Category?> FindCategoryAsync(int id)
+        public override async Task<Category?> FindCategoryAsync(int id, bool filtered = true)
         {
-            var results = await ListCategoriesAsync(true);
+            var results = await ListCategoriesAsync(filtered);
             return results.GetValueOrDefault(id);
         }
 

@@ -1,0 +1,77 @@
+﻿@model JuryListAffiliationsModel
+@{
+    ViewData["Title"] = "Affiliations";
+}
+
+<div class="alert alert-success" asp-show-if="Contest.IsPublic">
+    <b>Contest is public.</b> All users in this site can see the contest.
+</div>
+
+<div class="alert alert-warning" asp-show-if="!Contest.IsPublic">
+    <b>Contest is not public.</b> Only registered participants, jury, or users in the following visbile affiliations can see this contest.
+</div>
+
+<div class="alert alert-secondary" asp-not-in-roles="Administrator">
+    To edit the affiliations, please contact super administrators.
+</div>
+
+<div class="alert alert-primary" asp-in-roles="Administrator">
+    To edit the affiliations, please go to the <a asp-area="Dashboard" asp-controller="Affiliations" asp-action="List">dashboard page</a>.
+</div>
+
+<h2 class="mt-2">@ViewData["Title"]</h2>
+
+<div class="table-wrapper">
+    <table class="data-table table table-sm table-striped" style="width:auto">
+        <thead>
+            <tr role="row">
+                <th scope="col" class="sortable searchable">ID</th>
+                <th scope="col" class="sortable searchable">shortname</th>
+                <th scope="col" class="sortable searchable" style="min-width:10em">name</th>
+                <th scope="col" class="sortable">visible?</th>
+                <th scope="col" class="sortable searchable">country</th>
+                <th scope="col">logo</th>
+                <th scope="col" class="sortable"># teams</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var aff in Model)
+            {
+                <tr asp-action="Detail" asp-route-affid="@aff.Id" role="row" data-target="gotoUrl">
+                    <td use-a>@aff.Id</td>
+                    <td use-a>@aff.Abbreviation</td>
+                    <td use-a>@aff.Name</td>
+                    <td>
+                        @(Model.AllowedTenants.Contains(aff.Id) || Contest.IsPublic ? "Yes" : "No")
+                        <a asp-show-if="!Contest.IsPublic" asp-action="ToggleVisibility" asp-route-affid="@aff.Id" class="btn btn-sm btn-outline-secondary">toggle</a>
+                    </td>
+                    <td use-a>@(aff.CountryCode ?? "(none)")</td>
+                    <td use-a><img asp-show-if="@(aff.Abbreviation != "null")" src="~/images/affiliations/@(aff.Abbreviation).png" width="32" height="32" /></td>
+                    <td use-a>@Model.TeamCount.GetValueOrDefault(aff.Id)</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<script>
+    $().ready(function () {
+        $('.data-table').DataTable({
+            "paging": false,
+            "searching": true,
+            "ordering": true,
+            "order": [[6, 'desc']],
+            "info": false,
+            "autoWidth": true,
+            "language": {
+                "searchPlaceholder": "filter table",
+                "search": "_INPUT_",
+            },
+            'aoColumnDefs': [
+                { aTargets: ['sortable'], bSortable: true },
+                { aTargets: ['searchable'], bSearchable: true },
+                { aTargets: ['_all'], bSortable: false, bSearchable: false }
+            ],
+        });
+    });
+</script>

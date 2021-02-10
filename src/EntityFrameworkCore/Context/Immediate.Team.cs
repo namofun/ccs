@@ -32,19 +32,28 @@ namespace Ccs.Services
                 .ToListAsync();
         }
 
-        public virtual Task<Affiliation?> FindAffiliationAsync(int id)
+        public virtual Task<Affiliation?> FindAffiliationAsync(int id, bool filtered = true)
         {
-            return Get<IAffiliationStore>().FindAsync(id)!;
+            return Db.Affiliations
+                .Where(a => a.Id == id)
+                .WhereIf(filtered, a => Db.Teams.Select(a => a.AffiliationId).Contains(a.Id))
+                .FirstOrDefaultAsync()!;
         }
 
-        public virtual Task<Affiliation?> FindAffiliationAsync(string id)
+        public virtual Task<Affiliation?> FindAffiliationAsync(string id, bool filtered = true)
         {
-            return Get<IAffiliationStore>().FindAsync(id)!;
+            return Db.Affiliations
+                .Where(a => a.Abbreviation == id)
+                .WhereIf(filtered, a => Db.Teams.Select(a => a.AffiliationId).Contains(a.Id))
+                .FirstOrDefaultAsync()!;
         }
 
-        public virtual Task<Category?> FindCategoryAsync(int id)
+        public virtual Task<Category?> FindCategoryAsync(int id, bool filtered = true)
         {
-            return Get<ICategoryStore>().FindAsync(id)!;
+            return Db.Categories
+                .Where(a => a.Id == id)
+                .WhereIf(filtered, a => Db.Teams.Select(a => a.CategoryId).Contains(a.Id))
+                .FirstOrDefaultAsync()!;
         }
 
         public virtual Task<Team?> FindTeamByIdAsync(int teamid)
@@ -274,10 +283,9 @@ namespace Ccs.Services
 
         public virtual Task AllowTenantAsync(Affiliation affiliation)
         {
-            int cid = Contest.Id, affid = affiliation.Id;
             return Db.ContestTenants.UpsertAsync(
-                source: new { cid, affid },
-                insertExpression: s => new Visibility { AffiliationId = affid, ContestId = cid });
+                source: new { cid = Contest.Id, affid = affiliation.Id },
+                insertExpression: s => new Visibility { AffiliationId = s.affid, ContestId = s.cid });
         }
 
         public virtual Task DisallowTenantAsync(Affiliation affiliation)
@@ -294,6 +302,19 @@ namespace Ccs.Services
             return Db.ContestTenants
                 .Where(c => c.ContestId == cid && tenants.Contains(c.AffiliationId))
                 .AnyAsync();
+        }
+
+        public virtual Task<Dictionary<TKey, TValue>> AggregateTeamsAsync<TKey, TValue>(
+            Expression<Func<Team, TKey>> grouping,
+            Expression<Func<IGrouping<TKey, Team>, TValue>> aggregator)
+            where TKey : notnull
+        {
+            int cid = Contest.Id;
+            return Db.Teams
+                .Where(t => t.ContestId == cid && t.Status == 1)
+                .GroupBy(grouping)
+                .Select(Aggregator<TKey, TValue>.CreateExpression(aggregator))
+                .ToDictionaryAsync(k => k.Key, v => v.Value);
         }
     }
 }

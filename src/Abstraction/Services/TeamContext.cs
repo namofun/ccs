@@ -18,22 +18,25 @@ namespace Ccs.Services
         /// Gets the specified affiliation.
         /// </summary>
         /// <param name="id">The affiliation ID.</param>
+        /// <param name="filtered">Whether the found entity is filtered.</param>
         /// <returns>The task for fetching affiliation.</returns>
-        Task<Affiliation?> FindAffiliationAsync(int id);
+        Task<Affiliation?> FindAffiliationAsync(int id, bool filtered = true);
 
         /// <summary>
         /// Gets the specified affiliation.
         /// </summary>
         /// <param name="abbr">The affiliation ID.</param>
+        /// <param name="filtered">Whether the found entity is filtered.</param>
         /// <returns>The task for fetching affiliation.</returns>
-        Task<Affiliation?> FindAffiliationAsync(string abbr);
+        Task<Affiliation?> FindAffiliationAsync(string abbr, bool filtered = true);
 
         /// <summary>
         /// Gets the specified category.
         /// </summary>
         /// <param name="id">The category ID.</param>
+        /// <param name="filtered">Whether the found entity is filtered.</param>
         /// <returns>The task for fetching category.</returns>
-        Task<Category?> FindCategoryAsync(int id);
+        Task<Category?> FindCategoryAsync(int id, bool filtered = true);
 
         /// <summary>
         /// Gets the team members as a lookup dictionary.
@@ -134,5 +137,18 @@ namespace Ccs.Services
         /// <param name="affiliation">The tenant entity.</param>
         /// <returns>The task for disallowing tenant.</returns>
         Task DisallowTenantAsync(Affiliation affiliation);
+
+        /// <summary>
+        /// Aggregate the teams and do analysis via database.
+        /// </summary>
+        /// <typeparam name="TKey">The aggregate key.</typeparam>
+        /// <typeparam name="TValue">The aggregate value.</typeparam>
+        /// <param name="grouping">The grouping selector.</param>
+        /// <param name="aggregator">The result selector.</param>
+        /// <returns>The task for aggregating results.</returns>
+        Task<Dictionary<TKey, TValue>> AggregateTeamsAsync<TKey, TValue>(
+            Expression<Func<Team, TKey>> grouping,
+            Expression<Func<IGrouping<TKey, Team>, TValue>> aggregator)
+            where TKey : notnull;
     }
 }
