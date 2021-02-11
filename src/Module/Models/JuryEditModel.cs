@@ -31,6 +31,9 @@ namespace SatelliteSite.ContestModule.Models
         [Obsolete]
         public int DefaultCategory { get; set; }
 
+        [DisplayName("Languages")]
+        public string[] Languages { get; set; }
+
         [Required]
         [DisplayName("Status availability")]
         public int StatusAvailable { get; set; }
@@ -82,6 +85,7 @@ namespace SatelliteSite.ContestModule.Models
             UsePrintings = cont.Settings.PrintingAvailable;
             UseBalloon = cont.Settings.BalloonAvailable;
             StatusAvailable = cont.Settings.StatusAvailable;
+            Languages = cont.Settings.Languages;
         }
     }
 }

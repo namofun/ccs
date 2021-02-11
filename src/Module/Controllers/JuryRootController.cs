@@ -231,6 +231,7 @@ namespace SatelliteSite.ContestModule.Controllers
         public async Task<IActionResult> Edit()
         {
             ViewBag.Categories = await Context.ListCategoriesAsync(false);
+            ViewBag.Languages = await Context.ListLanguagesAsync(false);
             return View(new JuryEditModel(Contest));
         }
         
@@ -295,6 +296,7 @@ namespace SatelliteSite.ContestModule.Controllers
             settings.BalloonAvailable = model.UseBalloon;
             settings.PrintingAvailable = model.UsePrintings;
             settings.StatusAvailable = model.StatusAvailable;
+            settings.Languages = model.Languages;
             var settingsJson = settings.ToString();
 
             await Context.UpdateContestAsync(

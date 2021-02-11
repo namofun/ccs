@@ -3,6 +3,8 @@
     ViewData["Title"] = "Edit contest";
     IReadOnlyDictionary<int, Tenant.Entities.Category> cats = ViewBag.Categories;
     var catSel = cats.Values.Select(c => new SelectListItem(c.Name, c.Id.ToString()));
+    IReadOnlyList<Language> langs = ViewBag.Languages;
+    var langSel = langs.Select(c => new SelectListItem(c.Name, c.Id));
 }
 
 <h2 class="mt-2">Edit contest @Model.ContestId</h2>
@@ -77,6 +79,10 @@
                 <span asp-validation-for="DefaultCategory" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="Languages">Languages</label>
+                <select asp-for="Languages" class="form-control custom-select form-control" multiple asp-items="langSel"></select>
+            </div>
+            <div class="form-group">
                 <label asp-for="StatusAvailable"></label>
                 <select class="form-control" asp-for="StatusAvailable">
                     <option value="0">Users can see only his submissions</option>
@@ -105,7 +111,13 @@
             testcase into total.<br />
             If the Codeforces-style is chosen, points gained from solving problems
             will be calculated with the submitting time. Each re-submission will
-            cause 50 points decrease.<br />
+            cause 50 points decrease.<br /><br /><br />
+
+            <b>Specification of languages:</b><br />
+            If one language was chosen, the language will be enabled for submitting
+            if and only if it is enabled in both global and contest.<br />
+            If no languages were chosen, the submit settings will be inherited from global.<br />
+            The allow-judge settings should be configured in global.<br />
         </div>
     </div>
 
@@ -113,3 +125,15 @@
         <button type="submit" class="btn-primary btn">Save</button>
     </div>
 </form>
+
+@section Scripts {
+    <link rel="stylesheet" href="~/lib/select2/css/select2.min.css">
+    <link rel="stylesheet" href="~/lib/select2/css/select2-bootstrap.min.css">
+    <script src="~/lib/select2/js/select2.min.js"></script>
+    <script>
+        $(function () {
+            $.fn.select2.defaults.set("theme", "bootstrap");
+            $('select[multiple]').select2();
+        });
+    </script>
+}
