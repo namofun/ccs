@@ -31,6 +31,7 @@ namespace SatelliteSite
                 .AddModule<StudentModule.StudentModule<MyUser, Role, DefaultContext>>()
                 .AddModule<ContestModule.ContestModule<Ccs.RelationalRole<MyUser, Role, DefaultContext>>>()
                 .AddModule<TelemetryModule.TelemetryModule>()
+                .AddModule<HostModule>()
                 .AddDatabase<DefaultContext>((c, b) => b.UseSqlServer(c.GetConnectionString("UserDbConnection"), b => b.UseBulk()))
                 .ConfigureSubstrateDefaults<DefaultContext>(builder =>
                 {

@@ -79,9 +79,9 @@
                     <div class="col-lg-6">
                         <h5 class="ml-2 text-left">Infrastructures</h5>
                         <ul>
-                            <li><a asp-area="Dashboard" asp-controller="Executables" asp-action="List">Executables</a></li>
-                            <li><a asp-area="Dashboard" asp-controller="Judgehosts" asp-action="List">Judgehosts</a></li>
-                            <li><a asp-area="Dashboard" asp-controller="InternalErrors" asp-action="List">Internal Errors</a></li>
+                            <li><a asp-in-roles="Administrator" asp-area="Dashboard" asp-controller="Executables" asp-action="List">Executables</a></li>
+                            <li><a asp-in-roles="Administrator" asp-area="Dashboard" asp-controller="Judgehosts" asp-action="List">Judgehosts</a></li>
+                            <li><a asp-in-roles="Administrator" asp-area="Dashboard" asp-controller="InternalErrors" asp-action="List">Internal Errors</a></li>
                             <li><a asp-controller="JuryProblems" asp-action="List">Problems</a></li>
                             <li><a asp-controller="JuryLanguages" asp-action="List">Languages</a></li>
                             <li><a asp-controller="JuryTeams" asp-action="List">Teams</a></li>
