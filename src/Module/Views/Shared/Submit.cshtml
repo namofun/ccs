@@ -9,6 +9,7 @@
     var lang_sel = Model.Languages.Where(l => l.AllowSubmit).Select(l => new SelectListItem(l.Name, l.Id));
 }
 
+<div class="text-danger" asp-validation-summary="All"></div>
 <div class="form-group">
     <label class="required" asp-for="Problem"></label>
     <select asp-for="Problem" asp-items="prb_sel" id="submit-prob" required class="form-control custom-select form-control">

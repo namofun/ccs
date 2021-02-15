@@ -227,26 +227,28 @@ namespace SatelliteSite.ContestModule.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Submit(TeamCodeSubmitModel model)
         {
-            throw new Exception("Should re-display");
-
             if (TooEarly && !ViewData.ContainsKey("IsJury"))
             {
-                StatusMessage = "Contest not started.";
-                return RedirectToAction(nameof(Home));
+                ModelState.AddModelError("TimeSequence", "Contest not started.");
             }
 
             var prob = await Context.FindProblemAsync(model.Problem);
             if (prob is null || !prob.AllowSubmit)
             {
-                StatusMessage = "Error problem not found.";
-                return RedirectToAction(nameof(Home));
+                ModelState.AddModelError(nameof(model.Problem), "Problem not found.");
             }
 
             var lang = await Context.FindLanguageAsync(model.Language);
             if (lang == null)
             {
-                StatusMessage = "Error language not found.";
-                return RedirectToAction(nameof(Home));
+                ModelState.AddModelError(nameof(model.Language), "Language not found.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                model.Languages = await Context.ListLanguagesAsync();
+                model.Problems = await Context.ListProblemsAsync();
+                return Window(model);
             }
 
             var s = await Context.SubmitAsync(
