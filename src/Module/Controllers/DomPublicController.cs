@@ -1,8 +1,10 @@
 ﻿using Ccs;
+using Ccs.Registration;
 using Ccs.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SatelliteSite.ContestModule.Controllers
@@ -44,7 +46,7 @@ namespace SatelliteSite.ContestModule.Controllers
         [ValidateAntiForgeryToken]
         [AuditPoint(AuditlogType.Team)]
         [Authorize]
-        public async Task<IActionResult> Register()
+        public async Task<IActionResult> Register(string provider)
         {
             if (Team != null)
             {
@@ -54,6 +56,31 @@ namespace SatelliteSite.ContestModule.Controllers
 
             await Task.CompletedTask;
             return NoContent();
+        }
+
+
+        [HttpGet("[action]")]
+        public async Task<IActionResult> Register()
+        {
+            if (Team != null)
+            {
+                StatusMessage = "Already registered";
+                return RedirectToAction(nameof(Info));
+            }
+
+            var context = CreateRegisterProviderContext();
+            ViewBag.Context = context;
+
+            var items = new List<(IRegisterProvider, object)>();
+            foreach (var (_, provider) in RPBinderAttribute.Get(HttpContext))
+            {
+                if (provider.JuryOrContestant) continue;
+                if (!await provider.IsAvailableAsync(context)) continue;
+                var input = await provider.CreateInputModelAsync(context);
+                items.Add((provider, input));
+            }
+
+            return View(items);
         }
 
 

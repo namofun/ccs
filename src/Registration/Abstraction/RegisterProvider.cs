@@ -130,6 +130,12 @@ namespace Ccs.Registration
         private static readonly Task<bool> _OK = Task.FromResult(true);
         private static readonly Task<bool> _Fail = Task.FromResult(false);
 
+        /// <summary>
+        /// Gets the prefix in model.
+        /// </summary>
+        /// <returns>The prefix string.</returns>
+        protected virtual string GetPrefix() => string.Empty;
+
         /// <inheritdoc />
         public abstract bool JuryOrContestant { get; }
 
@@ -162,7 +168,7 @@ namespace Ccs.Registration
 
         /// <inheritdoc cref="IRegisterProvider.CreateInputRenderer(ViewContext, object, IModelExpressionProvider, IJsonHelper, IViewComponentHelper, IUrlHelper)" />
         protected virtual RegisterProviderOutput<TInputModel> CreateInputRenderer(ViewContext viewContext, TInputModel model, IModelExpressionProvider modelExpressionProvider, IJsonHelper jsonHelper, IViewComponentHelper viewComponentHelper, IUrlHelper urlHelper)
-            => new RegisterProviderOutput<TInputModel>(viewContext, model, modelExpressionProvider, jsonHelper, viewComponentHelper, urlHelper);
+            => new RegisterProviderOutput<TInputModel>(viewContext, model, modelExpressionProvider, jsonHelper, viewComponentHelper, urlHelper, GetPrefix());
 
         /// <inheritdoc cref="IRegisterProvider.CreateOutputRenderer(ViewContext, object, IModelExpressionProvider, IJsonHelper, IViewComponentHelper, IUrlHelper)" />
         protected virtual RegisterProviderOutput<TOutputModel> CreateOutputRenderer(ViewContext viewContext, TOutputModel model, IModelExpressionProvider modelExpressionProvider, IJsonHelper jsonHelper, IViewComponentHelper viewComponentHelper, IUrlHelper urlHelper)
@@ -170,7 +176,7 @@ namespace Ccs.Registration
 
         /// <inheritdoc cref="IRegisterProvider.ReadAsync(object, ControllerBase)" />
         protected virtual Task<bool> ReadAsync(TInputModel model, ControllerBase controller)
-            => controller.TryUpdateModelAsync(model);
+            => controller.TryUpdateModelAsync(model, GetPrefix());
 
         /// <inheritdoc cref="IRegisterProvider.IsAvailableAsync(RegisterProviderContext)" />
         protected virtual bool IsAvailable(RegisterProviderContext context)
@@ -246,5 +252,8 @@ namespace Ccs.Registration
         /// <inheritdoc />
         protected override sealed Task RenderOutputAsync(RegisterProviderContext context, RegisterProviderOutput<StatusMessageModel> output)
             => throw new System.NotSupportedException();
+
+        /// <inheritdoc />
+        protected override string GetPrefix() => FancyName;
     }
 }

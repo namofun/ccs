@@ -230,6 +230,7 @@ namespace SatelliteSite.ContestModule.Controllers
         {
             if (provider == null || !provider.JuryOrContestant) return NotFound();
             var context = CreateRegisterProviderContext();
+            if (!await provider.IsAvailableAsync(context)) return BadRequest();
             ViewBag.Provider = provider;
             ViewBag.Context = context;
             var model = await provider.CreateInputModelAsync(context);
@@ -244,6 +245,7 @@ namespace SatelliteSite.ContestModule.Controllers
         {
             if (provider == null || !provider.JuryOrContestant) return NotFound();
             var context = CreateRegisterProviderContext();
+            if (!await provider.IsAvailableAsync(context)) return BadRequest();
             ViewBag.Provider = provider;
             ViewBag.Context = context;
             var model = await provider.CreateInputModelAsync(context);

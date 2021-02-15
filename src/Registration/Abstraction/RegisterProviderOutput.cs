@@ -78,7 +78,7 @@ namespace Ccs.Registration
             ViewDataDictionary viewData,
             IHtmlGenerator htmlGenerator,
             IModelExpressionProvider modelExpressionProvider,
-            ViewContext viewContext,
+            ViewContext originalViewContext,
             IJsonHelper jsonHelper,
             IViewComponentHelper viewComponentHelper,
             IUrlHelper urlHelper)
@@ -86,7 +86,7 @@ namespace Ccs.Registration
             ViewData = viewData;
             Generator = htmlGenerator;
             ModelExpressionProvider = modelExpressionProvider;
-            ViewContext = viewContext;
+            ViewContext = new ViewContext(originalViewContext, originalViewContext.View, viewData, originalViewContext.Writer);
             Json = jsonHelper;
             Component = viewComponentHelper;
             Url = urlHelper;
@@ -329,11 +329,15 @@ namespace Ccs.Registration
         private ModelExpression Create<TElement>(Expression<Func<TModel, TElement>> @for)
             => ModelExpressionProvider.CreateModelExpression(ViewData, @for);
 
-        private static ViewDataDictionary Create(ViewDataDictionary viewData, TModel model)
-            => new ViewDataDictionary<TModel>(viewData, model);
+        private static ViewDataDictionary Create(ViewDataDictionary viewData, TModel model, string prefix = "")
+        {
+            var retVal = new ViewDataDictionary<TModel>(viewData, model);
+            retVal.TemplateInfo.HtmlFieldPrefix = prefix;
+            return retVal;
+        }
 
-        private static IHtmlGenerator GetHtmlGenerator(ViewContext context)
-            => context.HttpContext.RequestServices.GetRequiredService<IHtmlGenerator>();
+        private static IHtmlGenerator GetHtmlGenerator(HttpContext context)
+            => context.RequestServices.GetRequiredService<IHtmlGenerator>();
 
         /// <summary>
         /// Initialize a <see cref="RegisterProviderOutput{TModel}"/>.
@@ -344,9 +348,10 @@ namespace Ccs.Registration
             IModelExpressionProvider modelExpressionProvider,
             IJsonHelper jsonHelper,
             IViewComponentHelper viewComponentHelper,
-            IUrlHelper urlHelper)
-            : base(Create(viewContext.ViewData, model),
-                  GetHtmlGenerator(viewContext),
+            IUrlHelper urlHelper,
+            string prefix = "")
+            : base(Create(viewContext.ViewData, model, prefix),
+                  GetHtmlGenerator(viewContext.HttpContext),
                   modelExpressionProvider,
                   viewContext,
                   jsonHelper,
