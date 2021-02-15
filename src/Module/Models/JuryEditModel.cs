@@ -1,5 +1,6 @@
 ﻿using Ccs.Models;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
@@ -26,10 +27,8 @@ namespace SatelliteSite.ContestModule.Models
         [DisplayName("Send printings")]
         public bool UsePrintings { get; set; }
 
-        [Required]
-        [DisplayName("Self-registered category")]
-        [Obsolete]
-        public int DefaultCategory { get; set; }
+        [DisplayName("Self-registration category")]
+        public Dictionary<string, int> RegisterCategory { get; set; }
 
         [DisplayName("Languages")]
         public string[] Languages { get; set; }
@@ -81,11 +80,11 @@ namespace SatelliteSite.ContestModule.Models
             StopTime = stopTime;
             UnfreezeTime = unfTime;
             IsPublic = cont.IsPublic;
-            DefaultCategory = 0;
             UsePrintings = cont.Settings.PrintingAvailable;
             UseBalloon = cont.Settings.BalloonAvailable;
             StatusAvailable = cont.Settings.StatusAvailable;
             Languages = cont.Settings.Languages;
+            RegisterCategory = cont.Settings.RegisterCategory ?? new Dictionary<string, int>();
         }
     }
 }

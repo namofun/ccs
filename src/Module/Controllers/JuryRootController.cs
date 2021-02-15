@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SatelliteSite.ContestModule.Models;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SatelliteSite.ContestModule.Controllers
@@ -234,7 +235,7 @@ namespace SatelliteSite.ContestModule.Controllers
             ViewBag.Languages = await Context.ListLanguagesAsync(false);
             return View(new JuryEditModel(Contest));
         }
-        
+
 
         [HttpPost("[action]")]
         [ValidateAntiForgeryToken]
@@ -243,12 +244,14 @@ namespace SatelliteSite.ContestModule.Controllers
         {
             // check the category id
             var cates = await Context.ListCategoriesAsync(false);
-            if (model.DefaultCategory != 0 && !cates.ContainsKey(model.DefaultCategory))
-                ModelState.AddModelError("xys::nocat", "No corresponding category found.");
+            if ((model.RegisterCategory?.Values ?? Enumerable.Empty<int>()).Except(cates.Keys.Append(0)).Any())
+                ModelState.AddModelError(nameof(model.RegisterCategory), "No corresponding category found.");
 
             // check time sequence
-            if (!string.IsNullOrEmpty(model.StartTime) && string.IsNullOrEmpty(model.StopTime))
-                ModelState.AddModelError("xys::startstop", "No stop time when start time filled.");
+            if (Contest.Kind != CcsDefaults.KindProblemset
+                && !string.IsNullOrEmpty(model.StartTime)
+                && string.IsNullOrEmpty(model.StopTime))
+                ModelState.AddModelError(nameof(model.StopTime), "No stop time when start time filled.");
 
             bool contestTimeChanged = false;
             DateTimeOffset? startTime = null;
@@ -266,9 +269,10 @@ namespace SatelliteSite.ContestModule.Controllers
             if (!string.IsNullOrWhiteSpace(model.UnfreezeTime))
                 model.UnfreezeTime.TryParseAsTimeSpan(out unfreezeTime);
 
-            int? defaultCat = null;
-            if (model.DefaultCategory != 0)
-                defaultCat = model.DefaultCategory;
+            var defaultCat = model.RegisterCategory?
+                .Where(k => k.Value != 0)
+                .ToDictionary(k => k.Key, v => v.Value);
+            if (defaultCat?.Count == 0) defaultCat = null;
 
             if (!endTime.HasValue
                 || (freezeTime.HasValue && freezeTime.Value > endTime.Value)
@@ -278,6 +282,7 @@ namespace SatelliteSite.ContestModule.Controllers
             if (!ModelState.IsValid)
             {
                 ViewBag.Categories = cates;
+                ViewBag.Languages = await Context.ListLanguagesAsync(false);
                 return View(model);
             }
 
@@ -292,7 +297,7 @@ namespace SatelliteSite.ContestModule.Controllers
                 contestTimeChanged = true;
 
             var settings = Contest.Settings.Clone();
-            //settings.RegisterCategory = defaultCat;
+            settings.RegisterCategory = defaultCat;
             settings.BalloonAvailable = model.UseBalloon;
             settings.PrintingAvailable = model.UsePrintings;
             settings.StatusAvailable = model.StatusAvailable;

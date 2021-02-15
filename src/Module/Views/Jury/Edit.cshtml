@@ -5,6 +5,7 @@
     var catSel = cats.Values.Select(c => new SelectListItem(c.Name, c.Id.ToString()));
     IReadOnlyList<Language> langs = ViewBag.Languages;
     var langSel = langs.Select(c => new SelectListItem(c.Name, c.Id));
+    var providers = RPBinderAttribute.Get(Context);
 }
 
 <h2 class="mt-2">Edit contest @Model.ContestId</h2>
@@ -13,7 +14,7 @@
     <input type="hidden" asp-for="ContestId" />
     <div asp-validation-summary="All" class="text-danger"></div>
     <div class="row">
-        <div class="col-lg-4">
+        <div class="col-12 col-md-6 col-xl-4">
             <div class="form-group">
                 <label asp-for="ShortName" class="required"></label>
                 <input type="text" asp-for="ShortName" class="form-control" />
@@ -54,11 +55,24 @@
                 <span asp-validation-for="RankingStrategy" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label>Visiblity</label>
-                <div class="custom-control custom-checkbox">
-                    <input type="checkbox" class="custom-control-input" asp-for="IsPublic">
-                    <label class="custom-control-label" asp-for="IsPublic"></label>
+                <label asp-for="Languages">Languages</label>
+                <select asp-for="Languages" class="form-control custom-select form-control" multiple asp-items="langSel"></select>
+            </div>
+            <div class="form-group" asp-show-if="Contest.Kind != CcsDefaults.KindDom">
+                <label asp-for="StatusAvailable"></label>
+                <div class="custom-control custom-radio">
+                    <input type="radio" value="0" class="custom-control-input" id="StatusAvailable_0" asp-for="StatusAvailable">
+                    <label class="custom-control-label" for="StatusAvailable_0">Users can see only his submissions</label>
                 </div>
+                <div class="custom-control custom-radio">
+                    <input type="radio" value="1" class="custom-control-input" id="StatusAvailable_1" asp-for="StatusAvailable">
+                    <label class="custom-control-label" for="StatusAvailable_1">Users can see all submissions</label>
+                </div>
+                <div class="custom-control custom-radio">
+                    <input type="radio" value="2" class="custom-control-input" id="StatusAvailable_2" asp-for="StatusAvailable">
+                    <label class="custom-control-label" for="StatusAvailable_2">Users can see submissions for problems he solved</label>
+                </div>
+                <span asp-validation-for="StatusAvailable" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label>Others</label>
@@ -72,27 +86,30 @@
                 </div>
             </div>
             <div class="form-group">
-                <label asp-for="DefaultCategory"></label>
-                <select class="form-control" asp-for="DefaultCategory" asp-items="catSel">
-                    <option value="0">-- Registration Closed --</option>
-                </select>
-                <span asp-validation-for="DefaultCategory" class="text-danger"></span>
+                <label>Visiblity</label>
+                <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" asp-for="IsPublic">
+                    <label class="custom-control-label" asp-for="IsPublic"></label>
+                </div>
             </div>
             <div class="form-group">
-                <label asp-for="Languages">Languages</label>
-                <select asp-for="Languages" class="form-control custom-select form-control" multiple asp-items="langSel"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="StatusAvailable"></label>
-                <select class="form-control" asp-for="StatusAvailable">
-                    <option value="0">Users can see only his submissions</option>
-                    <option value="1">Users can see all submissions</option>
-                    <option value="2">Users can see submissions for problems he solved</option>
-                </select>
-                <span asp-validation-for="StatusAvailable" class="text-danger"></span>
+                <label asp-for="RegisterCategory">Self-registration category</label>
+                @foreach (var (id, provider) in providers.Where(p => !p.Item2.JuryOrContestant))
+                {
+                    Model.RegisterCategory.TryAdd(id, 0);
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <label class="input-group-text" style="font-size:1em;width:auto" asp-for="RegisterCategory[id]">@provider.Name</label>
+                        </div>
+                        <select class="custom-select" asp-for="RegisterCategory[id]" asp-items="catSel">
+                            <option value="0">-- Registration Closed --</option>
+                        </select>
+                    </div>
+                }
+                <span asp-validation-for="RegisterCategory" class="text-danger"></span>
             </div>
         </div>
-        <div class="col-lg-4">
+        <div class="col-12 col-md-6 col-xl-4">
             <b>Specification of short name:</b><br />
             Note that the short name will display on the title bar. <br /><br /><br />
 
@@ -117,11 +134,18 @@
             If one language was chosen, the language will be enabled for submitting
             if and only if it is enabled in both global and contest.<br />
             If no languages were chosen, the submit settings will be inherited from global.<br />
-            The allow-judge settings should be configured in global.<br />
+            The allow-judge settings should be configured in global.<br /><br /><br />
+
+            <b>Specification of visibility:</b><br />
+            For setting the available affiliations, please refer to the
+            <a asp-controller="JuryAffiliations" asp-action="List" target="_blank">Team Affiliation</a>
+            page.<br />
+            If the contest is set as globally visible, then the settings for affiliation
+            visibility will be ignored.<br />
         </div>
     </div>
 
-    <div class="form-group">
+    <div class="form-group mt-3">
         <button type="submit" class="btn-primary btn">Save</button>
     </div>
 </form>

@@ -48,6 +48,7 @@ namespace SatelliteSite
                         });
 
                         services.AddContestRegistrationProvider<Ccs.Registration.TeachingClassRegisterProvider>("student-by-class");
+                        services.AddContestRegistrationProvider<Ccs.Registration.StudentSelfRegisterProvider>("student-self");
 
                         services.ConfigureApplicationBuilder(options =>
                         {
