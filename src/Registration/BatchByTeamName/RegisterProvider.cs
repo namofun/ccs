@@ -18,6 +18,8 @@ namespace Ccs.Registration
 
         public override string Icon => "fas fa-envelope-open-text";
 
+        public override string FancyName => "batch-by-name";
+
         private static string UserNameForTeamId(int teamId) => $"team{teamId:D3}";
 
         private static Func<string> CreatePasswordGenerator()

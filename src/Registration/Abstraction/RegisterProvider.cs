@@ -12,6 +12,11 @@ namespace Ccs.Registration
     public interface IRegisterProvider
     {
         /// <summary>
+        /// The short distinct name of registration provider.
+        /// </summary>
+        string FancyName { get; }
+
+        /// <summary>
         /// The name of registration provider.
         /// </summary>
         string Name { get; }
@@ -46,6 +51,13 @@ namespace Ccs.Registration
         /// <param name="controller">The running controller.</param>
         /// <returns>The task for reading form values.</returns>
         Task<bool> ReadAsync(object model, ControllerBase controller);
+
+        /// <summary>
+        /// Checks whether this register provider is available.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <returns>The task for deciding.</returns>
+        Task<bool> IsAvailableAsync(RegisterProviderContext context);
 
         /// <summary>
         /// Validates the input content.
@@ -115,11 +127,17 @@ namespace Ccs.Registration
         where TInputModel : class
         where TOutputModel : class
     {
+        private static readonly Task<bool> _OK = Task.FromResult(true);
+        private static readonly Task<bool> _Fail = Task.FromResult(false);
+
         /// <inheritdoc />
         public abstract bool JuryOrContestant { get; }
 
         /// <inheritdoc />
         public abstract int Order { get; }
+
+        /// <inheritdoc />
+        public abstract string FancyName { get; }
 
         /// <inheritdoc />
         public abstract string Name { get; }
@@ -154,6 +172,14 @@ namespace Ccs.Registration
         protected virtual Task<bool> ReadAsync(TInputModel model, ControllerBase controller)
             => controller.TryUpdateModelAsync(model);
 
+        /// <inheritdoc cref="IRegisterProvider.IsAvailableAsync(RegisterProviderContext)" />
+        protected virtual bool IsAvailable(RegisterProviderContext context)
+            => true;
+
+        /// <inheritdoc cref="IRegisterProvider.IsAvailableAsync(RegisterProviderContext)" />
+        protected virtual Task<bool> IsAvailableAsync(RegisterProviderContext context)
+            => IsAvailable(context) ? _OK : _Fail;
+
         #region Implicit Implementations
 
         async Task<object> IRegisterProvider.CreateInputModelAsync(RegisterProviderContext context)
@@ -179,6 +205,9 @@ namespace Ccs.Registration
 
         Task<bool> IRegisterProvider.ReadAsync(object model, ControllerBase controller)
             => ReadAsync((TInputModel)model, controller);
+
+        Task<bool> IRegisterProvider.IsAvailableAsync(RegisterProviderContext context)
+            => IsAvailableAsync(context);
 
         #endregion
     }

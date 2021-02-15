@@ -47,8 +47,8 @@ namespace SatelliteSite
                             options.ProblemDirectory = Path.Combine(context.HostingEnvironment.ContentRootPath, "Problems");
                         });
 
-                        services.AddContestRegistrationProvider<Ccs.Registration.TeachingClassRegisterProvider>("student-by-class");
-                        services.AddContestRegistrationProvider<Ccs.Registration.StudentSelfRegisterProvider>("student-self");
+                        services.AddContestRegistrationProvider<Ccs.Registration.TeachingClassRegisterProvider>();
+                        services.AddContestRegistrationProvider<Ccs.Registration.StudentSelfRegisterProvider>();
 
                         services.ConfigureApplicationBuilder(options =>
                         {

@@ -1,5 +1,6 @@
 ﻿using Ccs.Entities;
 using Ccs.Models;
+using Ccs.Registration;
 using Ccs.Services;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -71,6 +72,13 @@ namespace SatelliteSite.ContestModule.Controllers
         {
             return new DataTableAjaxResult<T>(models, draw, count);
         }
+
+        /// <summary>
+        /// Creates a <see cref="RegisterProviderContext"/>.
+        /// </summary>
+        /// <returns>The created <see cref="RegisterProviderContext"/>.</returns>
+        protected RegisterProviderContext CreateRegisterProviderContext()
+            => new RegisterProviderContext(_accessor, HttpContext, _lazy_userManager);
 
         /// <inheritdoc />
         [NonAction]

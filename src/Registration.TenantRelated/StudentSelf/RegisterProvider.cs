@@ -12,6 +12,8 @@ namespace Ccs.Registration
 
         public override string Icon => string.Empty;
 
+        public override string FancyName => "student-self";
+
         protected override Task<EmptyModel> CreateInputModelAsync(RegisterProviderContext context)
             => EmptyModel.CompletedTask;
 

@@ -18,12 +18,11 @@ namespace Ccs.Registration
         /// <summary>
         /// Adds a register provider to the list.
         /// </summary>
-        /// <param name="name">The provider name.</param>
         /// <param name="provider">The provider instance.</param>
-        public void Add(string name, IRegisterProvider provider)
+        public void Add(IRegisterProvider provider)
             => _providers.Add(
-                (FluentTagExtensions.NotNull(name, nameof(name)),
-                 FluentTagExtensions.NotNull(provider, nameof(provider))));
+                (FluentTagExtensions.NotNull(provider, nameof(provider)).FancyName,
+                 provider));
 
         /// <summary>
         /// Completes the options.

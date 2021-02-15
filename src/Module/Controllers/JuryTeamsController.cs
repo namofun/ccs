@@ -17,10 +17,6 @@ namespace SatelliteSite.ContestModule.Controllers
     [AuditPoint(AuditlogType.Team)]
     public class JuryTeamsController : JuryControllerBase<ITeamContext>
     {
-        private RegisterProviderContext CreateRegisterProviderContext()
-            => new RegisterProviderContext(Contest, HttpContext, UserManager);
-
-
         [HttpGet]
         public async Task<IActionResult> List()
         {
@@ -232,7 +228,7 @@ namespace SatelliteSite.ContestModule.Controllers
         [Authorize(Roles = "Administrator,Teacher")]
         public async Task<IActionResult> Import([RPBinder] IRegisterProvider provider)
         {
-            if (provider == null) return NotFound();
+            if (provider == null || !provider.JuryOrContestant) return NotFound();
             var context = CreateRegisterProviderContext();
             ViewBag.Provider = provider;
             ViewBag.Context = context;
@@ -246,7 +242,7 @@ namespace SatelliteSite.ContestModule.Controllers
         [ActionName(nameof(Import))]
         public async Task<IActionResult> ImportResult([RPBinder] IRegisterProvider provider)
         {
-            if (provider == null) return NotFound();
+            if (provider == null || !provider.JuryOrContestant) return NotFound();
             var context = CreateRegisterProviderContext();
             ViewBag.Provider = provider;
             ViewBag.Context = context;

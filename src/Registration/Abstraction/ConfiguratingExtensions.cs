@@ -21,12 +21,11 @@ namespace Microsoft.Extensions.DependencyInjection
         /// Adds the <see cref="IRegisterProvider"/> to the <see cref="ContestRegistrationOptions"/>.
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection"/>.</param>
-        /// <param name="name">The provider name.</param>
         /// <param name="provider">The <see cref="IRegisterProvider"/>.</param>
         /// <returns>The same <see cref="IServiceCollection"/> to chain operations.</returns>
-        public static IServiceCollection AddContestRegistrationProvider(this IServiceCollection services, string name, IRegisterProvider provider)
+        public static IServiceCollection AddContestRegistrationProvider(this IServiceCollection services, IRegisterProvider provider)
         {
-            return services.Configure<ContestRegistrationOptions>(options => options.Add(name, provider));
+            return services.Configure<ContestRegistrationOptions>(options => options.Add(provider));
         }
 
         /// <summary>
@@ -34,11 +33,10 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <typeparam name="TProvider">The register provider type.</typeparam>
         /// <param name="services">The <see cref="IServiceCollection"/>.</param>
-        /// <param name="name">The provider name.</param>
         /// <returns>The same <see cref="IServiceCollection"/> to chain operations.</returns>
-        public static IServiceCollection AddContestRegistrationProvider<TProvider>(this IServiceCollection services, string name) where TProvider : IRegisterProvider, new()
+        public static IServiceCollection AddContestRegistrationProvider<TProvider>(this IServiceCollection services) where TProvider : IRegisterProvider, new()
         {
-            return AddContestRegistrationProvider(services, name, new TProvider());
+            return AddContestRegistrationProvider(services, new TProvider());
         }
     }
 }

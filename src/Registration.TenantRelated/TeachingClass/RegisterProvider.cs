@@ -17,6 +17,8 @@ namespace Ccs.Registration
 
         public override string Icon => "fas fa-graduation-cap";
 
+        public override string FancyName => "student-by-class";
+
         protected override async Task<InputModel> CreateInputModelAsync(RegisterProviderContext context)
         {
             var studentStore = context.GetRequiredService<IStudentStore>();

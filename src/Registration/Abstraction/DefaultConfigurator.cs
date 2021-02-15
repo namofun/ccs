@@ -12,8 +12,8 @@ namespace Ccs.Registration
         /// <inheritdoc />
         public void Configure(ContestRegistrationOptions options)
         {
-            options.Add("batch-by-name", new BatchByTeamNameRegisterProvider());
-            options.Add("individual-participant", new IndividualParticipantRegisterProvider());
+            options.Add(new BatchByTeamNameRegisterProvider());
+            options.Add(new IndividualParticipantRegisterProvider());
         }
 
         /// <inheritdoc />

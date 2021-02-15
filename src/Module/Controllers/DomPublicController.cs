@@ -46,7 +46,7 @@ namespace SatelliteSite.ContestModule.Controllers
         [Authorize]
         public async Task<IActionResult> Register()
         {
-            if (ViewData.ContainsKey("HasTeam"))
+            if (Team != null)
             {
                 StatusMessage = "Already registered";
                 return RedirectToAction(nameof(Info));
