@@ -254,6 +254,10 @@ namespace Ccs.Registration
             => throw new System.NotSupportedException();
 
         /// <inheritdoc />
+        protected override bool IsAvailable(RegisterProviderContext context)
+            => (context.Contest.Settings.RegisterCategory?.ContainsKey(FancyName)).GetValueOrDefault();
+
+        /// <inheritdoc />
         protected override string GetPrefix() => FancyName;
     }
 }

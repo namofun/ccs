@@ -13,7 +13,17 @@ namespace SatelliteSite.ContestModule
     {
         public Type BinderType => typeof(RPBinderAttribute);
 
-        public BindingSource BindingSource => BindingSource.Path;
+        public BindingSource BindingSource { get; }
+
+        public RPBinderAttribute(string type = nameof(BindingSource.Path))
+        {
+            BindingSource = type switch
+            {
+                nameof(BindingSource.Path) => BindingSource.Path,
+                nameof(BindingSource.Form) => BindingSource.Form,
+                _ => throw new InvalidOperationException(),
+            };
+        }
 
         public Task BindModelAsync(ModelBindingContext bindingContext)
         {

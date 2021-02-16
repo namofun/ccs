@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Ccs.Registration
@@ -25,24 +23,32 @@ namespace Ccs.Registration
             var teamName = context.User.GetNickName()!;
             var user = new FakeRegisterUser(int.Parse(context.User.GetUserId()!));
 
-            await context.CreateTeamAsync(
+            var t = await context.CreateTeamAsync(
                 users: new[] { user },
                 team: new Entities.Team
                 {
                     ContestId = context.Contest.Id,
                     TeamName = teamName,
                     RegisterTime = DateTimeOffset.Now,
-                    Status = 0,
-                    AffiliationId = -1,
-                    CategoryId = 0,
+                    Status = 1,
+                    AffiliationId = -1, // (none), should've existed
+                    CategoryId = context.Contest.Settings.RegisterCategory![FancyName],
                 });
 
-            return new StatusMessageModel(true, "Register succeeded.");
+            return StatusMessageModel.Succeed(t);
         }
 
         protected override Task RenderInputAsync(RegisterProviderContext context, RegisterProviderOutput<EmptyModel> output)
         {
-            throw new NotImplementedException();
+            output.AppendAgreement(
+@"The registration confirms that you:
+* have read the contest rules
+* will not violate the rules
+* will not communicate with other participants, use another person's code for solutions/generators, share ideas of solutions and hacks
+* will not attempt to deliberately destabilize the testing process and try to hack the contest system in any form
+* will not use multiple accounts and will take part in the contest using your personal and the single account.");
+
+            return Task.CompletedTask;
         }
 
         protected override Task ValidateAsync(RegisterProviderContext context, EmptyModel model, ModelStateDictionary modelState)

@@ -5,37 +5,46 @@
     Ccs.Registration.RegisterProviderContext context = ViewBag.Context;
 }
 
-<h3>Terms of agreement</h3>
-<textarea class="form-control mb-3" readonly style="height:15em;background-color:#f7f7f7">
-If this gym is homework for some course, you should not copy others' codes. Plagiarism detection may be used.
-
-If you register as virtual participant, it is forbidden to use someone else's code, to read the analysis of the problems and to communicate about the problems with anyone.
-
-If you register as practice, the copyrights for shared codes belongs to its writer, please don't share it without author's agreement.</textarea>
 <h3>Take part</h3>
-<div class="form-group">
-    @foreach (var item in Model)
-    {
-        <div class="custom-control custom-radio mb-1">
-            <input type="radio" id="provider-@item.Item1.FancyName" value="@item.Item1.FancyName" name="provider" class="custom-control-input">
-            <label class="custom-control-label" for="provider-@item.Item1.FancyName">as @item.Item1.Name</label>
-        </div>
-        <div class="row" id="area-@item.Item1.FancyName">
-            <div class="col-10 col-lg-6">
-                <select class="form-control ml-4 mb-2 mt-2" id="team-ids">
-                    <option value="0">select a team...</option>
-                </select>
-                <div class="d-flex mb-2" id="team-members"></div>
-            </div>
-            @{
-                var output = item.Item1.CreateInputRenderer(ViewContext, item.Item2, ModelExpressionProvider, Json, Component, Url);
-                await item.Item1.RenderInputAsync(context, output);
-            }
-            @output
-        </div>
-    }
+<div asp-validation-summary="All" class="text-danger"></div>
+@foreach (var item in Model)
+{
+<div class="form-group mb-4">
+    <div class="custom-control custom-radio mb-3">
+        <input type="radio" id="provider-@item.Item1.FancyName" value="@item.Item1.FancyName" name="provider" class="custom-control-input provider-radio">
+        <label class="custom-control-label" for="provider-@item.Item1.FancyName">as @item.Item1.Name</label>
+    </div>
+    <div id="area-@item.Item1.FancyName" class="register-general-areas" style="display: none;">
+        @{
+            var output = item.Item1.CreateInputRenderer(ViewContext, item.Item2, ModelExpressionProvider, Json, Component, Url);
+            await item.Item1.RenderInputAsync(context, output);
+        }
+        @output
+    </div>
 </div>
+}
 
 @section Footer {
-    <button type="submit" asp-action="Register">Submit</button>
+    <button class="btn btn-success" type="submit" style="display: none;" id="submit_button" asp-action="Register"><i class="fas fa-rocket"></i> Register</button>
+}
+
+@section Scripts {
+    <script>
+        $(function () {
+            var lastChecked = undefined;
+            $('body').on('click', '.provider-radio', function () {
+                let currentValue = $(this).val();
+                if (lastChecked === currentValue) {
+                    return;
+                } else if (lastChecked !== undefined) {
+                    $('#area-' + lastChecked).hide();
+                } else {
+                    $('#submit_button').show();
+                }
+
+                lastChecked = currentValue;
+                $('#area-' + currentValue).show();
+            });
+        });
+    </script>
 }

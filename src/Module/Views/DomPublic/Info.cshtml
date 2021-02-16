@@ -14,8 +14,8 @@
 <div class="row">
     <div class="col-lg-7">
         <p>
-            <span class="sol">Registration</span> <misc-status type="RegistrationStatus" value="Contest.Settings.RegisterCategory?.Count ?? 0" /><br />
-            <span class="sol">Rule</span> <misc-status type="ContestRule" value="Contest.RankingStrategy" />
+            <b>Registration</b> <misc-status type="RegistrationStatus" value="Contest.Settings.RegisterCategory?.Count ?? 0" /><br />
+            <b>Rule</b> <misc-status type="ContestRule" value="Contest.RankingStrategy" />
         </p>
         @Html.Raw(ViewBag.Markdown)
     </div>
@@ -23,13 +23,10 @@
         <h3 class="mt-4">Team info</h3>
         @if (Contest.Team == null)
         {
-            <p>You didn't register for this contest.</p>
-            @if ((Contest.Settings.RegisterCategory?.Count ?? 0) > 0)
-            {
-                <form method="post" asp-action="Register">
-                    <button class="btn btn-primary" type="submit">Register</button>
-                </form>
-            }
+            <p>
+                You didn't register for this contest.
+                <a asp-action="Register" asp-show-if="(Contest.Settings.RegisterCategory?.Count ?? 0) > 0">Go &raquo;</a>
+            </p>
         }
         else
         {
@@ -48,7 +45,7 @@
                 </tr>
                 <tr>
                     <th>Status</th>
-                    <td><verdict0 type="TeamStatus" value="team.Status" /></td>
+                    <td><misc-status type="TeamStatus" value="Contest.Team.Status" /></td>
                 </tr>
             </table>
         }

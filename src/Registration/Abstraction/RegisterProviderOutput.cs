@@ -72,6 +72,11 @@ namespace Ccs.Registration
         public string Title { get; private set; } = "Register";
 
         /// <summary>
+        /// Gets or sets whether this fields can be required.
+        /// </summary>
+        public bool CanBeRequired { get; set; }
+
+        /// <summary>
         /// Initialize a <see cref="RegisterProviderOutput"/>.
         /// </summary>
         protected RegisterProviderOutput(
@@ -176,7 +181,7 @@ namespace Ccs.Registration
             }
 
             select.AddCssClass("form-control custom-select");
-            if (required) select.Attributes.Add("required", "required");
+            if (CanBeRequired && required) select.Attributes.Add("required", "required");
 
             return AppendHtml(
                 new TagBuilder("div")
@@ -208,7 +213,7 @@ namespace Ccs.Registration
 
             textarea.AddCssClass("form-control");
             textarea.MergeAttribute("style", "min-height:20em;");
-            if (required) textarea.Attributes.Add("required", "required");
+            if (CanBeRequired && required) textarea.Attributes.Add("required", "required");
 
             return AppendHtml(
                 new TagBuilder("div")
@@ -278,9 +283,25 @@ namespace Ccs.Registration
             BootstrapColor color = BootstrapColor.success)
         {
             var alert = new TagBuilder("div");
-            alert.AppendInner(content);
+            alert.InnerHtml.Append(content);
             alert.AddCssClass("alert alert-" + color);
             base.AppendHtml(alert);
+            return this;
+        }
+
+        /// <summary>
+        /// Appends a &lt;textarea&gt; for agreement.
+        /// </summary>
+        /// <param name="content">The content to show in textbox.</param>
+        /// <returns>The <see cref="IHtmlContentBuilder"/>.</returns>
+        protected IHtmlContentBuilder AppendAgreement(string content)
+        {
+            var agreement = new TagBuilder("textarea");
+            agreement.AddCssClass("form-control mb-3");
+            agreement.Attributes.Add("readonly", "readonly");
+            agreement.Attributes.Add("style", "height:15em;background-color:#f7f7f7");
+            agreement.InnerHtml.Append(content);
+            base.AppendHtml(agreement);
             return this;
         }
 
@@ -358,6 +379,7 @@ namespace Ccs.Registration
                   viewComponentHelper,
                   urlHelper)
         {
+            CanBeRequired = string.IsNullOrWhiteSpace(prefix);
         }
 
         /// <inheritdoc cref="RegisterProviderOutput.ViewData"/>
@@ -430,9 +452,16 @@ namespace Ccs.Registration
         }
 
         /// <inheritdoc cref="RegisterProviderOutput.AppendAlert(string, BootstrapColor)"/>
-        public new IHtmlContentBuilder AppendAlert(string content, BootstrapColor color = BootstrapColor.success)
+        public new RegisterProviderOutput<TModel> AppendAlert(string content, BootstrapColor color = BootstrapColor.success)
         {
             base.AppendAlert(content, color);
+            return this;
+        }
+
+        /// <inheritdoc cref="RegisterProviderOutput.AppendAgreement(string)"/>
+        public new RegisterProviderOutput<TModel> AppendAgreement(string content)
+        {
+            base.AppendAgreement(content);
             return this;
         }
 
