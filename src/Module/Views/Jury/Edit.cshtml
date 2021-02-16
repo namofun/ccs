@@ -99,7 +99,7 @@
                     Model.RegisterCategory.TryAdd(id, 0);
                     <div class="input-group mb-2">
                         <div class="input-group-prepend">
-                            <label class="input-group-text" style="font-size:1em;width:auto" asp-for="RegisterCategory[id]">@provider.Name</label>
+                            <label class="input-group-text" style="font-size:1em;width:auto" asp-for="RegisterCategory[id]">@provider.FancyName</label>
                         </div>
                         <select class="custom-select" asp-for="RegisterCategory[id]" asp-items="catSel">
                             <option value="0">-- Registration Closed --</option>

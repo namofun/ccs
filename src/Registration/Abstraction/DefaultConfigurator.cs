@@ -13,7 +13,8 @@ namespace Ccs.Registration
         public void Configure(ContestRegistrationOptions options)
         {
             options.Add(new BatchByTeamNameRegisterProvider());
-            options.Add(new IndividualParticipantRegisterProvider());
+            options.Add(new IndividualParticipantRegisterProvider("individual-participant", 1));
+            options.Add(new IndividualParticipantRegisterProvider("individual-part-verify", 0));
         }
 
         /// <inheritdoc />

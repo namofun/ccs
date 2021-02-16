@@ -12,7 +12,15 @@ namespace Ccs.Registration
 
         public override string Icon => string.Empty;
 
-        public override string FancyName => "individual-participant";
+        public override string FancyName { get; }
+
+        private int DefaultStatus { get; }
+
+        public IndividualParticipantRegisterProvider(string fancyName, int defaultStatus)
+        {
+            FancyName = fancyName;
+            DefaultStatus = defaultStatus;
+        }
 
         protected override Task<EmptyModel> CreateInputModelAsync(RegisterProviderContext context)
             => EmptyModel.CompletedTask;
@@ -30,7 +38,7 @@ namespace Ccs.Registration
                     ContestId = context.Contest.Id,
                     TeamName = teamName,
                     RegisterTime = DateTimeOffset.Now,
-                    Status = 1,
+                    Status = DefaultStatus,
                     AffiliationId = -1, // (none), should've existed
                     CategoryId = context.Contest.Settings.RegisterCategory![FancyName],
                 });

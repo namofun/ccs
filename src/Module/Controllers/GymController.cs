@@ -87,10 +87,8 @@ namespace SatelliteSite.ContestModule.Controllers
         [HttpGet("submissions/{sid}")]
         public async Task<IActionResult> Submission(int sid)
         {
-            if (Team == null && Contest.Settings.StatusAvailable != 1)
-            {
-                return Forbid();
-            }
+            if (TooEarly && !Contest.IsJury) return NotFound();
+            if (Team == null && Contest.Settings.StatusAvailable != 1) return Forbid();
 
             var model = await Context.FindSolutionAsync(
                 sid, (s, j) => new SubmissionViewModel
@@ -133,7 +131,7 @@ namespace SatelliteSite.ContestModule.Controllers
         [HttpGet("problems/{prob}")]
         public async Task<IActionResult> ProblemView(string prob)
         {
-            if (TooEarly && !ViewData.ContainsKey("IsJury")) return NotFound();
+            if (TooEarly && !Contest.IsJury) return NotFound();
             var problem = await Context.FindProblemAsync(prob, true);
             if (problem == null) return NotFound();
             ViewBag.CurrentProblem = problem;
@@ -153,6 +151,10 @@ namespace SatelliteSite.ContestModule.Controllers
             if (Team == null)
             {
                 return Message("Submit", "You must have a team first.");
+            }
+            else if (Team.Status != 1)
+            {
+                return Message("Submit", "Your team should be verified first. Please contact a staff for this.");
             }
             else if (TooEarly && !Contest.IsJury)
             {
@@ -188,7 +190,7 @@ namespace SatelliteSite.ContestModule.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Submit(TeamCodeSubmitModel model)
         {
-            if (Team == null)
+            if (Team == null || Team.Status != 1)
             {
                 ModelState.AddModelError("NoRegistration", "You should register first.");
             }
@@ -238,9 +240,9 @@ namespace SatelliteSite.ContestModule.Controllers
             else if (filetype == "output") filetype = "out";
             else return NotFound();
 
-            if (TooEarly && !ViewData.ContainsKey("IsJury")) return NotFound();
+            if (TooEarly && !Contest.IsJury) return NotFound();
             var problem = await Context.FindProblemAsync(prob);
-            if (problem == null) return NotFound();
+            if (problem == null || !problem.Shared) return NotFound();
 
             var file = await Context.GetTestcaseAsync(problem, tcid, filetype);
             if (file == null || !file.Exists) return NotFound();
@@ -255,6 +257,7 @@ namespace SatelliteSite.ContestModule.Controllers
         [HttpGet("submissions")]
         public async Task<IActionResult> Submissions(int page = 1)
         {
+            if (TooEarly && !Contest.IsJury) return NotFound();
             if (page <= 0) return BadRequest();
             var model = await Context.ListSolutionsAsync(page, 50);
             var tn = await Context.GetTeamNamesAsync();
