@@ -46,79 +46,14 @@ namespace SatelliteSite.ContestModule.Controllers
         [ValidateAntiForgeryToken]
         [AuditPoint(AuditlogType.Team)]
         [Authorize]
-        public async Task<IActionResult> Register([RPBinder("Form")] IRegisterProvider provider)
-        {
-            if (Team != null)
-            {
-                StatusMessage = "Already registered";
-                return RedirectToAction(nameof(Info));
-            }
-
-            var context = CreateRegisterProviderContext();
-            if (provider == null
-                || provider.JuryOrContestant
-                || !await provider.IsAvailableAsync(context))
-            {
-                return NotFound();
-            }
-
-            var model = await provider.CreateInputModelAsync(context);
-            await provider.ReadAsync(model, this);
-            await provider.ValidateAsync(context, model, ModelState);
-
-            if (ModelState.IsValid)
-            {
-                var output = await provider.ExecuteAsync(context, model);
-                if (output is StatusMessageModel status)
-                {
-                    if (status.Succeeded)
-                    {
-                        await HttpContext.AuditAsync("created", status.TeamId?.ToString(), "via " + provider.Name);
-                        StatusMessage = status.Content;
-                        return RedirectToAction(nameof(Info));
-                    }
-                    else
-                    {
-                        StatusMessage = "Error " + status.Content;
-                        return RedirectToAction(nameof(Register));
-                    }
-                }
-            }
-
-            StatusMessage = "Error " + ModelState.GetErrorStrings();
-            return RedirectToAction(nameof(Register));
-        }
+        public Task<IActionResult> Register([RPBinder("Form")] IRegisterProvider provider)
+            => CommonActions.PostRegister(this, provider, nameof(Info));
 
 
         [HttpGet("[action]")]
-        public async Task<IActionResult> Register()
-        {
-            if (Team != null)
-            {
-                StatusMessage = "Already registered";
-                return RedirectToAction(nameof(Info));
-            }
-
-            var context = CreateRegisterProviderContext();
-            ViewBag.Context = context;
-
-            var items = new List<(IRegisterProvider, object)>();
-            foreach (var (_, provider) in RPBinderAttribute.Get(HttpContext))
-            {
-                if (provider.JuryOrContestant) continue;
-                if (!await provider.IsAvailableAsync(context)) continue;
-                var input = await provider.CreateInputModelAsync(context);
-                items.Add((provider, input));
-            }
-
-            if (items.Count == 0)
-            {
-                StatusMessage = "Registration is not for you.";
-                return RedirectToAction(nameof(Info));
-            }
-
-            return View(items);
-        }
+        [Authorize]
+        public Task<IActionResult> Register()
+            => CommonActions.GetRegister(this, nameof(Info));
 
 
         [HttpGet("[action]")]

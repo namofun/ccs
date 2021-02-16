@@ -1,6 +1,6 @@
-﻿using Ccs.Services;
+﻿using Ccs.Registration;
+using Ccs.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using SatelliteSite.ContestModule.Models;
@@ -170,87 +170,18 @@ namespace SatelliteSite.ContestModule.Controllers
         }
 
 
-        //~
         [HttpGet("[action]")]
-        public async Task<IActionResult> Register()
-        {
-            if (Team != null) return NotFound();
-            /*var items = await training.ListAsync(int.Parse(User.GetUserId()), true);
-            ViewData["TeamsJson"] = items.Select(g => new
-            {
-                team = new { name = g.Key.TeamName, id = g.Key.TrainingTeamId },
-                users = g.Select(v => new { name = v.UserName, id = v.UserId }).ToList()
-            })
-            .ToJson();*/
-            await Task.CompletedTask;
-
-            return View(new GymRegisterModel { AsIndividual = true });
-        }
+        [Authorize]
+        public Task<IActionResult> Register()
+            => CommonActions.GetRegister(this, nameof(Home));
 
 
-        //~
         [HttpPost("[action]")]
+        [ValidateAntiForgeryToken]
         [AuditPoint(AuditlogType.Team)]
-        public async Task<IActionResult> Register(GymRegisterModel model)
-        {
-            if (ViewData.ContainsKey("HasTeam"))
-                return GoBackHome("Already registered");
-            if (Contest.Settings.RegisterCategory == null || User.IsInRole("Blocked"))
-                return GoBackHome("Error registration closed.");
-
-            string teamName;
-            IUser[] uids;
-            int affId;
-            var uid = int.Parse(User.GetUserId());
-
-            //if (model.AsIndividual)
-            //{
-                var affs = await Context.ListAffiliationsAsync(false);
-                string defaultAff = User.IsInRole("Student") ? "jlu" : "null";
-                var aff = affs.Values.FirstOrDefault(a => a.Abbreviation == defaultAff);
-                if (aff == null)
-                    return GoBackHome("No default affiliation.");
-                affId = aff.Id;
-                uids = null;// new[] { uid };
-
-                var user = await UserManager.GetUserAsync(User);
-                //if (user.StudentId.HasValue && user.StudentVerified)
-                //    teamName = (await userManager.FindStudentAsync(user.StudentId.Value)).Name;
-                //else
-                    teamName = user.NickName;
-                teamName ??= user.UserName;
-            /*}
-            else
-            {
-                
-                var team = await training.FindTeamByIdAsync(model.TeamId);
-                if (team == null)
-                    return GoBackHome("Error team or team member.");
-                (teamName, affId) = (team.TeamName, team.AffiliationId);
-
-                var users = await training.ListMembersAsync(team, true);
-                uids = (model.UserIds ?? Enumerable.Empty<int>()).Append(uid).Distinct().ToArray();
-                if (uids.Except(users.Select(g => g.UserId)).Any())
-                    return GoBackHome("Error team or team member.");
-            //}
-
-            var team = await Context.CreateTeamAsync(
-                users: uids,
-                team: new Team
-                {
-                    AffiliationId = affId,
-                    ContestId = Contest.Id,
-                    CategoryId = 0,
-                    RegisterTime = DateTimeOffset.Now,
-                    Status = 1,
-                    TeamName = teamName,
-                });
-
-            await HttpContext.AuditAsync("added", $"{team.TeamId}");
-*/
-            StatusMessage = "Registration succeeded.";
-            return RedirectToAction(nameof(Home));
-        }
+        [Authorize]
+        public Task<IActionResult> Register([RPBinder("Form")] IRegisterProvider provider)
+            => CommonActions.PostRegister(this, provider, nameof(Home));
 
 
         [HttpPost("[action]")]

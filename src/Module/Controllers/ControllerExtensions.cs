@@ -1,9 +1,11 @@
 ﻿using Ccs.Entities;
 using Ccs.Models;
+using Ccs.Registration;
 using Ccs.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -14,24 +16,14 @@ namespace SatelliteSite.ContestModule.Controllers
     /// </summary>
     internal static class CommonActions
     {
-        /// <summary>
-        /// Presents a view for printing codes.
-        /// </summary>
-        /// <param name="that">The controller.</param>
-        /// <returns>The action result.</returns>
-        public static IActionResult GetPrint<T>(ContestControllerBase<T> that)
+        public static IActionResult GetPrint<T>(this ContestControllerBase<T> that)
             where T : class, IContestContext
         {
             if (!that.Contest.Settings.PrintingAvailable) return that.NotFound();
             return that.View("Print", new Models.AddPrintModel());
         }
 
-        /// <summary>
-        /// Resolve the printing request.
-        /// </summary>
-        /// <param name="that">The controller.</param>
-        /// <param name="model">The printing request.</param>
-        /// <returns>The action result.</returns>
+
         public static async Task<IActionResult> PostPrint<T>(this ContestControllerBase<T> that, Models.AddPrintModel model)
             where T : class, IContestContext
         {
@@ -63,16 +55,7 @@ namespace SatelliteSite.ContestModule.Controllers
             return that.RedirectToAction("Home");
         }
 
-        /// <summary>
-        /// Presents a scoreboard view.
-        /// </summary>
-        /// <param name="that">The controller.</param>
-        /// <param name="isPublic">Whether accessing public board or restricted board.</param>
-        /// <param name="isJury">Whether accessing jury board.</param>
-        /// <param name="clear">Whether to clear the filter arguments.</param>
-        /// <param name="filtered_affiliations">The filtered affiliation list.</param>
-        /// <param name="filtered_categories">The filtered category list.</param>
-        /// <returns>The task for creating action result.</returns>
+
         public static async Task<IActionResult> DomScoreboard<T>(
             this ContestControllerBase<T> that,
             bool isPublic, bool isJury, bool clear,
@@ -123,6 +106,82 @@ namespace SatelliteSite.ContestModule.Controllers
             }
 
             return that.View("Scoreboard", board);
+        }
+
+
+        public static async Task<IActionResult> GetRegister<T>(this ContestControllerBase<T> that, string homePage)
+            where T : class, IContestContext
+        {
+            if (that.Team != null)
+            {
+                that.StatusMessage = "Already registered";
+                return that.RedirectToAction(homePage);
+            }
+
+            var context = that.CreateRegisterProviderContext();
+            that.ViewBag.Context = context;
+
+            var items = new List<(IRegisterProvider, object)>();
+            foreach (var (_, provider) in RPBinderAttribute.Get(that.HttpContext))
+            {
+                if (provider.JuryOrContestant) continue;
+                if (!await provider.IsAvailableAsync(context)) continue;
+                var input = await provider.CreateInputModelAsync(context);
+                items.Add((provider, input));
+            }
+
+            if (items.Count == 0)
+            {
+                that.StatusMessage = "Registration is not for you.";
+                return that.RedirectToAction(homePage);
+            }
+
+            return that.View("Register", items);
+        }
+
+
+        public static async Task<IActionResult> PostRegister<T>(this ContestControllerBase<T> that, IRegisterProvider provider, string homePage, string registerPage = "Register")
+            where T : class, IContestContext
+        {
+            if (that.Team != null)
+            {
+                that.StatusMessage = "Already registered";
+                return that.RedirectToAction(homePage);
+            }
+
+            var context = that.CreateRegisterProviderContext();
+            if (provider == null
+                || provider.JuryOrContestant
+                || !await provider.IsAvailableAsync(context))
+            {
+                return that.NotFound();
+            }
+
+            var model = await provider.CreateInputModelAsync(context);
+            await provider.ReadAsync(model, that);
+            await provider.ValidateAsync(context, model, that.ModelState);
+
+            if (that.ModelState.IsValid)
+            {
+                var output = await provider.ExecuteAsync(context, model);
+                if (output is StatusMessageModel status)
+                {
+                    if (status.Succeeded)
+                    {
+                        await that.HttpContext.AuditAsync("created", status.TeamId?.ToString(), "via " + provider.Name);
+                        that.StatusMessage = status.Content;
+                        return that.RedirectToAction(homePage);
+                    }
+                    else
+                    {
+                        that.StatusMessage = "Error " + status.Content;
+                        return that.RedirectToAction(registerPage);
+                    }
+                }
+            }
+
+            that.StatusMessage = "Error " + that.ModelState.GetErrorStrings();
+            return that.RedirectToAction(registerPage);
         }
     }
 }

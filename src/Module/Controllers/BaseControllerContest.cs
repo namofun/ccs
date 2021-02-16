@@ -77,7 +77,7 @@ namespace SatelliteSite.ContestModule.Controllers
         /// Creates a <see cref="RegisterProviderContext"/>.
         /// </summary>
         /// <returns>The created <see cref="RegisterProviderContext"/>.</returns>
-        protected RegisterProviderContext CreateRegisterProviderContext()
+        protected internal RegisterProviderContext CreateRegisterProviderContext()
             => new RegisterProviderContext(_accessor, HttpContext, _lazy_userManager);
 
         /// <inheritdoc />
