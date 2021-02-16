@@ -1,3 +1,4 @@
+using Ccs.Registration;
 using Markdig;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -47,8 +48,7 @@ namespace SatelliteSite
                             options.ProblemDirectory = Path.Combine(context.HostingEnvironment.ContentRootPath, "Problems");
                         });
 
-                        services.AddContestRegistrationProvider<Ccs.Registration.TeachingClassRegisterProvider>();
-                        services.AddContestRegistrationProvider<Ccs.Registration.StudentSelfRegisterProvider>();
+                        services.AddContestRegistrationTenant();
 
                         services.ConfigureApplicationBuilder(options =>
                         {
