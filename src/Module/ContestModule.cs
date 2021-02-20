@@ -244,6 +244,132 @@ namespace SatelliteSite.ContestModule
                     .RequireThat(ctx => Feature(ctx).IsJury);
             });
 
+            menus.Menu(CcsDefaults.JuryMenuList, menu =>
+            {
+                menu.HasSubmenu(0, menu =>
+                {
+                    menus.Store.Add(CcsDefaults.JuryMenuBefore, menu);
+
+                    menu.HasTitle(string.Empty, "Before Contest")
+                        .HasLink("javascript:;");
+                });
+
+                menu.HasSubmenu(100, menu =>
+                {
+                    menus.Store.Add(CcsDefaults.JuryMenuDuring, menu);
+
+                    menu.HasTitle(string.Empty, "During Contest")
+                        .HasLink("javascript:;");
+                });
+
+                menu.HasSubmenu(200, menu =>
+                {
+                    menus.Store.Add(CcsDefaults.JuryMenuAdmin, menu);
+
+                    menu.HasTitle(string.Empty, "Administrator")
+                        .HasLink("javascript:;");
+                });
+            });
+
+            menus.Submenu(CcsDefaults.JuryMenuBefore, menu =>
+            {
+                menu.HasEntry(50)
+                    .HasTitle(string.Empty, "Executables")
+                    .HasLink("Dashboard", "Executables", "List")
+                    .RequireRoles("Administrator");
+
+                menu.HasEntry(100)
+                    .HasTitle(string.Empty, "Judgehosts")
+                    .HasLink("Dashboard", "Judgehosts", "List")
+                    .RequireRoles("Administrator");
+
+                menu.HasEntry(150)
+                    .HasTitle(string.Empty, "Languages")
+                    .HasLink("Contest", "JuryLanguages", "List");
+
+                menu.HasEntry(200)
+                    .HasTitle(string.Empty, "Problems")
+                    .HasLink("Contest", "JuryProblems", "List");
+
+                menu.HasEntry(250)
+                    .HasTitle(string.Empty, "Teams")
+                    .HasLink("Contest", "JuryTeams", "List");
+
+                menu.HasEntry(300)
+                    .HasTitle(string.Empty, "Team Categories")
+                    .HasLink("Contest", "JuryCategories", "List");
+
+                menu.HasEntry(350)
+                    .HasTitle(string.Empty, "Team Affiliations")
+                    .HasLink("Contest", "JuryAffiliations", "List");
+            });
+
+            menus.Submenu(CcsDefaults.JuryMenuDuring, menu =>
+            {
+                menu.HasEntry(50)
+                    .HasTitle(string.Empty, "Balloon Status")
+                    .HasLink("Contest", "JuryBalloons", "List")
+                    .RequireThat(c => Feature(c).Settings.BalloonAvailable);
+
+                menu.HasEntry(100)
+                    .HasTitle(string.Empty, "Clarifications")
+                    .HasLink("Contest", "JuryClarifications", "List");
+
+                menu.HasEntry(150)
+                    .HasTitle(string.Empty, "Internal Errors")
+                    .HasLink("Dashboard", "InternalErrors", "List")
+                    .RequireRoles("Administrator");
+
+                menu.HasEntry(200)
+                    .HasTitle(string.Empty, "Print")
+                    .HasLink("Contest", "Jury", "Print")
+                    .RequireThat(c => Feature(c).Settings.PrintingAvailable);
+
+                menu.HasEntry(201)
+                    .HasTitle(string.Empty, "Printing Status")
+                    .HasLink("Contest", "JuryPrintings", "List")
+                    .RequireThat(c => Feature(c).Settings.PrintingAvailable);
+
+                menu.HasEntry(250)
+                    .HasTitle(string.Empty, "Rejudgings")
+                    .HasLink("Contest", "JuryRejudgings", "List");
+
+                menu.HasEntry(300)
+                    .HasTitle(string.Empty, "Scoreboard")
+                    .HasLink("Contest", "Jury", "Scoreboard")
+                    .RequireThat(c => Feature(c).Kind == CcsDefaults.KindDom);
+
+                menu.HasEntry(350)
+                    .HasTitle(string.Empty, "Statistics/Analysis")
+                    .HasLink("Contest", "JuryAnalysis", "Overview")
+                    .RequireThat(c => Feature(c).Kind != CcsDefaults.KindProblemset);
+
+                menu.HasEntry(400)
+                    .HasTitle(string.Empty, "Submissions")
+                    .HasLink("Contest", "JurySubmissions", "List");
+            });
+
+            menus.Submenu(CcsDefaults.JuryMenuAdmin, menu =>
+            {
+                menu.HasEntry(50)
+                    .HasTitle(string.Empty, "Config checker")
+                    .HasLink("javascript:alert('oh...');");
+
+                menu.HasEntry(100)
+                    .HasTitle(string.Empty, "Refresh scoreboard cache")
+                    .HasLink("Contest", "Jury", "RefreshCache")
+                    .RequireThat(c => Feature(c).Kind != CcsDefaults.KindProblemset);
+
+                menu.HasEntry(150)
+                    .HasTitle(string.Empty, "Audit log")
+                    .HasLink("Contest", "Jury", "Auditlog");
+
+                menu.HasEntry(200)
+                    .HasTitle(string.Empty, "Generate statement LaTeX")
+                    .HasLink("Contest", "JuryProblems", "GenerateStatement")
+                    .RequireThat(c => Feature(c).Kind != CcsDefaults.KindProblemset);
+            });
+
             menus.Component(Polygon.ResourceDictionary.ComponentProblemOverview)
                 .HasComponent<Components.ProblemUsage.ProblemUsageViewComponent>(10);
 

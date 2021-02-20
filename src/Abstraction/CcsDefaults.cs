@@ -31,6 +31,26 @@
         public const string NavbarPublic = "Menu_CcsNavbar_Public";
 
         /// <summary>
+        /// The menu for jury home
+        /// </summary>
+        public const string JuryMenuList = "Menu_JuryHome";
+
+        /// <summary>
+        /// The menu for before contest
+        /// </summary>
+        public const string JuryMenuBefore = "Menu_JuryHome_BeforeContest";
+
+        /// <summary>
+        /// The menu for during contest
+        /// </summary>
+        public const string JuryMenuDuring = "Menu_JuryHome_DuringContest";
+
+        /// <summary>
+        /// The menu for administrator
+        /// </summary>
+        public const string JuryMenuAdmin = "Menu_JuryHome_Administrator";
+
+        /// <summary>
         /// The kind for contests
         /// </summary>
         public const int KindDom = 0;

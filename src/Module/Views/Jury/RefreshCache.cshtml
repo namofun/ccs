@@ -1,0 +1,21 @@
+﻿@{
+    ViewData["Title"] = "Refresh cache";
+}
+
+<h2 class="mt-2">Refresh cache</h2>
+
+<div class="alert alert-warning">
+    <h5 class="alert-heading">Significant database impact</h5>
+    <hr>
+    <p>
+        Refreshing the scoreboard cache can have a significant impact on the database load,
+        and is not necessary in normal operating circumstances.
+        <br /><br />
+        Refresh scoreboard cache for @Contest.Name now?
+    </p>
+    <form asp-action="RefreshCache" method="post">
+        <button type="submit" class="btn btn-danger" name="refresh">
+            <i class="fas fa-sync-alt"></i> Refresh now!
+        </button>
+    </form>
+</div>

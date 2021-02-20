@@ -331,13 +331,7 @@ namespace SatelliteSite.ContestModule.Controllers
         [HttpGet("[action]")]
         [Authorize(Roles = "Administrator")]
         public IActionResult RefreshCache()
-            => AskPost(
-                title: "Refresh scoreboard cache",
-                message: "Do you want to refresh scoreboard cache? " +
-                    "This will lead to a heavy database load in minutes.",
-                area: "Contest", controller: "Jury", action: "RefreshCache",
-                routeValues: new { cid = Contest.Id },
-                type: BootstrapColor.warning);
+            => View();
 
 
         [HttpPost("[action]")]
