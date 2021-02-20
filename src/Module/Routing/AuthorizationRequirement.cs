@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Ccs.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,12 +8,12 @@ namespace SatelliteSite.ContestModule.Routing
 {
     public interface IContestAuthorizationHandler : IAuthorizationRequirement
     {
-        Task HandleAsync(AuthorizationHandlerContext context, IContestFeature feature);
+        Task HandleAsync(AuthorizationHandlerContext context, IContestContextAccessor feature);
     }
 
     public class ContestVisibleRequirement : IContestAuthorizationHandler
     {
-        public Task HandleAsync(AuthorizationHandlerContext context, IContestFeature feature)
+        public Task HandleAsync(AuthorizationHandlerContext context, IContestContextAccessor feature)
         {
             if (feature.IsPublic || feature.HasTeam || feature.IsJury)
             {
@@ -46,7 +47,7 @@ namespace SatelliteSite.ContestModule.Routing
 
     public class ContestJuryRequirement : IContestAuthorizationHandler
     {
-        public Task HandleAsync(AuthorizationHandlerContext context, IContestFeature feature)
+        public Task HandleAsync(AuthorizationHandlerContext context, IContestContextAccessor feature)
         {
             if (feature.IsJury)
             {
@@ -59,7 +60,7 @@ namespace SatelliteSite.ContestModule.Routing
 
     public class ContestTeamRequirement : IContestAuthorizationHandler
     {
-        public Task HandleAsync(AuthorizationHandlerContext context, IContestFeature feature)
+        public Task HandleAsync(AuthorizationHandlerContext context, IContestContextAccessor feature)
         {
             if (feature.HasTeam)
             {
