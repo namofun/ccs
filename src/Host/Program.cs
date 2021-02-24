@@ -31,9 +31,11 @@ namespace SatelliteSite
                 .AddModule<GroupModule.GroupModule<DefaultContext>>()
                 .AddModule<StudentModule.StudentModule<MyUser, Role, DefaultContext>>()
                 .AddModule<ContestModule.ContestModule<Ccs.RelationalRole<MyUser, Role, DefaultContext>>>()
+                .AddModule<PlagModule.PlagModule<Plag.Backend.StorageBackendRole<PdsContext>>>()
                 .AddModule<TelemetryModule.TelemetryModule>()
                 .AddModule<HostModule>()
                 .AddDatabase<DefaultContext>((c, b) => b.UseSqlServer(c.GetConnectionString("UserDbConnection"), b => b.UseBulk()))
+                .AddDatabase<PdsContext>((c, b) => b.UseSqlServer(c.GetConnectionString("PlagDbConnection"), b => b.UseBulk()))
                 .ConfigureSubstrateDefaults<DefaultContext>(builder =>
                 {
                     builder.ConfigureServices((context, services) =>
@@ -55,6 +57,7 @@ namespace SatelliteSite
                             options.PointBeforeUrlRewriting.Add(app => app.UseMiddleware<Test46160Middleware>());
                         });
 
+                        return;
                         services.AddFakeJudgehost()
                             .AddFakeSeeds<DefaultContext>()
                             .AddJudgehost<FakeJudgeActivity>("fake-judgehost-0")

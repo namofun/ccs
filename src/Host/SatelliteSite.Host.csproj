@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Plag.Backend.Roles.Storage" Version="$(PlagVersion2)" />
     <PackageReference Include="SatelliteSite.GroupModule" Version="$(TenantVersion)" />
     <PackageReference Include="Polygon.DataAccess" Version="$(PolygonVersion)" />
     <PackageReference Include="SatelliteSite.PolygonModule" Version="$(PolygonVersion)" />
@@ -28,6 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Connector.PDS\Ccs.Connector.PlagiarismDetect.csproj" />
     <ProjectReference Include="..\EntityFrameworkCore\Ccs.Storage.Relational.csproj" />
     <ProjectReference Include="..\Module\SatelliteSite.ContestModule.csproj" />
     <ProjectReference Include="..\Registration.TenantRelated\Ccs.Registration.TenantRelated.csproj" />

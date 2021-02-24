@@ -23,7 +23,7 @@ namespace SatelliteSite
         IPolygonDbContext,
         IContestDbContext
     {
-        public DefaultContext(DbContextOptions options)
+        public DefaultContext(DbContextOptions<DefaultContext> options)
             : base(options)
         {
             ChangeTracker.AutoDetectChangesEnabled = false;
