@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Ccs.Entities
@@ -31,6 +32,10 @@ namespace Ccs.Entities
         [JsonPropertyName("registration")]
         public Dictionary<string, int>? RegisterCategory { get; set; }
 
+        /// <inheritdoc />
+        [JsonPropertyName("plagiarism-set")]
+        public string? PlagiarismSet { get; set; }
+
         /// <summary>
         /// Parse the settings out from the <paramref name="settingsJson"/>.
         /// </summary>
@@ -57,7 +62,12 @@ namespace Ccs.Entities
         /// <inheritdoc />
         public override string ToString()
         {
-            return this.ToJson();
+            return JsonSerializer.Serialize(
+                this,
+                new JsonSerializerOptions
+                {
+                    IgnoreNullValues = true
+                });
         }
     }
 }

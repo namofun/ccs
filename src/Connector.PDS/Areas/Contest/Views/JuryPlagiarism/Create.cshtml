@@ -1,0 +1,16 @@
+﻿@model CreateSetModel
+@{
+    Layout = "_WindowLayout";
+    ViewData["Title"] = "Create a plagiarism set";
+}
+
+<div class="form-group">
+    <label asp-for="Name"></label>
+    <input asp-for="Name" class="form-control" required />
+</div>
+
+<p>After creating, the newly created plagiarism set will be linked to the contest.</p>
+
+@section Footer {
+    <button asp-action="Create" type="submit" class="btn btn-primary">Save</button>
+}

@@ -48,6 +48,11 @@ namespace Ccs.Models
         Dictionary<string, int>? RegisterCategory { get; }
 
         /// <summary>
+        /// Linked plagiarism set
+        /// </summary>
+        string? PlagiarismSet { get; set; }
+
+        /// <summary>
         /// Clone a copy of this settings.
         /// </summary>
         /// <remarks>This is not a performance-significant function.</remarks>

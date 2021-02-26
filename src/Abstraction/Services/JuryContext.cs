@@ -80,6 +80,6 @@ namespace Ccs.Services
         /// </summary>
         /// <param name="settings">The contest settings.</param>
         /// <returns>The task for updating settings.</returns>
-        Task UpdateSettingsAsync(IContestSettings settings);
+        Task UpdateSettingsAsync(ContestSettings settings);
     }
 }

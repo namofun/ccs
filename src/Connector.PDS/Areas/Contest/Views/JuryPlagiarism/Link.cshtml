@@ -1,0 +1,59 @@
+﻿@model IReadOnlyList<PlagiarismSet>
+@{
+    ViewData["Title"] = "Plagiarism Sets";
+}
+
+<h2 class="mt-2">@ViewData["Title"]</h2>
+
+<div class="table-wrapper">
+    <table class="data-table table table-sm table-striped" style="width:auto">
+        <thead>
+            <tr role="row">
+                <th scope="col" class="sortable searchable">ID</th>
+                <th scope="col" class="sortable searchable" style="min-width:15em">name</th>
+                <th scope="col" class="sortable searchable">compile progress</th>
+                <th scope="col" class="sortable searchable">report progress</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var pset in Model)
+            {
+            <tr asp-action="Detail" asp-route-sid="@pset.Id" asp-controller="Plagiarism" asp-area="Dashboard">
+                <td use-a>@pset.Id</td>
+                <td use-a>@pset.Name</td>
+                <td>@Html.RatioOf(pset.SubmissionSucceeded, pset.SubmissionCount)</td>
+                <td>@Html.RatioOf(pset.ReportCount - pset.ReportPending, pset.ReportCount)</td>
+                <td><a asp-action="Link" asp-route-setid="@pset.Id" data-toggle="ajaxWindow" data-target="link"><i class="fas fa-link"></i></a></td>
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<p>
+    <a class="btn btn-primary" asp-action="Create" data-toggle="ajaxWindow" data-target="create"><i class="fas fa-plus"></i> Create</a>
+    <a class="btn btn-info" asp-area="Dashboard" asp-controller="Plagiarism" asp-action="List"><i class="fas fa-cog"></i> System</a>
+</p>
+
+<script>
+    $().ready(function () {
+        $('.data-table').DataTable({
+            "paging": false,
+            "searching": false,
+            "ordering": true,
+            "order": [[0, 'desc']],
+            "info": false,
+            "autoWidth": true,
+            "language": {
+                "searchPlaceholder": "filter table",
+                "search": "_INPUT_",
+            },
+            'aoColumnDefs': [
+                { aTargets: ['sortable'], bSortable: true },
+                { aTargets: ['searchable'], bSearchable: true },
+                { aTargets: ['_all'], bSortable: false, bSearchable: false }
+            ],
+        });
+    });
+</script>

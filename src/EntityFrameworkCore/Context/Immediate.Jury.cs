@@ -139,7 +139,7 @@ namespace Ccs.Services
                 .ViewLogsAsync(Contest.Id, page, pageCount);
         }
 
-        public Task UpdateSettingsAsync(IContestSettings settings)
+        public Task UpdateSettingsAsync(ContestSettings settings)
         {
             if (settings == null)
             {
