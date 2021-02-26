@@ -1,9 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     <DescriptionAttach>The connector to plagiarism detection system</DescriptionAttach>
-    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <Import Project="..\..\build\NugetPackage.Backend.props" />
@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Abstraction\Ccs.Abstraction.csproj" />
+    <ProjectReference Include="..\Module\SatelliteSite.ContestModule.csproj" />
   </ItemGroup>
 
 </Project>

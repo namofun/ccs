@@ -138,5 +138,16 @@ namespace Ccs.Services
             return Get<SatelliteSite.Services.IAuditlogger>()
                 .ViewLogsAsync(Contest.Id, page, pageCount);
         }
+
+        public Task UpdateSettingsAsync(IContestSettings settings)
+        {
+            if (settings == null)
+            {
+                throw new ArgumentNullException(nameof(settings));
+            }
+
+            var settingsResult = settings.ToJson();
+            return UpdateContestAsync(_ => new Contest { SettingsJson = settingsResult });
+        }
     }
 }

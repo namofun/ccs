@@ -1,5 +1,15 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Ccs.Registration;
+using Markdig;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Polygon.FakeJudgehost;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SatelliteSite
@@ -19,6 +29,42 @@ namespace SatelliteSite
                 context.Response.Redirect("/dashboard/contests");
                 return Task.CompletedTask;
             });
+        }
+
+        public override void RegisterServices(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment environment)
+        {
+            services.AddMarkdown();
+
+            services.AddDbModelSupplier<DefaultContext, Polygon.Storages.PolygonIdentityEntityConfiguration<MyUser, DefaultContext>>();
+
+            services.ConfigurePolygonStorage(options =>
+            {
+                options.JudgingDirectory = Path.Combine(environment.ContentRootPath, "Runs");
+                options.ProblemDirectory = Path.Combine(environment.ContentRootPath, "Problems");
+            });
+
+            services.AddContestRegistrationTenant();
+
+            services.ConfigureApplicationBuilder(options =>
+            {
+                options.PointBeforeUrlRewriting.Add(app => app.UseMiddleware<Test46160Middleware>());
+            });
+
+#if DEBUG
+            services.Configure<MvcRazorRuntimeCompilationOptions>(options =>
+            {
+                var a = typeof(Ccs.Connector.PlagiarismDetect.ConnectorDescriptor)
+                    .Assembly.GetCustomAttributes(true)
+                    .OfType<System.LocalDebugPathAttribute>()
+                    .Single();
+                options.FileProviders.Add(new Microsoft.Extensions.FileProviders.PhysicalFileProvider(a.Path));
+            });
+#endif
+
+            services.AddFakeJudgehost()
+                .AddFakeSeeds<DefaultContext>()
+                .AddJudgehost<FakeJudgeActivity>("fake-judgehost-0")
+                .AddHttpClientFactory(_ => new System.Net.Http.HttpClient { BaseAddress = new System.Uri("http://localhost:9121/api/") });
         }
     }
 }

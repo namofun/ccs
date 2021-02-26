@@ -74,5 +74,12 @@ namespace Ccs.Services
         /// <param name="pageCount">The count of pages to show.</param>
         /// <returns>The task with auditlogs.</returns>
         Task<IPagedList<SatelliteSite.Entities.Auditlog>> ViewLogsAsync(int page, int pageCount);
+
+        /// <summary>
+        /// Update the contest settings.
+        /// </summary>
+        /// <param name="settings">The contest settings.</param>
+        /// <returns>The task for updating settings.</returns>
+        Task UpdateSettingsAsync(IContestSettings settings);
     }
 }
