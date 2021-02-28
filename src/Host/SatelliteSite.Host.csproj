@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Plag.Backend.Roles.Storage" Version="$(PlagVersion2)" />
+    <PackageReference Include="Plag.Backend.Roles.Storage" Version="$(PlagVersion)" />
     <PackageReference Include="SatelliteSite.GroupModule" Version="$(TenantVersion)" />
     <PackageReference Include="Polygon.DataAccess" Version="$(PolygonVersion)" />
     <PackageReference Include="SatelliteSite.PolygonModule" Version="$(PolygonVersion)" />

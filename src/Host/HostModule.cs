@@ -50,17 +50,6 @@ namespace SatelliteSite
                 options.PointBeforeUrlRewriting.Add(app => app.UseMiddleware<Test46160Middleware>());
             });
 
-#if DEBUG
-            services.Configure<MvcRazorRuntimeCompilationOptions>(options =>
-            {
-                var a = typeof(Ccs.Connector.PlagiarismDetect.ConnectorDescriptor)
-                    .Assembly.GetCustomAttributes(true)
-                    .OfType<System.LocalDebugPathAttribute>()
-                    .Single();
-                options.FileProviders.Add(new Microsoft.Extensions.FileProviders.PhysicalFileProvider(a.Path));
-            });
-#endif
-
             services.AddFakeJudgehost()
                 .AddFakeSeeds<DefaultContext>()
                 .AddJudgehost<FakeJudgeActivity>("fake-judgehost-0")

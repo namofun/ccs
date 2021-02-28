@@ -10,8 +10,7 @@ using System.Threading.Tasks;
 namespace Ccs.Connector.PlagiarismDetect.Controllers
 {
     [Area("Contest")]
-    [Route("[area]/{cid:c(7)}/jury/plagiarism-detect")]
-    [AffiliateTo(typeof(SatelliteSite.ContestModule.ContestModule<>))]
+    [Route("[area]/{cid:c(3)}/jury/plagiarism-detect")]
     public class JuryPlagiarismController : JuryControllerBase<IJuryContext>
     {
         private IPlagiarismDetectService Service { get; }
@@ -28,10 +27,15 @@ namespace Ccs.Connector.PlagiarismDetect.Controllers
             var set = Contest.Settings.PlagiarismSet != null
                 ? await Service.FindSetAsync(Contest.Settings.PlagiarismSet)
                 : null;
+            if (set == null) return RedirectToAction(nameof(Link));
 
-            return set == null
-                ? RedirectToAction(nameof(Link))
-                : View(set) as IActionResult;
+            return View(new IndexModel
+            {
+                PlagiarismSet = set,
+                Problems = await Context.ListProblemsAsync(),
+                TeamNames = await Context.GetTeamNamesAsync(),
+                Submissions = await Service.ListSubmissionsAsync(set.Id)
+            });
         }
 
 
