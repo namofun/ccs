@@ -13,5 +13,9 @@ namespace Ccs.Connector.PlagiarismDetect.Models
         public ProblemCollection Problems { get; set; }
 
         public IReadOnlyList<Submission> Submissions { get; set; }
+
+        public int TotalPages { get; set; }
+
+        public int CurrentPage { get; set; }
     }
 }

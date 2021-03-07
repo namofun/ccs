@@ -5,7 +5,7 @@ using System;
 
 namespace SatelliteSite.ContestModule
 {
-    internal interface IContestFeature : IContestContextAccessor
+    public interface IContestFeature : IContestContextAccessor
     {
         internal bool Contextualized { get; }
 
