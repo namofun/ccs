@@ -35,5 +35,24 @@ namespace Ccs.Connector.PlagiarismDetect.Controllers
                 TotalPages = totalPages,
             });
         }
+
+
+        [HttpGet("sync")]
+        public async Task<IActionResult> Synchronize()
+        {
+            return Window(new SynchronizationOptionsModel
+            {
+                Problems = await Context.ListProblemsAsync(),
+            });
+        }
+
+
+        [HttpPost("sync")]
+        public IActionResult SynchronizeExecute(SynchronizationOptionsModel model)
+        {
+            return InAjax
+                ? new SynchronizeResult(model, PlagiarismSet)
+                : (IActionResult)View(model);
+        }
     }
 }

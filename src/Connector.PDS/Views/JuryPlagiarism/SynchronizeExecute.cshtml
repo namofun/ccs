@@ -1,0 +1,41 @@
+﻿@model SynchronizationOptionsModel
+@{
+    Layout = "_WindowLayout";
+    ViewData["Title"] = "Synchronize the submissions";
+}
+
+<p class=" text-danger">
+    During synchronization, please don't close the browser window.
+</p>
+
+<div id="sync-report">
+
+</div>
+
+@section Scripts {
+    <script>
+        $(function () {
+            var $status = $('div#sync-report');
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '@Url.Action()', true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+
+            xhr.onprogress = function (e) {
+                $status.html(e.currentTarget.response);
+
+                // Scroll page to bottom of div to keep showing progress
+                $('html, body').animate({ scrollTop: $status.offset().top + $status.height() }, 0);
+            };
+
+            var $rvt = $('input[name="__RequestVerificationToken"]').val();
+            var $formValues = [@(string.Join(',', Model.ChosenProblems))];
+            var $req = '__RequestVerificationToken=' + $rvt;
+            for (var $i = 0; $i < $formValues.length; $i++) {
+                $req = $req + '&ChosenProblems=' + $formValues[$i];
+            }
+
+            xhr.send($req);
+        });
+    </script>
+}

@@ -33,13 +33,17 @@
 </div>
 
 <p>
-    <a asp-action="Synchronize" class="btn btn-primary"><i class="fas fa-file-import"></i> Synchronize</a>
+    <a asp-action="Synchronize" class="btn btn-primary" data-toggle="ajaxWindow" data-target="sync"><i class="fas fa-file-import"></i> Synchronize</a>
     <a asp-action="Upload" data-toggle="ajaxWindow" data-target="upload" class="btn btn-secondary"><i class="fas fa-cloud-upload-alt"></i> Upload external code</a>
 </p>
 
 <h3>Submissions</h3>
 
-<div class="table-wrapper">
+<div class="d-none" id="submission-paging">
+    <pagination bs-total-page="Model.TotalPages" bs-current-page="Model.CurrentPage" />
+</div>
+
+<div class="table-wrapper submissions-table-big">
     <table class="data-table pagination-sm table table-hover table-striped table-sm submissions-table" role="grid">
         <thead class="thead-light">
             <tr>
@@ -78,8 +82,7 @@
 <script type="text/javascript">
     $().ready(function () {
         $('.data-table').DataTable({
-            "paging": true,
-            "pageLength": 25,
+            "paging": false,
             "searching": true,
             "ordering": true,
             "info": false,
@@ -101,5 +104,8 @@
                 { aTargets: ['_all'], bSortable: false, bSearchable: false }
             ],
         });
+
+        $('.submissions-table-big .dataTables_wrapper .row:first-child .col-md-6:first-child').html($('#submission-paging').html());
+        $('.submissions-table-big .dataTables_wrapper .pagination-sm').addClass('mb-0');
     });
 </script>
