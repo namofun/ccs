@@ -4,9 +4,13 @@
     ViewData["Title"] = "Synchronize the submissions";
 }
 
-<p class=" text-danger">
+<div class="alert alert-danger" id="during-sync">
     During synchronization, please don't close the browser window.
-</p>
+</div>
+
+<div class="alert alert-success" id="after-sync" style="display:none;">
+    Synchronization has stopped. You can close this page safely.
+</div>
 
 <div id="sync-report">
 
@@ -26,6 +30,13 @@
 
                 // Scroll page to bottom of div to keep showing progress
                 $('html, body').animate({ scrollTop: $status.offset().top + $status.height() }, 0);
+            };
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                    $('#during-sync').hide();
+                    $('#after-sync').show();
+                }
             };
 
             var $rvt = $('input[name="__RequestVerificationToken"]').val();
