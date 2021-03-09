@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 using Plag.Backend.Models;
 using SatelliteSite.ContestModule.Controllers;
 using SatelliteSite.PlagModule.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Ccs.Connector.PlagiarismDetect.Controllers
@@ -90,6 +93,54 @@ namespace Ccs.Connector.PlagiarismDetect.Controllers
             var retB = CodeModel.CreateView(report, c => c.FileB, c => c.ContentStartB, c => c.ContentEndB, subB);
 
             return View(new ReportModel(report, retA, retB));
+        }
+
+
+        [HttpGet("[action]")]
+        public async Task<IActionResult> UploadExternal()
+        {
+            return View(new UploadExternalModel
+            {
+                AvailableLanguages = await Service.ListLanguageAsync(),
+                AvailableProblems = await Context.ListProblemsAsync(),
+                Name = "External submission uploaded by " + User.GetUserName(),
+            });
+        }
+
+
+        [HttpPost("[action]")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UploadExternal(UploadExternalModel model)
+        {
+            var lang = await Service.FindLanguageAsync(model.Language);
+            if (lang == null) ModelState.AddModelError("lang", "Language not found.");
+
+            if (!ModelState.IsValid)
+            {
+                model.AvailableLanguages = await Service.ListLanguageAsync();
+                model.AvailableProblems = await Context.ListProblemsAsync();
+                return View(model);
+            }
+
+            var s = await Service.SubmitAsync(new SubmissionCreation
+            {
+                SetId = PlagiarismSet.Id,
+                InclusiveCategory = model.Problem,
+                Language = model.Language,
+                Name = model.Name,
+                Files = new List<SubmissionCreation.SubmissionFileCreation>
+                {
+                    new SubmissionCreation.SubmissionFileCreation
+                    {
+                        FileName = "Main." + lang.Suffixes.First(),
+                        Content = model.Content,
+                        FilePath = "Main." + lang.Suffixes.First(),
+                    }
+                }
+            });
+
+            StatusMessage = "External submission uploaded as s" + s.Id + ".";
+            return RedirectToAction(nameof(Index));
         }
     }
 }
