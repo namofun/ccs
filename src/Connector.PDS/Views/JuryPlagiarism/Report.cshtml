@@ -1,0 +1,36 @@
+﻿@model SatelliteSite.PlagModule.Models.ReportModel
+@addTagHelper *, SatelliteSite.PlagModule
+@{
+    ViewData["Title"] = $"Report {Model.Report.Id}";
+}
+
+<h2 class="mt-2">@ViewData["Title"]</h2>
+
+<div class="row">
+    <div class="col-lg-4">
+        <table class="table table-sm table-striped">
+            <tr>
+                <th>ID</th>
+                <td>@Model.Report.Id</td>
+            </tr>
+            <tr>
+                <th>Percent</th>
+                <td>@($"{Model.Report.Percent:F2}%")</td>
+            </tr>
+            <tr>
+                <th>A</th>
+                <td>@($"{Model.Report.PercentA:F2}%") - @Model.A.Sid</td>
+            </tr>
+            <tr>
+                <th>B</th>
+                <td>@($"{Model.Report.PercentB:F2}%") - @Model.B.Sid</td>
+            </tr>
+            <tr>
+                <th>Match</th>
+                <td>@Model.Report.TokensMatched total, @Model.Report.BiggestMatch consecutive longest</td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<vc:plagiarism-report model="Model" />

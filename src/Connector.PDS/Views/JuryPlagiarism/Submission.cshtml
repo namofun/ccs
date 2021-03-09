@@ -1,0 +1,85 @@
+﻿@model Vertex
+@{
+    ViewData["Title"] = $"Comparison s{Model.Id}";
+    string error = ViewBag.Error;
+    var teamNames = await Contest.Context.GetTeamNamesAsync();
+}
+
+<h2 class="mt-2">Comparisons for submission <a asp-controller="JurySubmissions" asp-action="Detail" asp-route-submitid="@Model.Id">s@(Model.Id)</a></h2>
+
+<h6>@Model.Name</h6>
+
+@if (error == null)
+{
+    <div class="table-wrapper mt-2">
+        <table class="data-table pagination-sm table table-hover table-striped table-sm" role="grid">
+            <thead>
+                <tr>
+                    <th scope="col" class="sortable searchable">team</th>
+                    <th scope="col" class="sortable searchable">submission</th>
+                    <th scope="col" class="sortable searchable">status</th>
+                    <th scope="col" class="sortable searchable">percent</th>
+                    <th scope="col" class="sortable searchable">this.</th>
+                    <th scope="col" class="sortable searchable">that.</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var cmp in Model.Comparisons)
+                {
+                <tr asp-action="Report" asp-route-rid="@cmp.Id">
+                    <td use-a data-order="@cmp.ExclusiveCategory">@teamNames.GetValueOrDefault(cmp.ExclusiveCategory, "UNKNOWN") (t@(cmp.ExclusiveCategory))</td>
+                    <td use-a data-order="@cmp.SubmissionIdAnother">@cmp.SubmissionNameAnother</td>
+                    <td use-a class="text-variant">@(cmp.Finished == true ? "finished" : "pending")</td>
+                    <td use-a data-order="@cmp.Percent">@($"{cmp.Percent:F2}%")</td>
+                    <td use-a data-order="@cmp.PercentSelf">@($"{cmp.PercentSelf:F2}%")</td>
+                    <td use-a data-order="@cmp.PercentIt">@($"{cmp.PercentIt:F2}%")</td>
+                    <td><a asp-controller="JurySubmissions" asp-action="Detail" asp-route-submitid="@cmp.SubmissionIdAnother"><i class="fas fa-file-code"></i></a></td>
+                    <td><a asp-area="Plagiarism" asp-controller="Report" asp-action="Compare" asp-route-rid="@cmp.Id" target="_blank"><i class="fas fa-external-link-alt"></i></a></td>
+                </tr>
+                }
+                @if (Model.Comparisons.Count == 0)
+                {
+                <tr>
+                    <td colspan="8">No submissions data available</td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <script type="text/javascript">
+        $().ready(function () {
+            $('.data-table').DataTable({
+                "paging": true,
+                "pageLength": 50,
+                "searching": true,
+                "ordering": true,
+                "info": false,
+                "order": [[3, 'desc']],
+                "autoWidth": true,
+                "lengthChange": true,
+                "serverSide": false,
+                "language": {
+                    "searchPlaceholder": "filter table",
+                    "search": "_INPUT_",
+                    "oPaginate": {
+                        "sPrevious": "&laquo;",
+                        "sNext": "&raquo;",
+                    },
+                },
+                'aoColumnDefs': [
+                    { aTargets: ['sortable'], bSortable: true },
+                    { aTargets: ['searchable'], bSearchable: true },
+                    { aTargets: ['_all'], bSortable: false, bSearchable: false }
+                ],
+            });
+        });
+    </script>
+}
+else
+{
+    <div class="alert alert-danger">Compilation failed. Front end should be updated, or this submission cannot compile simply.</div>
+    <pre class="output_text">@error</pre>
+}

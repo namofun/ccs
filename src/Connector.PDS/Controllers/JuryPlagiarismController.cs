@@ -3,6 +3,7 @@ using Ccs.Services;
 using Microsoft.AspNetCore.Mvc;
 using Plag.Backend.Models;
 using SatelliteSite.ContestModule.Controllers;
+using SatelliteSite.PlagModule.Models;
 using System.Threading.Tasks;
 
 namespace Ccs.Connector.PlagiarismDetect.Controllers
@@ -53,6 +54,42 @@ namespace Ccs.Connector.PlagiarismDetect.Controllers
             return InAjax
                 ? new SynchronizeResult(model, PlagiarismSet)
                 : (IActionResult)View(model);
+        }
+
+
+        [HttpGet("submissions/{submitid}")]
+        public async Task<IActionResult> Submission(int submitid)
+        {
+            var vertex = await Service.GetComparisonsBySubmissionAsync(PlagiarismSet.Id, submitid);
+            if (vertex == null) return NotFound();
+
+            if (vertex.TokenProduced == false)
+            {
+                var er = await Service.GetCompilationAsync(PlagiarismSet.Id, submitid);
+                ViewBag.Error = er.Error;
+            }
+            else
+            {
+                ViewBag.Error = null;
+            }
+
+            return View(vertex);
+        }
+
+
+        [HttpGet("reports/{rid}")]
+        public async Task<IActionResult> Report(string rid)
+        {
+            var report = await Service.FindReportAsync(rid);
+            if (report == null || report.SetId != PlagiarismSet.Id) return NotFound();
+
+            var subA = await Service.FindSubmissionAsync(report.SetId, report.SubmissionA);
+            var subB = await Service.FindSubmissionAsync(report.SetId, report.SubmissionB);
+
+            var retA = CodeModel.CreateView(report, c => c.FileA, c => c.ContentStartA, c => c.ContentEndA, subA);
+            var retB = CodeModel.CreateView(report, c => c.FileB, c => c.ContentStartB, c => c.ContentEndB, subB);
+
+            return View(new ReportModel(report, retA, retB));
         }
     }
 }

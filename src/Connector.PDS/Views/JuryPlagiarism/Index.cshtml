@@ -59,14 +59,14 @@
         <tbody>
             @foreach (var sub in Model.Submissions)
             {
-                <tr>
-                    <td data-order="@sub.Id">s@(sub.Id)</td>
-                    <td>@sub.Name</td>
-                    <td class="text-variant">@(sub.TokenProduced.HasValue ? sub.TokenProduced.Value ? "ready" : "failed" : "pending")</td>
-                    <td data-order="@sub.ExclusiveCategory">@Model.TeamNames.GetValueOrDefault(sub.ExclusiveCategory, sub.ExclusiveCategory <= 0 ? "external" : "UNKNOWN") (t@(sub.ExclusiveCategory))</td>
-                    <td data-order="@sub.InclusiveCategory">@(Model.Problems.Find(sub.InclusiveCategory)?.ShortName ?? $"p{sub.InclusiveCategory}")</td>
-                    <td class="text-variant">@sub.Language</td>
-                    <td data-order="@sub.MaxPercent">@($"{sub.MaxPercent:F2}%")</td>
+                <tr asp-action="Submission" asp-route-submitid="@sub.Id">
+                    <td use-a data-order="@sub.Id">s@(sub.Id)</td>
+                    <td use-a>@sub.Name</td>
+                    <td use-a class="text-variant">@(sub.TokenProduced.HasValue ? sub.TokenProduced.Value ? "ready" : "failed" : "pending")</td>
+                    <td use-a data-order="@sub.ExclusiveCategory">@Model.TeamNames.GetValueOrDefault(sub.ExclusiveCategory, sub.ExclusiveCategory <= 0 ? "external" : "UNKNOWN") (t@(sub.ExclusiveCategory))</td>
+                    <td use-a data-order="@sub.InclusiveCategory">@(Model.Problems.Find(sub.InclusiveCategory)?.ShortName ?? $"p{sub.InclusiveCategory}")</td>
+                    <td use-a class="text-variant">@sub.Language</td>
+                    <td use-a data-order="@sub.MaxPercent">@($"{sub.MaxPercent:F2}%")</td>
                 </tr>
             }
             @if (Model.Submissions.Count == 0)
