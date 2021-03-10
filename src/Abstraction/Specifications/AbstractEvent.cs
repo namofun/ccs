@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Text.Encodings.Web;
+using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.Unicode;
 
 namespace Ccs.Specifications
 {
@@ -8,6 +11,13 @@ namespace Ccs.Specifications
     /// </summary>
     public abstract class AbstractEvent
     {
+        private static readonly JsonSerializerOptions _jsonOptions
+            = new JsonSerializerOptions
+            {
+                Encoder = JavaScriptEncoder.Create(UnicodeRanges.BasicLatin, UnicodeRanges.CjkUnifiedIdeographs),
+                Converters = { new TimeSpanJsonConverter() },
+            };
+
         /// <summary>
         /// Abstract ID
         /// </summary>
@@ -26,7 +36,7 @@ namespace Ccs.Specifications
                 Action = action,
                 Content = action == "delete"
                     ? $"{{\"id\":\"{Id}\"}}"
-                    : this.ToJson(),
+                    : JsonSerializer.Serialize(this, GetType(), _jsonOptions),
                 ContestId = cid,
                 EndpointId = Id,
                 EndpointType = EndpointType,

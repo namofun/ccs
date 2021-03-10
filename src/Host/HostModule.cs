@@ -3,13 +3,11 @@ using Markdig;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Polygon.FakeJudgehost;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SatelliteSite
