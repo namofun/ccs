@@ -166,5 +166,13 @@ namespace Ccs.Services
             string via,
             string username,
             DateTimeOffset? time = null);
+
+        /// <summary>
+        /// Emits an event.
+        /// </summary>
+        /// <param name="event">The event entity.</param>
+        /// <param name="action">The action type.</param>
+        /// <returns>The task for emitting an event.</returns>
+        Task EmitEventAsync(Specifications.AbstractEvent @event, string action);
     }
 }

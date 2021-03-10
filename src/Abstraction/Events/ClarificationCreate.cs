@@ -1,5 +1,5 @@
 ﻿using Ccs.Entities;
-using Ccs.Models;
+using Ccs.Services;
 using MediatR;
 
 namespace Ccs.Events
@@ -8,9 +8,9 @@ namespace Ccs.Events
     {
         public Clarification Clarification { get; }
 
-        public IContestInformation Contest { get; }
+        public IContestContextAccessor Contest { get; }
 
-        public ClarificationCreateEvent(IContestInformation contest, Clarification entity)
+        public ClarificationCreateEvent(IContestContextAccessor contest, Clarification entity)
         {
             Clarification = entity;
             Contest = contest;

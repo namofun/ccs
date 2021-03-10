@@ -78,5 +78,25 @@ namespace Ccs.Specifications
             Ordinal = rank;
             RunTime = timems / 1000.0;
         }
+
+        /// <summary>
+        /// Construct a <see cref="Run"/>.
+        /// </summary>
+        /// <param name="run">The judging run.</param>
+        /// <param name="contestTime">The contest time.</param>
+        /// <param name="rank">The rank.</param>
+        public Run(
+            Polygon.Entities.JudgingRun run,
+            DateTimeOffset contestTime,
+            int rank)
+            : this(run.CompleteTime,
+                  run.CompleteTime - contestTime,
+                  run.Id,
+                  run.JudgingId,
+                  run.Status,
+                  rank,
+                  run.ExecuteTime)
+        {
+        }
     }
 }

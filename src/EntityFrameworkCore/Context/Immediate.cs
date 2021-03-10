@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Polygon.Storages;
 using System;
+using System.Threading.Tasks;
 
 namespace Ccs.Services
 {
@@ -30,6 +31,12 @@ namespace Ccs.Services
             _contest = contest;
             _services = serviceProvider;
             Logger = serviceProvider.GetRequiredService<ILogger<IContestContext>>();
+        }
+
+        public Task EmitEventAsync(Specifications.AbstractEvent @event, string action)
+        {
+            Db.ContestEvents.Add(@event.ToEvent(action, Contest.Id));
+            return Db.SaveChangesAsync();
         }
     }
 }
