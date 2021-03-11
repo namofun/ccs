@@ -200,7 +200,6 @@ namespace SatelliteSite.ContestModule.Controllers
                     });
 
                 await HttpContext.AuditAsync("added", $"{clar.Id}");
-                await Mediator.Publish(new Ccs.Events.ClarificationCreateEvent(Contest, clar));
                 StatusMessage = "Clarification sent to the jury.";
             }
 

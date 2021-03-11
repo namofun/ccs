@@ -38,6 +38,7 @@ namespace Ccs.Services
             }
 
             await Db.SaveChangesAsync();
+            await Mediator.Publish(new Events.ClarificationCreateEvent(this, clar));
             return cl.Entity;
         }
 

@@ -57,12 +57,13 @@ namespace SatelliteSite.ContestModule.Controllers
         [ValidateAntiForgeryToken]
         [AuditPoint(AuditlogType.Contest)]
         [ActionName("ResetEventFeed")]
-        public async Task<IActionResult> ResetEventFeedConfirmation()
+        public Task<IActionResult> ResetEventFeedConfirmation()
         {
-            await Mediator.Publish(new Ccs.Events.ScoreboardRefreshEvent(Contest));
-            await HttpContext.AuditAsync("reset event", Contest.Id.ToString());
-            StatusMessage = "Event feed reset.";
-            return RedirectToAction(nameof(Home));
+            throw new NotImplementedException();
+            //await Mediator.Publish(new Ccs.Events.ScoreboardRefreshEvent(Contest));
+            //await HttpContext.AuditAsync("reset event", Contest.Id.ToString());
+            //StatusMessage = "Event feed reset.";
+            //return RedirectToAction(nameof(Home));
         }
 
 

@@ -73,7 +73,6 @@ namespace SatelliteSite.ContestModule.Controllers
                 });
 
             await HttpContext.AuditAsync("added", $"{clar.Id}");
-            await Mediator.Publish(new Ccs.Events.ClarificationCreateEvent(Contest, clar));
             StatusMessage = $"Clarification {clar.Id} has been sent.";
             return RedirectToAction(nameof(Detail), new { clarid = clar.Id });
         }

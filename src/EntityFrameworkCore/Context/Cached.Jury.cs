@@ -46,8 +46,11 @@ namespace Ccs.Services
             Expire("Languages");
 
             // The other occurrence is in Factory.cs
-            return await CacheAsync("Core", _options.Contest,
+            var @new = await CacheAsync("Core", _options.Contest,
                 async () => (await Ccs.FindAsync(Contest.Id))!);
+
+            await Mediator.Publish(new Events.ContestUpdateEvent(Contest, @new));
+            return @new;
         }
 
         public override Task<Dictionary<int, string>> ListJuriesAsync()

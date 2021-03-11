@@ -48,7 +48,9 @@ namespace Ccs.Services
         public virtual async Task<ContestWrapper> UpdateContestAsync(Expression<Func<Contest, Contest>> updateExpression)
         {
             await Ccs.UpdateAsync(Contest.Id, updateExpression);
-            return (await Ccs.FindAsync(Contest.Id))!;
+            var @new = (await Ccs.FindAsync(Contest.Id))!;
+            await Mediator.Publish(new Events.ContestUpdateEvent(Contest, @new));
+            return @new;
         }
 
         public virtual async Task<ServerStatus> GetJudgeQueueAsync()

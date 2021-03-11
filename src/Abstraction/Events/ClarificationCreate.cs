@@ -8,9 +8,9 @@ namespace Ccs.Events
     {
         public Clarification Clarification { get; }
 
-        public IContestContextAccessor Contest { get; }
+        public IContestContext Contest { get; }
 
-        public ClarificationCreateEvent(IContestContextAccessor contest, Clarification entity)
+        public ClarificationCreateEvent(IContestContext contest, Clarification entity)
         {
             Clarification = entity;
             Contest = contest;

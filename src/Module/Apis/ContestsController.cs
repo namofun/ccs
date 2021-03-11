@@ -58,14 +58,13 @@ namespace SatelliteSite.ContestModule.Apis
             if (now + TimeSpan.FromSeconds(30) > oldtime)
                 return StatusCode(403); // left time
 
-            var newcont = await Context.UpdateContestAsync(
+            await Context.UpdateContestAsync(
                 _ => new Ccs.Entities.Contest
                 {
                     StartTime = newTime,
                 });
 
             await HttpContext.AuditAsync("changed time", $"{Contest.Id}", "via ccs-api");
-            await Mediator.Publish(new ContestUpdateEvent(Contest, newcont));
             return Ok();
         }
 

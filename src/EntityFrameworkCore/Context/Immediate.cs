@@ -1,4 +1,5 @@
 ﻿using Ccs.Models;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Polygon.Storages;
@@ -13,6 +14,7 @@ namespace Ccs.Services
         private readonly ContestWrapper _contest;
         private IContestRepository? _ccsFacade;
         private IPolygonFacade? _polygonFacade;
+        private IMediator? _mediator;
 
         public IContestInformation Contest => _contest;
 
@@ -21,6 +23,8 @@ namespace Ccs.Services
         public IContestRepository Ccs => _ccsFacade ??= Get<IContestRepository>();
 
         public IContestDbContext Db => ((ISupportDbContext)Ccs).Db;
+
+        public IMediator Mediator => _mediator ??= Get<IMediator>();
 
         protected T Get<T>() => _services.GetRequiredService<T>();
 

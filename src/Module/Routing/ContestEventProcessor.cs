@@ -21,16 +21,18 @@ namespace Ccs.Services
             Factory = factory;
         }
 
-        public Task<IContestContext> TryGetContest(int? cid)
+        public async Task<IContestContext> TryGetContest(int? cid)
         {
             if (!cid.HasValue) return null;
-            return Factory.CreateAsync(cid.Value);
+            var ctx = await Factory.CreateAsync(cid.Value);
+            return ctx.Contest.Kind == CcsDefaults.KindDom ? ctx : null;
         }
 
         public Task Handle(ClarificationCreateEvent notification, CancellationToken cancellationToken)
         {
-            var spec = new Specifications.Clarification(notification.Clarification, notification.Contest.StartTime ?? DateTimeOffset.Now);
-            return notification.Contest.Context.EmitEventAsync(spec, "create");
+            if (notification.Contest.Contest.Kind != CcsDefaults.KindDom) return Task.CompletedTask;
+            var spec = new Specifications.Clarification(notification.Clarification, notification.Contest.Contest.StartTime ?? DateTimeOffset.Now);
+            return notification.Contest.EmitEventAsync(spec, "create");
         }
 
         public async Task Handle(JudgingFinishedEvent notification, CancellationToken cancellationToken)
