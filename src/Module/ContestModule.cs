@@ -154,6 +154,11 @@ namespace SatelliteSite.ContestModule
                     .HasLink("Contest", "Gym", "Home")
                     .HasTitle("fas fa-arrow-right", "Gym")
                     .RequireThat(ctx => Feature(ctx).Kind == CcsDefaults.KindGym);
+
+                menu.HasEntry(602)
+                    .HasLink("Contest", "Problemset", "List")
+                    .HasTitle("fas fa-arrow-right", "Problemset")
+                    .RequireThat(ctx => Feature(ctx).Kind == CcsDefaults.KindProblemset);
             });
 
             menus.Menu(CcsDefaults.NavbarGym, menu =>
