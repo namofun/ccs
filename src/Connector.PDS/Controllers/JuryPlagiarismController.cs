@@ -13,6 +13,7 @@ namespace Ccs.Connector.PlagiarismDetect.Controllers
 {
     [Area("Contest")]
     [Route("[area]/{cid:c(3)}/jury/plagiarism-detect")]
+    [RestfulRoleExceptionFilter]
     public partial class JuryPlagiarismController : JuryControllerBase<IJuryContext>
     {
         [HttpGet]
