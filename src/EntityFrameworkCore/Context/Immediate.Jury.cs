@@ -70,9 +70,9 @@ namespace Ccs.Services
 
         public virtual Task AssignJuryAsync(IUser user)
         {
+            int cid = Contest.Id, userid = user.Id;
             return Db.ContestJuries.UpsertAsync(
-                new { cid = Contest.Id, userid = user.Id },
-                s => new Jury { ContestId = s.cid, UserId = s.userid });
+                () => new Jury { ContestId = cid, UserId = userid });
         }
 
         public virtual Task UnassignJuryAsync(IUser user)

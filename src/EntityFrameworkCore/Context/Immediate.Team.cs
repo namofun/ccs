@@ -254,9 +254,9 @@ namespace Ccs.Services
 
         public virtual Task AttachMemberAsync(Team team, IUser user, bool temporary)
         {
+            int cid = team.ContestId, teamid = team.TeamId, uid = user.Id;
             return Db.TeamMembers.UpsertAsync(
-                new { cid = team.ContestId, teamid = team.TeamId, uid = user.Id },
-                s => new Member { ContestId = s.cid, TeamId = s.teamid, UserId = s.uid, Temporary = temporary });
+                () => new Member { ContestId = cid, TeamId = teamid, UserId = uid, Temporary = temporary });
         }
 
         public virtual async Task<List<Member>> LockOutTemporaryAsync(IUserManager userManager)
@@ -283,9 +283,9 @@ namespace Ccs.Services
 
         public virtual Task AllowTenantAsync(Affiliation affiliation)
         {
+            int cid = Contest.Id, affid = affiliation.Id;
             return Db.ContestTenants.UpsertAsync(
-                source: new { cid = Contest.Id, affid = affiliation.Id },
-                insertExpression: s => new Visibility { AffiliationId = s.affid, ContestId = s.cid });
+                () => new Visibility { AffiliationId = affid, ContestId = cid });
         }
 
         public virtual Task DisallowTenantAsync(Affiliation affiliation)

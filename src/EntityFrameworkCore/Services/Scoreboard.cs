@@ -83,8 +83,8 @@ namespace Ccs.Services
         public Task<List<ScoreCalculateModel>> FetchSolutionsAsync(int cid, DateTimeOffset deadline)
             => SolutionQuery(cid, deadline).ToListAsync();
 
-        public Task<bool> IsFirstToSolveAsync(int cid, int teamid, int probid)
-            => FirstBloodQuery(cid, probid, SortOrderQuery(cid, teamid)).AnyAsync();
+        public async Task<bool> IsFirstToSolveAsync(int cid, int teamid, int probid)
+            => !await FirstBloodQuery(cid, probid, SortOrderQuery(cid, teamid)).AnyAsync();
 
         public Task RebuildPartialScoreAsync(int cid)
             => Db.Set<Judging>().BatchUpdateJoinAsync(
@@ -107,31 +107,8 @@ namespace Ccs.Services
             int cid, int teamid, int probid,
             Expression<Func<ScoreCache, RankCache>> insert,
             Expression<Func<RankCache, RankCache, RankCache>> update)
-            => RankUpsertInnerAsync(ScoreQuery(cid, teamid, probid), insert, update);
-
-        public Task ScoreUpsertAsync(
-            int cid, int teamid, int probid,
-            Expression<Func<ScoreCache>> insert,
-            Expression<Func<ScoreCache, ScoreCache>> update)
-            => ScoreUpsertInnerAsync(
-                new { cid, teamid, probid }, insert, update,
-                a => new ScoreCache { ContestId = a.cid, TeamId = a.teamid, ProblemId = a.probid, });
-
-        public async Task RefreshAsync(int cid, IEnumerable<RankCache> ranks, IEnumerable<ScoreCache> scores)
         {
-            await Db.Set<ScoreCache>().Where(s => s.ContestId == cid).BatchDeleteAsync();
-            await Db.Set<RankCache>().Where(s => s.ContestId == cid).BatchDeleteAsync();
-
-            Db.Set<ScoreCache>().AddRange(scores);
-            Db.Set<RankCache>().AddRange(ranks);
-            await Db.SaveChangesAsync();
-        }
-
-        Task RankUpsertInnerAsync(
-            IQueryable<ScoreCache> source,
-            Expression<Func<ScoreCache, RankCache>> insert,
-            Expression<Func<RankCache, RankCache, RankCache>> update)
-        {
+            var source = ScoreQuery(cid, teamid, probid);
             var insertBody = (MemberInitExpression)insert.Body;
             var param = insert.Parameters[0];
 
@@ -146,28 +123,33 @@ namespace Ccs.Services
             return Db.Set<RankCache>().UpsertAsync(source, insert, update);
         }
 
-        Task ScoreUpsertInnerAsync<T>(
-            T entry,
+        public Task ScoreUpsertAsync(
+            int cid, int teamid, int probid,
             Expression<Func<ScoreCache>> insert,
-            Expression<Func<ScoreCache, ScoreCache>> update,
-            Expression<Func<T, ScoreCache>> primaryKey)
-            where T : class
+            Expression<Func<ScoreCache, ScoreCache>> update)
         {
+            Expression<Func<ScoreCache>> primaryKey =
+                () => new ScoreCache { ContestId = cid, TeamId = teamid, ProblemId = probid };
+
             var insertBody = (MemberInitExpression)insert.Body;
             var pkeyBody = (MemberInitExpression)primaryKey.Body;
 
-            var ins2 = Expression.Lambda<Func<T, ScoreCache>>(
+            insert = Expression.Lambda<Func<ScoreCache>>(
                 Expression.MemberInit(
                     insertBody.NewExpression,
-                    Enumerable.Concat(insertBody.Bindings, pkeyBody.Bindings)),
-                primaryKey.Parameters);
+                    Enumerable.Concat(insertBody.Bindings, pkeyBody.Bindings)));
 
-            var upd2 = Expression.Lambda<Func<ScoreCache, ScoreCache, ScoreCache>>(
-                update.Body,
-                update.Parameters[0],
-                Expression.Parameter(typeof(ScoreCache), "__"));
+            return Db.Set<ScoreCache>().UpsertAsync(insert, update);
+        }
 
-            return Db.Set<ScoreCache>().UpsertAsync(entry, ins2, upd2);
+        public async Task RefreshAsync(int cid, IEnumerable<RankCache> ranks, IEnumerable<ScoreCache> scores)
+        {
+            await Db.Set<ScoreCache>().Where(s => s.ContestId == cid).BatchDeleteAsync();
+            await Db.Set<RankCache>().Where(s => s.ContestId == cid).BatchDeleteAsync();
+
+            Db.Set<ScoreCache>().AddRange(scores);
+            Db.Set<RankCache>().AddRange(ranks);
+            await Db.SaveChangesAsync();
         }
 
         public Task CreateBalloonAsync(int id)

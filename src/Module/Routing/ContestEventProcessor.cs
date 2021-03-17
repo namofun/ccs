@@ -11,7 +11,7 @@ namespace Ccs.Services
         INotificationHandler<ClarificationCreateEvent>,
         INotificationHandler<JudgingFinishedEvent>,
         INotificationHandler<JudgingBeginEvent>,
-        INotificationHandler<JudgingRunEmitted>,
+        INotificationHandler<JudgingRunEmittedEvent>,
         INotificationHandler<SubmissionCreatedEvent>
     {
         public ScopedContestContextFactory Factory { get; }
@@ -53,7 +53,7 @@ namespace Ccs.Services
             await ctx.EmitEventAsync(spec, "create");
         }
 
-        public async Task Handle(JudgingRunEmitted notification, CancellationToken cancellationToken)
+        public async Task Handle(JudgingRunEmittedEvent notification, CancellationToken cancellationToken)
         {
             var ctx = await TryGetContest(notification.ContestId);
             if (ctx == null) return;
