@@ -3,10 +3,17 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
-    <DescriptionAttach>The problem judging module</DescriptionAttach>
+    <DescriptionAttach>The contest control module</DescriptionAttach>
   </PropertyGroup>
 
   <Import Project="..\..\build\NugetPackage.props" />
+
+  <ItemGroup>
+    <None Include="..\..\build\CopyDocumentXml.props" Pack="true" PackagePath="build\" Link="build\CopyDocumentXml.props" />
+    <None Include="..\..\build\SatelliteSite.ContestModule.props" Pack="true" PackagePath="build\" Link="build\SatelliteSite.ContestModule.props" />
+    <None Include="..\..\build\SatelliteSite.ContestModule-buildMultiTargeting.props" Pack="true" PackagePath="buildMultiTargeting\SatelliteSite.ContestModule.props" Link="build\SatelliteSite.ContestModule-buildMultiTargeting.props" />
+    <None Include="..\..\build\SatelliteSite.ContestModule-buildTransitive.props" Pack="true" PackagePath="buildTransitive\SatelliteSite.ContestModule.props" Link="build\SatelliteSite.ContestModule-buildTransitive.props" />
+  </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="olymp.sty" />
