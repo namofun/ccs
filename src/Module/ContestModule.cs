@@ -51,6 +51,7 @@ namespace SatelliteSite.ContestModule
             services.EnsureScoped<IScoreboard>();
             services.EnsureScoped<IPrintingService>();
             services.EnsureScoped<IContestRepository>();
+            services.EnsureScoped<IRatingUpdater>();
 
             services.AddContestRegistration();
 
@@ -61,6 +62,7 @@ namespace SatelliteSite.ContestModule
             services.AddSingleton<IAuthorizationHandler, ContestAuthorizationHandler>();
             services.AddSingleton<IRewriteRule, ContestOnlyRewriteRule>();
             services.AddMediatRAssembly(typeof(Ccs.Scoreboard.RankingSolver).Assembly);
+            services.AddSingleton<IRatingCalculator, Ccs.Scoreboard.Rating.EloRatingCalculator>();
 
             services.ConfigureApplicationBuilder(options =>
             {

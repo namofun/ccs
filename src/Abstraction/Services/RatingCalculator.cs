@@ -10,6 +10,11 @@ namespace Ccs.Services
     public interface IRatingCalculator
     {
         /// <summary>
+        /// The initial rating value
+        /// </summary>
+        int InitialRating { get; }
+
+        /// <summary>
         /// Calculates the normal rating for participants.
         /// </summary>
         /// <param name="ratingChanges">Rating changes represented by <see cref="Member"/> entity.</param>

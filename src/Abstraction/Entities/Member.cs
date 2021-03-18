@@ -31,6 +31,11 @@
         public bool Temporary { get; set; }
 
         /// <summary>
+        /// The previous rating information
+        /// </summary>
+        public int? PreviousRating { get; set; }
+
+        /// <summary>
         /// The rating delta for Codeforces Rounds Rating
         /// </summary>
         public int? RatingDelta { get; set; }

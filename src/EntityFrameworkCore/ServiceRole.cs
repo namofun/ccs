@@ -14,11 +14,19 @@ namespace Ccs
     {
         public void Configure(IServiceCollection services)
         {
+            var userType = typeof(TUser);
+            var ratingUpdaterType = typeof(NullRatingUpdater);
+            if (typeof(IUserWithRating).IsAssignableFrom(userType))
+            {
+                ratingUpdaterType = typeof(RatingUpdater<,>).MakeGenericType(userType, typeof(TContext));
+            }
+
             services.AddDbModelSupplier<TContext, ContestEntityConfiguration<TUser, TRole, TContext>>();
 
             services.AddScoped<IContestRepository, ContestRepository<TContext>>();
             services.AddScoped<IPrintingService, PrintingService<TContext>>();
             services.AddScoped<IScoreboard, Scoreboard<TContext>>();
+            services.Add(ServiceDescriptor.Scoped(typeof(IRatingUpdater), ratingUpdaterType));
 
             services.AddSingleton<IContestContextFactory, CachedContestContextFactory>();
         }

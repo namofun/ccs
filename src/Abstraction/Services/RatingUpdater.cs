@@ -11,6 +11,11 @@ namespace Ccs.Services
     public interface IRatingUpdater
     {
         /// <summary>
+        /// Gets whether rating update is supported.
+        /// </summary>
+        bool SupportRatingUpdate { get; }
+
+        /// <summary>
         /// Rolls back the contest ratings.
         /// </summary>
         /// <param name="contest">The contest information.</param>
@@ -31,6 +36,9 @@ namespace Ccs.Services
     public abstract class RatingUpdaterBase : IRatingUpdater
     {
         protected readonly IRatingCalculator _ratingCalculator;
+
+        /// <inheritdoc />
+        public bool SupportRatingUpdate => true;
 
         /// <summary>
         /// Initialize the <see cref="IRatingUpdater"/>.
