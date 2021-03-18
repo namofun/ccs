@@ -60,11 +60,6 @@ namespace Ccs.Services
                 .Select(c => new ContestListModel(c.Id, c.Name, c.ShortName, c.StartTime, c.EndTimeSeconds, c.Kind, c.RankingStrategy, c.IsPublic, c.TeamCount, c.ProblemCount))
                 .ToPagedListAsync(page, limit);
 
-        public Task<IPagedList<ContestListModel>> ListAsync(ClaimsPrincipal user, int? kind = null, int page = 1, int limit = 100)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<Contest> CreateAndAssignAsync(int kind, ClaimsPrincipal user)
         {
             var e = Db.Contests.Add(new Contest { Kind = kind });

@@ -52,6 +52,7 @@ namespace SatelliteSite.ContestModule
             services.EnsureScoped<IPrintingService>();
             services.EnsureScoped<IContestRepository>();
             services.EnsureScoped<IRatingUpdater>();
+            services.EnsureScoped<IContestRepository2>();
 
             services.AddContestRegistration();
 

@@ -38,16 +38,6 @@ namespace Ccs.Services
         Task<ContestWrapper> CreateAndAssignAsync(int kind, ClaimsPrincipal user);
 
         /// <summary>
-        /// Lists the contests with user and kind limitation.
-        /// </summary>
-        /// <param name="user">The user claims principal.</param>
-        /// <param name="kind">The contest kind.</param>
-        /// <param name="page">The current page.</param>
-        /// <param name="limit">The count per page.</param>
-        /// <returns>The task for fetching paged lists.</returns>
-        Task<IPagedList<ContestListModel>> ListAsync(ClaimsPrincipal user, int? kind = null, int page = 1, int limit = 100);
-
-        /// <summary>
         /// Lists the contests with original entity.
         /// </summary>
         /// <param name="page">The current page.</param>

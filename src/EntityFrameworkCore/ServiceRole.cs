@@ -23,9 +23,11 @@ namespace Ccs
 
             services.AddDbModelSupplier<TContext, ContestEntityConfiguration<TUser, TRole, TContext>>();
 
+            services.AddSingleton<CachedContestRepository2Cache>();
             services.AddScoped<IContestRepository, ContestRepository<TContext>>();
             services.AddScoped<IPrintingService, PrintingService<TContext>>();
             services.AddScoped<IScoreboard, Scoreboard<TContext>>();
+            services.AddScoped<IContestRepository2, CachedContestRepository2<TContext>>();
             services.Add(ServiceDescriptor.Scoped(typeof(IRatingUpdater), ratingUpdaterType));
 
             services.AddSingleton<IContestContextFactory, CachedContestContextFactory>();

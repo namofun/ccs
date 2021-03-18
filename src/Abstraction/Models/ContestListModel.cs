@@ -37,6 +37,9 @@ namespace Ccs.Models
         /// <inheritdoc cref="Contest.ProblemCount" />
         public int ProblemCount { get; }
 
+        /// <summary>Whether user has registered this contest</summary>
+        public bool IsRegistered { get; set; }
+
         /// <summary>
         /// Construct a <see cref="ContestListModel"/>.
         /// </summary>
@@ -50,7 +53,8 @@ namespace Ccs.Models
         /// <param name="isPublic">Whether to show to public.</param>
         /// <param name="problemCount">The count of problems.</param>
         /// <param name="teamCount">The count of teams.</param>
-        public ContestListModel(int id, string name, string shortName, DateTimeOffset? start, double? duration, int kind, int ranker, bool isPublic, int teamCount, int problemCount)
+        /// <param name="registered">Whether user has registered.</param>
+        public ContestListModel(int id, string name, string shortName, DateTimeOffset? start, double? duration, int kind, int ranker, bool isPublic, int teamCount, int problemCount, bool registered)
         {
             ContestId = id;
             Name = name;
@@ -71,15 +75,16 @@ namespace Ccs.Models
                 _state = 3; // Ended
         }
 
-
-        [Obsolete]
-        public bool IsRegistered { get; set; }
+        /// <inheritdoc cref="ContestListModel(int, string, string, DateTimeOffset?, double?, int, int, bool, int, int, bool)" />
+        public ContestListModel(int id, string name, string shortName, DateTimeOffset? start, double? duration, int kind, int ranker, bool isPublic, int teamCount, int problemCount)
+            : this(id, name, shortName, start, duration, kind, ranker, isPublic, teamCount, problemCount, false)
+        {
+        }
 
         [Obsolete]
         public bool OpenRegister { get; set; }
 
-
-
+        /// <inheritdoc />
         public int CompareTo(ContestListModel other)
         {
             if (Kind != other.Kind)
