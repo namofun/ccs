@@ -1,12 +1,14 @@
 ﻿using Ccs.Entities;
+using Ccs.Models;
+using Ccs.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Ccs.Scoreboard.Ratings
+namespace Ccs.Scoreboard.Rating
 {
     /// <summary>
-    /// Calculator for Codeforces Rating System.
+    /// Calculator for elo-probabilistic Codeforces Rating System.
     /// </summary>
     /// <remarks>
     /// Related documents:
@@ -15,24 +17,24 @@ namespace Ccs.Scoreboard.Ratings
     /// <list type="bullet"><c>[OCT 26 2015] </c><a href="https://codeforces.com/contest/1/submission/13861109"> &gt;&gt; referenced source code</a></list>
     /// <list type="bullet"><c>[MAY 25 2020] </c><a href="https://codeforces.com/blog/entry/77890">Codeforces: Soon We Will Change the Rating Calculation for New Accounts</a></list>
     /// </remarks>
-    public static class RatingCalculator
+    public class EloRatingCalculator : IRatingCalculator
     {
         /// <summary>
         /// The initial rating value, and <c>1500</c> is the default value
         /// </summary>
         /// <remarks>Currently it is 1500 and will be applied the new rules.</remarks>
-        public const int INITIAL_RATING = 1500;
+        public int InitialRating { get; } = 1500;
 
         /// <summary>
         /// Calculate the normal rating for participants.
         /// </summary>
         /// <param name="ratingChanges">Rating changes represented by <see cref="Member"/> entity.</param>
         /// <returns>The latest member rating.</returns>
-        public static int? AggregateRating(List<Member> ratingChanges)
+        public int? AggregateRating(IReadOnlyList<Member> ratingChanges)
         {
             if (ratingChanges == null || ratingChanges.Count == 0)
                 return null;
-            return INITIAL_RATING + ratingChanges
+            return InitialRating + ratingChanges
                 .Where(a => a.RatingDelta != null)
                 .Sum(a => a.RatingDelta!.Value);
         }
@@ -42,17 +44,17 @@ namespace Ccs.Scoreboard.Ratings
         /// </summary>
         /// <param name="ratingChanges">Rating changes represented by <see cref="Member"/> entity.</param>
         /// <returns>The maximum member rating.</returns>
-        public static int? GetMaxRating(List<Member> ratingChanges)
+        public int? GetMaxRating(IReadOnlyList<Member> ratingChanges)
         {
             if (ratingChanges == null || ratingChanges.Count == 0)
                 return null;
             if (ratingChanges.Count == 1)
-                return ratingChanges[0].RatingDelta + INITIAL_RATING;
+                return ratingChanges[0].RatingDelta + InitialRating;
             return ratingChanges
                 .Where(a => a.RatingDelta != null)
                 .Select(a => a.RatingDelta!.Value)
                 .Aggregate(
-                    seed: (a: INITIAL_RATING, b: INITIAL_RATING),
+                    seed: (a: InitialRating, b: InitialRating),
                     func: (prev, rc) => (prev.a + rc, Math.Max(prev.b, prev.a + rc)))
                 .b;
         }
@@ -89,7 +91,7 @@ namespace Ccs.Scoreboard.Ratings
             return (int)Math.Round((left + right) / 2);
         }
 
-        private static double GetSeed(List<Participant> contestants, int rating)
+        private static double GetSeed(List<ParticipantRating> contestants, int rating)
         {
             double result = 1;
             foreach (var other in contestants)
@@ -97,7 +99,7 @@ namespace Ccs.Scoreboard.Ratings
             return result;
         }
 
-        private static int GetRatingToRank(List<Participant> contestants, double rank)
+        private static int GetRatingToRank(List<ParticipantRating> contestants, double rank)
         {
             int left = 1;
             int right = 8000;
@@ -111,7 +113,7 @@ namespace Ccs.Scoreboard.Ratings
             return left;
         }
 
-        private static void ReassignRanks(List<Participant> contestants)
+        private static void ReassignRanks(List<ParticipantRating> contestants)
         {
             SortByPointsDesc(contestants);
 
@@ -141,15 +143,17 @@ namespace Ccs.Scoreboard.Ratings
             }
         }
 
-        private static void SortByPointsDesc(List<Participant> contestants)
+        private static void SortByPointsDesc(List<ParticipantRating> contestants)
         {
             contestants.Sort((o1, o2) => o2.Points.CompareTo(o1.Points));
         }
 
-        public static void ProcessComputing(this List<Participant> contestants)
+        public void ComputeRatingChanges(List<ParticipantRating> contestants)
         {
             if (contestants.Count == 0)
                 return;
+
+            contestants.ForEach(a => a.Rating = a.UserRating ?? InitialRating);
 
             ReassignRanks(contestants);
 
@@ -189,7 +193,7 @@ namespace Ccs.Scoreboard.Ratings
             ValidateDeltas(contestants);
         }
 
-        private static void ValidateDeltas(List<Participant> contestants)
+        private static void ValidateDeltas(List<ParticipantRating> contestants)
         {
             SortByPointsDesc(contestants);
 
@@ -208,7 +212,7 @@ namespace Ccs.Scoreboard.Ratings
             }
         }
 
-        private static void SortByRatingDesc(List<Participant> contestants)
+        private static void SortByRatingDesc(List<ParticipantRating> contestants)
         {
             contestants.Sort((o1, o2) => o2.Rating.CompareTo(o1.Rating));
         }
