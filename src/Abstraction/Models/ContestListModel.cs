@@ -66,6 +66,7 @@ namespace Ccs.Models
             IsPublic = isPublic;
             TeamCount = teamCount;
             ProblemCount = problemCount;
+            IsRegistered = registered;
 
             if (!StartTime.HasValue)
                 _state = 1; // Not Scheduled

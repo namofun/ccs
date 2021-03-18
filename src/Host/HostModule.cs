@@ -22,6 +22,8 @@ namespace SatelliteSite
 
         public override void RegisterEndpoints(IEndpointBuilder endpoints)
         {
+            endpoints.MapControllers();
+
             endpoints.MapFallback("/", context =>
             {
                 context.Response.Redirect("/dashboard/contests");
