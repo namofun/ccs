@@ -1,4 +1,5 @@
 ﻿using Ccs.Entities;
+using System;
 using System.Collections.Generic;
 
 namespace Ccs.Models
@@ -31,11 +32,53 @@ namespace Ccs.Models
         /// <summary>
         /// The navigation to rank cache
         /// </summary>
-        RankCache? RankCache { get; }
+        RankCache RankCache { get; }
 
         /// <summary>
         /// The navigation to score cache
         /// </summary>
-        ICollection<ScoreCache> ScoreCache { get; }
+        IEnumerable<ScoreCache> ScoreCache { get; }
+    }
+
+    /// <summary>
+    /// The model class representing single row in the scoreboard.
+    /// </summary>
+    public class ScoreboardRow : IScoreboardRow
+    {
+        private RankCache? _rankCache;
+        private IEnumerable<ScoreCache>? _scoreCache;
+
+        /// <inheritdoc />
+        public int TeamId { get; }
+
+        /// <inheritdoc />
+        public string TeamName { get; }
+
+        /// <inheritdoc />
+        public int CategoryId { get; }
+
+        /// <inheritdoc />
+        public int AffiliationId { get; }
+
+        /// <inheritdoc />
+        public RankCache RankCache => _rankCache ?? throw new InvalidOperationException();
+
+        /// <inheritdoc />
+        public IEnumerable<ScoreCache> ScoreCache => _scoreCache ?? throw new InvalidOperationException();
+
+        public ScoreboardRow(int teamId, string teamName, int catId, int affId)
+        {
+            TeamId = teamId;
+            TeamName = teamName;
+            CategoryId = catId;
+            AffiliationId = affId;
+        }
+
+        public IScoreboardRow With(RankCache? rankCache, IEnumerable<ScoreCache>? scoreCache)
+        {
+            _rankCache = rankCache ?? RankCache.Empty;
+            _scoreCache = scoreCache ?? Array.Empty<ScoreCache>();
+            return this;
+        }
     }
 }

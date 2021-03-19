@@ -58,8 +58,8 @@ namespace Ccs.Models
                     catName = Categories[catid].Name;
                 }
 
-                int point = (ispublic ? item.RankCache?.PointsPublic : item.RankCache?.PointsRestricted) ?? 0;
-                int penalty = (ispublic ? item.RankCache?.TotalTimePublic : item.RankCache?.TotalTimeRestricted) ?? 0;
+                int point = ispublic ? item.RankCache.PointsPublic : item.RankCache.PointsRestricted;
+                int penalty = ispublic ? item.RankCache.TotalTimePublic : item.RankCache.TotalTimeRestricted;
                 rank++;
                 if (last_point != point || last_penalty != penalty) last_rank = rank;
                 last_point = point;
@@ -67,7 +67,7 @@ namespace Ccs.Models
 
                 var prob = new ScoreCellModel[Problems.Count];
 
-                foreach (var pp in item.ScoreCache ?? Array.Empty<ScoreCache>())
+                foreach (var pp in item.ScoreCache)
                 {
                     var p = Problems.Find(pp.ProblemId);
                     if (p == null) continue;

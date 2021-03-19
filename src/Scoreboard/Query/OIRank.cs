@@ -38,10 +38,10 @@ namespace Ccs.Scoreboard.Query
         /// <inheritdoc />
         public IEnumerable<IScoreboardRow> SortByRule(IEnumerable<IScoreboardRow> source, bool isPublic)
             => isPublic
-                ? source.OrderByDescending(a => a.RankCache?.PointsPublic ?? 0)
-                    .ThenBy(a => a.RankCache?.TotalTimePublic ?? 0)
-                : source.OrderByDescending(a => a.RankCache?.PointsRestricted ?? 0)
-                    .ThenBy(a => a.RankCache?.TotalTimeRestricted ?? 0);
+                ? source.OrderByDescending(a => a.RankCache.PointsPublic)
+                    .ThenBy(a => a.RankCache.TotalTimePublic)
+                : source.OrderByDescending(a => a.RankCache.PointsRestricted)
+                    .ThenBy(a => a.RankCache.TotalTimeRestricted);
 
 
         /// <inheritdoc />

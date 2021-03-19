@@ -64,8 +64,8 @@ namespace SatelliteSite.ContestModule.Controllers
                 TeamId = team.TeamId,
                 TeamName = team.TeamName,
                 Status = team.Status,
-                ScoreCache = bq?.ScoreCache,
-                RankCache = bq?.RankCache,
+                ScoreCache = bq?.ScoreCache ?? Enumerable.Empty<ScoreCache>(),
+                RankCache = bq?.RankCache ?? RankCache.Empty,
             });
         }
 

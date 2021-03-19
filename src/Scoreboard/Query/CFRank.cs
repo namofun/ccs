@@ -40,8 +40,8 @@ namespace Ccs.Scoreboard.Query
     {
         /// <inheritdoc />
         public IEnumerable<IScoreboardRow> SortByRule(IEnumerable<IScoreboardRow> source, bool isPublic)
-            => source.OrderByDescending(a => a.RankCache?.PointsPublic ?? 0)
-                .ThenBy(a => a.RankCache?.TotalTimePublic ?? 0);
+            => source.OrderByDescending(a => a.RankCache.PointsPublic)
+                .ThenBy(a => a.RankCache.TotalTimePublic);
 
 
         /// <inheritdoc />

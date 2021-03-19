@@ -212,12 +212,12 @@ namespace Ccs.Entities
                 .HasForeignKey(e => e.CategoryId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            entity.HasMany<ScoreCache>(e => e.ScoreCache)
+            entity.HasMany<ScoreCache>()
                 .WithOne()
                 .HasForeignKey(sc => new { sc.ContestId, sc.TeamId })
                 .OnDelete(DeleteBehavior.Cascade);
 
-            entity.HasOne<RankCache>(e => e.RankCache!)
+            entity.HasOne<RankCache>()
                 .WithOne()
                 .HasForeignKey<RankCache>(rc => new { rc.ContestId, rc.TeamId })
                 .OnDelete(DeleteBehavior.Cascade);

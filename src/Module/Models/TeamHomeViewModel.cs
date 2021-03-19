@@ -2,7 +2,6 @@
 using Ccs.Entities;
 using Ccs.Models;
 using System.Collections.Generic;
-using System.Linq;
 using Tenant.Entities;
 
 namespace SatelliteSite.ContestModule.Models
@@ -27,7 +26,7 @@ namespace SatelliteSite.ContestModule.Models
 
         public RankCache RankCache { get; set; }
 
-        public ICollection<ScoreCache> ScoreCache { get; set; }
+        public IEnumerable<ScoreCache> ScoreCache { get; set; }
 
         protected override IEnumerable<SortOrderModel> GetEnumerable()
         {
@@ -38,7 +37,7 @@ namespace SatelliteSite.ContestModule.Models
         {
             var prob = new ScoreCellModel[Problems.Count];
 
-            foreach (var pp in ScoreCache ?? Enumerable.Empty<ScoreCache>())
+            foreach (var pp in ScoreCache)
             {
                 var p = Problems.Find(pp.ProblemId);
                 if (p == null) continue;
@@ -62,8 +61,8 @@ namespace SatelliteSite.ContestModule.Models
                 AffiliationId = Affiliation.Abbreviation,
                 Category = Category.Name,
                 CategoryColor = Category.Color,
-                Points = RankCache?.PointsRestricted ?? 0,
-                Penalty = RankCache?.TotalTimeRestricted ?? 0,
+                Points = RankCache.PointsRestricted,
+                Penalty = RankCache.TotalTimeRestricted,
                 ShowRank = true,
                 Problems = prob,
             };

@@ -1,6 +1,4 @@
-﻿using Ccs.Models;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using Tenant.Entities;
 
 namespace Ccs.Entities
@@ -8,7 +6,7 @@ namespace Ccs.Entities
     /// <summary>
     /// The entity class for contest teams.
     /// </summary>
-    public class Team : IScoreboardRow
+    public class Team
     {
         /// <summary>
         /// The contest ID
@@ -71,16 +69,6 @@ namespace Ccs.Entities
         /// The location of team
         /// </summary>
         public string? Location { get; set; }
-
-        /// <summary>
-        /// The navigation to rank cache
-        /// </summary>
-        public RankCache? RankCache { get; set; }
-
-        /// <summary>
-        /// The navigation to score cache
-        /// </summary>
-        public ICollection<ScoreCache> ScoreCache { get; set; }
 
 #pragma warning disable CS8618
         /// <summary>

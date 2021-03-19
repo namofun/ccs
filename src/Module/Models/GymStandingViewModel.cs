@@ -49,8 +49,8 @@ namespace SatelliteSite.ContestModule.Models
 
             foreach (var item in src)
             {
-                int point = item.RankCache?.PointsPublic ?? 0;
-                int penalty = item.RankCache?.TotalTimePublic ?? 0;
+                int point = item.RankCache.PointsPublic;
+                int penalty = item.RankCache.TotalTimePublic;
                 rank++;
                 if (last_point != point || last_penalty != penalty) last_rank = rank;
                 last_point = point;
@@ -58,7 +58,7 @@ namespace SatelliteSite.ContestModule.Models
 
                 var prob = new ScoreCellModel[Problems.Count];
 
-                foreach (var pp in item.ScoreCache ?? Array.Empty<ScoreCache>())
+                foreach (var pp in item.ScoreCache)
                 {
                     var p = Problems.Find(pp.ProblemId);
                     if (p == null) continue;

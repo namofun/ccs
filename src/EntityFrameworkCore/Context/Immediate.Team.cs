@@ -215,12 +215,25 @@ namespace Ccs.Services
         public virtual async Task<ScoreboardModel> GetScoreboardAsync()
         {
             int cid = Contest.Id;
-            var value = await Db.Teams
+
+            var rankCaches = await Db.RankCache
+                .AsNoTracking()
+                .Where(t => t.ContestId == cid)
+                .ToDictionaryAsync(a => a.TeamId);
+
+            var scoreCaches = await Db.ScoreCache
+                .AsNoTracking()
+                .Where(t => t.ContestId == cid)
+                .ToLookupAsync(a => a.TeamId, a => a);
+
+            var teams = await Db.Teams
                 .Where(t => t.ContestId == cid && t.Status == 1)
-                .Include(t => t.RankCache)
-                .Include(t => t.ScoreCache)
-                .ToDictionaryAsync(t => t.TeamId, t => (IScoreboardRow)t);
-            return new ScoreboardModel(value);
+                .Select(t => new ScoreboardRow(t.TeamId, t.TeamName, t.CategoryId, t.AffiliationId))
+                .ToDictionaryAsync(
+                    a => a.TeamId,
+                    v => v.With(rankCaches.GetValueOrDefault(v.TeamId), scoreCaches[v.TeamId]));
+
+            return new ScoreboardModel(teams);
         }
 
         public virtual async Task<IReadOnlyDictionary<int, (int, int)>> StatisticsAsync(Team? team)

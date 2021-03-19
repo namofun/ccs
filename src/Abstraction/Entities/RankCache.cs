@@ -6,6 +6,11 @@
     public class RankCache
     {
         /// <summary>
+        /// Represents an empty item
+        /// </summary>
+        public static readonly RankCache Empty = new RankCache();
+
+        /// <summary>
         /// The contest ID
         /// </summary>
         public int ContestId { get; set; }
