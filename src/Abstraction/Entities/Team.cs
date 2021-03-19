@@ -16,11 +16,6 @@ namespace Ccs.Entities
         public int ContestId { get; set; }
 
         /// <summary>
-        /// The navigation to contest
-        /// </summary>
-        public Contest Contest { get; }
-
-        /// <summary>
         /// The team ID
         /// </summary>
         public int TeamId { get; set; }
@@ -86,11 +81,6 @@ namespace Ccs.Entities
         /// The navigation to score cache
         /// </summary>
         public ICollection<ScoreCache> ScoreCache { get; set; }
-
-        /// <summary>
-        /// The navigation to members
-        /// </summary>
-        public ICollection<Member> Members { get; set; }
 
 #pragma warning disable CS8618
         /// <summary>

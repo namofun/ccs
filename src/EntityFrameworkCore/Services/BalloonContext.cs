@@ -18,9 +18,8 @@ namespace Ccs.Services
                 join s in Db.Submissions on b.SubmissionId equals s.Id
                 where s.ContestId == cid
                 orderby s.Time
-                join t in Db.Teams
-                    on new { s.ContestId, s.TeamId }
-                    equals new { t.ContestId, t.TeamId }
+                join t in Db.Teams on new { s.ContestId, s.TeamId } equals new { t.ContestId, t.TeamId }
+                join c in Db.Categories on t.CategoryId equals c.Id
                 select new BalloonModel(
                     b.Id,
                     b.SubmissionId,
@@ -30,8 +29,8 @@ namespace Ccs.Services
                     t.TeamName,
                     t.Location,
                     s.Time,
-                    t.Category.Name,
-                    t.Category.SortOrder);
+                    c.Name,
+                    c.SortOrder);
 
             var balloons = new List<BalloonModel>();
             var hashSet = new HashSet<long>();

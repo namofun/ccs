@@ -27,17 +27,19 @@ namespace Ccs.Services
                 into uu from u in uu.DefaultIfEmpty()
                 join tu in Db.TeamMembers on new { p.ContestId, p.UserId } equals new { tu.ContestId, tu.UserId }
                 into tuu from tu in tuu.DefaultIfEmpty()
+                join t in Db.Teams on new { tu.ContestId, tu.TeamId } equals new { t.ContestId, t.TeamId }
+                into tt from t in tt.DefaultIfEmpty()
                 select new PrintingTask
                 {
                     Id = p.Id,
                     FileName = p.FileName,
                     Language = p.LanguageId,
                     Done = p.Done,
-                    Location = tu.Team.Location,
+                    Location = t.Location,
                     Time = p.Time,
                     TeamName = tu == null
                         ? $"u{u.Id} - {u.UserName}"
-                        : $"t{tu.TeamId} - {tu.Team.TeamName}",
+                        : $"t{tu.TeamId} - {t.TeamName}",
                 };
 
             return query.Take(limit).ToListAsync();
