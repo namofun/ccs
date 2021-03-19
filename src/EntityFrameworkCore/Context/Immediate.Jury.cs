@@ -92,6 +92,14 @@ namespace Ccs.Services
                 .ToListAsync();
         }
 
+        public virtual Task CleanEventsAsync()
+        {
+            int cid = Contest.Id;
+            return Db.ContestEvents
+                .Where(e => e.ContestId == cid)
+                .BatchDeleteAsync();
+        }
+
         public virtual Task<int> GetMaxEventIdAsync()
         {
             int cid = Contest.Id;

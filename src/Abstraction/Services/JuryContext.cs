@@ -27,6 +27,12 @@ namespace Ccs.Services
         Task<ContestWrapper> UpdateContestAsync(Expression<Func<Contest, Contest>> updateExpression);
 
         /// <summary>
+        /// Remove all previous events.
+        /// </summary>
+        /// <returns>The task for cleanning the events.</returns>
+        Task CleanEventsAsync();
+
+        /// <summary>
         /// Fetch the ID of the latest event.
         /// </summary>
         /// <returns>The task for ID of event.</returns>

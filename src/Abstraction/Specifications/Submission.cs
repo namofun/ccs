@@ -105,6 +105,24 @@ namespace Ccs.Specifications
         }
 
         /// <summary>
+        /// Construct a <see cref="Submission"/>.
+        /// </summary>
+        /// <param name="solution">The solution entity.</param>
+        /// <param name="contestStart">The contest start time.</param>
+        public Submission(
+            Polygon.Models.Solution solution,
+            DateTimeOffset contestStart)
+            : this(solution.ContestId,
+                  solution.Language,
+                  solution.SubmissionId,
+                  solution.ProblemId,
+                  solution.TeamId,
+                  solution.Time,
+                  solution.Time - contestStart)
+        {
+        }
+
+        /// <summary>
         /// Metadata for file archive.
         /// </summary>
         public sealed class FileMeta
