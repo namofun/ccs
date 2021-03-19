@@ -17,11 +17,34 @@ namespace Ccs.Services
         private static readonly ConcurrentAsyncLock _teamLock = new ConcurrentAsyncLock();
         protected static readonly IReadOnlyDictionary<int, (int, int)> _emptyStat = new Dictionary<int, (int, int)>();
 
-        protected Task FixTeamCountAsync(int cid)
-            => Db.Contests
-                .Where(c => c.Id == cid)
-                .BatchUpdateAsync(c => new Contest { TeamCount =
-                    Db.Teams.Count(cp => cp.ContestId == c.Id && cp.Status == 1 && cp.Category.IsPublic) });
+        protected Task FixTeamCountAsync(int cid, bool up)
+        {
+            if (DateTimeOffset.Now.Ticks % 100 < 30)
+            {
+                return Db.Contests
+                    .Where(c => c.Id == cid)
+                    .BatchUpdateAsync(c => new Contest
+                    {
+                        TeamCount = Db.Teams
+                            .Where(t => t.ContestId == c.Id && t.Status == 1)
+                            .Join(Db.Categories, t => t.CategoryId, c => c.Id, (t, c) => new { t, c })
+                            .Where(a => a.c.IsPublic)
+                            .Count()
+                    });
+            }
+            else
+            {
+                // Category.IsPublic is not considered yet
+                // so the accurate update will hit in a larger probability
+                int delta = up ? 1 : -1;
+                return Db.Contests
+                    .Where(c => c.Id == cid)
+                    .BatchUpdateAsync(c => new Contest
+                    {
+                        TeamCount = c.TeamCount + delta
+                    });
+            }
+        }
 
         public Task<List<Team>> ListTeamsAsync(Expression<Func<Team, bool>>? predicate = null)
         {
@@ -121,7 +144,7 @@ namespace Ccs.Services
             }
 
             await Db.SaveChangesAsync();
-            if (team.Status == 1) await FixTeamCountAsync(cid);
+            if (team.Status == 1) await FixTeamCountAsync(cid, true);
             return team;
         }
 
@@ -140,7 +163,7 @@ namespace Ccs.Services
         {
             if (origin.Status == status) return;
             await UpdateTeamAsync(origin, t => new Team { Status = status });
-            if (origin.Status == 1 || status == 1) await FixTeamCountAsync(Contest.Id);
+            if (origin.Status == 1 || status == 1) await FixTeamCountAsync(Contest.Id, status == 1);
         }
 
         public virtual async Task<IReadOnlyList<Member>> DeleteTeamAsync(Team team)
@@ -162,7 +185,7 @@ namespace Ccs.Services
                 .Where(t => t.ContestId == cid && t.TeamId == teamid)
                 .BatchDeleteAsync();
 
-            if (team.Status == 1) await FixTeamCountAsync(cid);
+            if (team.Status == 1) await FixTeamCountAsync(cid, false);
             return list;
         }
 

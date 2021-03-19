@@ -38,11 +38,25 @@ namespace Ccs.Services
         private IQueryable<PartialScore> QueryScores(int cid)
             => QueryScores(Db.ContestProblems.Where(cp => cp.ContestId == cid));
 
-        private Task FixProblemCountAsync(int cid)
-            => Db.Contests
-                .Where(c => c.Id == cid)
-                .BatchUpdateAsync(c => new Contest { ProblemCount =
-                    Db.ContestProblems.Count(cp => cp.ContestId == c.Id) });
+        protected Task FixProblemCountAsync(int cid, bool up)
+        {
+            if (DateTimeOffset.Now.Ticks % 100 < 10)
+            {
+                return Db.Contests
+                    .Where(c => c.Id == cid)
+                    .BatchUpdateAsync(c => new Contest
+                    {
+                        ProblemCount = Db.ContestProblems.Count(cp => cp.ContestId == c.Id)
+                    });
+            }
+            else
+            {
+                int delta = up ? 1 : -1;
+                return Db.Contests
+                    .Where(c => c.Id == cid)
+                    .BatchUpdateAsync(c => new Contest { ProblemCount = c.ProblemCount + delta });
+            }
+        }
 
         protected virtual async Task LoadStatementAsync(ProblemModel problem)
         {
@@ -144,7 +158,7 @@ namespace Ccs.Services
         {
             Db.ContestProblems.Add(entity);
             await Db.SaveChangesAsync();
-            await FixProblemCountAsync(Contest.Id);
+            await FixProblemCountAsync(Contest.Id, true);
         }
 
         public virtual async Task DeleteProblemAsync(ProblemModel problem)
@@ -155,7 +169,7 @@ namespace Ccs.Services
                 .Where(cp => cp.ContestId == cid && cp.ProblemId == probid)
                 .BatchDeleteAsync();
 
-            await FixProblemCountAsync(Contest.Id);
+            await FixProblemCountAsync(Contest.Id, false);
         }
 
         public virtual async Task<List<Statement>> GetStatementsAsync()
