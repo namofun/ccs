@@ -1,4 +1,4 @@
-﻿using Ccs.Entities;
+﻿using Ccs.Models;
 using Polygon.Entities;
 using System;
 using System.Collections.Generic;
@@ -29,6 +29,6 @@ namespace Ccs.Services
         /// Fetch the team names as a lookup dictionary.
         /// </summary>
         /// <returns>The task for getting this dictionary.</returns>
-        Task<IReadOnlyDictionary<int, Team>> GetAnalyticalTeamsAsync();
+        Task<IReadOnlyDictionary<int, AnalyticalTeam>> GetAnalyticalTeamsAsync();
     }
 }

@@ -1,5 +1,4 @@
-﻿using Ccs.Entities;
-using Ccs.Models;
+﻿using Ccs.Models;
 using System.Collections.Generic;
 
 namespace SatelliteSite.ContestModule.Models
@@ -24,7 +23,7 @@ namespace SatelliteSite.ContestModule.Models
 
         public int[,] VerdictStatistics { get; }
 
-        public IReadOnlyDictionary<int, Team> Teams { get; set; }
+        public IReadOnlyDictionary<int, AnalyticalTeam> Teams { get; set; }
 
         public ProblemCollection Problems { get; set; }
 

@@ -194,7 +194,7 @@ namespace Ccs.Services
                 .ToListAsync();
         }
 
-        public virtual async Task<IReadOnlyDictionary<int, Team>> GetAnalyticalTeamsAsync()
+        public virtual async Task<IReadOnlyDictionary<int, AnalyticalTeam>> GetAnalyticalTeamsAsync()
         {
             int cid = Contest.Id;
             var affs = await ListAffiliationsAsync(true);
@@ -202,14 +202,8 @@ namespace Ccs.Services
 
             return await Db.Teams
                 .Where(t => t.ContestId == cid && t.Status == 1)
-                .ToDictionaryAsync(
-                    keySelector: t => t.TeamId,
-                    elementSelector: t =>
-                    {
-                        t.Affiliation = affs[t.AffiliationId];
-                        t.Category = cats[t.CategoryId];
-                        return t;
-                    });
+                .Select(t => new AnalyticalTeam(t.TeamId, t.TeamName, t.AffiliationId, t.CategoryId))
+                .ToDictionaryAsync(t => t.TeamId, t => t.With(cats, affs));
         }
 
         public virtual async Task<ScoreboardModel> GetScoreboardAsync()

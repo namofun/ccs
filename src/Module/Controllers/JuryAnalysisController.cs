@@ -1,4 +1,4 @@
-﻿using Ccs.Entities;
+﻿using Ccs.Models;
 using Ccs.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -16,7 +16,7 @@ namespace SatelliteSite.ContestModule.Controllers
     [Route("[area]/{cid:c(3)}/jury/analysis")]
     public class JuryAnalysisController : JuryControllerBase<IAnalysisContext>
     {
-        public IReadOnlyDictionary<int, Team> Teams { get; set; }
+        public IReadOnlyDictionary<int, AnalyticalTeam> Teams { get; set; }
 
         private static void Add<T>(Dictionary<T, int> kvp, T key)
         {
