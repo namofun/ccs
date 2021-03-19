@@ -51,10 +51,16 @@ namespace Ccs.Specifications
         protected abstract string EndpointType { get; }
 
         /// <summary>
+        /// Gets or sets the fake default time.
+        /// </summary>
+        [JsonIgnore]
+        public DateTimeOffset? FakeDefaultTime { get; set; }
+
+        /// <summary>
         /// Get the event happening time.
         /// </summary>
         /// <param name="action">The action.</param>
         /// <returns>The happening datetime.</returns>
-        protected virtual DateTimeOffset GetTime(string action) => DateTimeOffset.Now;
+        protected virtual DateTimeOffset GetTime(string action) => FakeDefaultTime ?? DateTimeOffset.Now;
     }
 }

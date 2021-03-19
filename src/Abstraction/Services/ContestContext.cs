@@ -174,5 +174,12 @@ namespace Ccs.Services
         /// <param name="action">The action type.</param>
         /// <returns>The task for emitting an event.</returns>
         Task EmitEventAsync(Specifications.AbstractEvent @event, string action);
+
+        /// <summary>
+        /// Emits a batch of events.
+        /// </summary>
+        /// <param name="events">The event entities.</param>
+        /// <returns>The task for emitting an event.</returns>
+        Task EmitEventAsync(EventBatch events);
     }
 }

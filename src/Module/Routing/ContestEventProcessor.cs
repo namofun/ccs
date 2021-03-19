@@ -1,8 +1,10 @@
 ﻿using Ccs.Events;
+using Ccs.Models;
 using Ccs.Specifications;
 using MediatR;
 using Polygon.Events;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -93,34 +95,52 @@ namespace Ccs.Services
             // clean up
             await ((IJuryContext)ctx).CleanEventsAsync();
 
+            int cid = ctx.Contest.Id;
             var deadline = DateTimeOffset.Now;
             var contestTime = ctx.Contest.StartTime ?? deadline;
 
-            // contests
-            await ctx.EmitCreateEventAsync(new Contest(notification.Contest));
+            // add all the dependents first.
+            using (var batch = new EventBatch(cid, contestTime.AddDays(-7)))
+            {
+                // contests
+                batch.AddCreate(new Contest(notification.Contest));
 
-            // judgement-types
-            await ctx.EmitCreateEventAsync(JudgementType.Defaults);
+                await ctx.EmitEventAsync(batch);
+            }
 
-            // languages
-            var langs = await ctx.ListLanguagesAsync();
-            await ctx.EmitCreateEventAsync(langs, l => new Language(l));
+            IReadOnlyDictionary<int, Tenant.Entities.Affiliation> affs;
+            using (var batch = new EventBatch(cid, contestTime.AddDays(-5)))
+            {
+                // judgement-types
+                batch.AddCreate(JudgementType.Defaults);
 
-            // groups
-            var cats = await ctx.ListCategoriesAsync();
-            await ctx.EmitCreateEventAsync(cats, c => new Group(c.Value));
+                // languages
+                var langs = await ctx.ListLanguagesAsync();
+                batch.AddCreate(langs, l => new Language(l));
 
-            // organizations
-            var affs = await ctx.ListAffiliationsAsync();
-            await ctx.EmitCreateEventAsync(affs, a => new Organization(a.Value));
+                // groups
+                var cats = await ctx.ListCategoriesAsync();
+                batch.AddCreate(cats, c => new Group(c.Value));
 
-            // problems
-            var probs = await ctx.ListProblemsAsync();
-            await ctx.EmitCreateEventAsync(probs, p => new Problem(p));
+                // organizations
+                affs = await ctx.ListAffiliationsAsync();
+                batch.AddCreate(affs, a => new Organization(a.Value));
 
-            // teams
-            var teams = await ((ITeamContext)ctx).ListTeamsAsync(t => t.Status == 1);
-            await ctx.EmitCreateEventAsync(teams, t => new Team(t, affs[t.AffiliationId]));
+                // problems
+                var probs = await ctx.ListProblemsAsync();
+                batch.AddCreate(probs, p => new Problem(p));
+
+                await ctx.EmitEventAsync(batch);
+            }
+
+            using (var batch = new EventBatch(cid, contestTime.AddDays(-3)))
+            {
+                // teams
+                var teams = await ((ITeamContext)ctx).ListTeamsAsync(t => t.Status == 1);
+                batch.AddCreate(teams, t => new Team(t, affs[t.AffiliationId]));
+
+                await ctx.EmitEventAsync(batch);
+            }
 
             // clarifications
             var clars = await ((IClarificationContext)ctx).ListClarificationsAsync(c => c.SubmitTime <= deadline);

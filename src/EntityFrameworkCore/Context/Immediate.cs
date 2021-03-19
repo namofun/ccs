@@ -42,5 +42,11 @@ namespace Ccs.Services
             Db.ContestEvents.Add(@event.ToEvent(action, Contest.Id));
             return Db.SaveChangesAsync();
         }
+
+        public Task EmitEventAsync(EventBatch events)
+        {
+            Db.ContestEvents.AddRange(events);
+            return Db.SaveChangesAsync();
+        }
     }
 }
