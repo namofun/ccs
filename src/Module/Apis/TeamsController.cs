@@ -37,16 +37,32 @@ namespace SatelliteSite.ContestModule.Apis
             [FromQuery] string affiliation = null,
             [FromQuery] bool @public = false)
         {
+            var affs = await Context.ListAffiliationsAsync();
+            var cats = await Context.ListCategoriesAsync();
+            int? affId = null;
+
+            if (affiliation != null)
+            {
+                // Assume that all abbr. is unique
+                var aff = affs.Values.FirstOrDefault(a => a.Abbreviation == affiliation);
+                if (aff == null) return new List<Team>();
+                affId = aff.Id;
+            }
+
             var cond = Expr
                 .Of<Ccs.Entities.Team>(t => t.Status == 1)
                 .CombineIf(category.HasValue, t => t.CategoryId == category)
                 .CombineIf(ids != null && ids.Length > 0, t => ids.Contains(t.TeamId))
-                .CombineIf(affiliation != null, t => t.Affiliation.Abbreviation == affiliation)
-                .CombineIf(@public, t => t.Category.IsPublic);
+                .CombineIf(affId.HasValue, t => t.AffiliationId == affId);
 
             var teams = await Context.ListTeamsAsync(cond);
-            var affs = await Context.ListAffiliationsAsync(true);
-            return teams.Select(t => new Team(t, affs[t.AffiliationId])).ToList();
+
+            // In most situations, the team category is public.
+            // So we can filter it in memory.
+            return teams
+                .WhereIf(@public, t => cats[t.CategoryId].IsPublic)
+                .Select(t => new Team(t, affs[t.AffiliationId]))
+                .ToList();
         }
 
 

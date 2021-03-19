@@ -1,5 +1,4 @@
 ﻿using System;
-using Tenant.Entities;
 
 namespace Ccs.Entities
 {
@@ -29,19 +28,9 @@ namespace Ccs.Entities
         public int AffiliationId { get; set; }
 
         /// <summary>
-        /// The navigation to affiliation
-        /// </summary>
-        public Affiliation Affiliation { get; set; }
-
-        /// <summary>
         /// The category ID
         /// </summary>
         public int CategoryId { get; set; }
-
-        /// <summary>
-        /// The navigation to category
-        /// </summary>
-        public Category Category { get; set; }
 
         /// <summary>
         /// The team status

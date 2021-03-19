@@ -202,12 +202,12 @@ namespace Ccs.Entities
                 .IsRequired()
                 .HasMaxLength(128);
 
-            entity.HasOne<Affiliation>(e => e.Affiliation)
+            entity.HasOne<Affiliation>()
                 .WithMany()
                 .HasForeignKey(e => e.AffiliationId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            entity.HasOne<Category>(e => e.Category)
+            entity.HasOne<Category>()
                 .WithMany()
                 .HasForeignKey(e => e.CategoryId)
                 .OnDelete(DeleteBehavior.Restrict);
