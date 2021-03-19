@@ -190,7 +190,7 @@ namespace SatelliteSite.ContestModule.Controllers
 
             await Context.ApplyAsync(rej, int.Parse(User.GetUserId()));
             await HttpContext.AuditAsync("applied", $"{rejudgingid}");
-            await Mediator.Publish(new Ccs.Events.ScoreboardRefreshEvent(Contest));
+            await Mediator.Publish(new Ccs.Events.ScoreboardRefreshEvent(Context));
             StatusMessage = "Rejudging applied. Scoreboard cache will be refreshed.";
             return RedirectToAction(nameof(Detail));
         }

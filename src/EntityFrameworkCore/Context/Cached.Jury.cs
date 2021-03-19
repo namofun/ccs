@@ -49,7 +49,7 @@ namespace Ccs.Services
             var @new = await CacheAsync("Core", _options.Contest,
                 async () => (await Ccs.FindAsync(Contest.Id))!);
 
-            await Mediator.Publish(new Events.ContestUpdateEvent(Contest, @new));
+            await Mediator.Publish(new Events.ContestUpdateEvent(Contest, @new, this));
             return @new;
         }
 

@@ -1,19 +1,18 @@
 ﻿using Ccs.Entities;
 using Ccs.Services;
-using MediatR;
 
 namespace Ccs.Events
 {
-    public class ClarificationCreateEvent : INotification
+    public class ClarificationCreateEvent : IContextedNotification
     {
         public Clarification Clarification { get; }
 
-        public IContestContext Contest { get; }
+        public IContestContext Context { get; }
 
         public ClarificationCreateEvent(IContestContext contest, Clarification entity)
         {
             Clarification = entity;
-            Contest = contest;
+            Context = contest;
         }
     }
 }

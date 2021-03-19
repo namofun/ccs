@@ -343,7 +343,7 @@ namespace SatelliteSite.ContestModule.Controllers
         [ActionName("RefreshCache")]
         public async Task<IActionResult> RefreshCacheConfirmation()
         {
-            await Mediator.Publish(new Ccs.Events.ScoreboardRefreshEvent(Contest));
+            await Mediator.Publish(new Ccs.Events.ScoreboardRefreshEvent(Context));
             StatusMessage = "Scoreboard cache has been refreshed.";
             await HttpContext.AuditAsync("refresh scoreboard cache", Contest.Id.ToString());
             return RedirectToAction(nameof(Home));

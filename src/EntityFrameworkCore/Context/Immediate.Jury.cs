@@ -49,7 +49,7 @@ namespace Ccs.Services
         {
             await Ccs.UpdateAsync(Contest.Id, updateExpression);
             var @new = (await Ccs.FindAsync(Contest.Id))!;
-            await Mediator.Publish(new Events.ContestUpdateEvent(Contest, @new));
+            await Mediator.Publish(new Events.ContestUpdateEvent(Contest, @new, this));
             return @new;
         }
 
