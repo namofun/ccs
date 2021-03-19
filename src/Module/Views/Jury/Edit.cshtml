@@ -74,15 +74,19 @@
                 </div>
                 <span asp-validation-for="StatusAvailable" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group" asp-show-if="Contest.Kind == CcsDefaults.KindDom">
                 <label>Others</label>
-                <div class="custom-control custom-checkbox">
+                <div class="custom-control custom-checkbox" asp-show-if="Contest.RankingStrategy == CcsDefaults.RuleXCPC">
                     <input type="checkbox" class="custom-control-input" asp-for="UseBalloon">
                     <label class="custom-control-label" asp-for="UseBalloon"></label>
                 </div>
                 <div class="custom-control custom-checkbox">
                     <input type="checkbox" class="custom-control-input" asp-for="UsePrintings">
                     <label class="custom-control-label" asp-for="UsePrintings"></label>
+                </div>
+                <div class="custom-control custom-checkbox" asp-show-if="Contest.RankingStrategy == CcsDefaults.RuleXCPC">
+                    <input type="checkbox" class="custom-control-input" asp-for="UseEvents">
+                    <label class="custom-control-label" asp-for="UseEvents"></label>
                 </div>
             </div>
             <div class="form-group">

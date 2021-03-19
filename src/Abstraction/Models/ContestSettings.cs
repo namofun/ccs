@@ -18,6 +18,11 @@ namespace Ccs.Models
         bool BalloonAvailable { get; }
 
         /// <summary>
+        /// Whether event is available
+        /// </summary>
+        bool EventAvailable { get; }
+
+        /// <summary>
         /// The submission status availability
         /// </summary>
         /// <remarks>

@@ -125,6 +125,10 @@
                 <th>Process printings</th>
                 <td>@(Contest.Settings.PrintingAvailable ? "Yes" : "No")</td>
             </tr>
+            <tr asp-show-if="Contest.Kind == CcsDefaults.KindDom">
+                <th>Emit CCS events</th>
+                <td>@(Contest.Settings.EventAvailable ? "Yes" : "No")</td>
+            </tr>
             <tr>
                 <th>Publicly visible</th>
                 <td>@(Contest.IsPublic ? "Yes" : "No")</td>

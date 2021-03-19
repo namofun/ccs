@@ -11,21 +11,20 @@ namespace SatelliteSite.ContestModule.Models
         [ReadOnly(true)]
         public int ContestId { get; set; }
 
-        [Required]
         [DisplayName("Ranking strategy")]
         public int RankingStrategy { get; set; }
 
-        [Required]
         [DisplayName("Is active and visible to public")]
         public bool IsPublic { get; set; }
 
-        [Required]
         [DisplayName("Create balloons")]
         public bool UseBalloon { get; set; }
 
-        [Required]
         [DisplayName("Send printings")]
         public bool UsePrintings { get; set; }
+
+        [DisplayName("Emit CCS events")]
+        public bool UseEvents { get; set; }
 
         [DisplayName("Self-registration category")]
         public Dictionary<string, int> RegisterCategory { get; set; }
@@ -33,7 +32,6 @@ namespace SatelliteSite.ContestModule.Models
         [DisplayName("Languages")]
         public string[] Languages { get; set; }
 
-        [Required]
         [DisplayName("Status availability")]
         public int StatusAvailable { get; set; }
 
@@ -82,6 +80,7 @@ namespace SatelliteSite.ContestModule.Models
             IsPublic = cont.IsPublic;
             UsePrintings = cont.Settings.PrintingAvailable;
             UseBalloon = cont.Settings.BalloonAvailable;
+            UseEvents = cont.Settings.EventAvailable;
             StatusAvailable = cont.Settings.StatusAvailable;
             Languages = cont.Settings.Languages;
             RegisterCategory = cont.Settings.RegisterCategory ?? new Dictionary<string, int>();

@@ -21,6 +21,10 @@ namespace Ccs.Entities
         public bool BalloonAvailable { get; set; }
 
         /// <inheritdoc />
+        [JsonPropertyName("event")]
+        public bool EventAvailable { get; set; }
+
+        /// <inheritdoc />
         [JsonPropertyName("status")]
         public int StatusAvailable { get; set; }
 
@@ -52,7 +56,9 @@ namespace Ccs.Entities
             return new ContestSettings
             {
                 BalloonAvailable = BalloonAvailable,
+                EventAvailable = EventAvailable,
                 Languages = Languages?.ToArray(),
+                PlagiarismSet = PlagiarismSet,
                 PrintingAvailable = PrintingAvailable,
                 RegisterCategory = RegisterCategory?.ToDictionary(k => k.Key, v => v.Value),
                 StatusAvailable = StatusAvailable,

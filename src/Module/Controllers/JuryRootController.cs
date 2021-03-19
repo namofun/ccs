@@ -298,11 +298,12 @@ namespace SatelliteSite.ContestModule.Controllers
                 contestTimeChanged = true;
 
             var settings = Contest.Settings.Clone();
-            settings.RegisterCategory = defaultCat;
             settings.BalloonAvailable = model.UseBalloon;
-            settings.PrintingAvailable = model.UsePrintings;
-            settings.StatusAvailable = model.StatusAvailable;
+            settings.EventAvailable = model.UseEvents;
             settings.Languages = model.Languages;
+            settings.PrintingAvailable = model.UsePrintings;
+            settings.RegisterCategory = defaultCat;
+            settings.StatusAvailable = model.StatusAvailable;
             var settingsJson = settings.ToString();
 
             await Context.UpdateContestAsync(
