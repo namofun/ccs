@@ -1,6 +1,6 @@
 ﻿@{
-    bool disabled_ = Contest.GetState() < ContestState.Started || Contest.Team == null || Contest.Team.Status != 1;
-    disabled_ = disabled_ && ViewData.ContainsKey("IsJury");
+    bool disabled_ = (Contest.GetState() < ContestState.Started && !Contest.IsJury)
+        || Contest.Team == null || Contest.Team.Status != 1;
     string disableClass = disabled_ ? "disabled" : "";
 }
 

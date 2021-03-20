@@ -109,7 +109,7 @@ namespace SatelliteSite.ContestModule.Controllers
         [HttpGet("problems/{prob}")]
         public async Task<IActionResult> ProblemView(string prob)
         {
-            if (TooEarly && !ViewData.ContainsKey("IsJury")) return NotFound();
+            if (TooEarly && !Contest.IsJury) return NotFound();
             var problem = await Context.FindProblemAsync(prob, true);
             if (problem == null) return NotFound();
 
@@ -210,7 +210,7 @@ namespace SatelliteSite.ContestModule.Controllers
         [HttpGet("[action]")]
         public async Task<IActionResult> Submit()
         {
-            if (TooEarly && !ViewData.ContainsKey("IsJury"))
+            if (TooEarly && !Contest.IsJury)
             {
                 return Message("Submit", "Contest not started.", BootstrapColor.danger);
             }
@@ -227,7 +227,7 @@ namespace SatelliteSite.ContestModule.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Submit(TeamCodeSubmitModel model)
         {
-            if (TooEarly && !ViewData.ContainsKey("IsJury"))
+            if (TooEarly && !Contest.IsJury)
             {
                 ModelState.AddModelError("TimeSequence", "Contest not started.");
             }
