@@ -157,5 +157,25 @@ namespace Ccs.Services
         {
             return Polygon.Submissions.ListWithJudgingAsync(selector, predicate, limits);
         }
+
+        public Task<List<Judging>> ListJudgingsAsync(Expression<Func<Judging, bool>>? predicate = null)
+        {
+            int cid = Contest.Id;
+            return Db.Judgings
+                .AsNoTracking()
+                .Where(j => j.s.ContestId == cid && !j.s.Ignored)
+                .WhereIf(predicate != null, predicate)
+                .ToListAsync();
+        }
+
+        public Task<List<JudgingRun>> ListJudgingRunsAsync(Expression<Func<JudgingRun, bool>>? predicate = null)
+        {
+            int cid = Contest.Id;
+            return Db.JudgingRuns
+                .AsNoTracking()
+                .Where(jr => jr.j.s.ContestId == cid && !jr.j.s.Ignored)
+                .WhereIf(predicate != null, predicate)
+                .ToListAsync();
+        }
     }
 }

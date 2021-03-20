@@ -75,11 +75,12 @@ namespace Ccs.Specifications
         /// </summary>
         /// <param name="j">The judging entity.</param>
         /// <param name="contestTime">The contest start time.</param>
-        public Judgement(Polygon.Entities.Judging j, DateTimeOffset contestTime)
+        /// <param name="verdict">The verdict to use instead.</param>
+        public Judgement(Polygon.Entities.Judging j, DateTimeOffset contestTime, Polygon.Entities.Verdict? verdict = null)
         {
             Id = $"{j.Id}";
             SubmissionId = $"{j.SubmissionId}";
-            JudgementTypeId = JudgementType.For(j.Status);
+            JudgementTypeId = JudgementType.For(verdict ?? j.Status);
             Valid = j.Active;
             StartContestTime = j.StartTime!.Value - contestTime;
             StartTime = j.StartTime!.Value;

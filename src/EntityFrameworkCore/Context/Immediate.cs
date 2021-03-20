@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Polygon.Storages;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Ccs.Services
@@ -43,10 +44,13 @@ namespace Ccs.Services
             return Db.SaveChangesAsync();
         }
 
-        public Task EmitEventAsync(EventBatch events)
+        public async Task EmitEventAsync(EventBatch events)
         {
-            Db.ContestEvents.AddRange(events);
-            return Db.SaveChangesAsync();
+            foreach (var g in events.GroupBy(e => e.EventTime).OrderBy(gg => gg.Key))
+            {
+                Db.ContestEvents.AddRange(g);
+                await Db.SaveChangesAsync();
+            }
         }
     }
 }

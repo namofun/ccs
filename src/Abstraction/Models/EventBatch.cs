@@ -39,6 +39,16 @@ namespace Ccs.Models
             }));
         }
 
+        public void AddUpdate<T>(IEnumerable<T> events, Func<T, Specifications.AbstractEvent> shaper)
+        {
+            _events.AddRange(events.Select(ee =>
+            {
+                var e = shaper(ee);
+                e.FakeDefaultTime = _preferredTime;
+                return e.ToEvent("update", _cid);
+            }));
+        }
+
         public void AddCreate(Specifications.AbstractEvent e)
         {
             e.FakeDefaultTime = _preferredTime;

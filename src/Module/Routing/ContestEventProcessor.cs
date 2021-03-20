@@ -5,8 +5,10 @@ using MediatR;
 using Polygon.Events;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Verdict = Polygon.Entities.Verdict;
 
 namespace Ccs.Services
 {
@@ -98,9 +100,12 @@ namespace Ccs.Services
             int cid = ctx.Contest.Id;
             var deadline = DateTimeOffset.Now;
             var contestTime = ctx.Contest.StartTime ?? deadline;
+            if (contestTime > deadline) contestTime = deadline;
 
-            // add all the dependents first.
-            using (var batch = new EventBatch(cid, contestTime.AddDays(-7)))
+            var submits = await ((ISubmissionContext)ctx).ListSolutionsAsync((s, j) => s, s => !s.Ignored);
+            var earlyTime = submits.Select(s => s.Time).DefaultIfEmpty(contestTime).Min();
+
+            using (var batch = new EventBatch(cid, earlyTime.AddDays(-7)))
             {
                 // contests
                 batch.AddCreate(new Contest(notification.Contest));
@@ -109,7 +114,7 @@ namespace Ccs.Services
             }
 
             IReadOnlyDictionary<int, Tenant.Entities.Affiliation> affs;
-            using (var batch = new EventBatch(cid, contestTime.AddDays(-5)))
+            using (var batch = new EventBatch(cid, earlyTime.AddDays(-5)))
             {
                 // judgement-types
                 batch.AddCreate(JudgementType.Defaults);
@@ -133,7 +138,7 @@ namespace Ccs.Services
                 await ctx.EmitEventAsync(batch);
             }
 
-            using (var batch = new EventBatch(cid, contestTime.AddDays(-3)))
+            using (var batch = new EventBatch(cid, earlyTime.AddDays(-3)))
             {
                 // teams
                 var teams = await ((ITeamContext)ctx).ListTeamsAsync(t => t.Status == 1);
@@ -142,15 +147,29 @@ namespace Ccs.Services
                 await ctx.EmitEventAsync(batch);
             }
 
-            // clarifications
-            var clars = await ((IClarificationContext)ctx).ListClarificationsAsync(c => c.SubmitTime <= deadline);
-            await ctx.EmitCreateEventAsync(clars, c => new Clarification(c, contestTime));
+            using (var batch = new EventBatch(cid, deadline))
+            {
+                // clarifications
+                var clars = await ((IClarificationContext)ctx).ListClarificationsAsync(c => c.SubmitTime <= deadline);
+                batch.AddCreate(clars, c => new Clarification(c, contestTime));
 
-            // submissions
-            var submits = await ctx.ListSolutionsAsync(all: true);
-            await ctx.EmitCreateEventAsync(submits, s => new Submission(s, contestTime));
+                // submissions
+                var judgings = await ((ISubmissionContext)ctx).ListJudgingsAsync(j => j.Status != Verdict.Pending);
+                var runs = await ((ISubmissionContext)ctx).ListJudgingRunsAsync();
 
-            throw new NotImplementedException();
+                batch.AddCreate(submits, s => new Submission(s, contestTime));
+                batch.AddCreate(runs, r => new Run(r, contestTime, 0));
+                batch.AddCreate(judgings, j => new Judgement(j, contestTime, Verdict.Running));
+                batch.AddUpdate(judgings.Where(j => j.Status != Verdict.Running), j => new Judgement(j, contestTime));
+
+                var state = ctx.Contest.GetState(deadline);
+                if (state >= Entities.ContestState.Started) batch.AddCreate(new State(ctx.Contest, ctx.Contest.StartTime.Value));
+                if (state >= Entities.ContestState.Frozen && ctx.Contest.FreezeTime.HasValue) batch.AddCreate(new State(ctx.Contest, (ctx.Contest.StartTime + ctx.Contest.FreezeTime).Value));
+                if (state >= Entities.ContestState.Ended) batch.AddCreate(new State(ctx.Contest, (ctx.Contest.StartTime + ctx.Contest.EndTime).Value));
+                if (state >= Entities.ContestState.Finalized && ctx.Contest.UnfreezeTime.HasValue) batch.AddCreate(new State(ctx.Contest, (ctx.Contest.StartTime + ctx.Contest.UnfreezeTime).Value));
+
+                await ctx.EmitEventAsync(batch);
+            }
         }
     }
 }

@@ -65,11 +65,12 @@ namespace Ccs.Specifications
         /// Construct a <see cref="State"/>.
         /// </summary>
         /// <param name="ctx">The contest entity.</param>
-        public State(IContestInformation ctx)
+        /// <param name="now">The current time, null if <see cref="DateTimeOffset.Now"/>.</param>
+        public State(IContestInformation ctx, DateTimeOffset? now = null)
         {
             Id = $"{ctx.Id}";
 
-            switch (ctx.GetState())
+            switch (ctx.GetState(now))
             {
                 case Entities.ContestState.Finalized:
                     EndOfUpdates = DateTimeOffset.Now;

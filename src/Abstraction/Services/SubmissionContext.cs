@@ -133,6 +133,22 @@ namespace Ccs.Services
         Task<List<Judging>> ListJudgingsAsync(Expression<Func<Judging, bool>> predicate, int topCount);
 
         /// <summary>
+        /// List the judgings with predicate.
+        /// </summary>
+        /// <param name="predicate">The predicate.</param>
+        /// <returns>The list task.</returns>
+        /// <remarks>Should be used in event generating only.</remarks>
+        Task<List<Judging>> ListJudgingsAsync(Expression<Func<Judging, bool>>? predicate = null);
+
+        /// <summary>
+        /// List the judging runs with predicate.
+        /// </summary>
+        /// <param name="predicate">The predicate.</param>
+        /// <returns>The list task.</returns>
+        /// <remarks>Should be used in event generating only.</remarks>
+        Task<List<JudgingRun>> ListJudgingRunsAsync(Expression<Func<JudgingRun, bool>>? predicate = null);
+
+        /// <summary>
         /// Fetch the first submission source.
         /// </summary>
         /// <param name="predicate">The submission condition.</param>
