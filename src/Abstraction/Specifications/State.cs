@@ -23,48 +23,53 @@ namespace Ccs.Specifications
         /// </summary>
         /// <remarks>When set, this time must be equal to the contest <c>start_time</c>.</remarks>
         [JsonPropertyName("started")]
-        public DateTimeOffset? Started { get; }
+        public DateTimeOffset? Started { get; set; }
 
         /// <summary>
         /// Time when the scoreboard was frozen, or <c>null</c> if the scoreboard has not been frozen.
         /// </summary>
         /// <remarks>Required iff <c>scoreboard_freeze_duration</c> is present in the contest endpoint.</remarks>
         [JsonPropertyName("frozen")]
-        public DateTimeOffset? Frozen { get; }
+        public DateTimeOffset? Frozen { get; set; }
 
         /// <summary>
         /// Time when the contest ended, or <c>null</c> if the contest has not ended.
         /// </summary>
         /// <remarks>Must not be set if started is <c>null</c>.</remarks>
         [JsonPropertyName("ended")]
-        public DateTimeOffset? Ended { get; }
+        public DateTimeOffset? Ended { get; set; }
 
         /// <summary>
         /// Time when the scoreboard was thawed (that is, unfrozen again), or <c>null</c> if the scoreboard has not been thawed.
         /// </summary>
         /// <remarks>Required iff <c>scoreboard_freeze_duration</c> is present in the contest endpoint. Must not be set if frozen is <c>null</c>.</remarks>
         [JsonPropertyName("thawed")]
-        public DateTimeOffset? Thawed { get; }
+        public DateTimeOffset? Thawed { get; set; }
 
         /// <summary>
         /// Time when the results were finalized, or <c>null</c> if results have not been finalized.
         /// </summary>
         /// <remarks>Must not be set if ended is <c>null</c>.</remarks>
         [JsonPropertyName("finalized")]
-        public DateTimeOffset? Finalized { get; }
+        public DateTimeOffset? Finalized { get; set; }
 
         /// <summary>
         /// Time after last update to the contest occurred, or <c>null</c> if more updates are still to come.
         /// </summary>
         /// <remarks>Setting this to non-<c>null</c> must be the very last change in the contest.</remarks>
         [JsonPropertyName("end_of_updates")]
-        public DateTimeOffset? EndOfUpdates { get; }
+        public DateTimeOffset? EndOfUpdates { get; set; }
 
         /// <inheritdoc />
         protected override string EndpointType => "state";
 
         /// <inheritdoc />
         protected override DateTimeOffset GetTime(string action) => _currentTime;
+
+        /// <summary>
+        /// The constructor used by JSON deserializers.
+        /// </summary>
+        public State() => Id = "unknown";
 
         /// <summary>
         /// Construct a <see cref="State"/>.
@@ -108,6 +113,34 @@ namespace Ccs.Specifications
                 case Entities.ContestState.ScheduledToStart:
                 default:
                     break;
+            }
+        }
+
+        /// <summary>
+        /// Gets the enum state of current event state.
+        /// </summary>
+        /// <returns>The enum state.</returns>
+        public Entities.ContestState GetState()
+        {
+            if (Finalized.HasValue)
+            {
+                return Entities.ContestState.Finalized;
+            }
+            else if (Ended.HasValue)
+            {
+                return Entities.ContestState.Ended;
+            }
+            else if (Frozen.HasValue)
+            {
+                return Entities.ContestState.Frozen;
+            }
+            else if (Started.HasValue)
+            {
+                return Entities.ContestState.Started;
+            }
+            else
+            {
+                return Entities.ContestState.ScheduledToStart;
             }
         }
     }

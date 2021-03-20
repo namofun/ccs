@@ -85,8 +85,7 @@ namespace SatelliteSite.ContestModule.Controllers
 
             int cid = Team.ContestId, teamid = Team.TeamId, probId = prob.ProblemId;
             var subs = await Context.ListSolutionsAsync(
-                predicate: s => s.ProblemId == probId && s.ContestId == cid
-                             && s.TeamId == teamid && s.Id == submitid,
+                predicate: s => s.ProblemId == probId && s.TeamId == teamid && s.Id == submitid,
                 selector: (s, j) => new CodeViewModel
                 {
                     CompileError = j.CompileError,

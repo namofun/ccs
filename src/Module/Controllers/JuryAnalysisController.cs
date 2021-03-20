@@ -70,7 +70,7 @@ namespace SatelliteSite.ContestModule.Controllers
             var endTime = startTime + Contest.EndTime.Value;
 
             var result = await Context.ListSolutionsAsync(
-                predicate: s => s.ContestId == cid && s.Time >= startTime && s.Time <= endTime,
+                predicate: s => s.Time >= startTime && s.Time <= endTime,
                 selector: (s, j) => new { s.Time, j.Status, s.ProblemId, s.TeamId, s.Language });
 
             var tof = (int)Math.Ceiling(Contest.EndTime.Value.TotalMinutes);
@@ -130,7 +130,7 @@ namespace SatelliteSite.ContestModule.Controllers
             var endTime = startTime + Contest.EndTime.Value;
 
             var result = await Context.ListSolutionsAsync(
-                predicate: s => s.ContestId == cid && s.Time >= startTime && s.Time <= endTime && s.ProblemId == probid,
+                predicate: s => s.Time >= startTime && s.Time <= endTime && s.ProblemId == probid,
                 selector: (s, j) => new { s.Time, SubmissionId = s.Id, j.Status, s.TeamId, s.Language, JudgingId = j.Id, j.ExecuteTime });
 
             var tof = (int)Math.Ceiling((endTime - startTime).TotalMinutes);

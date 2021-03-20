@@ -1,4 +1,6 @@
-﻿using Ccs.Models;
+﻿using Ccs.Entities;
+using Ccs.Models;
+using Ccs.Specifications;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using System;
@@ -35,6 +37,18 @@ namespace Ccs.Services
         private void Expire(string tag)
         {
             _cache.Remove($"Contest({Contest.Id})::{tag}");
+        }
+
+        protected override async Task WriteLastStateAsync(ContestState now, ContestState lastState)
+        {
+            await base.WriteLastStateAsync(now, lastState);
+            Expire("State");
+        }
+
+        protected override Task<State> GetLastStateAsync()
+        {
+            return CacheAsync("State", _options.Contest,
+                async () => await base.GetLastStateAsync());
         }
     }
 }

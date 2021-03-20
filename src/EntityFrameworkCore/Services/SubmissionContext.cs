@@ -155,6 +155,8 @@ namespace Ccs.Services
             Expression<Func<Submission, bool>>? predicate = null,
             int? limits = null)
         {
+            int cid = Contest.Id;
+            predicate = predicate.Combine(s => s.ContestId == cid);
             return Polygon.Submissions.ListWithJudgingAsync(selector, predicate, limits);
         }
 

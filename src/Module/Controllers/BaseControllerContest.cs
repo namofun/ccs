@@ -88,21 +88,7 @@ namespace SatelliteSite.ContestModule.Controllers
             _accessor = HttpContext.Features.Get<IContestFeature>();
 
             // the event of contest state change
-            /*
-            var stateNow = Contest.GetState();
-            if (!Cache.TryGetValue($"`c{cid}`internal_state", out ContestState state))
-            {
-                Cache.Set($"`c{cid}`internal_state", stateNow, TimeSpan.FromDays(365));
-                if (stateNow != ContestState.Finalized)
-                    await Notifier.Update(cid, Contest, stateNow);
-            }
-            else if (state != stateNow)
-            {
-                Cache.Set($"`c{cid}`internal_state", stateNow, TimeSpan.FromDays(365));
-                if (stateNow != ContestState.Finalized)
-                    await Notifier.Update(cid, Contest, stateNow);
-            }
-            */
+            await _accessor.Context.EnsureLastStateAsync();
 
             if (!Contest.IsPublic && !_accessor.IsJury && !_accessor.HasTeam)
             {

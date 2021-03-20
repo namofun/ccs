@@ -181,5 +181,11 @@ namespace Ccs.Services
         /// <param name="events">The event entities.</param>
         /// <returns>The task for emitting an event.</returns>
         Task EmitEventAsync(EventBatch events);
+
+        /// <summary>
+        /// Ensures that the state of contest is correct.
+        /// </summary>
+        /// <returns>The task for ensuring.</returns>
+        Task EnsureLastStateAsync();
     }
 }
