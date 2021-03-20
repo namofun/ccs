@@ -103,11 +103,22 @@ namespace Ccs.Services
         {
             if (Contest.Kind != CcsDefaults.KindDom || !Contest.Settings.EventAvailable) return;
 
+            await events.LogAsync($"A batch of {events.Count} events has been submitted.");
+            int last = 0, current = 0;
+
             foreach (var g in events.GroupBy(e => e.EventTime).OrderBy(gg => gg.Key))
             {
                 Db.ContestEvents.AddRange(g);
-                await Db.SaveChangesAsync();
+                current += await Db.SaveChangesAsync();
+
+                if (current / 50 != last)
+                {
+                    last = current / 50;
+                    await events.LogAsync($"Processing... ({current} / {events.Count})");
+                }
             }
+
+            await events.LogAsync("Finished.\n");
         }
     }
 }

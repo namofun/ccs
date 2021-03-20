@@ -17,9 +17,47 @@
         <br /><br />
         Reset event feed for @Contest.Name now? This process may take several minutes...
     </p>
-    <form asp-action="ResetEventFeed" method="post">
-        <button type="submit" class="btn btn-danger" name="refresh">
-            <i class="fas fa-sync-alt"></i> Reset now!
-        </button>
-    </form>
+    <button type="submit" class="btn btn-danger" id="reset-confirm">
+        <i class="fas fa-sync-alt"></i> Reset now!
+    </button>
 </div>
+
+<div id="reset-report">
+
+</div>
+
+@section Scripts {
+    <script>
+        $(function () {
+            var started = false;
+
+            $('#reset-confirm').on('click', function () {
+                if (started) return;
+                started = true;
+                $('#reset-confirm').remove();
+
+                var $status = $('div#reset-report');
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', '@Url.Action()?inajax=1', true);
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+
+                xhr.onprogress = function (e) {
+                    $status.html(e.currentTarget.response);
+
+                    // Scroll page to bottom of div to keep showing progress
+                    $('html, body').animate({ scrollTop: $status.offset().top + $status.height() }, 0);
+                };
+
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                        $status.append('<p><b class="text-success">Event feed has been reset.</b> You can close this window safely.</p>');
+                    }
+                };
+
+                var $rvt = $('input[name="__RequestVerificationToken"]').val();
+                xhr.send('__RequestVerificationToken=' + $rvt);
+            });
+        });
+    </script>
+}

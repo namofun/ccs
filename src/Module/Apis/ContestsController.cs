@@ -1,5 +1,4 @@
-﻿using Ccs.Events;
-using Ccs.Models;
+﻿using Ccs.Models;
 using Ccs.Services;
 using Ccs.Specifications;
 using Microsoft.AspNetCore.Authorization;
@@ -99,7 +98,7 @@ namespace SatelliteSite.ContestModule.Apis
             [FromQuery] bool stream = true)
         {
             string[] endpointTypes = string.IsNullOrWhiteSpace(types) ? null : types.Split(',');
-            return new EventFeedResult(Context, endpointTypes, stream, since_id ?? 0);
+            return new EventFeedResult(endpointTypes, stream, since_id ?? 0);
         }
 
 

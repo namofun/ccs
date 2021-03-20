@@ -45,6 +45,11 @@ namespace SatelliteSite.ContestModule
                 throw new ObjectDisposedException(nameof(_actionContext));
             }
 
+            if (_actionContext.HttpContext.RequestAborted.IsCancellationRequested)
+            {
+                return;
+            }
+
             var bytes = Encoding.UTF8.GetBytes(content);
             await _actionContext.HttpContext.Response.Body.WriteAsync(bytes.AsMemory());
             await _actionContext.HttpContext.Response.Body.FlushAsync();

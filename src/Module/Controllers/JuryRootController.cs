@@ -51,15 +51,14 @@ namespace SatelliteSite.ContestModule.Controllers
 
         [HttpPost("/[area]/{cid:c(1)}/[controller]/[action]")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrator")]
         [AuditPoint(AuditlogType.Contest)]
         [ActionName("ResetEventFeed")]
         public async Task<IActionResult> ResetEventFeedConfirmation()
         {
-            if (!Contest.Settings.EventAvailable) return NotFound();
-            await Mediator.Publish(new Ccs.Events.EventResetEvent(Context));
-            await HttpContext.AuditAsync("reset event", Contest.Id.ToString());
-            StatusMessage = "Event feed was reset.";
-            return RedirectToAction(nameof(Home));
+            if (!Contest.Settings.EventAvailable || !InAjax) return BadRequest();
+            await HttpContext.AuditAsync("reset event requested", Contest.Id.ToString());
+            return new ResetEventResult();
         }
 
 

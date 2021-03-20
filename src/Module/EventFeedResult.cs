@@ -9,19 +9,13 @@ namespace SatelliteSite.ContestModule
     /// </summary>
     public class EventFeedResult : LongRunningOperationResult
     {
-        private readonly IJuryContext _ctx;
         private readonly string[] _type;
         private readonly bool _keepAlive;
         private int after, step;
 
-        public EventFeedResult(
-            IJuryContext context,
-            string[] type,
-            bool stream,
-            int sinceid)
+        public EventFeedResult(string[] type, bool stream, int sinceid)
             : base("application/x-ndjson")
         {
-            _ctx = context;
             _type = type;
             _keepAlive = stream;
             after = sinceid;
@@ -30,6 +24,8 @@ namespace SatelliteSite.ContestModule
 
         protected override async Task ExecuteAsync(CancellationToken cancellationToken)
         {
+            var _ctx = GetContext<IJuryContext>();
+
             while (true)
             {
                 if (cancellationToken.IsCancellationRequested) break;

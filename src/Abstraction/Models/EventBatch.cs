@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Ccs.Models
 {
@@ -10,14 +11,21 @@ namespace Ccs.Models
         private readonly List<Ccs.Entities.Event> _events;
         private readonly DateTimeOffset _preferredTime;
         private readonly int _cid;
+        private ILoggable? _loggable;
 
         public int Count => _events.Count;
 
-        public EventBatch(int cid, DateTimeOffset preferredTime)
+        public Task LogAsync(string message)
+        {
+            return _loggable?.LogAsync(message) ?? Task.CompletedTask;
+        }
+
+        public EventBatch(int cid, DateTimeOffset preferredTime, ILoggable loggable)
         {
             _preferredTime = preferredTime;
             _events = new List<Ccs.Entities.Event>();
             _cid = cid;
+            _loggable = loggable;
         }
 
         public void AddCreate(IEnumerable<Specifications.AbstractEvent> events)
@@ -72,6 +80,7 @@ namespace Ccs.Models
 
         public void Dispose()
         {
+            _loggable = null;
             _events.Clear();
         }
 
@@ -88,6 +97,11 @@ namespace Ccs.Models
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerable().GetEnumerator();
+        }
+
+        public interface ILoggable
+        {
+            Task LogAsync(string message);
         }
     }
 }
