@@ -1,34 +1,35 @@
 ﻿using Ccs.Connector.PlagiarismDetect.Models;
 using Ccs.Services;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
 using Plag.Backend.Models;
 using Plag.Backend.Services;
 using SatelliteSite.ContestModule;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Ccs.Connector.PlagiarismDetect.Controllers
 {
-    public class SynchronizeResult : IActionResult
+    public class SynchronizeResult : LongRunningOperationResult
     {
         public SynchronizationOptionsModel Model { get; }
 
         public PlagiarismSet PlagiarismSet { get; }
 
-        public SynchronizeResult(SynchronizationOptionsModel model, PlagiarismSet plagiarismSet)
+        public SynchronizeResult(
+            SynchronizationOptionsModel model,
+            PlagiarismSet plagiarismSet)
+            : base("text/html")
         {
             Model = model;
             PlagiarismSet = plagiarismSet;
         }
 
-        public async Task ExecuteResultAsync(ActionContext context)
+        protected override async Task ExecuteAsync(CancellationToken cancellationToken)
         {
-            var pds = context.HttpContext.RequestServices.GetRequiredService<IPlagiarismDetectService>();
-            var ccs = (ISubmissionContext)context.HttpContext.Features.Get<IContestFeature>().Context;
+            var pds = GetService<IPlagiarismDetectService>();
+            var ccs = GetContext<ISubmissionContext>();
 
             var problemIds = (Model.ChosenProblems ?? Array.Empty<int>()).ToHashSet();
             var problems = await ccs.ListProblemsAsync();
@@ -70,7 +71,7 @@ namespace Ccs.Connector.PlagiarismDetect.Controllers
             await WriteAsync("<pre>");
             foreach (var teamId in teams.Keys)
             {
-                if (context.HttpContext.RequestAborted.IsCancellationRequested)
+                if (cancellationToken.IsCancellationRequested)
                 {
                     return;
                 }
@@ -134,13 +135,6 @@ namespace Ccs.Connector.PlagiarismDetect.Controllers
                 "<span class=\"text-success\"><b>Synchronization finished</b></span>. " +
                 $"{processed} submissions added to PDS." +
                 "</p>");
-
-            async Task WriteAsync(string content)
-            {
-                var bytes = Encoding.UTF8.GetBytes(content);
-                await context.HttpContext.Response.Body.WriteAsync(bytes.AsMemory());
-                await context.HttpContext.Response.Body.FlushAsync();
-            }
         }
     }
 }

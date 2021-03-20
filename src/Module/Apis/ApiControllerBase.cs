@@ -43,8 +43,13 @@ namespace SatelliteSite.ContestModule.Apis
             {
                 var factory = HttpContext.RequestServices.GetRequiredService<ScopedContestContextFactory>();
                 Context = (TContestContext)await factory.CreateAsync(cid, false);
+
                 if (Context != null)
                 {
+                    var feature = HttpContext.RequestServices.GetRequiredService<IContestFeature>();
+                    feature.Contextualize(Context);
+                    HttpContext.Features.Set(feature);
+
                     HttpContext.Items[nameof(cid)] = cid;
                     Mediator = HttpContext.RequestServices.GetRequiredService<IMediator>();
                     return;
