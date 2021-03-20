@@ -10,6 +10,8 @@ namespace Ccs.Specifications
     /// </summary>
     public class State : AbstractEvent
     {
+        private readonly DateTimeOffset _currentTime;
+
         /// <summary>
         /// Identifier of the current contest
         /// </summary>
@@ -61,6 +63,9 @@ namespace Ccs.Specifications
         /// <inheritdoc />
         protected override string EndpointType => "state";
 
+        /// <inheritdoc />
+        protected override DateTimeOffset GetTime(string action) => _currentTime;
+
         /// <summary>
         /// Construct a <see cref="State"/>.
         /// </summary>
@@ -73,25 +78,32 @@ namespace Ccs.Specifications
             switch (ctx.GetState(now))
             {
                 case Entities.ContestState.Finalized:
-                    EndOfUpdates = DateTimeOffset.Now;
+                    Started = ctx.StartTime;
+                    Frozen = ctx.StartTime + ctx.FreezeTime;
+                    Ended = ctx.StartTime + ctx.EndTime;
                     Thawed = ctx.StartTime + ctx.UnfreezeTime;
-                    Ended = ctx.StartTime + ctx.EndTime;
                     Finalized = Frozen.HasValue ? Thawed : Ended;
-                    Frozen = ctx.StartTime + ctx.FreezeTime;
-                    Started = ctx.StartTime;
+                    _currentTime = Finalized!.Value;
                     break;
+
                 case Entities.ContestState.Ended:
+                    Started = ctx.StartTime;
+                    Frozen = ctx.StartTime + ctx.FreezeTime;
                     Ended = ctx.StartTime + ctx.EndTime;
-                    Frozen = ctx.StartTime + ctx.FreezeTime;
-                    Started = ctx.StartTime;
+                    _currentTime = Ended!.Value;
                     break;
+
                 case Entities.ContestState.Frozen:
-                    Frozen = ctx.StartTime + ctx.FreezeTime;
                     Started = ctx.StartTime;
+                    Frozen = ctx.StartTime + ctx.FreezeTime;
+                    _currentTime = Frozen!.Value;
                     break;
+
                 case Entities.ContestState.Started:
                     Started = ctx.StartTime;
+                    _currentTime = Started!.Value;
                     break;
+
                 case Entities.ContestState.NotScheduled:
                 case Entities.ContestState.ScheduledToStart:
                 default:

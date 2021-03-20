@@ -368,6 +368,11 @@ namespace SatelliteSite.ContestModule
                     .HasLink("Contest", "Jury", "RefreshCache")
                     .RequireThat(c => Feature(c).Kind != CcsDefaults.KindProblemset);
 
+                menu.HasEntry(102)
+                    .HasTitle(string.Empty, "Reset event feed")
+                    .HasLink("Contest", "Jury", "ResetEventFeed")
+                    .RequireThat(c => Feature(c).Kind == CcsDefaults.KindDom && Feature(c).Settings.EventAvailable);
+
                 menu.HasEntry(150)
                     .HasTitle(string.Empty, "Audit log")
                     .HasLink("Contest", "Jury", "Auditlog");

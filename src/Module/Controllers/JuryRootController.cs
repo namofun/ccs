@@ -43,14 +43,10 @@ namespace SatelliteSite.ContestModule.Controllers
         [HttpGet("/[area]/{cid:c(1)}/[controller]/[action]")]
         [Authorize(Roles = "Administrator")]
         public IActionResult ResetEventFeed()
-            => AskPost(
-                title: "Reset event feed",
-                message: "After reseting event feed, you can connect to CDS. " +
-                    "But you shouldn't change any settings more, and you should use it only before contest start. " +
-                    "Or it will lead to event missing. Are you sure?",
-                area: "Contest", controller: "Jury", action: "ResetEventFeed",
-                routeValues: new { cid = Contest.Id },
-                type: BootstrapColor.warning);
+        {
+            if (!Contest.Settings.EventAvailable) return NotFound();
+            return View();
+        }
 
 
         [HttpPost("/[area]/{cid:c(1)}/[controller]/[action]")]
@@ -59,6 +55,7 @@ namespace SatelliteSite.ContestModule.Controllers
         [ActionName("ResetEventFeed")]
         public async Task<IActionResult> ResetEventFeedConfirmation()
         {
+            if (!Contest.Settings.EventAvailable) return NotFound();
             await Mediator.Publish(new Ccs.Events.EventResetEvent(Context));
             await HttpContext.AuditAsync("reset event", Contest.Id.ToString());
             StatusMessage = "Event feed was reset.";

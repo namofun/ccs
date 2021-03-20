@@ -1,0 +1,25 @@
+﻿@{
+    ViewData["Title"] = "Reset event feed";
+}
+
+<h2 class="mt-2">@ViewData["Title"]</h2>
+
+<div class="alert alert-warning">
+    <h5 class="alert-heading">Significant database impact</h5>
+    <hr>
+    <p>
+        Resetting the event feed can have a significant impact on the database load,
+        and is not necessary in normal operating circumstances.
+        <br /><br />
+        After reseting event feed, you can connect to CDS.
+        During the contest you shouldn't edit problems, teams or other things.
+        Or it will lead to event missing. Are you sure?
+        <br /><br />
+        Reset event feed for @Contest.Name now? This process may take several minutes...
+    </p>
+    <form asp-action="ResetEventFeed" method="post">
+        <button type="submit" class="btn btn-danger" name="refresh">
+            <i class="fas fa-sync-alt"></i> Reset now!
+        </button>
+    </form>
+</div>

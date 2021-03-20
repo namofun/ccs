@@ -76,14 +76,9 @@ namespace Ccs.Services
             var ctx = await TryGetContest(notification, notification.ContestId);
             if (ctx == null) return;
 
-            using (var batch = new EventBatch(ctx.Contest.Id, DateTimeOffset.Now))
+            for (int i = 0; i < notification.Runs.Count; i++)
             {
-                for (int i = 0; i < notification.Runs.Count; i++)
-                {
-                    batch.AddCreate(new Run(notification.Runs[i], ctx.Contest.StartTime ?? DateTimeOffset.Now, i + notification.RankOfFirst));
-                }
-
-                await ctx.EmitEventAsync(batch);
+                await ctx.EmitEventAsync(new Run(notification.Runs[i], ctx.Contest.StartTime ?? DateTimeOffset.Now, i + notification.RankOfFirst));
             }
         }
 

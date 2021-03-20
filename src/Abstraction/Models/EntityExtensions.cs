@@ -70,19 +70,19 @@ namespace Ccs.Models
             if (freeze.HasValue)
             {
                 // unfreezed
-                if (unfreeze.HasValue && unfreeze.Value < timeSpan)
+                if (unfreeze.HasValue && unfreeze.Value <= timeSpan)
                 {
                     return ContestState.Finalized;
                 }
 
                 // ended, but not freezed
-                if (end.Value < timeSpan)
+                if (end.Value <= timeSpan)
                 {
                     return ContestState.Ended;
                 }
 
                 // freezed, but not ended
-                if (freeze.Value < timeSpan)
+                if (freeze.Value <= timeSpan)
                 {
                     return ContestState.Frozen;
                 }
@@ -90,7 +90,7 @@ namespace Ccs.Models
                 // This contest may freeze later
                 return ContestState.Started;
             }
-            else if (end.Value < timeSpan)
+            else if (end.Value <= timeSpan)
             {
                 return ContestState.Finalized;
             }
