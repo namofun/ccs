@@ -1,6 +1,7 @@
 ﻿using Ccs.Entities;
 using Ccs.Models;
 using Microsoft.Extensions.FileProviders;
+using Polygon.Entities;
 using Polygon.Models;
 using System;
 using System.Collections.Generic;
@@ -68,5 +69,11 @@ namespace Ccs.Services
         /// <param name="filetype">The file type.</param>
         /// <returns>The task for getting file info.</returns>
         Task<IFileInfo?> GetTestcaseAsync(ProblemModel problem, int testcaseId, string filetype);
+
+        /// <summary>
+        /// Lists the testcases of all problems in this contest.
+        /// </summary>
+        /// <returns>The task for getting testcase.</returns>
+        Task<List<Testcase>> ListTestcasesAsync();
     }
 }

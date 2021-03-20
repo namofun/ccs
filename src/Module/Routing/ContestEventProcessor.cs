@@ -48,7 +48,7 @@ namespace Ccs.Services
             var ctx = await TryGetContest(notification, notification.Clarification.ContestId);
             if (ctx == null) return;
 
-            await ctx.EmitCreateEventAsync(
+            await ctx.EmitEventAsync(
                 new Clarification(notification.Clarification, ctx.Contest.StartTime ?? DateTimeOffset.Now));
         }
 
@@ -57,8 +57,9 @@ namespace Ccs.Services
             var ctx = await TryGetContest(notification, notification.ContestId);
             if (ctx == null) return;
 
-            await ctx.EmitUpdateEventAsync(
-                new Judgement(notification.Judging, ctx.Contest.StartTime ?? DateTimeOffset.Now));
+            await ctx.EmitEventAsync(
+                new Judgement(notification.Judging, ctx.Contest.StartTime ?? DateTimeOffset.Now),
+                "update");
         }
 
         public async Task Handle(JudgingBeginEvent notification, CancellationToken cancellationToken)
@@ -66,7 +67,7 @@ namespace Ccs.Services
             var ctx = await TryGetContest(notification, notification.ContestId);
             if (ctx == null) return;
 
-            await ctx.EmitCreateEventAsync(
+            await ctx.EmitEventAsync(
                 new Judgement(notification.Judging, ctx.Contest.StartTime ?? DateTimeOffset.Now));
         }
 
@@ -75,9 +76,15 @@ namespace Ccs.Services
             var ctx = await TryGetContest(notification, notification.ContestId);
             if (ctx == null) return;
 
-            await ctx.EmitCreateEventAsync(
-                notification.Runs,
-                (r, i) => new Run(r, ctx.Contest.StartTime ?? DateTimeOffset.Now, i + notification.RankOfFirst));
+            using (var batch = new EventBatch(ctx.Contest.Id, DateTimeOffset.Now))
+            {
+                for (int i = 0; i < notification.Runs.Count; i++)
+                {
+                    batch.AddCreate(new Run(notification.Runs[i], ctx.Contest.StartTime ?? DateTimeOffset.Now, i + notification.RankOfFirst));
+                }
+
+                await ctx.EmitEventAsync(batch);
+            }
         }
 
         public async Task Handle(SubmissionCreatedEvent notification, CancellationToken cancellationToken)
@@ -85,7 +92,7 @@ namespace Ccs.Services
             var ctx = await TryGetContest(notification, notification.Submission.ContestId);
             if (ctx == null) return;
 
-            await ctx.EmitCreateEventAsync(
+            await ctx.EmitEventAsync(
                 new Submission(notification.Submission, ctx.Contest.StartTime ?? DateTimeOffset.Now));
         }
 
@@ -156,17 +163,18 @@ namespace Ccs.Services
                 // submissions
                 var judgings = await ((ISubmissionContext)ctx).ListJudgingsAsync(j => j.Status != Verdict.Pending);
                 var runs = await ((ISubmissionContext)ctx).ListJudgingRunsAsync();
+                var testcases = (await ((IProblemContext)ctx).ListTestcasesAsync()).ToDictionary(t => t.Id);
 
                 batch.AddCreate(submits, s => new Submission(s, contestTime));
-                batch.AddCreate(runs, r => new Run(r, contestTime, 0));
+                batch.AddCreate(runs, r => new Run(r, contestTime, testcases[r.TestcaseId].Rank));
                 batch.AddCreate(judgings, j => new Judgement(j, contestTime, Verdict.Running));
                 batch.AddUpdate(judgings.Where(j => j.Status != Verdict.Running), j => new Judgement(j, contestTime));
 
                 var state = ctx.Contest.GetState(deadline);
-                if (state >= Entities.ContestState.Started) batch.AddCreate(new State(ctx.Contest, ctx.Contest.StartTime.Value));
-                if (state >= Entities.ContestState.Frozen && ctx.Contest.FreezeTime.HasValue) batch.AddCreate(new State(ctx.Contest, (ctx.Contest.StartTime + ctx.Contest.FreezeTime).Value));
-                if (state >= Entities.ContestState.Ended) batch.AddCreate(new State(ctx.Contest, (ctx.Contest.StartTime + ctx.Contest.EndTime).Value));
-                if (state >= Entities.ContestState.Finalized && ctx.Contest.UnfreezeTime.HasValue) batch.AddCreate(new State(ctx.Contest, (ctx.Contest.StartTime + ctx.Contest.UnfreezeTime).Value));
+                if (state >= Entities.ContestState.Started) batch.AddUpdate(new State(ctx.Contest, ctx.Contest.StartTime.Value));
+                if (state >= Entities.ContestState.Frozen && ctx.Contest.FreezeTime.HasValue) batch.AddUpdate(new State(ctx.Contest, (ctx.Contest.StartTime + ctx.Contest.FreezeTime).Value));
+                if (state >= Entities.ContestState.Ended) batch.AddUpdate(new State(ctx.Contest, (ctx.Contest.StartTime + ctx.Contest.EndTime).Value));
+                if (state >= Entities.ContestState.Finalized && ctx.Contest.UnfreezeTime.HasValue) batch.AddUpdate(new State(ctx.Contest, (ctx.Contest.StartTime + ctx.Contest.UnfreezeTime).Value));
 
                 await ctx.EmitEventAsync(batch);
             }

@@ -227,5 +227,14 @@ namespace Ccs.Services
             if (testcase == null || (!problem.Shared && testcase.IsSecret)) return null;
             return await Polygon.Testcases.GetFileAsync(testcase, filetype);
         }
+
+        public Task<List<Testcase>> ListTestcasesAsync()
+        {
+            int cid = Contest.Id;
+            return Db.ContestProblems
+                .Where(cp => cp.ContestId == cid)
+                .Join(Db.Testcases, cp => cp.ProblemId, tc => tc.ProblemId, (cp, tc) => tc)
+                .ToListAsync();
+        }
     }
 }
