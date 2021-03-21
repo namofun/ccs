@@ -6,18 +6,23 @@
 trigger:
 - main
 
-pool:
-  vmImage: ubuntu-latest
+jobs:
+- job: Build
+  displayName: "Build, Test and Publish"
 
-variables:
-  buildConfiguration: 'Release'
+  pool:
+    vmImage: ubuntu-latest
 
-steps:
-- script: dotnet build
-  displayName: 'dotnet build'
+  steps:
+  - script: dotnet build
+    displayName: 'Build'
 
-- script: dotnet test
-  displayName: 'dotnet test'
+  - script: dotnet test
+    displayName: 'Test'
 
-- script: dotnet pack -c Release -o packages
-  displayName: 'dotnet pack'
+  - script: dotnet pack -c Release -o $(Build.ArtifactStagingDirectory)
+    displayName: 'Package'
+
+  - script: dotnet nuget push -s https://nuget.xylab.fun/v3/index.json -k $(NUGET_KEY) "$(Build.ArtifactStagingDirectory)/**/*.nupkg"
+    displayName: 'Publish'
+    condition: startsWith(variables['Build.SourceBranch'], 'refs/tags/')
