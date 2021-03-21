@@ -43,4 +43,4 @@ jobs:
       custom: 'nuget'
       arguments: 'push -s https://nuget.xylab.fun/v3/index.json -k $(NUGET_KEY) "$(Build.ArtifactStagingDirectory)/**/*.nupkg"'
     displayName: 'Push to NuGet Feed'
-    #condition: startsWith(variables['Build.SourceBranch'], 'refs/tags/')
+    condition: startsWith(variables['Build.SourceBranch'], 'refs/tags/')
