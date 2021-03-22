@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace SatelliteSite.ContestModule.Controllers
 {
     [Area("Contest")]
-    [Route("[area]/{cid:c(7)}/jury/rejudgings")]
+    [Route("[area]/{cid:c(3)}/jury/rejudgings")]
     [AuditPoint(AuditlogType.Rejudging)]
     public class JuryRejudgingsController : JuryControllerBase<IRejudgingContext>
     {

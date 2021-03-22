@@ -49,7 +49,6 @@ namespace SatelliteSite.ContestModule.Models
         [ValidateNever]
         public ProblemCollection AllowedProblems { get; private set; }
 
-        [Obsolete("Problem listing need refactor")]
         public async Task<AddRejudgingModel> LoadAsync(IRejudgingContext context)
         {
             AllowedTeamNames ??= await context.GetTeamNamesAsync();

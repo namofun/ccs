@@ -141,7 +141,8 @@ namespace SatelliteSite.ContestModule
                     .HasTitle("fas fa-sync-alt", "Rejudgings")
                     .HasIdentifier("menu_rejudgings")
                     .HasBadge("rejudgings", BootstrapColor.info)
-                    .ActiveWhenController("JuryRejudgings");
+                    .ActiveWhenController("JuryRejudgings")
+                    .RequireThat(ctx => Feature(ctx).Kind != CcsDefaults.KindProblemset);
 
                 menu.HasEntry(500)
                     .HasLink("Contest", "Jury", "Scoreboard")
@@ -342,7 +343,8 @@ namespace SatelliteSite.ContestModule
 
                 menu.HasEntry(250)
                     .HasTitle(string.Empty, "Rejudgings")
-                    .HasLink("Contest", "JuryRejudgings", "List");
+                    .HasLink("Contest", "JuryRejudgings", "List")
+                    .RequireThat(ctx => Feature(ctx).Kind != CcsDefaults.KindProblemset);
 
                 menu.HasEntry(300)
                     .HasTitle(string.Empty, "Scoreboard")
