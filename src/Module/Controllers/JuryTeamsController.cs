@@ -225,7 +225,7 @@ namespace SatelliteSite.ContestModule.Controllers
 
 
         [HttpGet("[action]/{provider}")]
-        [Authorize(Roles = "Administrator,Teacher")]
+        [Authorize(Roles = "Administrator,ContestCreator")]
         public async Task<IActionResult> Import([RPBinder] IRegisterProvider provider)
         {
             if (provider == null || !provider.JuryOrContestant) return NotFound();
@@ -239,7 +239,7 @@ namespace SatelliteSite.ContestModule.Controllers
 
 
         [HttpPost("[action]/{provider}")]
-        [Authorize(Roles = "Administrator,Teacher")]
+        [Authorize(Roles = "Administrator,ContestCreator")]
         [ActionName(nameof(Import))]
         public async Task<IActionResult> ImportResult([RPBinder] IRegisterProvider provider)
         {

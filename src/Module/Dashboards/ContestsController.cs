@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 namespace SatelliteSite.ContestModule.Dashboards
 {
     [Area("Dashboard")]
-    [Authorize(Roles = "Administrator,Teacher")]
+    [Authorize(Roles = "Administrator,ContestCreator")]
     [Route("[area]/[controller]")]
     [AuditPoint(AuditlogType.Contest)]
     public class ContestsController : ViewControllerBase

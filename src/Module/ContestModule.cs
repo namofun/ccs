@@ -6,9 +6,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using SatelliteSite;
 using SatelliteSite.ContestModule.Routing;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+
+[assembly: RoleDefinition(30, "CDS", "cds_api", "CDS API user")]
+[assembly: RoleDefinition(31, "ContestCreator", "cont", "Contest Creator")]
 
 namespace SatelliteSite.ContestModule
 {
@@ -97,14 +101,16 @@ namespace SatelliteSite.ContestModule
                 menu.HasEntry(400)
                     .HasTitle("fas fa-trophy", "Contests")
                     .HasLink("Dashboard", "Contests", "List")
-                    .ActiveWhenController("Contests");
+                    .ActiveWhenController("Contests")
+                    .RequireRoles("Administrator,ContestCreator");
             });
 
             menus.Submenu(MenuNameDefaults.DashboardUsers, menu =>
             {
                 menu.HasEntry(150)
                     .HasTitle(string.Empty, "Contests")
-                    .HasLink("Dashboard", "Contests", "List");
+                    .HasLink("Dashboard", "Contests", "List")
+                    .RequireRoles("Administrator,ContestCreator");
             });
 
             menus.Submenu(MenuNameDefaults.DashboardDocuments, menu =>
