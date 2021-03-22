@@ -58,5 +58,12 @@ namespace Ccs.Services
         /// <param name="userid">The user ID.</param>
         /// <returns>The participant model.</returns>
         Task<List<ParticipantModel>> FindParticipantOfAsync(int userid);
+
+        /// <summary>
+        /// Check the problems.
+        /// </summary>
+        /// <param name="userId">The user ID.</param>
+        /// <returns>The task for checking.</returns>
+        Task<IEnumerable<(int, string)>> ListPermissionAsync(int userId);
     }
 }

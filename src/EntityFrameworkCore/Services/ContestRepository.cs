@@ -85,6 +85,17 @@ namespace Ccs.Services
             return new ContestWrapper(entity);
         }
 
+        async Task<IEnumerable<(int, string)>> IContestRepository.ListPermissionAsync(int userId)
+        {
+            var items = await Db.ContestJuries
+                .Where(pa => pa.UserId == userId)
+                .Join(Db.Contests, pa => pa.ContestId, p => p.Id, (pa, p) => p)
+                .Select(p => new { p.Id, p.Name })
+                .ToListAsync();
+
+            return items.Select(a => (a.Id, a.Name));
+        }
+
         #region Queryable Store
 
         IQueryable<Contest> IContestQueryableStore.Contests => Db.Contests;
