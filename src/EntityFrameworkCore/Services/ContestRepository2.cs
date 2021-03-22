@@ -126,9 +126,14 @@ namespace Ccs.Services
                     .ToHashSetAsync());
 
         public Task<HashSet<int>> GetRegistered(int userId)
-            => Db.TeamMembers
-                .Where(m => m.UserId == userId)
-                .Select(m => m.ContestId)
+            => Queryable
+                .Concat(
+                    Db.TeamMembers
+                        .Where(m => m.UserId == userId)
+                        .Select(m => m.ContestId),
+                    Db.ContestJuries
+                        .Where(j => j.UserId == userId)
+                        .Select(j => j.ContestId))
                 .ToHashSetAsync();
 
         public CachedContestRepository2(
