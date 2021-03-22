@@ -19,5 +19,13 @@ namespace Ccs.Services
         /// <param name="limit">The count per page.</param>
         /// <returns>The task for fetching paged lists.</returns>
         Task<IPagedList<ContestListModel>> ListAsync(ClaimsPrincipal user, int? kind = null, int page = 1, int limit = 100);
+
+        /// <summary>
+        /// Statistics the submission for participant.
+        /// </summary>
+        /// <param name="contestId">The contest ID.</param>
+        /// <param name="teamId">The team ID.</param>
+        /// <returns>The task for fetching cached statistics results.</returns>
+        Task<List<ProblemsetStatistics>> StatisticsAsync(int contestId, int teamId);
     }
 }

@@ -1,7 +1,7 @@
 ﻿@namespace SatelliteSite.ContestModule.Components.ContestStatistics
-@using Polygon.Entities
+@using Ccs.Models
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
-@model IEnumerable<SubmissionStatistics>
+@model List<ProblemsetStatistics>
 @{ bool noSolvedProblems = true, noUnsolvedProblems = true; }
 
 <h4>Statistics</h4>
@@ -29,7 +29,7 @@
 {
     noSolvedProblems = false;
     <div class="mr-1 d-inline-block">
-        <a asp-area="Misc" asp-controller="Problem" asp-action="View" asp-route-pid="@prob.ProblemId">@prob.ProblemId</a>
+        <a asp-area="Contest" asp-route-cid="@ViewData["DefaultContestId"]" asp-controller="Problemset" asp-action="View" asp-route-probid="@prob.ProblemId">@prob.ProblemId</a>
         <small class="text-danger">@prob.AcceptedSubmission/@prob.TotalSubmission</small>
     </div>
 }
@@ -44,7 +44,7 @@
 {
     noUnsolvedProblems = false;
     <div class="mr-1 d-inline-block">
-        <a asp-area="Misc" asp-controller="Problem" asp-action="View" asp-route-pid="@prob.ProblemId">@prob.ProblemId</a>
+        <a asp-area="Contest" asp-route-cid="@ViewData["DefaultContestId"]" asp-controller="Problemset" asp-action="View" asp-route-probid="@prob.ProblemId">@prob.ProblemId</a>
         <small class="text-danger mr-1">@prob.AcceptedSubmission/@prob.TotalSubmission</small>
     </div>
 }

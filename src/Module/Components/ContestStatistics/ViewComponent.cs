@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Ccs.Services;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using Polygon.Storages;
 using System;
 using System.Threading.Tasks;
 
@@ -8,11 +8,11 @@ namespace SatelliteSite.ContestModule.Components.ContestStatistics
 {
     public class ContestStatisticsViewComponent : ViewComponent
     {
-        private readonly ISubmissionStore _service;
+        private readonly IContestRepository2 _service;
         private readonly ContestStatisticsOptions _options;
 
         public ContestStatisticsViewComponent(
-            ISubmissionStore service,
+            IContestRepository2 service,
             IOptions<ContestStatisticsOptions> options)
         {
             _options = options.Value;
@@ -28,6 +28,7 @@ namespace SatelliteSite.ContestModule.Components.ContestStatistics
             }
             else
             {
+                ViewData["DefaultContestId"] = _options.DefaultContest.Value;
                 return View("Default",
                     await _service.StatisticsAsync(
                         _options.DefaultContest.Value,
