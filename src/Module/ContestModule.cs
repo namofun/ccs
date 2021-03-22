@@ -398,6 +398,9 @@ namespace SatelliteSite.ContestModule
 
             menus.Component(IdentityModule.ExtensionPointDefaults.DashboardUserDetail)
                 .HasComponent<Components.ParticipantDashboard.ParticipantDashboardViewComponent>(100);
+
+            menus.Component(IdentityModule.ExtensionPointDefaults.UserDetail)
+                .HasComponent<Components.ContestStatistics.ContestStatisticsViewComponent>(10);
         }
 
         public void RegisterPolicies(IAuthorizationPolicyContainer container)
