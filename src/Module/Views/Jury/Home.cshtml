@@ -19,7 +19,7 @@
     }
 }
 
-<h1 class="mt-2 mb-2">Contest <span>@Contest.ShortName</span></h1>
+<h1 class="mt-2 mb-2">@(Contest.Kind == CcsDefaults.KindProblemset ? "Problemset" : "Contest") <span>@Contest.ShortName</span></h1>
 
 <!--
 <form method="post">

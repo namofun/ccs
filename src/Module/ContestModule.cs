@@ -128,7 +128,8 @@ namespace SatelliteSite.ContestModule
                     .HasTitle("fas fa-comments", "Clarifications")
                     .HasIdentifier("menu_clarifications")
                     .HasBadge("clarifications", BootstrapColor.info)
-                    .ActiveWhenController("JuryClarifications");
+                    .ActiveWhenController("JuryClarifications")
+                    .RequireThat(ctx => Feature(ctx).Kind != CcsDefaults.KindProblemset);
 
                 menu.HasEntry(300)
                     .HasLink("Contest", "JurySubmissions", "List")
@@ -321,7 +322,8 @@ namespace SatelliteSite.ContestModule
 
                 menu.HasEntry(100)
                     .HasTitle(string.Empty, "Clarifications")
-                    .HasLink("Contest", "JuryClarifications", "List");
+                    .HasLink("Contest", "JuryClarifications", "List")
+                    .RequireThat(ctx => Feature(ctx).Kind != CcsDefaults.KindProblemset);
 
                 menu.HasEntry(150)
                     .HasTitle(string.Empty, "Internal Errors")

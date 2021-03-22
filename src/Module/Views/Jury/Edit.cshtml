@@ -12,6 +12,7 @@
 
 <form asp-action="Edit" method="post">
     <input type="hidden" asp-for="ContestId" />
+    <input type="hidden" asp-for="StopTime" value="+0:00:00" asp-show-if="Contest.Kind == CcsDefaults.KindProblemset" />
     <div asp-validation-summary="All" class="text-danger"></div>
     <div class="row">
         <div class="col-12 col-md-6 col-xl-4">
@@ -25,22 +26,22 @@
                 <input type="text" asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group" asp-show-if="Contest.Kind != CcsDefaults.KindProblemset">
                 <label asp-for="StartTime" class="required"></label>
                 <input type="datetime" asp-for="StartTime" class="form-control" />
                 <span asp-validation-for="StartTime" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group" asp-show-if="Contest.Kind != CcsDefaults.KindProblemset">
                 <label asp-for="FreezeTime"></label>
                 <input type="text" asp-for="FreezeTime" class="form-control" />
                 <span asp-validation-for="FreezeTime" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group" asp-show-if="Contest.Kind != CcsDefaults.KindProblemset">
                 <label asp-for="StopTime" class="required"></label>
                 <input type="text" asp-for="StopTime" class="form-control" />
                 <span asp-validation-for="StopTime" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group" asp-show-if="Contest.Kind != CcsDefaults.KindProblemset">
                 <label asp-for="UnfreezeTime"></label>
                 <input type="text" asp-for="UnfreezeTime" class="form-control" />
                 <span asp-validation-for="UnfreezeTime" class="text-danger"></span>
@@ -50,7 +51,7 @@
                 <select class="form-control" asp-for="RankingStrategy">
                     <option value="0">XCPC style</option>
                     <option value="1">IOI style</option>
-                    <option value="2">Codeforces style</option>
+                    <option value="2" asp-show-if="Contest.Kind != CcsDefaults.KindProblemset">Codeforces style</option>
                 </select>
                 <span asp-validation-for="RankingStrategy" class="text-danger"></span>
             </div>
@@ -117,11 +118,13 @@
             <b>Specification of short name:</b><br />
             Note that the short name will display on the title bar. <br /><br /><br />
 
+            <razor asp-show-if="Contest.Kind != CcsDefaults.KindProblemset">
             <b>Specification of contest times:</b><br />
             Each of the contest times can be specified as absolute time or relative
             to the start time (except for start time itself).<br /><br />
             Absolute time format: <b><tt>YYYY-MM-DD HH:MM:SS</tt></b><br />
             Relative time format: <b><tt>+[HHH]H:MM:SS</tt></b><br /><br /><br />
+            </razor>
 
             <b>Specification of ranking strategy:</b><br />
             If the XCPC-style is chosen, any rejected solutions before accepted
