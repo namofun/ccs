@@ -16,7 +16,7 @@
 
     <div class="d-flex flex-row" asp-show-if="@(Model.CompilerOutput != null && Model.Verdict != Verdict.CompileError)">
         <div class="p-2">
-            Run result: <verdict3 value="@Model.Verdict" />
+            Run result: <verdict value="@Model.Verdict" />
         </div>
         <div asp-show-if="Contest.RankingStrategy == CcsDefaults.RuleIOI" class="p-2">
             Score: <b>@Model.Points</b>
