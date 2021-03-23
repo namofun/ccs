@@ -68,6 +68,23 @@ namespace Ccs.Services
 
             return baseQuery.ToPagedListAsync(page, limit);
         }
+
+        public Task<List<ProblemsetStatistics>> StatisticsAsync(int contestId, int teamId)
+        {
+            return Db.SubmissionStatistics
+                .Where(c => c.ContestId == contestId && c.TeamId == teamId)
+                .Join(
+                    inner: Db.ContestProblems,
+                    outerKeySelector: s => new { s.ContestId, s.ProblemId },
+                    innerKeySelector: p => new { p.ContestId, p.ProblemId },
+                    resultSelector: (s, p) => new ProblemsetStatistics
+                    {
+                        AcceptedSubmission = s.AcceptedSubmission,
+                        ProblemId = p.ShortName,
+                        TotalSubmission = s.TotalSubmission,
+                    })
+                .ToListAsync();
+        }
     }
 
     public sealed class CachedContestRepository2Cache : IMemoryCache

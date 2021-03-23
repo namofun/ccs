@@ -436,3 +436,4 @@ $RECYCLE.BIN/
 /src/Host/Migrations
 /src/Host/Runs
 /src/Host/Problems
+/src/Host/wwwroot
