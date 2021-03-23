@@ -1,7 +1,7 @@
 ﻿using Ccs.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using System;
 using System.Threading.Tasks;
 
 namespace SatelliteSite.ContestModule.Components.ContestStatistics
@@ -21,8 +21,8 @@ namespace SatelliteSite.ContestModule.Components.ContestStatistics
 
         public async Task<IViewComponentResult> InvokeAsync()
         {
-            if (!_options.DefaultContest.HasValue
-                || !int.TryParse(UserClaimsPrincipal.GetUserId(), out int userId))
+            var user = (IUser)ViewData["User"];
+            if (!_options.DefaultContest.HasValue)
             {
                 return Content("");
             }
@@ -32,7 +32,7 @@ namespace SatelliteSite.ContestModule.Components.ContestStatistics
                 return View("Default",
                     await _service.StatisticsAsync(
                         _options.DefaultContest.Value,
-                        userId));
+                        user.Id));
             }
         }
     }
