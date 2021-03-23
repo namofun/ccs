@@ -18,6 +18,7 @@ namespace SatelliteSite
             if (context.Connection.LocalPort == _port)
             {
                 context.Request.Headers["X-Contest-Id"] = "1";
+                context.Request.Headers["X-Contest-Keyword"] = "hahaahahahahha";
             }
 
             return _next(context);

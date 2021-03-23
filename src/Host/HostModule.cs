@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Polygon.FakeJudgehost;
+using SatelliteSite.ContestModule.Routing;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -54,6 +55,11 @@ namespace SatelliteSite
                 .AddFakeSeeds<DefaultContext>()
                 .AddJudgehost<FakeJudgeActivity>("fake-judgehost-0")
                 .AddHttpClientFactory(_ => new System.Net.Http.HttpClient { BaseAddress = new System.Uri("http://localhost:9121/api/") });
+
+            services.Configure<MinimalSiteOptions>(options =>
+            {
+                options.Keyword = "hahaahahahahha";
+            });
         }
     }
 }
