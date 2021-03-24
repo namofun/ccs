@@ -341,4 +341,16 @@ namespace Ccs.Entities
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }
+
+    public class RemoveRatingRelatedConfiguration<TContext> :
+        EntityTypeConfigurationSupplier<TContext>,
+        IEntityTypeConfiguration<Member>
+        where TContext : DbContext
+    {
+        public void Configure(EntityTypeBuilder<Member> entity)
+        {
+            entity.Ignore(e => e.RatingDelta);
+            entity.Ignore(e => e.PreviousRating);
+        }
+    }
 }

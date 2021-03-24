@@ -20,6 +20,10 @@ namespace Ccs
             {
                 ratingUpdaterType = typeof(RatingUpdater<,>).MakeGenericType(userType, typeof(TContext));
             }
+            else
+            {
+                services.AddDbModelSupplier<TContext, RemoveRatingRelatedConfiguration<TContext>>();
+            }
 
             services.AddDbModelSupplier<TContext, ContestEntityConfiguration<TUser, TRole, TContext>>();
 
