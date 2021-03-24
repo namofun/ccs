@@ -30,6 +30,10 @@
     .rks .sol { font-weight: normal; }
 </style>
 
+<div class="d-none" id="paging">
+    <pagination bs-total-page="Model.TotalPage" bs-current-page="Model.CurrentPage" />
+</div>
+
 <div class="table-wrapper">
     <table class="data-table table table-sm table-striped" style="width:auto">
         <thead>
@@ -87,6 +91,9 @@
                 { aTargets: ['_all'], bSortable: false, bSearchable: false }
             ],
         });
+
+        $('.dataTables_wrapper .row:first-child .col-md-6:first-child').html($('#paging').html());
+        $('.dataTables_wrapper .pagination-sm').addClass('mb-0');
     });
 </script>
 

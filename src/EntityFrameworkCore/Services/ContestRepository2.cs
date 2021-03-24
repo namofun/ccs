@@ -207,9 +207,9 @@ namespace Ccs.Services
             return new PagedViewList<ContestListModel>(results, page, total, limit);
         }
 
-        public Task<List<ProblemsetStatistics>> StatisticsAsync(int contestId, int teamId)
+        public async Task<List<ProblemsetStatistics>> StatisticsAsync(int contestId, int teamId)
         {
-            return Db.SubmissionStatistics
+            var result = await Db.SubmissionStatistics
                 .Where(c => c.ContestId == contestId && c.TeamId == teamId)
                 .Join(
                     inner: Db.ContestProblems,
@@ -222,6 +222,9 @@ namespace Ccs.Services
                         TotalSubmission = s.TotalSubmission,
                     })
                 .ToListAsync();
+
+            result.Sort((a, b) => a.ProblemId.CompareTo(b.ProblemId));
+            return result;
         }
     }
 }
