@@ -31,6 +31,17 @@ namespace SatelliteSite.ContestModule.Controllers
         }
 
 
+        [HttpGet("/[area]/{cid:c(7)}/dashboard/{**slug}")]
+        [HttpGet("/[area]/{cid:c(7)}/profile/{**slug}")]
+        public IActionResult FeatureUnavailable()
+        {
+            return Message(
+                title: "Feature unavailable",
+                message: "This feature is not available in this domain. " +
+                        "Please goto the primary site to continue operations.");
+        }
+
+
         [HttpGet("[action]")]
         [AllowAnonymous]
         public async Task<IActionResult> Login()
@@ -178,6 +189,7 @@ namespace SatelliteSite.ContestModule.Controllers
                 return View();
             }
         }
+
 
         private ShowMessageResult TwoFactorFail()
             => Message(
