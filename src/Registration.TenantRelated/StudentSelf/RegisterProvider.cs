@@ -6,7 +6,7 @@ namespace Ccs.Registration
 {
     public class StudentSelfRegisterProvider : ContestantRegisterProviderBase<EmptyModel>
     {
-        public override int Order => -1000;
+        public override int Order => -800;
 
         public override string Name => "student";
 
@@ -23,7 +23,9 @@ namespace Ccs.Registration
         protected override async Task<StatusMessageModel> ExecuteAsync(RegisterProviderContext context, EmptyModel model)
         {
             if (!context.TryGetStudent(out int affId, out var studId, out _, out var studName))
-                return StatusMessageModel.Fail("Unknown error occurred.");
+            {
+                throw new NotImplementedException("Unknown error occurred.");
+            }
 
             // This time, current user haven't got any team registered.
             var teamName = studId + studName;

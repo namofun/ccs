@@ -5,7 +5,7 @@ namespace Ccs.Registration
     /// <summary>
     /// Place holder for empty model.
     /// </summary>
-    public class EmptyModel
+    public sealed class EmptyModel
     {
         /// <summary>
         /// The private constructor.
@@ -20,6 +20,6 @@ namespace Ccs.Registration
         /// <summary>
         /// The singleton task.
         /// </summary>
-        public static Task<EmptyModel> CompletedTask { get; } = Task.FromResult(new EmptyModel());
+        public static Task<EmptyModel> CompletedTask { get; } = Task.FromResult(Singleton);
     }
 }

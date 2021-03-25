@@ -10,7 +10,7 @@ namespace Ccs.Registration
 {
     public class TrainingTeamRegisterProvider : ContestantRegisterProviderBase<InputModel>
     {
-        public override int Order => -1000;
+        public override int Order => -500;
 
         public override string Name => "team member";
 

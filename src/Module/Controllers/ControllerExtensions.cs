@@ -178,6 +178,10 @@ namespace SatelliteSite.ContestModule.Controllers
                         return that.RedirectToAction(registerPage);
                     }
                 }
+                else
+                {
+                    throw new System.NotImplementedException();
+                }
             }
 
             that.StatusMessage = "Error " + that.ModelState.GetErrorStrings();
