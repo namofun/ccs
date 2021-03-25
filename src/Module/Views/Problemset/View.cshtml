@@ -1,6 +1,7 @@
 ﻿@model ProblemModel
 @{
     ViewData["Title"] = $"Problem {Model.ShortName}";
+    bool okSubmit = User.IsSignedIn() && Contest.HasTeam && Contest.Team.Status == 1;
 }
 
 <link rel="stylesheet" href="~/lib/katex/katex.min.css" />
@@ -20,12 +21,14 @@
                 <tags color="info" list="@Model.Source" />
             </p>
             <h4>Operations</h4>
-            <p asp-show-if="User.IsSignedIn()">
-                <a asp-action="Submit" data-toggle="ajaxWindow" data-target="submit" class="btn btn-success btn-sm">
+            <p>
+                <a asp-show-if="!okSubmit" class="btn btn-success btn-sm disabled">
+                    <i class="fas fa-cloud-upload-alt"></i> Submit
+                </a>
+                <a asp-show-if="okSubmit" asp-action="Submit" data-toggle="ajaxWindow" data-target="submit" class="btn btn-success btn-sm">
                     <i class="fas fa-cloud-upload-alt"></i> Submit
                 </a>
             </p>
-            <p asp-show-if="!User.IsSignedIn()">You should login first.</p>
             <h4>My submissions</h4>
             <table class="data-table pagination-sm table table-hover table-striped table-sm submissions-table" role="grid">
                 <thead class="thead-light">

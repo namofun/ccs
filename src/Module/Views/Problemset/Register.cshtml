@@ -1,0 +1,50 @@
+﻿@model List<(Ccs.Registration.IRegisterProvider, object)>
+@{
+    Layout = "_WindowLayout";
+    ViewData["Title"] = "Register";
+    Ccs.Registration.RegisterProviderContext context = ViewBag.Context;
+}
+
+<h3>Take part</h3>
+<div asp-validation-summary="All" class="text-danger"></div>
+@foreach (var item in Model)
+{
+<div class="form-group mb-4">
+    <div class="custom-control custom-radio mb-3">
+        <input type="radio" id="provider-@item.Item1.FancyName" value="@item.Item1.FancyName" name="provider" class="custom-control-input provider-radio">
+        <label class="custom-control-label" for="provider-@item.Item1.FancyName">as @item.Item1.Name</label>
+    </div>
+    <div id="area-@item.Item1.FancyName" class="register-general-areas" style="display: none;">
+        @{
+            var output = item.Item1.CreateInputRenderer(ViewContext, item.Item2, ModelExpressionProvider, Json, Component, Url);
+            await item.Item1.RenderInputAsync(context, output);
+        }
+        @output
+    </div>
+</div>
+}
+
+@section Footer {
+    <button class="btn btn-success" type="submit" style="display: none;" id="submit_button" asp-action="Register"><i class="fas fa-rocket"></i> Register</button>
+}
+
+@section Scripts {
+    <script>
+        $(function () {
+            var lastChecked = undefined;
+            $('body').on('click', '.provider-radio', function () {
+                let currentValue = $(this).val();
+                if (lastChecked === currentValue) {
+                    return;
+                } else if (lastChecked !== undefined) {
+                    $('#area-' + lastChecked).hide();
+                } else {
+                    $('#submit_button').show();
+                }
+
+                lastChecked = currentValue;
+                $('#area-' + currentValue).show();
+            });
+        });
+    </script>
+}

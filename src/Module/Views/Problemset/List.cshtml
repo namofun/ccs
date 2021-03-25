@@ -7,6 +7,31 @@
 
 <h2 class="mt-2">Problems</h2>
 
+@if (!User.IsSignedIn())
+{
+    <div class="alert alert-primary">
+        To start practicing with this problemset, you must <a class="alert-link" asp-area="Account" asp-controller="Sign" asp-action="Login" asp-route-returnUrl="@Url.Action()" data-toggle="ajaxWindow" data-target="loginAjax">login</a> first.
+    </div>
+}
+else if (Contest.HasTeam)
+{
+    <div class="alert alert-warning" asp-show-if="Contest.Team.Status == 0">
+        Your permission is being granted soon, please wait...
+    </div>
+    <div class="alert alert-danger" asp-show-if="Contest.Team.Status == 2">
+        You are not granted to submit solutions in this problemset.
+    </div>
+}
+else
+{
+    <div class="alert alert-warning" asp-show-if="@((Contest.Settings.RegisterCategory?.Count ?? 0) > 0)">
+        To start practicing with this problemset, you must <a class="alert-link" asp-action="Register">register</a> first.
+    </div>
+    <div class="alert alert-primary" asp-show-if="@((Contest.Settings.RegisterCategory?.Count ?? 0) == 0)">
+        Submitting solutions in this problemset is not open for you. If you believe this is a mistake, please contact the site administrator.
+    </div>
+}
+
 <table class="mt-3 table table-responsive-md">
     <thead>
         <tr>

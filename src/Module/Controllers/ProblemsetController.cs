@@ -1,5 +1,6 @@
 ﻿using Ccs;
 using Ccs.Entities;
+using Ccs.Registration;
 using Ccs.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -175,5 +176,19 @@ namespace SatelliteSite.ContestModule.Controllers
                 return RedirectToAction(nameof(View));
             }
         }
+
+
+        [HttpGet("[action]")]
+        [Authorize]
+        public Task<IActionResult> Register()
+            => CommonActions.GetRegister(this, nameof(List));
+
+
+        [HttpPost("[action]")]
+        [ValidateAntiForgeryToken]
+        [AuditPoint(AuditlogType.Team)]
+        [Authorize]
+        public Task<IActionResult> Register([RPBinder("Form")] IRegisterProvider provider)
+            => CommonActions.PostRegister(this, provider, nameof(List));
     }
 }
