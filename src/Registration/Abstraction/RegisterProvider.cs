@@ -256,7 +256,7 @@ namespace Ccs.Registration
         /// <inheritdoc />
         protected override bool IsAvailable(RegisterProviderContext context)
             => !context.User.IsInRole("TemporaryTeamAccount")
-                && (context.Contest.Settings.RegisterCategory?.ContainsKey(FancyName)).GetValueOrDefault();
+                && (context.Contest.Settings.RegisterCategory?.ContainsKey(FancyName) ?? false);
 
         /// <inheritdoc />
         protected override string GetPrefix() => FancyName;

@@ -71,7 +71,7 @@ namespace Ccs.Models
             TeamCount = teamCount;
             ProblemCount = problemCount;
             IsRegistered = registered;
-            IsJury = IsJury;
+            IsJury = isJury;
 
             if (!StartTime.HasValue)
                 _state = 1; // Not Scheduled
