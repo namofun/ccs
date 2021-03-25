@@ -134,22 +134,21 @@ namespace Ccs.Services
             return new PagedViewList<ContestListModel>(results, page, total, limit);
         }
 
-        public async Task<List<ProblemsetStatistics>> StatisticsAsync(int contestId, int teamId)
+        public async Task<List<ProblemsetStatistics>> StatisticsAsync(int contestId, int userId)
         {
-            var result = await Db.SubmissionStatistics
-                .Where(c => c.ContestId == contestId && c.TeamId == teamId)
-                .Join(
-                    inner: Db.ContestProblems,
-                    outerKeySelector: s => new { s.ContestId, s.ProblemId },
-                    innerKeySelector: p => new { p.ContestId, p.ProblemId },
-                    resultSelector: (s, p) => new ProblemsetStatistics
-                    {
-                        AcceptedSubmission = s.AcceptedSubmission,
-                        ProblemId = p.ShortName,
-                        TotalSubmission = s.TotalSubmission,
-                    })
-                .ToListAsync();
+            var query =
+                from m in Db.TeamMembers
+                where m.ContestId == contestId && m.UserId == userId
+                join s in Db.SubmissionStatistics on new { m.ContestId, m.TeamId } equals new { s.ContestId, s.TeamId }
+                join p in Db.ContestProblems on new { s.ContestId, s.ProblemId } equals new { p.ContestId, p.ProblemId }
+                select new ProblemsetStatistics
+                {
+                    AcceptedSubmission = s.AcceptedSubmission,
+                    ProblemId = p.ShortName,
+                    TotalSubmission = s.TotalSubmission,
+                };
 
+            var result = await query.ToListAsync();
             result.Sort((a, b) => a.ProblemId.CompareTo(b.ProblemId));
             return result;
         }

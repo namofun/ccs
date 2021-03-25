@@ -24,8 +24,8 @@ namespace Ccs.Services
         /// Statistics the submission for participant.
         /// </summary>
         /// <param name="contestId">The contest ID.</param>
-        /// <param name="teamId">The team ID.</param>
+        /// <param name="userId">The user ID.</param>
         /// <returns>The task for fetching cached statistics results.</returns>
-        Task<List<ProblemsetStatistics>> StatisticsAsync(int contestId, int teamId);
+        Task<List<ProblemsetStatistics>> StatisticsAsync(int contestId, int userId);
     }
 }
