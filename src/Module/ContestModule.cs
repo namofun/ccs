@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 
 [assembly: RoleDefinition(30, "CDS", "cds_api", "CDS API user")]
 [assembly: RoleDefinition(31, "ContestCreator", "cont", "Contest Creator")]
+[assembly: RoleDefinition(32, "TemporaryTeamAccount", "temp_team", "Temporary Team Account")]
 
 namespace SatelliteSite.ContestModule
 {

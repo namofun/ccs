@@ -149,6 +149,7 @@ namespace Ccs.Registration
                     user = userManager.CreateEmpty(username);
                     user.Email = $"{username}@contest.acm.xylab.fun";
                     await userManager.CreateAsync(user, password);
+                    await userManager.AddToRoleAsync(user, "TemporaryTeamAccount");
                 }
 
                 await context.AttachMemberAsync(team, user, true);
