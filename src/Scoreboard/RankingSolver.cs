@@ -68,8 +68,16 @@ namespace Ccs.Scoreboard
         /// <inheritdoc />
         public Task Handle(ScoreboardRefreshEvent notification, CancellationToken cancellationToken)
         {
-            if (notification.Contest.Kind == CcsDefaults.KindProblemset) return Task.CompletedTask;
-            return Select(notification.Contest).RefreshCache(Store, notification);
+            if (notification.Contest.Kind == CcsDefaults.KindProblemset)
+            {
+                return Store
+                    .RebuildStatisticsAsync(notification.Contest.Id);
+            }
+            else
+            {
+                return Select(notification.Contest)
+                    .RefreshCache(Store, notification);
+            }
         }
 
         /// <inheritdoc />

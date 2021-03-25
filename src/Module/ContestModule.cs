@@ -376,8 +376,7 @@ namespace SatelliteSite.ContestModule
 
                 menu.HasEntry(100)
                     .HasTitle(string.Empty, "Refresh scoreboard cache")
-                    .HasLink("Contest", "Jury", "RefreshCache")
-                    .RequireThat(c => Feature(c).Kind != CcsDefaults.KindProblemset);
+                    .HasLink("Contest", "Jury", "RefreshCache");
 
                 menu.HasEntry(102)
                     .HasTitle(string.Empty, "Reset event feed")
