@@ -143,5 +143,18 @@ namespace Ccs.Connector.PlagiarismDetect.Controllers
             StatusMessage = "External submission uploaded as s" + s.Id + ".";
             return RedirectToAction(nameof(Index));
         }
+
+
+        [HttpPost("reports/{rid}/[action]")]
+        public async Task<IActionResult> Justificate(string rid, int status)
+        {
+            if (status < 0 || status > 2) return BadRequest();
+            var report = await Service.FindReportAsync(rid);
+            if (report == null || PlagiarismSet.Id != report.SetId) return NotFound();
+
+            await Service.JustificateAsync(report.Id, status switch { 0 => default(bool?), 1 => false, _ => true });
+            StatusMessage = $"Plagiarism Report between s{report.SubmissionB} and s{report.SubmissionA} has been justificated.";
+            return RedirectToAction(nameof(Report), new { rid });
+        }
     }
 }

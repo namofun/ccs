@@ -11,6 +11,9 @@
 
 @if (error == null)
 {
+    <style>
+        .text-delete { text-decoration: line-through!important; }
+    </style>
     <div class="table-wrapper mt-2">
         <table class="data-table pagination-sm table table-hover table-striped table-sm" role="grid">
             <thead>
@@ -28,13 +31,13 @@
             <tbody>
                 @foreach (var cmp in Model.Comparisons)
                 {
-                <tr asp-action="Report" asp-route-rid="@cmp.Id">
+                <tr asp-action="Report" asp-route-rid="@cmp.Id" class="@(cmp.Justification == true ? "table-danger" : "")">
                     <td use-a data-order="@cmp.ExclusiveCategory">@teamNames.GetValueOrDefault(cmp.ExclusiveCategory, "UNKNOWN") (t@(cmp.ExclusiveCategory))</td>
                     <td use-a data-order="@cmp.SubmissionIdAnother">@cmp.SubmissionNameAnother</td>
-                    <td use-a class="text-variant">@(cmp.Finished == true ? "finished" : "pending")</td>
-                    <td use-a data-order="@cmp.Percent">@($"{cmp.Percent:F2}%")</td>
-                    <td use-a data-order="@cmp.PercentSelf">@($"{cmp.PercentSelf:F2}%")</td>
-                    <td use-a data-order="@cmp.PercentIt">@($"{cmp.PercentIt:F2}%")</td>
+                    <td use-a class="text-variant">@(cmp.Finished == true ? cmp.Justification == false ? "ignored" : cmp.Justification == true ? "marked" : "finished" : "pending")</td>
+                    <td class="@(cmp.Justification == false ? "text-delete" : "")" use-a data-order="@(cmp.Justification == false ? 0 : cmp.Percent)">@($"{cmp.Percent:F2}%")</td>
+                    <td class="@(cmp.Justification == false ? "text-delete" : "")" use-a data-order="@(cmp.Justification == false ? 0 : cmp.PercentSelf)">@($"{cmp.PercentSelf:F2}%")</td>
+                    <td class="@(cmp.Justification == false ? "text-delete" : "")" use-a data-order="@(cmp.Justification == false ? 0 : cmp.PercentIt)">@($"{cmp.PercentIt:F2}%")</td>
                     <td><a asp-controller="JurySubmissions" asp-action="Detail" asp-route-submitid="@cmp.SubmissionIdAnother"><i class="fas fa-file-code"></i></a></td>
                     <td><a asp-area="Plagiarism" asp-controller="Report" asp-action="Compare" asp-route-rid="@cmp.Id" target="_blank"><i class="fas fa-external-link-alt"></i></a></td>
                 </tr>
