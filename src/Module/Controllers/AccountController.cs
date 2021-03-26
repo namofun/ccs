@@ -27,6 +27,17 @@ namespace SatelliteSite.ContestModule.Controllers
         {
             var feature = HttpContext.Features.Get<IMinimalSiteFeature>();
             if (feature == null) context.Result = BadRequest();
+            var ccs = HttpContext.Features.Get<IContestFeature>();
+
+            ViewData["NavbarName"] = ccs.Context.Contest.Kind switch
+            {
+                0 => Ccs.CcsDefaults.NavbarPublic,
+                1 => Ccs.CcsDefaults.NavbarGym,
+                2 => Ccs.CcsDefaults.NavbarProblemset,
+                _ => null,
+            };
+
+            ViewData["UseLightTheme"] = true;
             base.OnActionExecuting(context);
         }
 
