@@ -98,10 +98,14 @@ namespace Ccs.Services
         public virtual async Task<IReadOnlyDictionary<int, Affiliation>> ListAffiliationsAsync(bool contestFiltered)
         {
             List<Affiliation> results;
+            int cid = Contest.Id;
 
             if (contestFiltered)
                 results = await Get<IAffiliationStore>().ListAsync(
-                    a => Db.Teams.Select(a => a.AffiliationId).Contains(a.Id));
+                    a => Db.Teams
+                        .Where(t => t.ContestId == cid)
+                        .Select(a => a.AffiliationId)
+                        .Contains(a.Id));
             else
                 results = await Get<IAffiliationStore>().ListAsync();
 
@@ -111,10 +115,14 @@ namespace Ccs.Services
         public virtual async Task<IReadOnlyDictionary<int, Category>> ListCategoriesAsync(bool contestFiltered)
         {
             List<Category> results;
+            int cid = Contest.Id;
 
             if (contestFiltered)
                 results = await Get<ICategoryStore>().ListAsync(
-                    a => Db.Teams.Select(a => a.CategoryId).Contains(a.Id));
+                    a => Db.Teams
+                        .Where(t => t.ContestId == cid)
+                        .Select(a => a.CategoryId)
+                        .Contains(a.Id));
             else
                 results = await Get<ICategoryStore>().ListAsync();
 
