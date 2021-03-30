@@ -10,7 +10,7 @@
 
 <div class="form-group">
     <label asp-for="ProblemId">Problem ID</label>
-    <input asp-for="ProblemId" type="number" onblur="ajaxget('@Url.Action("Find", new { probid = "_PROB_ID_" })'.replace('_PROB_ID_', $(this).val()),'#tryUser')" class="form-control" required />
+    <input asp-for="ProblemId" type="number" onblur="oncheck($(this).val())" class="form-control" required />
     <small id="tryUser" class="text-danger"></small>
 </div>
 <div class="form-group">
@@ -39,4 +39,13 @@
 @section Scripts {
     <script src="~/lib/jscolor/jscolor.min.js"></script>
     <script>jscolor.dir = "/lib/jscolor/"; jscolor.bind();</script>
+    <script>
+        function oncheck(val) {
+            if (val === '') {
+                $('#tryUser').text('Please enter an ID for problem.');
+            } else {
+                ajaxget('@Url.Action("Find", new { probid = "_PROB_ID_" })'.replace('_PROB_ID_', val),'#tryUser')
+            }
+        }
+    </script>
 }

@@ -6,10 +6,24 @@
 
 <div class="form-group">
     <label asp-for="UserName"></label>
-    <input asp-for="UserName" onblur="ajaxget('@Url.Action("TestUser", new { userName = "_USER_NAME_" })'.replace('_USER_NAME_', $(this).val()),'#tryUser')" class="form-control" required />
+    <input asp-for="UserName" onblur="oncheck($(this).val())" class="form-control" required />
     <small id="tryUser" class="text-danger"></small>
 </div>
 
 @section Footer {
     <button asp-action="Assign" type="submit" class="btn btn-primary">Save</button>
+}
+
+@section Scripts {
+    <script>
+        function oncheck(val) {
+            if (val === '') {
+                $('#tryUser').text('Please enter the username.');
+            } else if (val.indexOf('/') !== -1 || val.indexOf('#') !== -1 || val.indexOf('?') !== -1) {
+                $('#tryUser').text('Please enter a valid username.');
+            } else {
+                ajaxget('@Url.Action("TestUser", new { userName = "_USER_NAME_" })'.replace('_USER_NAME_', val),'#tryUser')
+            }
+        }
+    </script>
 }
