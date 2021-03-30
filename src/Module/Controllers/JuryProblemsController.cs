@@ -1,4 +1,5 @@
 ﻿using Ccs.Entities;
+using Ccs.Models;
 using Ccs.Services;
 using Microsoft.AspNetCore.Mvc;
 using Polygon.Packaging;
@@ -55,6 +56,22 @@ namespace SatelliteSite.ContestModule.Controllers
         {
             var prob = await Context.FindProblemAsync(probid, true);
             return View(prob);
+        }
+
+
+        [HttpGet("[action]")]
+        public async Task<IActionResult> Descriptions()
+        {
+            if (Contest.Kind == Ccs.CcsDefaults.KindProblemset) return StatusCode(503);
+
+            var problems = await Context.ListProblemsAsync();
+            var list = new List<ProblemModel>();
+            foreach (var item in problems)
+            {
+                list.Add(await Context.FindProblemAsync(item.ProblemId, true));
+            }
+
+            return View(list);
         }
 
 

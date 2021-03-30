@@ -1,0 +1,42 @@
+﻿@model List<ProblemModel>
+@{
+    Layout = "_WindowLayout";
+    ViewData["MaxWidth"] = "800px";
+    ViewData["Title"] = "Description";
+    ViewData["DisableAjaxRefresh"] = true;
+}
+
+@foreach (var problem in Model)
+{
+<h5><span class="circle" style="background:@problem.Color;"></span> @problem.ShortName - @problem.Title</h5>
+
+<div class="alert alert-danger mb-5" asp-show-if="string.IsNullOrWhiteSpace(problem.Statement)">
+    No description available.
+</div>
+
+<div class="problem-descibe mb-5" asp-show-if="!string.IsNullOrWhiteSpace(problem.Statement)">
+    @Html.Raw(problem.Statement)
+</div>
+}
+
+<style>
+    .problem-descibe p {
+        font-size: 1.05em;
+    }
+
+    .problem-descibe p > code, .problem-descibe li > code {
+        font-size: 100%;
+        background: rgba(27, 31, 35, 0.05);
+        color: #24292e;
+        padding: .2em .4em;
+        border-radius: .2em;
+    }
+
+    .problem-descibe span.katex-src ~ .katex {
+        font-size: 1.1em;
+    }
+
+    .window-card > h1 {
+        display: none;
+    }
+</style>
