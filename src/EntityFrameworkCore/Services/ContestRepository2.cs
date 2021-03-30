@@ -1,5 +1,4 @@
-﻿using Ccs.Entities;
-using Ccs.Models;
+﻿using Ccs.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using System;
@@ -52,11 +51,17 @@ namespace Ccs.Services
 
         public IMemoryCache Cache { get; }
 
-        public Task<List<Contest>> GetContests()
-            => CachedGetAsync("Contests", 5,
-                () => Db.Contests.AsNoTracking()
-                    .OrderByDescending(c => c.Id)
-                    .ToListAsync());
+        public Task<List<ContestListModel>> GetContests()
+            => CachedGetAsync("Contests", 5, async () =>
+            {
+                // pre-sorted to be ordered in general for paging
+                var list = await Db.Contests
+                    .Select(c => new ContestListModel(c.Id, c.Name, c.ShortName, c.StartTime, c.EndTimeSeconds, c.Kind, c.RankingStrategy, c.IsPublic, c.TeamCount, c.ProblemCount))
+                    .ToListAsync();
+
+                list.Sort();
+                return list;
+            });
 
         public Task<HashSet<int>> GetVisibility(int affId)
             => CachedGetAsync($"Tenant({affId})", 5,
@@ -122,11 +127,11 @@ namespace Ccs.Services
 
             var orig = contests
                 .WhereIf(kind.HasValue, c => c.Kind == kind)
-                .Where(c => c.IsPublic || isSiteAdmin || users.Contains(c.Id) || affs.Contains(c.Id) || jury.Contains(c.Id));
+                .Where(c => c.IsPublic || isSiteAdmin || users.Contains(c.ContestId) || affs.Contains(c.ContestId) || jury.Contains(c.ContestId));
 
             var total = orig.Count();
             var results = orig
-                .Select(c => new ContestListModel(c.Id, c.Name, c.ShortName, c.StartTime, c.EndTimeSeconds, c.Kind, c.RankingStrategy, c.IsPublic, c.TeamCount, c.ProblemCount, users.Contains(c.Id), jury.Contains(c.Id)))
+                .Select(c => c.With(users.Contains(c.ContestId), jury.Contains(c.ContestId)))
                 .Skip((page - 1) * limit)
                 .Take(limit)
                 .ToList();

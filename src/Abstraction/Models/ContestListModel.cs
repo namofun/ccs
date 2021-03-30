@@ -56,15 +56,20 @@ namespace Ccs.Models
         /// <param name="isPublic">Whether to show to public.</param>
         /// <param name="problemCount">The count of problems.</param>
         /// <param name="teamCount">The count of teams.</param>
-        /// <param name="registered">Whether user has registered.</param>
-        /// <param name="isJury">Whether user is jury of contest.</param>
-        public ContestListModel(int id, string name, string shortName, DateTimeOffset? start, double? duration, int kind, int ranker, bool isPublic, int teamCount, int problemCount, bool registered, bool isJury)
+        public ContestListModel(int id, string name, string shortName, DateTimeOffset? start, double? duration, int kind, int ranker, bool isPublic, int teamCount, int problemCount)
+            : this(id, name, shortName, start,
+                  duration.HasValue ? TimeSpan.FromSeconds(duration.Value) : default(TimeSpan?),
+                  kind, ranker, isPublic, teamCount, problemCount, false, false)
+        {
+        }
+
+        private ContestListModel(int id, string name, string shortName, DateTimeOffset? start, TimeSpan? duration, int kind, int ranker, bool isPublic, int teamCount, int problemCount, bool registered, bool isJury)
         {
             ContestId = id;
             Name = name;
             ShortName = shortName;
             StartTime = start;
-            Duration = duration.HasValue ? TimeSpan.FromSeconds(duration.Value) : default(TimeSpan?);
+            Duration = duration;
             Kind = kind;
             RankingStrategy = ranker;
             IsPublic = isPublic;
@@ -73,22 +78,36 @@ namespace Ccs.Models
             IsRegistered = registered;
             IsJury = isJury;
 
-            if (!StartTime.HasValue)
+            if (!start.HasValue)
                 _state = 1; // Not Scheduled
-            else if (!Duration.HasValue || (StartTime + Duration) >= DateTimeOffset.Now)
+            else if (!duration.HasValue || (start + duration) >= DateTimeOffset.Now)
                 _state = 2; // Running or Waiting
             else
                 _state = 3; // Ended
         }
 
-        /// <inheritdoc cref="ContestListModel(int, string, string, DateTimeOffset?, double?, int, int, bool, int, int, bool, bool)" />
-        public ContestListModel(int id, string name, string shortName, DateTimeOffset? start, double? duration, int kind, int ranker, bool isPublic, int teamCount, int problemCount)
-            : this(id, name, shortName, start, duration, kind, ranker, isPublic, teamCount, problemCount, false, true)
+        /// <summary>
+        /// Make a copy of this model with the specified property.
+        /// </summary>
+        /// <param name="registered">Whether user has registered.</param>
+        /// <param name="isJury">Whether user is jury of contest.</param>
+        /// <returns>A new instance of model.</returns>
+        public ContestListModel With(bool registered, bool isJury)
         {
+            return new ContestListModel(
+                ContestId,
+                Name,
+                ShortName,
+                StartTime,
+                Duration,
+                Kind,
+                RankingStrategy,
+                IsPublic,
+                TeamCount,
+                ProblemCount,
+                registered,
+                isJury);
         }
-
-        [Obsolete]
-        public bool OpenRegister { get; set; }
 
         /// <inheritdoc />
         public int CompareTo(ContestListModel other)
