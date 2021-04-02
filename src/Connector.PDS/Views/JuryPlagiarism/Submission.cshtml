@@ -42,12 +42,6 @@
                     <td><a asp-area="Plagiarism" asp-controller="Report" asp-action="Compare" asp-route-rid="@cmp.Id" target="_blank"><i class="fas fa-external-link-alt"></i></a></td>
                 </tr>
                 }
-                @if (Model.Comparisons.Count == 0)
-                {
-                <tr>
-                    <td colspan="8">No submissions data available</td>
-                </tr>
-                }
             </tbody>
         </table>
     </div>
@@ -83,6 +77,29 @@
 }
 else
 {
-    <div class="alert alert-danger">Compilation failed. Front end should be updated, or this submission cannot compile simply.</div>
+    <div class="alert alert-danger">
+        Compilation failed. Front end should be updated, or this submission cannot compile simply.
+        If this submission relays on macros from C++, please expand it manually then upload it as external ones.
+        <a href="#" class="alert-link" data-toggle="modal" data-target="#recompileModal">Retry &raquo;</a>
+    </div>
     <pre class="output_text">@error</pre>
+    <form id="recompileModal" method="post" asp-action="Recompile" asp-route-submitid="@Model.Id" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Recompile the submission</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure to recompile this submission? Results may not change.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                    <button type="submit" class="btn btn-danger">Yes</button>
+                </div>
+            </div>
+        </div>
+    </form>
 }

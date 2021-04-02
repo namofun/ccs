@@ -81,6 +81,17 @@ namespace Ccs.Connector.PlagiarismDetect.Controllers
         }
 
 
+        [HttpPost("submissions/{submitid}/[action]")]
+        public async Task<IActionResult> Recompile(int submitid)
+        {
+            var ss = await Service.FindSubmissionAsync(PlagiarismSet.Id, submitid, false);
+            if (ss == null) return NotFound();
+            if (ss.TokenProduced != false) return NotFound();
+            await Service.ResetCompilationAsync(PlagiarismSet.Id, submitid);
+            return RedirectToAction(nameof(Submission), new { submitid });
+        }
+
+
         [HttpGet("reports/{rid}")]
         public async Task<IActionResult> Report(string rid)
         {
