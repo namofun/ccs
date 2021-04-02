@@ -28,7 +28,8 @@ namespace SatelliteSite.ContestModule
             }
 
             var store = notification.Context.RequestServices.GetRequiredService<IProblemStore>();
-            notification.Handled = await store.CheckPermissionAsync(cid, userid);
+            var level = await store.CheckPermissionAsync(cid, userid);
+            notification.Handled = level.HasValue && level.Value >= Polygon.Entities.AuthorLevel.Writer;
         }
     }
 }

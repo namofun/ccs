@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using SatelliteSite;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -22,13 +23,14 @@ namespace Ccs.Registration
         protected override async Task<InputModel> CreateInputModelAsync(RegisterProviderContext context)
         {
             var studentStore = context.GetRequiredService<IStudentStore>();
+            var userId = int.Parse(context.User.GetUserId()!);
             IEnumerable<int> tenantId = context.User.IsInRole("Administrator")
                 ? context.GetRequiredService<IAffiliationStore>().GetQueryable().Select(a => a.Id)
                 : context.User.FindAll("tenant_admin").Select(a => int.Parse(a.Value));
 
             return new InputModel
             {
-                Classes = await studentStore.ListClassesAsync(tenantId),
+                Classes = await studentStore.ListClassesAsync(tenantId, c => c.UserId == null || c.UserId == userId),
                 Categories = await context.ListCategoriesAsync(false),
             };
         }
