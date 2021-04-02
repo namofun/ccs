@@ -63,7 +63,7 @@ namespace Ccs.Registration
                 keySelector: s => new { s.Id, s.Name },
                 elementSelector: s => s.UserId.HasValue ? new { UserId = s.UserId!.Value, UserName = s.UserName! } : null);
 
-            var _allTeams = await context.ListTeamsAsync(t => t.Status == 1);
+            var _allTeams = await context.ListTeamsAsync(t => t.Status != 3);
             var allTeams = _allTeams.ToDictionary(a => a.TeamId);
             var existing = allTeams.Values
                 .Where(t => t.AffiliationId == affId && t.CategoryId == catId)

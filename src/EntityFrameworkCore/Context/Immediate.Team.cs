@@ -206,14 +206,13 @@ namespace Ccs.Services
                 .ToDictionaryAsync(a => a.TeamId, a => a.TeamName);
         }
 
-        public virtual async Task<ILookup<int, string>> GetTeamMembersAsync()
+        public virtual Task<ILookup<int, string>> GetTeamMembersAsync()
         {
             int cid = Contest.Id;
-            var results = await Db.TeamMembers
+            return Db.TeamMembers
                 .Where(t => t.ContestId == cid)
                 .Join(Db.Users, m => m.UserId, u => u.Id, (m, u) => new { m.TeamId, u.UserName })
-                .ToListAsync();
-            return results.ToLookup(a => a.TeamId, a => a.UserName);
+                .ToLookupAsync(a => a.TeamId, a => a.UserName);
         }
 
         public virtual async Task<IEnumerable<string>> GetTeamMemberAsync(Team team)
