@@ -405,11 +405,15 @@ namespace SatelliteSite.ContestModule
 
         public void RegisterPolicies(IAuthorizationPolicyContainer container)
         {
-            var jury = new ContestJuryRequirement();
+            var balloon = new ContestJuryRequirement(Ccs.Entities.JuryLevel.BalloonRunner);
+            var jury = new ContestJuryRequirement(Ccs.Entities.JuryLevel.Jury);
+            var admin = new ContestJuryRequirement(Ccs.Entities.JuryLevel.Administrator);
             var team = new ContestTeamRequirement();
             var visible = new ContestVisibleRequirement();
 
+            container.AddPolicy("ContestIsBalloonRunner", b => b.AddRequirements(jury));
             container.AddPolicy("ContestIsJury", b => b.AddRequirements(jury));
+            container.AddPolicy("ContestIsAdministrator", b => b.AddRequirements(admin));
             container.AddPolicy("ContestVisible", b => b.AddRequirements(visible));
             container.AddPolicy("ContestHasTeam", b => b.AddRequirements(team));
         }

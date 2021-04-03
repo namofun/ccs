@@ -1,4 +1,5 @@
-﻿using Ccs.Services;
+﻿using Ccs.Entities;
+using Ccs.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using System.Linq;
@@ -47,9 +48,16 @@ namespace SatelliteSite.ContestModule.Routing
 
     public class ContestJuryRequirement : IContestAuthorizationHandler
     {
+        private readonly JuryLevel _level;
+
+        public ContestJuryRequirement(JuryLevel level)
+        {
+            _level = level;
+        }
+
         public Task HandleAsync(AuthorizationHandlerContext context, IContestContextAccessor feature)
         {
-            if (feature.IsJury)
+            if (feature.JuryLevel.HasValue && feature.JuryLevel.Value >= _level)
             {
                 context.Succeed(this);
             }

@@ -26,7 +26,7 @@ namespace SatelliteSite.ContestModule.Routing
             }
             else if (!context.User.IsSignedIn())
             {
-                feature.Authenticate(null, false);
+                feature.Authenticate(null, null);
                 return _next(context);
             }
             else
@@ -39,12 +39,22 @@ namespace SatelliteSite.ContestModule.Routing
         {
             Team? team = null;
             if (int.TryParse(context.User.GetUserId(), out int uid))
+            {
                 team = await feature.Context.FindTeamByUserAsync(uid);
+            }
 
-            bool isJury = context.User.IsInRole("Administrator") ||
-                (await feature.Context.ListJuriesAsync()).ContainsKey(uid);
+            JuryLevel? level = null;
+            if (context.User.IsInRole("Administrator"))
+            {
+                level = JuryLevel.Administrator;
+            }
+            else
+            {
+                var juryList = await feature.Context.ListJuriesAsync();
+                if (juryList.ContainsKey(uid)) level = juryList[uid].Item2;
+            }
 
-            feature.Authenticate(team, isJury);
+            feature.Authenticate(team, level);
             await _next(context);
         }
     }

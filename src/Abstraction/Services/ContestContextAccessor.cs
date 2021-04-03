@@ -14,8 +14,17 @@ namespace Ccs.Services
         /// <summary>The current team</summary>
         Team? Team { get; }
 
+        /// <summary>The jury level</summary>
+        JuryLevel? JuryLevel { get; }
+
+        /// <summary>Whether current user is a balloon runner</summary>
+        bool IsBalloonRunner { get; }
+
         /// <summary>Whether current user is a jury</summary>
         bool IsJury { get; }
+
+        /// <summary>Whether current user is an administrator</summary>
+        bool IsAdministrator { get; }
 
         /// <summary>Whether current user belongs to a team</summary>
         bool HasTeam { get; }
