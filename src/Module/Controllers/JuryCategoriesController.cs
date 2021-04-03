@@ -1,4 +1,5 @@
 ﻿using Ccs.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SatelliteSite.ContestModule.Models;
 using System.Linq;
@@ -7,6 +8,7 @@ using System.Threading.Tasks;
 namespace SatelliteSite.ContestModule.Controllers
 {
     [Area("Contest")]
+    [Authorize(Policy = "ContestIsJury")]
     [Route("[area]/{cid:c(7)}/jury/categories")]
     [AuditPoint(AuditlogType.Team)]
     public class JuryCategoriesController : JuryControllerBase<ITeamContext>

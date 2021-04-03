@@ -1,5 +1,6 @@
 ﻿using Ccs.Entities;
 using Ccs.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SatelliteSite.ContestModule.Models;
 using System;
@@ -9,6 +10,7 @@ using System.Threading.Tasks;
 namespace SatelliteSite.ContestModule.Controllers
 {
     [Area("Contest")]
+    [Authorize(Policy = "ContestIsJury")]
     [Route("[area]/{cid:c(3)}/jury/clarifications")]
     [AuditPoint(AuditlogType.Clarification)]
     public class JuryClarificationsController : JuryControllerBase<IClarificationContext>

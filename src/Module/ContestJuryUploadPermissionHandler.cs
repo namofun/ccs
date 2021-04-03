@@ -1,6 +1,6 @@
-﻿using MediatR;
+﻿using Ccs.Services;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
-using Polygon.Storages;
 using SatelliteSite.Substrate.Dashboards;
 using System;
 using System.Threading;
@@ -27,9 +27,17 @@ namespace SatelliteSite.ContestModule
                 return;
             }
 
-            var store = notification.Context.RequestServices.GetRequiredService<IProblemStore>();
-            var level = await store.CheckPermissionAsync(cid, userid);
-            notification.Handled = level.HasValue && level.Value >= Polygon.Entities.AuthorLevel.Writer;
+            notification.Handled = false;
+            var store = notification.Context.RequestServices.GetRequiredService<ScopedContestContextFactory>();
+            var c = await store.CreateAsync(cid, false);
+            if (c != null)
+            {
+                var jury = await c.ListJuriesAsync();
+                if (jury.TryGetValue(userid, out var val))
+                {
+                    notification.Handled = val.Item2 >= Ccs.Entities.JuryLevel.Jury;
+                }
+            }
         }
     }
 }

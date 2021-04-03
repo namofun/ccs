@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 namespace SatelliteSite.ContestModule.Controllers
 {
     [Area("Contest")]
+    [Authorize(Policy = "ContestIsJury")]
     [Route("[area]/{cid:c(7)}/[controller]")]
     public class JuryController : JuryControllerBase<IJuryContext>
     {
@@ -41,7 +42,7 @@ namespace SatelliteSite.ContestModule.Controllers
 
 
         [HttpGet("/[area]/{cid:c(1)}/[controller]/[action]")]
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Policy = "ContestIsAdministrator")]
         public IActionResult ResetEventFeed()
         {
             if (!Contest.Settings.EventAvailable) return NotFound();
@@ -51,7 +52,7 @@ namespace SatelliteSite.ContestModule.Controllers
 
         [HttpPost("/[area]/{cid:c(1)}/[controller]/[action]")]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Policy = "ContestIsAdministrator")]
         [AuditPoint(AuditlogType.Contest)]
         [ActionName("ResetEventFeed")]
         public async Task<IActionResult> ResetEventFeedConfirmation()
@@ -73,7 +74,7 @@ namespace SatelliteSite.ContestModule.Controllers
 
         [HttpPost("[action]/{target}")]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Policy = "ContestIsAdministrator")]
         [AuditPoint(AuditlogType.Contest)]
         public async Task<IActionResult> ChangeState(string target)
         {
@@ -147,14 +148,14 @@ namespace SatelliteSite.ContestModule.Controllers
 
 
         [HttpGet("[action]")]
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Policy = "ContestIsAdministrator")]
         public IActionResult Assign()
             => Window(new JuryAssignModel { Level = JuryLevel.Jury });
 
 
         [HttpPost("[action]")]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Policy = "ContestIsAdministrator")]
         [AuditPoint(AuditlogType.User)]
         public async Task<IActionResult> Assign(JuryAssignModel model)
         {
@@ -175,7 +176,7 @@ namespace SatelliteSite.ContestModule.Controllers
 
 
         [HttpGet("[action]/{userid}")]
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Policy = "ContestIsAdministrator")]
         public async Task<IActionResult> Unassign(int userid)
         {
             var user = await UserManager.FindByIdAsync(userid);
@@ -192,7 +193,7 @@ namespace SatelliteSite.ContestModule.Controllers
 
         [HttpPost("[action]/{userid}")]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Policy = "ContestIsAdministrator")]
         [AuditPoint(AuditlogType.User)]
         [ActionName("Unassign")]
         public async Task<IActionResult> UnassignConfirmation(int userid)
@@ -207,7 +208,7 @@ namespace SatelliteSite.ContestModule.Controllers
 
 
         [HttpGet("[action]/{userName?}")]
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Policy = "ContestIsAdministrator")]
         public async Task<IActionResult> TestUser(string userName)
         {
             if (userName != null)
@@ -326,14 +327,14 @@ namespace SatelliteSite.ContestModule.Controllers
 
 
         [HttpGet("[action]")]
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Policy = "ContestIsAdministrator")]
         public IActionResult RefreshCache()
             => View();
 
 
         [HttpPost("[action]")]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Policy = "ContestIsAdministrator")]
         [AuditPoint(AuditlogType.Contest)]
         [ActionName("RefreshCache")]
         public async Task<IActionResult> RefreshCacheConfirmation()

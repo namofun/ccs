@@ -1,5 +1,6 @@
 ﻿using Ccs.Connector.PlagiarismDetect.Models;
 using Ccs.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Plag.Backend.Models;
 using SatelliteSite.ContestModule.Controllers;
@@ -12,6 +13,7 @@ using System.Threading.Tasks;
 namespace Ccs.Connector.PlagiarismDetect.Controllers
 {
     [Area("Contest")]
+    [Authorize(Policy = "ContestIsJury")]
     [Route("[area]/{cid:c(3)}/jury/plagiarism-detect")]
     [RestfulRoleExceptionFilter]
     public partial class JuryPlagiarismController : JuryControllerBase<IJuryContext>

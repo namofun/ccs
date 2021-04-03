@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 namespace SatelliteSite.ContestModule.Controllers
 {
     [Area("Contest")]
+    [Authorize(Policy = "ContestIsJury")]
     [Route("[area]/{cid:c(7)}/jury/teams")]
     [AuditPoint(AuditlogType.Team)]
     public class JuryTeamsController : JuryControllerBase<ITeamContext>
@@ -225,7 +226,7 @@ namespace SatelliteSite.ContestModule.Controllers
 
 
         [HttpGet("[action]/{provider}")]
-        [Authorize(Roles = "Administrator,ContestCreator")]
+        [Authorize(Policy = "ContestIsAdministrator")]
         public async Task<IActionResult> Import([RPBinder] IRegisterProvider provider)
         {
             if (provider == null || !provider.JuryOrContestant) return NotFound();
@@ -239,7 +240,7 @@ namespace SatelliteSite.ContestModule.Controllers
 
 
         [HttpPost("[action]/{provider}")]
-        [Authorize(Roles = "Administrator,ContestCreator")]
+        [Authorize(Policy = "ContestIsAdministrator")]
         [ActionName(nameof(Import))]
         public async Task<IActionResult> ImportResult([RPBinder] IRegisterProvider provider)
         {
@@ -267,7 +268,7 @@ namespace SatelliteSite.ContestModule.Controllers
 
 
         [HttpGet("[action]")]
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Policy = "ContestIsAdministrator")]
         public IActionResult LockoutTemporary()
         {
             return AskPost(
@@ -280,7 +281,7 @@ namespace SatelliteSite.ContestModule.Controllers
 
 
         [HttpPost("[action]")]
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Policy = "ContestIsAdministrator")]
         [ValidateAntiForgeryToken]
         [ActionName(nameof(LockoutTemporary))]
         public async Task<IActionResult> LockoutTemporaryConfirmation()

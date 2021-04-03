@@ -8,7 +8,6 @@ namespace SatelliteSite.ContestModule.Controllers
     /// Base controller for jury related things.
     /// </summary>
     [Authorize]
-    [Authorize(Policy = "ContestIsJury")]
     public abstract class JuryControllerBase<TContestContext> : ContestControllerBase<TContestContext>
         where TContestContext : class, Ccs.Services.IContestContext
     {

@@ -16,7 +16,7 @@ namespace SatelliteSite.ContestModule.Routing
     {
         public Task HandleAsync(AuthorizationHandlerContext context, IContestContextAccessor feature)
         {
-            if (feature.IsPublic || feature.HasTeam || feature.IsJury)
+            if (feature.IsPublic || feature.HasTeam || feature.JuryLevel.HasValue)
             {
                 context.Succeed(this);
                 return Task.CompletedTask;

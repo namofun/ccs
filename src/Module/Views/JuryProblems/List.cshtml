@@ -81,7 +81,7 @@
     <a asp-action="Descriptions" asp-show-if="@Contest.Kind != CcsDefaults.KindProblemset" class="btn btn-success" title="Review descriptions">
         <i class="fas fa-file-pdf"></i>&nbsp;Review descriptions
     </a>
-    <a asp-in-roles="Administrator,Problem" asp-area="Dashboard" asp-controller="Problems" asp-action="List" class="btn btn-secondary" title="polygon">
+    <a asp-in-roles="Administrator,ProblemCreator" asp-area="Dashboard" asp-controller="Problems" asp-action="List" class="btn btn-secondary" title="polygon">
         <i class="fas fa-book-open"></i>&nbsp;Polygon
     </a>
 </p>

@@ -1,4 +1,5 @@
 ﻿using Ccs.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Threading.Tasks;
@@ -6,6 +7,7 @@ using System.Threading.Tasks;
 namespace SatelliteSite.ContestModule.Controllers
 {
     [Area("Contest")]
+    [Authorize(Policy = "ContestIsBalloonRunner")]
     [Route("[area]/{cid:c(3)}/jury/printings")]
     public class JuryPrintingsController : JuryControllerBase<IContestContext>
     {

@@ -1,6 +1,7 @@
 ﻿using Ccs.Entities;
 using Ccs.Models;
 using Ccs.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Polygon.Packaging;
 using SatelliteSite.ContestModule.Models;
@@ -14,6 +15,7 @@ using System.Threading.Tasks;
 namespace SatelliteSite.ContestModule.Controllers
 {
     [Area("Contest")]
+    [Authorize(Policy = "ContestIsJury")]
     [Route("[area]/{cid:c(7)}/jury/problems")]
     [AuditPoint(AuditlogType.Problem)]
     public class JuryProblemsController : JuryControllerBase<IProblemContext>
