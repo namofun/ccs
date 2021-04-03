@@ -166,7 +166,7 @@ namespace SatelliteSite.ContestModule.Controllers
             }
             else
             {
-                await Context.AssignJuryAsync(user);
+                await Context.AssignJuryAsync(user, JuryLevel.Jury);
                 await HttpContext.AuditAsync("assigned jury", $"{user.Id}");
             }
 

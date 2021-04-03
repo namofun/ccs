@@ -59,9 +59,9 @@ namespace Ccs.Services
                 async () => await base.ListJuriesAsync());
         }
 
-        public override async Task AssignJuryAsync(IUser user)
+        public override async Task AssignJuryAsync(IUser user, JuryLevel level)
         {
-            await base.AssignJuryAsync(user);
+            await base.AssignJuryAsync(user, level);
             Expire("Jury");
         }
 

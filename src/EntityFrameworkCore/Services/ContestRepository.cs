@@ -66,7 +66,7 @@ namespace Ccs.Services
             await Db.SaveChangesAsync();
 
             var uid = int.Parse(user.GetUserId()!);
-            Db.ContestJuries.Add(new Jury { ContestId = e.Entity.Id, UserId = uid });
+            Db.ContestJuries.Add(new Jury { ContestId = e.Entity.Id, UserId = uid, Level = JuryLevel.Administrator });
             await Db.SaveChangesAsync();
 
             return e.Entity;

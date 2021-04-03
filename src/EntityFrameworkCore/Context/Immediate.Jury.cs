@@ -68,11 +68,11 @@ namespace Ccs.Services
                 .ToDictionaryAsync(k => k.Id, v => v.UserName);
         }
 
-        public virtual Task AssignJuryAsync(IUser user)
+        public virtual Task AssignJuryAsync(IUser user, JuryLevel level)
         {
             int cid = Contest.Id, userid = user.Id;
             return Db.ContestJuries.UpsertAsync(
-                () => new Jury { ContestId = cid, UserId = userid });
+                () => new Jury { ContestId = cid, UserId = userid, Level = level });
         }
 
         public virtual Task UnassignJuryAsync(IUser user)

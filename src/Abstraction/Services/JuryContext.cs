@@ -50,8 +50,9 @@ namespace Ccs.Services
         /// Assign jury user to contest.
         /// </summary>
         /// <param name="user">The jury user.</param>
+        /// <param name="level">The jury level.</param>
         /// <returns>The task for assigning jury.</returns>
-        Task AssignJuryAsync(IUser user);
+        Task AssignJuryAsync(IUser user, JuryLevel level);
 
         /// <summary>
         /// Unassign jury user to contest.
