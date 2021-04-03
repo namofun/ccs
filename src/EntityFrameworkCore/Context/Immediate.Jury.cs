@@ -59,13 +59,13 @@ namespace Ccs.Services
             return lists.SingleOrDefault() ?? new ServerStatus { ContestId = Contest.Id };
         }
 
-        public virtual Task<Dictionary<int, string>> ListJuriesAsync()
+        public virtual Task<Dictionary<int, (string, JuryLevel)>> ListJuriesAsync()
         {
             int cid = Contest.Id;
             return Db.ContestJuries
                 .Where(j => j.ContestId == cid)
-                .Join(Db.Users, j => j.UserId, u => u.Id, (j, u) => new { u.Id, u.UserName })
-                .ToDictionaryAsync(k => k.Id, v => v.UserName);
+                .Join(Db.Users, j => j.UserId, u => u.Id, (j, u) => new { u.Id, u.UserName, j.Level })
+                .ToDictionaryAsync(k => k.Id, v => (v.UserName, v.Level));
         }
 
         public virtual Task AssignJuryAsync(IUser user, JuryLevel level)

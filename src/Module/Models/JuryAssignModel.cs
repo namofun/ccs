@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using Ccs.Entities;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace SatelliteSite.ContestModule.Models
@@ -8,5 +9,7 @@ namespace SatelliteSite.ContestModule.Models
         [DisplayName("User Name")]
         [Required]
         public string UserName { get; set; }
+
+        public JuryLevel Level { get; set; }
     }
 }

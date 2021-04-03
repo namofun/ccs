@@ -10,6 +10,22 @@
     <small id="tryUser" class="text-danger"></small>
 </div>
 
+<div class="form-group">
+    <label class="d-block">Permission Level</label>
+    <div class="custom-control custom-radio d-inline mr-2">
+        <input type="radio" asp-for="Level" id="level-reader" class="custom-control-input" value="0" />
+        <label class="custom-control-label" for="level-reader">Balloon Runner</label>
+    </div>
+    <div class="custom-control custom-radio d-inline mr-2">
+        <input type="radio" asp-for="Level" checked id="level-writer" class="custom-control-input" value="1" />
+        <label class="custom-control-label" for="level-writer">Jury</label>
+    </div>
+    <div class="custom-control custom-radio d-inline">
+        <input type="radio" asp-for="Level" id="level-creator" class="custom-control-input" value="2" />
+        <label class="custom-control-label" for="level-creator">Administrator</label>
+    </div>
+</div>
+
 @section Footer {
     <button asp-action="Assign" type="submit" class="btn btn-primary">Save</button>
 }

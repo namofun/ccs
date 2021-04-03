@@ -149,7 +149,7 @@ namespace SatelliteSite.ContestModule.Controllers
         [HttpGet("[action]")]
         [Authorize(Roles = "Administrator")]
         public IActionResult Assign()
-            => Window(new JuryAssignModel());
+            => Window(new JuryAssignModel { Level = JuryLevel.Jury });
 
 
         [HttpPost("[action]")]
@@ -166,7 +166,7 @@ namespace SatelliteSite.ContestModule.Controllers
             }
             else
             {
-                await Context.AssignJuryAsync(user, JuryLevel.Jury);
+                await Context.AssignJuryAsync(user, model.Level);
                 await HttpContext.AuditAsync("assigned jury", $"{user.Id}");
             }
 

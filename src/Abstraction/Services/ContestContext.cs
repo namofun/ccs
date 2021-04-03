@@ -114,7 +114,7 @@ namespace Ccs.Services
         /// Get the jury list.
         /// </summary>
         /// <returns>The task for fetching jury list.</returns>
-        Task<Dictionary<int, string>> ListJuriesAsync();
+        Task<Dictionary<int, (string, JuryLevel)>> ListJuriesAsync();
 
         /// <summary>
         /// Checks the tenant visiblity.

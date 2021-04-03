@@ -53,7 +53,7 @@ namespace Ccs.Services
             return @new;
         }
 
-        public override Task<Dictionary<int, string>> ListJuriesAsync()
+        public override Task<Dictionary<int, (string, JuryLevel)>> ListJuriesAsync()
         {
             return CacheAsync("Jury", _options.Contest,
                 async () => await base.ListJuriesAsync());

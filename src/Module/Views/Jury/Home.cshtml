@@ -150,15 +150,17 @@
                 <tr>
                     <th scope="col">ID</th>
                     <th scope="col">User Name</th>
+                    <th scope="col">role</th>
                     <th><a asp-in-roles="Administrator" class="text-reset" asp-action="Assign" data-toggle="ajaxWindow" data-target="assign"><i class="fas fa-plus"></i></a></th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var u in juries)
                 {
-                    <tr asp-area="Account" asp-controller="Profile" asp-action="Show" asp-route-username="@u.Value" data-toggle="gotoUrl">
+                    <tr asp-area="Account" asp-controller="Profile" asp-action="Show" asp-route-username="@u.Value.Item1" data-toggle="gotoUrl">
                         <td use-a>u@(u.Key)</td>
-                        <td use-a>@u.Value</td>
+                        <td use-a>@u.Value.Item1</td>
+                        <td use-a>@u.Value.Item2</td>
                         <td><a asp-in-roles="Administrator" asp-action="Unassign" asp-route-userid="@u.Key" data-toggle="ajaxWindow" data-target="unassign"><i class="fas fa-trash-alt"></i></a></td>
                     </tr>
                 }
