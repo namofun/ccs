@@ -160,6 +160,7 @@ namespace SatelliteSite.ContestModule.Controllers
         public async Task<IActionResult> Assign(JuryAssignModel model)
         {
             var user = await UserManager.FindByNameAsync(model.UserName);
+            if (!Jury.ValidValues.Contains(model.Level)) return BadRequest();
 
             if (user == null)
             {
@@ -179,6 +180,7 @@ namespace SatelliteSite.ContestModule.Controllers
         [Authorize(Policy = "ContestIsAdministrator")]
         public async Task<IActionResult> Unassign(int userid)
         {
+            if (User.GetUserId() == userid.ToString() && !User.IsInRole("Administrator")) return NotFound();
             var user = await UserManager.FindByIdAsync(userid);
             if (user == null) return NotFound();
 
@@ -198,6 +200,7 @@ namespace SatelliteSite.ContestModule.Controllers
         [ActionName("Unassign")]
         public async Task<IActionResult> UnassignConfirmation(int userid)
         {
+            if (User.GetUserId() == userid.ToString() && !User.IsInRole("Administrator")) return NotFound();
             var user = await UserManager.FindByIdAsync(userid);
             if (user == null) return NotFound();
             await Context.UnassignJuryAsync(user);

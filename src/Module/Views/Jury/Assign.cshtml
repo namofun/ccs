@@ -4,6 +4,12 @@
     ViewData["Title"] = "Assign jury";
 }
 
+<div class="alert alert-primary">
+    If you want to change someone's permission, please remove that one
+    out of the permission list first and then add that one into the list
+    with the target permission.
+</div>
+
 <div class="form-group">
     <label asp-for="UserName"></label>
     <input asp-for="UserName" onblur="oncheck($(this).val())" class="form-control" required />
@@ -11,18 +17,18 @@
 </div>
 
 <div class="form-group">
-    <label class="d-block">Permission Level</label>
-    <div class="custom-control custom-radio d-inline mr-2">
-        <input type="radio" asp-for="Level" id="level-reader" class="custom-control-input" value="0" />
-        <label class="custom-control-label" for="level-reader">Balloon Runner</label>
+    <label>Permission Level</label>
+    <div class="custom-control custom-radio">
+        <input type="radio" asp-for="Level" id="level-reader" class="custom-control-input" value="@JuryLevel.BalloonRunner" />
+        <label class="custom-control-label" for="level-reader">Balloon Runner (only balloon and printings)</label>
     </div>
-    <div class="custom-control custom-radio d-inline mr-2">
-        <input type="radio" asp-for="Level" checked id="level-writer" class="custom-control-input" value="1" />
-        <label class="custom-control-label" for="level-writer">Jury</label>
+    <div class="custom-control custom-radio">
+        <input type="radio" asp-for="Level" checked id="level-writer" class="custom-control-input" value="@JuryLevel.Jury" />
+        <label class="custom-control-label" for="level-writer">Jury (with most of the management features)</label>
     </div>
-    <div class="custom-control custom-radio d-inline">
-        <input type="radio" asp-for="Level" id="level-creator" class="custom-control-input" value="2" />
-        <label class="custom-control-label" for="level-creator">Administrator</label>
+    <div class="custom-control custom-radio">
+        <input type="radio" asp-for="Level" id="level-creator" class="custom-control-input" value="@JuryLevel.Administrator" />
+        <label class="custom-control-label" for="level-creator">Administrator (with several dangerous features)</label>
     </div>
 </div>
 

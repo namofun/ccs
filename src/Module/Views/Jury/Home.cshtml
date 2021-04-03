@@ -161,7 +161,7 @@
                         <td use-a>u@(u.Key)</td>
                         <td use-a>@u.Value.Item1</td>
                         <td use-a>@u.Value.Item2</td>
-                        <td><a asp-show-if="@Contest.IsAdministrator" asp-action="Unassign" asp-route-userid="@u.Key" data-toggle="ajaxWindow" data-target="unassign"><i class="fas fa-trash-alt"></i></a></td>
+                        <td><a asp-show-if="@(Contest.IsAdministrator && (User.IsInRole("Administrator") || User.GetUserId() != u.Key.ToString()))" asp-action="Unassign" asp-route-userid="@u.Key" data-toggle="ajaxWindow" data-target="unassign"><i class="fas fa-trash-alt"></i></a></td>
                     </tr>
                 }
                 @if (juries.Count == 0)

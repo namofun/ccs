@@ -87,7 +87,7 @@ namespace SatelliteSite.ContestModule
                 options.Events.OnRedirectToAccessDenied = context =>
                 {
                     var feature = context.HttpContext.Features.Get<IContestFeature>();
-                    if (feature?.Context == null || !(feature.HasTeam || feature.IsJury || feature.IsPublic))
+                    if (feature?.Context == null || !(feature.HasTeam || feature.JuryLevel.HasValue || feature.IsPublic))
                         return original(context);
                     context.Response.StatusCode = 403;
                     return Task.CompletedTask;

@@ -1,4 +1,6 @@
-﻿namespace Ccs.Entities
+﻿using System.Collections.Generic;
+
+namespace Ccs.Entities
 {
     /// <summary>
     /// The entity class for contest jury.
@@ -19,6 +21,16 @@
         /// The jury level
         /// </summary>
         public JuryLevel Level { get; set; }
+
+        /// <summary>
+        /// Valid jury levels
+        /// </summary>
+        public static readonly IReadOnlyList<JuryLevel> ValidValues = new[]
+        {
+            JuryLevel.BalloonRunner,
+            JuryLevel.Jury,
+            JuryLevel.Administrator
+        };
     }
 
     /// <summary>
@@ -29,16 +41,16 @@
         /// <summary>
         /// The level that only can send balloons and prints
         /// </summary>
-        BalloonRunner,
+        BalloonRunner = 0,
 
         /// <summary>
         /// The level that manipulates many things
         /// </summary>
-        Jury,
+        Jury = 10,
 
         /// <summary>
         /// The level that can add more jury, refresh cache, or dangerous operations
         /// </summary>
-        Administrator,
+        Administrator = 20,
     }
 }
