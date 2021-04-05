@@ -16,9 +16,9 @@ namespace SatelliteSite.ContestModule.Controllers
     public class JurySubmissionsController : JuryControllerBase<ISubmissionContext>
     {
         [HttpGet]
-        public async Task<IActionResult> List(bool all = false)
+        public async Task<IActionResult> List(int? probid = null, string langid = null, int? teamid = null, bool all = false)
         {
-            var model = await Context.ListSolutionsAsync(all: all);
+            var model = await Context.ListSolutionsAsync(probid: probid, langid: langid, teamid: teamid, all: all);
             var teamNames = await Context.GetTeamNamesAsync();
             model.ForEach(a => a.AuthorName = teamNames.GetValueOrDefault(a.TeamId));
             return View(model);
