@@ -26,9 +26,8 @@ namespace SatelliteSite.ContestModule.Controllers
 
 
         [HttpGet("{submitid}")]
-        public async Task<IActionResult> Detail(int submitid, int? judgingid = null, int? jid = null)
+        public async Task<IActionResult> Detail(int submitid, int? judgingid = null)
         {
-            judgingid ??= jid; // compatible with old part
             var submit = await Context.FindSubmissionAsync(submitid, true);
             if (submit == null) return NotFound();
             var judgings = submit.Judgings;

@@ -7,6 +7,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Problems\**" />
+    <Compile Remove="Runs\**" />
+    <Content Remove="Problems\**" />
+    <Content Remove="Runs\**" />
+    <EmbeddedResource Remove="Problems\**" />
+    <EmbeddedResource Remove="Runs\**" />
+    <None Remove="Problems\**" />
+    <None Remove="Runs\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Plag.Backend.Roles.Rest" Version="$(PlagVersion)" />
     <PackageReference Include="Plag.Backend.Roles.Storage" Version="$(PlagVersion)" />
     <PackageReference Include="SatelliteSite.GroupModule" Version="$(TenantVersion)" />

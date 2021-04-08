@@ -60,10 +60,10 @@ namespace SatelliteSite.ContestModule.Models
                 values: new
                 {
                     area = "Polygon",
-                    pid = Submission.ProblemId,
-                    sid = SubmissionId,
-                    jid = JudgingId,
-                    rid = runid,
+                    probid = Submission.ProblemId,
+                    submitid = SubmissionId,
+                    judgingid = JudgingId,
+                    runid = runid,
                     type = file,
                 });
         }
@@ -76,8 +76,8 @@ namespace SatelliteSite.ContestModule.Models
                 values: new
                 {
                     area = "Polygon",
-                    pid = Submission.ProblemId,
-                    tid = tcid,
+                    probid = Submission.ProblemId,
+                    testid = tcid,
                     filetype = file
                 });
         }

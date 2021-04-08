@@ -85,14 +85,14 @@ namespace SatelliteSite.ContestModule.Controllers
             model.Verdicts ??= Array.Empty<Verdict>();
 
             var cond = Expr
-                .Of<Submission, Judging>((s, j) => s.RejudgingId == null && s.ContestId == r.ContestId)
+                .Of<Submission, Judging>((s, j) => true)
                 .CombineIf(model.Submission.HasValue, (s, j) => s.Id == model.Submission)
                 .CombineIf(model.Problems.Length > 0, (s, j) => model.Problems.Contains(s.ProblemId))
                 .CombineIf(model.Teams.Length > 0, (s, j) => model.Teams.Contains(s.TeamId))
                 .CombineIf(model.Languages.Length > 0, (s, j) => model.Languages.Contains(s.Language))
                 .CombineIf(model.Judgehosts.Length > 0, (s, j) => model.Judgehosts.Contains(j.Server))
                 .CombineIf(model.Verdicts.Length > 0, (s, j) => model.Verdicts.Contains(j.Status))
-                .CombineIf(ta, (s, j) => s.Time <= tat)
+                .CombineIf(ta, (s, j) => s.Time >= tat)
                 .CombineIf(tb, (s, j) => s.Time <= tbt);
 
             int tok = await Context.RejudgeAsync(cond, r, fullTest: Contest.RankingStrategy == Ccs.CcsDefaults.RuleIOI);
