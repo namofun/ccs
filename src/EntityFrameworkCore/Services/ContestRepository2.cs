@@ -1,10 +1,12 @@
 ﻿using Ccs.Models;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Ccs.Services
@@ -39,6 +41,26 @@ namespace Ccs.Services
             {
                 Clock = new Microsoft.Extensions.Internal.SystemClock(),
             });
+        }
+    }
+
+    public sealed class CachedContestRepository2CacheCleaner :
+        INotificationHandler<Events.ContestUpdateEvent>
+    {
+        private readonly IMemoryCache _cache;
+
+        public CachedContestRepository2CacheCleaner(
+            CachedContestRepository2Cache cache)
+        {
+            _cache = cache;
+        }
+
+        public Task Handle(
+            Events.ContestUpdateEvent notification,
+            CancellationToken cancellationToken)
+        {
+            _cache.Remove("Contests");
+            return Task.CompletedTask;
         }
     }
 
