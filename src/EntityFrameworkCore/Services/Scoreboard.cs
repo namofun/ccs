@@ -68,7 +68,7 @@ namespace Ccs.Services
 
         IQueryable<SubmissionStatistics> Statistics(int cid)
             => from s in Db.Set<Submission>()
-               where s.ContestId == cid
+               where s.ContestId == cid && !s.Ignored
                join j in Db.Set<Judging>() on new { s.Id, Active = true } equals new { Id = j.SubmissionId, j.Active }
                group j.Status by new { s.ProblemId, s.TeamId, s.ContestId } into g
                select new SubmissionStatistics

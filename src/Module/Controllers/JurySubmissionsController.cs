@@ -135,8 +135,8 @@ namespace SatelliteSite.ContestModule.Controllers
                 title: $"{(sub.Ignored ? "Unignore" : "Ignore")} submission",
                 message: $"Are you sure to {(sub.Ignored ? "unignore" : "ignore")} " +
                     $"submission s{submitid} " +
-                    $"from {team?.TeamName} (t{sub.TeamId}) " +
-                    $"on {prob?.ShortName ?? "?"} - {prob?.Title ?? "???"} (p{sub.ProblemId})?",
+                    $"from team {team?.TeamName} (t{sub.TeamId}) " +
+                    $"on problem {prob?.ShortName ?? "?"} - {prob?.Title ?? "???"} (p{sub.ProblemId})?",
                 type: BootstrapColor.danger);
         }
 
@@ -150,7 +150,7 @@ namespace SatelliteSite.ContestModule.Controllers
 
             var origIgnore = sub.Ignored;
             await Context.ToggleIgnoreAsync(sub, !origIgnore);
-            StatusMessage = $"Submission s{submitid} has been {(origIgnore ? "un" : "")}ignored.";
+            StatusMessage = $"Submission s{submitid} has been {(origIgnore ? "un" : "")}ignored. You may have to refresh the scoreboard manually.";
             return RedirectToAction(nameof(Detail));
         }
     }

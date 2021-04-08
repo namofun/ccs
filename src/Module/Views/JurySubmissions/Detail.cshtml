@@ -14,7 +14,7 @@
 <div class="mt-2 mb-2">
     <h2 class="mt-0 d-inline mb-0 mr-2 @(submit.Ignored ? "text-decoration-del" : "")">Submission @submit.Id</h2>
     <a asp-show-if="Contest.Kind != CcsDefaults.KindProblemset" asp-action="Rejudge" class="btn btn-outline-primary btn-sm" data-toggle="ajaxWindow" data-target="rejudge"><i class="fas fa-sync"></i> Rejudge</a>
-    <a asp-action="Ignore" class="btn btn-outline-secondary btn-sm" data-toggle="ajaxWindow" data-target="ignore"><i class="fas fa-ban"></i> @(Model.Submission.Ignored ? "Unignore" : "Ignore")</a>
+    <a asp-action="Ignore" class="btn btn-outline-secondary btn-sm" data-toggle="ajaxWindow" data-target="ignore"><i class="fas fa-@(Model.Submission.Ignored ? "peace" : "ban")"></i> @(Model.Submission.Ignored ? "Unignore" : "Ignore")</a>
 </div>
 
 <div class="submission-summary mb-2">
