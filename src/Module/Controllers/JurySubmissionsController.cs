@@ -26,8 +26,9 @@ namespace SatelliteSite.ContestModule.Controllers
 
 
         [HttpGet("{submitid}")]
-        public async Task<IActionResult> Detail(int submitid, int? judgingid)
+        public async Task<IActionResult> Detail(int submitid, int? judgingid = null, int? jid = null)
         {
+            judgingid ??= jid; // compatible with old part
             var submit = await Context.FindSubmissionAsync(submitid, true);
             if (submit == null) return NotFound();
             var judgings = submit.Judgings;
@@ -50,6 +51,21 @@ namespace SatelliteSite.ContestModule.Controllers
                 Problem = prob,
                 Language = await Context.FindLanguageAsync(submit.Language),
             });
+        }
+
+
+        [HttpGet("{submitid}/[action]/{judgingid}/{runid}")]
+        public async Task<IActionResult> RunDetails(int submitid, int judgingid, int runid)
+        {
+            var submit = await Context.FindSubmissionAsync(submitid);
+            if (submit == null) return NotFound();
+            
+            var run = await Context.GetDetailAsync(submit.ProblemId, submitid, judgingid, runid);
+            if (run == null) return NotFound();
+
+            var prob = await Context.FindProblemAsync(submit.ProblemId);
+            ViewBag.CombinedRunCompare = prob?.Interactive ?? false;
+            return Window(run);
         }
 
 
@@ -85,6 +101,13 @@ namespace SatelliteSite.ContestModule.Controllers
         [HttpGet("{submitid}/[action]")]
         public async Task<IActionResult> Rejudge(int submitid)
         {
+            if (Contest.Kind == Ccs.CcsDefaults.KindProblemset)
+            {
+                return Message(
+                    title: "Rejudging",
+                    message: "Rejudging not supported. Please submit this solution again.");
+            }
+
             var sub = await Context.FindSubmissionAsync(submitid);
             if (sub == null) return NotFound();
 

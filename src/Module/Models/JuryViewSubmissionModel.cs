@@ -1,5 +1,6 @@
 ﻿using Ccs.Entities;
 using Ccs.Models;
+using Microsoft.AspNetCore.Mvc;
 using Polygon.Entities;
 using Polygon.Models;
 using System.Collections.Generic;
@@ -35,5 +36,50 @@ namespace SatelliteSite.ContestModule.Models
         public Language Language { get; set; }
 
         public Team Team { get; set; }
+
+        public virtual string GetRunDetailsUrl(IUrlHelper urlHelper, int rid)
+        {
+            return urlHelper.Action(
+                action: "RunDetails",
+                controller: "JurySubmissions",
+                values: new
+                {
+                    area = "Contest",
+                    cid = Submission.ContestId,
+                    submitid = SubmissionId,
+                    judgingid = JudgingId,
+                    runid = rid,
+                });
+        }
+
+        public virtual string GetRunFileUrl(IUrlHelper urlHelper, int runid, string file)
+        {
+            return urlHelper.Action(
+                action: "RunDetails",
+                controller: "Submissions",
+                values: new
+                {
+                    area = "Polygon",
+                    pid = Submission.ProblemId,
+                    sid = SubmissionId,
+                    jid = JudgingId,
+                    rid = runid,
+                    type = file,
+                });
+        }
+
+        public virtual string GetTestcaseUrl(IUrlHelper urlHelper, int tcid, string file)
+        {
+            return urlHelper.Action(
+                action: "Fetch",
+                controller: "Testcases",
+                values: new
+                {
+                    area = "Polygon",
+                    pid = Submission.ProblemId,
+                    tid = tcid,
+                    filetype = file
+                });
+        }
     }
 }

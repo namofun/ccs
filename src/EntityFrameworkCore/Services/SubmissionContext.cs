@@ -78,6 +78,11 @@ namespace Ccs.Services
             return Polygon.Submissions.ListWithJudgingAsync(selector, cond);
         }
 
+        public virtual Task<JudgingRun?> GetDetailAsync(int problemId, int submitId, int judgingId, int runId)
+        {
+            return Polygon.Judgings.GetDetailAsync(problemId, submitId, judgingId, runId);
+        }
+
         public virtual async Task<TSolution?> FindSolutionAsync<TSolution>(
             int submitid,
             Expression<Func<Submission, Judging, TSolution>> selector) where TSolution : class

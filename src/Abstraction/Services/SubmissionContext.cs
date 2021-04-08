@@ -96,6 +96,16 @@ namespace Ccs.Services
         Task<IEnumerable<(JudgingRun?, Testcase)>> GetDetailsAsync(int problemId, int judgingId);
 
         /// <summary>
+        /// Fetch the detail DTO.
+        /// </summary>
+        /// <param name="problemId">The problem ID.</param>
+        /// <param name="submitId">The submission ID.</param>
+        /// <param name="judgingId">The judging ID.</param>
+        /// <param name="runId">The judging run ID.</param>
+        /// <returns>The task for fetching judging run.</returns>
+        Task<JudgingRun?> GetDetailAsync(int problemId, int submitId, int judgingId, int runId);
+
+        /// <summary>
         /// Fetch the details DTO.
         /// </summary>
         /// <remarks>Use inner join so the judging run is not null.</remarks>
