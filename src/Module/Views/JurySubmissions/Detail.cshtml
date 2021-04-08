@@ -11,7 +11,7 @@
 
 <div class="mt-2 mb-2">
     <h2 class="mt-0 d-inline mb-0 mr-2">Submission @submit.Id</h2>
-    <a asp-action="Rejudge" class="btn btn-outline-primary btn-sm" data-toggle="ajaxWindow" data-target="rejudge"><i class="fas fa-sync"></i> Rejudge</a>
+    <a asp-show-if="Contest.Kind != CcsDefaults.KindProblemset" asp-action="Rejudge" class="btn btn-outline-primary btn-sm" data-toggle="ajaxWindow" data-target="rejudge"><i class="fas fa-sync"></i> Rejudge</a>
 </div>
 
 <div class="submission-summary mb-2">
@@ -30,7 +30,7 @@
     <span>
         <i class="fas fa-clock" title="Submittime:"></i>
         <span title="@submit.Time">
-            @((submit.Time - Contest.StartTime).GetValueOrDefault().ToDeltaString())
+            @(Contest.StartTime.HasValue ? (submit.Time - Contest.StartTime.Value).ToDeltaString() : Html.CstTime(submit.Time))
         </span>
     </span>
     <span>

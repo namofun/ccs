@@ -138,7 +138,7 @@
             WriteLiteral(sub.SubmissionId);
             WriteLiteral("\">");
             WriteCell($"s{sub.SubmissionId}");
-            WriteCell((sub.Time - Contest.StartTime).GetValueOrDefault().ToDeltaString(), title: sub.Time.ToString());
+            WriteCell(Contest.StartTime.HasValue ? (sub.Time - Contest.StartTime.Value).ToDeltaString() : sub.Time.ToString("HH:mm"), title: sub.Time.ToString());
             WriteCell($"{sub.AuthorName} (t{sub.TeamId})", write: Model.ShowTeams);
             WriteCell(prob?.ShortName ?? string.Empty, _class: "probid", write: Model.ShowProblems);
             WriteCell(sub.Language, _class: "langid", write: Model.ShowLanguages);
