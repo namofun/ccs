@@ -136,6 +136,12 @@
             WriteLiteral(sub.Language);
             WriteLiteral("\" data-submission-id=\"");
             WriteLiteral(sub.SubmissionId);
+
+            if (sub.Skipped)
+            {
+                WriteLiteral("\" class=\"ignore");
+            }
+
             WriteLiteral("\">");
             WriteCell($"s{sub.SubmissionId}");
             WriteCell(Contest.StartTime.HasValue ? (sub.Time - Contest.StartTime.Value).ToDeltaString() : sub.Time.ToString("HH:mm"), title: sub.Time.ToString());

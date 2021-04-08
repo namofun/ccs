@@ -15,6 +15,12 @@ namespace Ccs.Services
 {
     public partial class ImmediateContestContext : ISubmissionContext
     {
+        public virtual Task ToggleIgnoreAsync(Submission submission, bool ignore)
+        {
+            if (submission.ContestId != Contest.Id) throw new InvalidOperationException();
+            return Polygon.Submissions.UpdateAsync(submission, s => new Submission { Ignored = ignore });
+        }
+
         public virtual async Task<Submission?> FindSubmissionAsync(int submissionId, bool includeJudgings = false)
         {
             var result = await Polygon.Submissions.FindAsync(submissionId, includeJudgings);

@@ -21,6 +21,14 @@ namespace Ccs.Services
         Task<Submission?> FindSubmissionAsync(int submissionId, bool includeJudgings = false);
 
         /// <summary>
+        /// Toggle the ignore status of submission.
+        /// </summary>
+        /// <param name="submission">The submission.</param>
+        /// <param name="ignore">The new ignore status of submission.</param>
+        /// <returns>The task for making ignore.</returns>
+        Task ToggleIgnoreAsync(Submission submission, bool ignore);
+
+        /// <summary>
         /// List the solutions satisfying some conditions.
         /// </summary>
         /// <typeparam name="T">The DTO entity.</typeparam>

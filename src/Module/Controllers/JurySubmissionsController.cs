@@ -122,5 +122,37 @@ namespace SatelliteSite.ContestModule.Controllers
                 Reason = $"submission: {submitid}",
             });
         }
+
+
+        [HttpGet("{submitid}/[action]")]
+        public async Task<IActionResult> Ignore(int submitid)
+        {
+            var sub = await Context.FindSubmissionAsync(submitid);
+            if (sub == null) return NotFound();
+            var team = await Context.FindTeamByIdAsync(sub.TeamId);
+            var prob = await Context.FindProblemAsync(sub.ProblemId);
+
+            return AskPost(
+                title: $"{(sub.Ignored ? "Unignore" : "Ignore")} submission",
+                message: $"Are you sure to {(sub.Ignored ? "unignore" : "ignore")} " +
+                    $"submission s{submitid} " +
+                    $"from {team?.TeamName} (t{sub.TeamId}) " +
+                    $"on {prob?.ShortName ?? "?"} - {prob?.Title ?? "???"} (p{sub.ProblemId})?",
+                type: BootstrapColor.danger);
+        }
+
+
+        [HttpPost("{submitid}/[action]")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Ignore(int submitid, bool _ = true)
+        {
+            var sub = await Context.FindSubmissionAsync(submitid);
+            if (sub == null) return NotFound();
+
+            var origIgnore = sub.Ignored;
+            await Context.ToggleIgnoreAsync(sub, !origIgnore);
+            StatusMessage = $"Submission s{submitid} has been {(origIgnore ? "un" : "")}ignored.";
+            return RedirectToAction(nameof(Detail));
+        }
     }
 }

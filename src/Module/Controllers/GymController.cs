@@ -96,6 +96,7 @@ namespace SatelliteSite.ContestModule.Controllers
                     SubmissionId = s.Id,
                     Verdict = j.Status,
                     Time = s.Time,
+                    Skipped = s.Ignored,
                     ProblemId = s.ProblemId,
                     CompilerOutput = j.CompileError,
                     LanguageId = s.Language,

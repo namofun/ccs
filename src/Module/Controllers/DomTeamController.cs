@@ -77,6 +77,7 @@ namespace SatelliteSite.ContestModule.Controllers
                     LanguageId = s.Language,
                     SubmissionId = s.Id,
                     Time = s.Time,
+                    Skipped = s.Ignored,
                     Verdict = j.Status,
                     ProblemId = s.ProblemId,
                 });
@@ -277,6 +278,7 @@ namespace SatelliteSite.ContestModule.Controllers
                     Points = j.TotalScore ?? 0,
                     LanguageId = s.Language,
                     Time = s.Time,
+                    Skipped = s.Ignored,
                     Verdict = j.Status,
                     ProblemId = s.ProblemId,
                     CompilerOutput = j.CompileError,

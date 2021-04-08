@@ -11,6 +11,8 @@ namespace SatelliteSite.ContestModule.Models
 
         public Verdict Verdict { get; set; }
 
+        public bool Skipped { get; set; }
+
         public DateTimeOffset Time { get; set; }
 
         public int TeamId { get; set; }
