@@ -143,6 +143,7 @@ namespace SatelliteSite.ContestModule.Controllers
 
         [HttpPost("{submitid}/[action]")]
         [ValidateAntiForgeryToken]
+        [AuditPoint(AuditlogType.Submission)]
         public async Task<IActionResult> Ignore(int submitid, bool _ = true)
         {
             var sub = await Context.FindSubmissionAsync(submitid);
@@ -150,6 +151,7 @@ namespace SatelliteSite.ContestModule.Controllers
 
             var origIgnore = sub.Ignored;
             await Context.ToggleIgnoreAsync(sub, !origIgnore);
+            await HttpContext.AuditAsync(origIgnore ? "unignored" : "ignored", submitid.ToString());
             StatusMessage = $"Submission s{submitid} has been {(origIgnore ? "un" : "")}ignored. You may have to refresh the scoreboard manually.";
             return RedirectToAction(nameof(Detail));
         }

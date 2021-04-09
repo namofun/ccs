@@ -287,6 +287,7 @@ namespace SatelliteSite.ContestModule.Controllers
         public async Task<IActionResult> LockoutTemporaryConfirmation()
         {
             await Context.LockOutTemporaryAsync(UserManager);
+            await HttpContext.AuditAsync("lockout", "temporary accounts");
             StatusMessage = "Lockout finished.";
             return RedirectToAction(nameof(List));
         }
