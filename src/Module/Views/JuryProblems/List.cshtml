@@ -75,13 +75,16 @@
 </script>
 
 <p>
-    <a asp-action="Add" data-toggle="ajaxWindow" data-target="addProb" class="btn btn-primary" title="Add new problem">
+    <a asp-action="Add" data-toggle="ajaxWindow" data-target="addProb" class="btn btn-primary mb-2" title="Add new problem">
         <i class="fas fa-plus"></i>&nbsp;Attach existing
     </a>
-    <a asp-action="Descriptions" asp-show-if="@Contest.Kind != CcsDefaults.KindProblemset" class="btn btn-success" title="Review descriptions">
+    <a asp-action="Choose" asp-show-if="@Contest.Kind != CcsDefaults.KindProblemset" class="btn btn-danger mb-2" title="Batch edit problems">
+        <i class="fas fa-edit"></i>&nbsp;Batch edit
+    </a>
+    <a asp-action="Descriptions" asp-show-if="@Contest.Kind != CcsDefaults.KindProblemset" class="btn btn-success mb-2" title="Review descriptions">
         <i class="fas fa-file-pdf"></i>&nbsp;Review descriptions
     </a>
-    <a asp-in-roles="Administrator,ProblemCreator" asp-area="Dashboard" asp-controller="Problems" asp-action="List" class="btn btn-secondary" title="polygon">
+    <a asp-in-roles="Administrator,ProblemCreator" asp-area="Dashboard" asp-controller="Problems" asp-action="List" class="btn btn-secondary mb-2" title="polygon">
         <i class="fas fa-book-open"></i>&nbsp;Polygon
     </a>
 </p>

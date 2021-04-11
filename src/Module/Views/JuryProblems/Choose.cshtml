@@ -5,32 +5,43 @@
     var probSel = repos.OrderByDescending(k => k.Key).Select(p => new SelectListItem($"p{p.Key} - {p.Value}", p.Key.ToString()));
 }
 
+<div class="alert alert-danger">
+    <b>
+        Using this edit will impact database performance.
+        Please only use this when initializing the contest or making a lot of changes.
+    </b>
+</div>
+
 <h2 class="mt-2">@ViewData["Title"]</h2>
 
+<div asp-validation-summary="All" class="text-danger"></div>
+
 <form asp-action="Choose" method="post">
-    <table class="mt-4 table table-sm table-striped">
+    <table class="table table-sm table-striped">
         <thead>
             <tr>
                 <th><label class="required mt-1 mb-1">Problem</label></th>
                 <th><label class="required mt-1 mb-1">Short name</label></th>
                 <th><label class="required mt-1 mb-1">Allow submit</label></th>
                 <th><label class="required mt-1 mb-1">Color</label></th>
+                <th asp-show-if="Contest.RankingStrategy == CcsDefaults.RuleCodeforces"><label class="required mt-1 mb-1">Codeforces Score</label></th>
                 <th></th>
             </tr>
         </thead>
         <tbody data-collection-holder data-after-add="bindColor">
             @foreach (var (ii, item) in Model.Problems ?? Enumerable.Empty<KeyValuePair<int, ContestProblem>>())
             {
-                <tr>
-                    <td>
-                        <input type="hidden" name="Problems[@ii].ProblemId" value="@item.ProblemId" />
-                        <input type="text" data-name="Problems[@ii].ProblemId" value="p@(item.ProblemId) - @repos.GetValueOrDefault(item.ProblemId)" class="form-control custom-select form-control prob-sel" />
-                    </td>
-                    <td><input type="text" name="Problems[@ii].ShortName" required class="form-control" value="@item.ShortName" /></td>
-                    <td><select name="Problems[@ii].AllowSubmit" class="form-control custom-select form-control"><option value="True" issel="item.AllowSubmit">Yes</option><option value="False" issel="!item.AllowSubmit">No</option></select></td>
-                    <td><input type="text" name="Problems[@ii].Color" required class="color form-control" value="@Html.Raw(item.Color)" /></td>
-                    <td><button type="button" data-delete class="btn btn-danger"><i class="fas fa-trash-alt"></i></button></td>
-                </tr>
+            <tr>
+                <td>
+                    <input type="hidden" class="prob-backfield" name="Problems[@ii].ProblemId" value="@item.ProblemId" />
+                    <input type="text" data-name="Problems[@ii].ProblemId" value="p@(item.ProblemId) - @repos.GetValueOrDefault(item.ProblemId)" class="form-control custom-select form-control prob-sel" />
+                </td>
+                <td><input type="text" name="Problems[@ii].ShortName" required class="form-control" value="@item.ShortName" /></td>
+                <td><select name="Problems[@ii].AllowSubmit" class="form-control custom-select form-control"><option value="True" issel="item.AllowSubmit">Yes</option><option value="False" issel="!item.AllowSubmit">No</option></select></td>
+                <td><input type="text" name="Problems[@ii].Color" required class="color form-control" value="@Html.Raw(item.Color)" /></td>
+                <td asp-show-if="Contest.RankingStrategy == CcsDefaults.RuleCodeforces"><input type="number" name="Problems[@ii].Score" required class="form-control" value="@Html.Raw(item.Score)" /></td>
+                <td><button type="button" data-delete class="btn btn-danger"><i class="fas fa-trash-alt"></i></button></td>
+            </tr>
             }
         </tbody>
         <tfoot>
@@ -38,6 +49,7 @@
                 <td colspan="4">
                     <button type="submit" class="btn btn-primary mt-2">Save</button>
                 </td>
+                <td asp-show-if="Contest.RankingStrategy == CcsDefaults.RuleCodeforces"></td>
                 <td>
                     <button type="button" data-add class="btn btn-success"><i class="fas fa-plus"></i></button>
                 </td>
@@ -74,12 +86,13 @@
 <script type="text/html" data-prototype>
     <tr>
         <td>
-            <input type="hidden" name="Problems[__name__].ProblemId" value="@repos.FirstOrDefault().Key" />
-            <input type="text" data-name="Problems[__name__].ProblemId" value="p@(repos.FirstOrDefault().Key) - @(repos.FirstOrDefault().Value ?? "UNKNOWN")" class="form-control custom-select form-control prob-sel" />
+            <input type="hidden" class="prob-backfield" name="Problems[__name__].ProblemId" value="" />
+            <input type="text" data-name="Problems[__name__].ProblemId" value="" class="form-control custom-select form-control prob-sel" />
         </td>
         <td><input type="text" name="Problems[__name__].ShortName" required class="form-control" /></td>
         <td><select name="Problems[__name__].AllowSubmit" class="form-control custom-select form-control"><option value="True">Yes</option><option value="False">No</option></select></td>
         <td><input type="text" name="Problems[__name__].Color" required class="color form-control" value="#FFFFFF" /></td>
+        <td asp-show-if="Contest.RankingStrategy == CcsDefaults.RuleCodeforces"><input type="number" name="Problems[__name__].Score" required class="form-control" value="#FFFFFF" /></td>
         <td><button type="button" data-delete class="btn btn-danger"><i class="fas fa-trash-alt"></i></button></td>
     </tr>
 </script>
@@ -110,19 +123,44 @@
     var $collectionHolder;
     $(function () {
         $collectionHolder = $('[data-collection-holder]');
-        $collectionHolder.data('index', $collectionHolder.find('tr').length + 1);
+        $collectionHolder.data('index', @((Model.Problems?.Keys?.Append(0).Max() ?? 0) + 1));
         $('[data-add]').on('click', function () {
             addCollectionItem($collectionHolder);
         });
         $('[data-delete]').on('click', function () {
             $(this).closest('tr').remove();
         });
+
         function addCollectionItem($collectionHolder) {
+            var ft = $('[data-collection-holder] tr:last td:first input:first').val();
+            var ftd;
+
+            if (ft !== undefined) {
+                let i = ft - (-1);
+                let j = $('#problem-selector option[value=' + i + ']').text();
+                if (j === '') {
+                    ft = undefined;
+                } else {
+                    ft = j;
+                    ftd = i;
+                }
+            }
+
+            if (ft === undefined) {
+                let j = $('#problem-selector option:last');
+                ft = j.text();
+                ftd = j.prop('value');
+            }
+
             var prototype = $('[data-prototype]').text();
             var index = $collectionHolder.data('index');
             prototype = prototype.replace(/__name__/g, index);
             $collectionHolder.data('index', index + 1);
             var $prototype = $(prototype);
+
+            $prototype.find('.prob-backfield').val(ftd);
+            $prototype.find('.prob-sel').val(ft);
+
             $prototype.find('[data-delete]').on('click', function () {
                 $(this).closest('tr').remove();
             });

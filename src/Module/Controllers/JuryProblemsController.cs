@@ -67,7 +67,7 @@ namespace SatelliteSite.ContestModule.Controllers
         {
             if (Contest.Kind == Ccs.CcsDefaults.KindProblemset) return StatusCode(503);
 
-            var problems = await Context.ListProblemsAsync();
+            var problems = await Context.ListProblemsAsync(true);
             var recent = await Context.ListPolygonAsync(User);
             foreach (var p in problems) recent.TryAdd(p.ProblemId, p.Title);
             ViewBag.RecentProblems = recent;
@@ -76,6 +76,108 @@ namespace SatelliteSite.ContestModule.Controllers
             {
                 Problems = problems.ToDictionary(e => e.Rank, e => (ContestProblem)e),
             });
+        }
+
+
+        [HttpPost("[action]")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Choose(ChooseProblemModel model)
+        {
+            if (Contest.Kind == Ccs.CcsDefaults.KindProblemset) return StatusCode(503);
+
+            var problems = await Context.ListProblemsAsync(true);
+            var recent = await Context.ListPolygonAsync(User);
+            foreach (var p in problems) recent.TryAdd(p.ProblemId, p.Title);
+            ViewBag.RecentProblems = recent;
+            model.Problems ??= new Dictionary<int, ContestProblem>();
+
+            var newCp = new Dictionary<int, ContestProblem>();
+            var newShortName = new HashSet<string>();
+            foreach (var prob in model.Problems.Values)
+            {
+                if (newCp.ContainsKey(prob.ProblemId))
+                {
+                    ModelState.AddModelError("duplicate", "Duplicate problem entry.");
+                    continue;
+                }
+
+                if (!recent.ContainsKey(prob.ProblemId))
+                {
+                    ModelState.AddModelError("no-perm", $"Error problem p{prob.ProblemId}: No permission or no such problem.");
+                    continue;
+                }
+
+                if (string.IsNullOrWhiteSpace(prob.ShortName))
+                {
+                    ModelState.AddModelError("dupkey", $"Problem short name is invalid.");
+                    continue;
+                }
+
+                if (!newShortName.Add(prob.ShortName = prob.ShortName.Trim()))
+                {
+                    ModelState.AddModelError("dupkey", $"Duplicate problem short name {prob.ShortName}.");
+                    continue;
+                }
+
+                prob.ContestId = Contest.Id;
+                prob.Color = "#" + (prob.Color ?? "#ffffff").TrimStart('#');
+                newCp.Add(prob.ProblemId, prob);
+            }
+
+            if (!ModelState.IsValid) return View(model);
+
+            var oldCp = new Dictionary<int, ProblemModel>();
+            var tmpGuid = new HashSet<string>();
+            foreach (var oldProb in problems)
+            {
+                oldCp.Add(oldProb.ProblemId, oldProb);
+                if (!newCp.TryGetValue(oldProb.ProblemId, out var newProb))
+                {
+                    await Context.DeleteProblemAsync(oldProb);
+                    await HttpContext.AuditAsync("detached", $"{oldProb.ProblemId}");
+                }
+                else if (newProb.ShortName != oldProb.ShortName)
+                {
+                    string tempGuid;
+                    do tempGuid = Guid.NewGuid().ToString()[0..10];
+                    while (!tmpGuid.Add(tempGuid));
+
+                    await Context.UpdateProblemAsync(oldProb,
+                        cp => new ContestProblem { ShortName = tempGuid });
+                    oldProb.ShortName = tempGuid;
+                }
+            }
+
+            foreach (var newProb in newCp.Values)
+            {
+                if (!oldCp.TryGetValue(newProb.ProblemId, out var oldProb))
+                {
+                    await Context.CreateProblemAsync(newProb);
+                    await HttpContext.AuditAsync("attached", $"{newProb.ProblemId}");
+                }
+                else
+                {
+                    if (oldProb.AllowSubmit == newProb.AllowSubmit
+                        && oldProb.Color == newProb.Color
+                        && oldProb.Score == newProb.Score
+                        && oldProb.ShortName == newProb.ShortName)
+                        continue;
+
+                    await Context.UpdateProblemAsync(oldProb,
+                        cp => new ContestProblem
+                        {
+                            AllowSubmit = newProb.AllowSubmit,
+                            Color = newProb.Color,
+                            Score = newProb.Score,
+                            ShortName = newProb.ShortName,
+                        });
+
+                    await HttpContext.AuditAsync("updated", $"{newProb.ProblemId}");
+                }
+            }
+
+            StatusMessage = "Problem batch edit finished.";
+            return RedirectToAction(nameof(List));
         }
 
 
