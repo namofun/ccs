@@ -14,7 +14,7 @@ namespace Ccs.Registration
     {
         public override int Order => -500;
 
-        public override string Name => "Teaching class";
+        public override string Name => "Student Groups";
 
         public override string Icon => "fas fa-graduation-cap";
 
