@@ -236,5 +236,21 @@ namespace Ccs.Services
                 .Join(Db.Testcases, cp => cp.ProblemId, tc => tc.ProblemId, (cp, tc) => tc)
                 .ToListAsync();
         }
+
+        public Task<Dictionary<int, string>> ListPolygonAsync(ClaimsPrincipal user)
+        {
+            int? uid = user.IsInRole("Administrator") ? default(int?) : int.Parse(user.GetUserId() ?? "0");
+
+            var probQuery =
+                uid.HasValue
+                    ? Db.ProblemAuthors
+                        .Where(pa => pa.UserId == uid)
+                        .Join(Db.Problems, pa => pa.ProblemId, p => p.Id, (pa, p) => p)
+                    : Db.Problems;
+
+            return probQuery
+                .Select(p => new { p.Id, p.Title })
+                .ToDictionaryAsync(k => k.Id, v => v.Title);
+        }
     }
 }

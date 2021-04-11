@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SatelliteSite.ContestModule.Controllers
@@ -58,6 +59,23 @@ namespace SatelliteSite.ContestModule.Controllers
         {
             var prob = await Context.FindProblemAsync(probid, true);
             return View(prob);
+        }
+
+
+        [HttpGet("[action]")]
+        public async Task<IActionResult> Choose()
+        {
+            if (Contest.Kind == Ccs.CcsDefaults.KindProblemset) return StatusCode(503);
+
+            var problems = await Context.ListProblemsAsync();
+            var recent = await Context.ListPolygonAsync(User);
+            foreach (var p in problems) recent.TryAdd(p.ProblemId, p.Title);
+            ViewBag.RecentProblems = recent;
+
+            return View(new ChooseProblemModel
+            {
+                Problems = problems.ToDictionary(e => e.Rank, e => (ContestProblem)e),
+            });
         }
 
 

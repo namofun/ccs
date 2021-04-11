@@ -75,5 +75,12 @@ namespace Ccs.Services
         /// </summary>
         /// <returns>The task for getting testcase.</returns>
         Task<List<Testcase>> ListTestcasesAsync();
+
+        /// <summary>
+        /// Lists the problems in polygon for some user.
+        /// </summary>
+        /// <param name="user">The user.</param>
+        /// <returns>The dictionary for problem ID and title.</returns>
+        Task<Dictionary<int, string>> ListPolygonAsync(ClaimsPrincipal user);
     }
 }

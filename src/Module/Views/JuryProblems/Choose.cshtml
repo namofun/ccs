@@ -1,0 +1,135 @@
+﻿@model ChooseProblemModel
+@{
+    ViewData["Title"] = "Choose problems";
+    Dictionary<int, string> repos = ViewBag.RecentProblems;
+    var probSel = repos.OrderByDescending(k => k.Key).Select(p => new SelectListItem($"p{p.Key} - {p.Value}", p.Key.ToString()));
+}
+
+<h2 class="mt-2">@ViewData["Title"]</h2>
+
+<form asp-action="Choose" method="post">
+    <table class="mt-4 table table-sm table-striped">
+        <thead>
+            <tr>
+                <th><label class="required mt-1 mb-1">Problem</label></th>
+                <th><label class="required mt-1 mb-1">Short name</label></th>
+                <th><label class="required mt-1 mb-1">Allow submit</label></th>
+                <th><label class="required mt-1 mb-1">Color</label></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody data-collection-holder data-after-add="bindColor">
+            @foreach (var (ii, item) in Model.Problems ?? Enumerable.Empty<KeyValuePair<int, ContestProblem>>())
+            {
+                <tr>
+                    <td>
+                        <input type="hidden" name="Problems[@ii].ProblemId" value="@item.ProblemId" />
+                        <input type="text" data-name="Problems[@ii].ProblemId" value="p@(item.ProblemId) - @repos.GetValueOrDefault(item.ProblemId)" class="form-control custom-select form-control prob-sel" />
+                    </td>
+                    <td><input type="text" name="Problems[@ii].ShortName" required class="form-control" value="@item.ShortName" /></td>
+                    <td><select name="Problems[@ii].AllowSubmit" class="form-control custom-select form-control"><option value="True" issel="item.AllowSubmit">Yes</option><option value="False" issel="!item.AllowSubmit">No</option></select></td>
+                    <td><input type="text" name="Problems[@ii].Color" required class="color form-control" value="@Html.Raw(item.Color)" /></td>
+                    <td><button type="button" data-delete class="btn btn-danger"><i class="fas fa-trash-alt"></i></button></td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="4">
+                    <button type="submit" class="btn btn-primary mt-2">Save</button>
+                </td>
+                <td>
+                    <button type="button" data-add class="btn btn-success"><i class="fas fa-plus"></i></button>
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+</form>
+
+<div class="modal fade" id="chooseProblem" tabindex="-1" role="dialog" aria-labelledby="chooseProblemLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="chooseProblemLabel">Choose problem</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <select id="problem-selector" asp-items="probSel" class="form-control"></select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button id="chooseFinish" type="button" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/lib/jscolor/jscolor.min.js"></script>
+<script>jscolor.dir = "/lib/jscolor/";</script>
+
+<script type="text/html" data-prototype>
+    <tr>
+        <td>
+            <input type="hidden" name="Problems[__name__].ProblemId" value="@repos.FirstOrDefault().Key" />
+            <input type="text" data-name="Problems[__name__].ProblemId" value="p@(repos.FirstOrDefault().Key) - @(repos.FirstOrDefault().Value ?? "UNKNOWN")" class="form-control custom-select form-control prob-sel" />
+        </td>
+        <td><input type="text" name="Problems[__name__].ShortName" required class="form-control" /></td>
+        <td><select name="Problems[__name__].AllowSubmit" class="form-control custom-select form-control"><option value="True">Yes</option><option value="False">No</option></select></td>
+        <td><input type="text" name="Problems[__name__].Color" required class="color form-control" value="#FFFFFF" /></td>
+        <td><button type="button" data-delete class="btn btn-danger"><i class="fas fa-trash-alt"></i></button></td>
+    </tr>
+</script>
+
+<script>
+    var target = "";
+    $('body').on('click', '.prob-sel', function () {
+        target = $(this).data('name');
+        $('#problem-selector').val($('input[name="' + target + '"]').val());
+        $('#chooseProblem').modal('show');
+    });
+    $('#chooseFinish').on('click', function () {
+        var value = $('#problem-selector').val();
+        $('input[data-name="' + target + '"]').val($('#problem-selector option:selected').text());
+        $('input[name="' + target + '"]').val(value);
+        $('#chooseProblem').modal('hide');
+    });
+</script>
+
+
+<script>
+    function bindColor() {
+        jscolor.bind();
+    }
+</script>
+
+<script>
+    var $collectionHolder;
+    $(function () {
+        $collectionHolder = $('[data-collection-holder]');
+        $collectionHolder.data('index', $collectionHolder.find('tr').length + 1);
+        $('[data-add]').on('click', function () {
+            addCollectionItem($collectionHolder);
+        });
+        $('[data-delete]').on('click', function () {
+            $(this).closest('tr').remove();
+        });
+        function addCollectionItem($collectionHolder) {
+            var prototype = $('[data-prototype]').text();
+            var index = $collectionHolder.data('index');
+            prototype = prototype.replace(/__name__/g, index);
+            $collectionHolder.data('index', index + 1);
+            var $prototype = $(prototype);
+            $prototype.find('[data-delete]').on('click', function () {
+                $(this).closest('tr').remove();
+            });
+            $collectionHolder.append($prototype);
+            if ($collectionHolder.data('after-add')) {
+                window[$collectionHolder.data('after-add')]();
+            }
+        }
+    });
+</script>
