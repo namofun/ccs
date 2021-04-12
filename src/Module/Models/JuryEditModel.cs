@@ -23,6 +23,19 @@ namespace SatelliteSite.ContestModule.Models
         [DisplayName("Send printings")]
         public bool UsePrintings { get; set; }
 
+        [DisplayName("Restrict to IP ranges")]
+        public bool RestrictToIpRanges { get; set; }
+
+        [DisplayName("IP Ranges")]
+        [IpRanges]
+        public string IpRanges { get; set; }
+
+        [DisplayName("Restrict to Minimal Site")]
+        public bool RestrictToMinimalSite { get; set; }
+
+        [DisplayName("Restrict to last login IP")]
+        public bool RestrictToLastLoginIp { get; set; }
+
         [DisplayName("Emit CCS events")]
         public bool UseEvents { get; set; }
 

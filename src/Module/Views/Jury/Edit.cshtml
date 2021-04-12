@@ -90,6 +90,24 @@
                     <label class="custom-control-label" asp-for="UseEvents"></label>
                 </div>
             </div>
+            <div class="form-group" asp-show-if="Contest.Kind == CcsDefaults.KindDom">
+                <label>Access Restrictions</label>
+                <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" asp-for="RestrictToMinimalSite">
+                    <label class="custom-control-label" asp-for="RestrictToMinimalSite"></label>
+                </div>
+                <div class="custom-control custom-checkbox mt-2">
+                    <input type="checkbox" class="custom-control-input" asp-for="RestrictToLastLoginIp">
+                    <label class="custom-control-label" asp-for="RestrictToLastLoginIp"></label>
+                </div>
+                <div class="custom-control custom-checkbox mt-2">
+                    <input type="checkbox" class="custom-control-input restrict-to-ip-ranges" asp-for="RestrictToIpRanges">
+                    <label class="custom-control-label" asp-for="RestrictToIpRanges"></label>
+                </div>
+                <div class="ml-4 mt-1 @(Model.RestrictToIpRanges ? "" : "d-none")" id="restrict-to-ip-ranges-value">
+                    <input asp-for="IpRanges" class="form-control" placeholder="IP ranges like 0.0.0.0/32;[::]/128" />
+                </div>
+            </div>
             <div class="form-group">
                 <label>Visiblity</label>
                 <div class="custom-control custom-checkbox">
@@ -165,6 +183,13 @@
         $(function () {
             $.fn.select2.defaults.set("theme", "bootstrap");
             $('select[multiple]').select2();
+            $('.restrict-to-ip-ranges').change(function () {
+                if ($(this).prop('checked')) {
+                    $('#restrict-to-ip-ranges-value').removeClass('d-none');
+                } else {
+                    $('#restrict-to-ip-ranges-value').removeClass('d-none').addClass('d-none');
+                }
+            });
         });
     </script>
 }
