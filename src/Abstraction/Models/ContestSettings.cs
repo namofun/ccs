@@ -55,7 +55,27 @@ namespace Ccs.Models
         /// <summary>
         /// Linked plagiarism set
         /// </summary>
-        string? PlagiarismSet { get; set; }
+        string? PlagiarismSet { get; }
+
+        /// <summary>
+        /// Whether to restrict login IP
+        /// </summary>
+        /// <remarks>
+        /// This represent the flags of IP restrictions.
+        /// <list type="bullet"><c>null</c>: Not restricted</list>
+        /// <list type="bullet"><c>1</c>: Restrict to IP ranges</list>
+        /// <list type="bullet"><c>2</c>: Restrict to minimal site</list>
+        /// <list type="bullet"><c>4</c>: Restrict to last login IP</list>
+        /// </remarks>
+        int? RestrictIp { get; }
+
+        /// <summary>
+        /// The restricted IP ranges
+        /// </summary>
+        /// <remarks>
+        /// Format should be <c>0.0.0.0/32</c> or <c>[::]/128</c>.
+        /// </remarks>
+        string[]? IpRanges { get; }
 
         /// <summary>
         /// Clone a copy of this settings.

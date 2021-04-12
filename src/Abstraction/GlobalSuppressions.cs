@@ -6,7 +6,10 @@
 using System.Diagnostics.CodeAnalysis;
 
 [assembly: SuppressMessage("Performance", "CA1819:Properties should not return arrays", Justification = "Source code should be base64 to prevent encoding problems.", Scope = "member", Target = "~P:Ccs.Entities.Printing.SourceCode")]
+[assembly: SuppressMessage("Performance", "CA1819:Properties should not return arrays", Justification = "API specification.", Scope = "member", Target = "~P:Ccs.Entities.ContestSettings.IpRanges")]
 [assembly: SuppressMessage("Performance", "CA1819:Properties should not return arrays", Justification = "API specification.", Scope = "member", Target = "~P:Ccs.Entities.ContestSettings.Languages")]
+[assembly: SuppressMessage("Performance", "CA1819:Properties should not return arrays", Justification = "API specification.", Scope = "member", Target = "~P:Ccs.Models.IContestSettings.IpRanges")]
+[assembly: SuppressMessage("Performance", "CA1819:Properties should not return arrays", Justification = "API specification.", Scope = "member", Target = "~P:Ccs.Models.IContestSettings.Languages")]
 [assembly: SuppressMessage("Performance", "CA1819:Properties should not return arrays", Justification = "API specification.", Scope = "member", Target = "~P:Ccs.Specifications.Team.Members")]
 [assembly: SuppressMessage("Performance", "CA1819:Properties should not return arrays", Justification = "API specification.", Scope = "member", Target = "~P:Ccs.Specifications.Team.GroupIds")]
 [assembly: SuppressMessage("Performance", "CA1819:Properties should not return arrays", Justification = "API specification.", Scope = "member", Target = "~P:Ccs.Specifications.Language.Extensions")]

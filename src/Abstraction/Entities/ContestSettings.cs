@@ -40,6 +40,14 @@ namespace Ccs.Entities
         [JsonPropertyName("plagiarism-set")]
         public string? PlagiarismSet { get; set; }
 
+        /// <inheritdoc />
+        [JsonPropertyName("restrict-ip")]
+        public int? RestrictIp { get; set; }
+
+        /// <inheritdoc />
+        [JsonPropertyName("restrict-ip-range")]
+        public string[]? IpRanges { get; set; }
+
         /// <summary>
         /// Parse the settings out from the <paramref name="settingsJson"/>.
         /// </summary>
@@ -62,6 +70,8 @@ namespace Ccs.Entities
                 PrintingAvailable = PrintingAvailable,
                 RegisterCategory = RegisterCategory?.ToDictionary(k => k.Key, v => v.Value),
                 StatusAvailable = StatusAvailable,
+                RestrictIp = RestrictIp,
+                IpRanges = IpRanges,
             };
         }
 
