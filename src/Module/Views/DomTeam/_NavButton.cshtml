@@ -1,6 +1,5 @@
 ﻿@{
-    bool disabled_ = (Contest.GetState() < ContestState.Started && !Contest.IsJury)
-        || Contest.Team == null || Contest.Team.Status != 1;
+    bool disabled_ = (Contest.GetState() < ContestState.Started && !Contest.IsJury) || !Contest.IsTeamAccepted;
     string disableClass = disabled_ ? "disabled" : "";
 }
 

@@ -20,7 +20,7 @@ namespace SatelliteSite.ContestModule.Controllers
     {
         public override void OnActionExecuting(ActionExecutingContext context)
         {
-            if (Team.Status != 1)
+            if (!Contest.IsTeamAccepted)
             {
                 context.Result = IsWindowAjax
                     ? Message("401 Unauthorized",
@@ -59,18 +59,18 @@ namespace SatelliteSite.ContestModule.Controllers
         public async Task<IActionResult> Home()
         {
             var scb = await Context.GetScoreboardAsync();
-            var bq = scb.Data.GetValueOrDefault(Team.TeamId);
+            var bq = scb.Data.GetValueOrDefault(Contest.Team.TeamId);
             var cats = await Context.ListCategoriesAsync();
             var affs = await Context.ListAffiliationsAsync();
             var probs = await Context.ListProblemsAsync();
 
-            int teamid = Team.TeamId;
+            int teamid = Contest.Team.TeamId;
             var clars = await Context.ListClarificationsAsync(
                 c => (c.Sender == null && c.Recipient == null)
                 || c.Recipient == teamid || c.Sender == teamid);
 
             var submits = await Context.ListSolutionsAsync(
-                teamid: Team.TeamId,
+                teamid: Contest.Team.TeamId,
                 selector: (s, j) => new SubmissionViewModel
                 {
                     Points = j.TotalScore ?? 0,
@@ -136,7 +136,7 @@ namespace SatelliteSite.ContestModule.Controllers
             var toSee = await Context.FindClarificationAsync(clarid);
             var clars = Enumerable.Empty<Clarification>();
 
-            if (toSee?.CheckPermission(Team.TeamId) ?? true)
+            if (toSee?.CheckPermission(Contest.Team.TeamId) ?? true)
             {
                 clars = clars.Append(toSee);
 
@@ -149,7 +149,7 @@ namespace SatelliteSite.ContestModule.Controllers
             }
 
             if (!clars.Any()) return NotFound();
-            ViewData["TeamName"] = Team.TeamName;
+            ViewData["TeamName"] = Contest.Team.TeamName;
             return Window(clars);
         }
 
@@ -160,7 +160,7 @@ namespace SatelliteSite.ContestModule.Controllers
         [AuditPoint(AuditlogType.Clarification)]
         public async Task<IActionResult> ClarificationReply(int? clarid, AddClarificationModel model)
         {
-            var (cid, teamid) = (Contest.Id, Team.TeamId);
+            var (cid, teamid) = (Contest.Id, Contest.Team.TeamId);
 
             Clarification replit = null;
             if (clarid.HasValue)
@@ -256,7 +256,7 @@ namespace SatelliteSite.ContestModule.Controllers
                 code: model.Code,
                 language: lang,
                 problem: prob,
-                team: Team,
+                team: Contest.Team,
                 ipAddr: HttpContext.Connection.RemoteIpAddress,
                 via: "team-page",
                 username: User.GetUserName());
@@ -269,7 +269,7 @@ namespace SatelliteSite.ContestModule.Controllers
         [HttpGet("[action]/{submitid}")]
         public async Task<IActionResult> Submission(int submitid)
         {
-            int teamid = Team.TeamId;
+            int teamid = Contest.Team.TeamId;
 
             var model = await Context.FindSolutionAsync(
                 submitid, (s, j) => new SubmissionViewModel

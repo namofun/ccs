@@ -45,11 +45,6 @@ namespace SatelliteSite.ContestModule.Controllers
         protected internal IUserManager UserManager => _lazy_userManager ??= HttpContext.RequestServices.GetRequiredService<IUserManager>();
 
         /// <summary>
-        /// The team entity for current user
-        /// </summary>
-        protected internal Team Team => _accessor.Team;
-
-        /// <summary>
         /// Whether the contest has not been started
         /// </summary>
         protected internal bool TooEarly => Contest.GetState() < ContestState.Started;

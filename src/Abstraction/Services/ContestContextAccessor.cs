@@ -28,5 +28,8 @@ namespace Ccs.Services
 
         /// <summary>Whether current user belongs to a team</summary>
         bool HasTeam { get; }
+
+        /// <summary>Whether status of team is accepted and no other restrictions are applied</summary>
+        bool IsTeamAccepted { get; }
     }
 }

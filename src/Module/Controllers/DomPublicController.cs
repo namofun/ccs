@@ -4,7 +4,6 @@ using Ccs.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SatelliteSite.ContestModule.Controllers
@@ -27,7 +26,7 @@ namespace SatelliteSite.ContestModule.Controllers
         [HttpGet]
         public IActionResult Home()
         {
-            if (Team == null) return RedirectToAction("Info", "DomPublic");
+            if (Contest.Team == null) return RedirectToAction("Info", "DomPublic");
             return RedirectToAction("Home", "DomTeam");
         }
 

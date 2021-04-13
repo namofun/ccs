@@ -41,7 +41,7 @@ namespace SatelliteSite.ContestModule.Controllers
 
             if (context.Result == null)
             {
-                Statistics = await Context.StatisticsAsync(Team);
+                Statistics = await Context.StatisticsAsync(Contest.Team);
                 ViewData["SubmissionStatistics"] = Statistics;
             }
         }
@@ -88,7 +88,7 @@ namespace SatelliteSite.ContestModule.Controllers
         public async Task<IActionResult> Submission(int sid)
         {
             if (TooEarly && !Contest.IsJury) return NotFound();
-            if (Team == null && Contest.Settings.StatusAvailable != 1) return Forbid();
+            if (!Contest.HasTeam && Contest.Settings.StatusAvailable != 1) return Forbid();
 
             var model = await Context.FindSolutionAsync(
                 sid, (s, j) => new SubmissionViewModel
@@ -114,7 +114,7 @@ namespace SatelliteSite.ContestModule.Controllers
 
             if (model.Problem == null
                 || model.Language == null
-                || model.TeamId != Team?.TeamId
+                || model.TeamId != Contest.Team?.TeamId
                 && (Contest.Settings.StatusAvailable == 0
                 || (Contest.Settings.StatusAvailable == 2 && Statistics.GetValueOrDefault(model.ProblemId).Accepted == 0)))
             {
@@ -141,7 +141,7 @@ namespace SatelliteSite.ContestModule.Controllers
             if (string.IsNullOrEmpty(view)) return NotFound();
             ViewData["Content"] = view;
 
-            var model = await Context.ListSolutionsAsync(problem.ProblemId, null, Team?.TeamId ?? -1000, true);
+            var model = await Context.ListSolutionsAsync(problem.ProblemId, null, Contest.Team?.TeamId ?? -1000, true);
             return View(model);
         }
 
@@ -149,11 +149,11 @@ namespace SatelliteSite.ContestModule.Controllers
         [HttpGet("[action]")]
         public async Task<IActionResult> Submit(string prob)
         {
-            if (Team == null)
+            if (!Contest.HasTeam)
             {
                 return Message("Submit", "You must have a team first.");
             }
-            else if (Team.Status != 1)
+            else if (!Contest.IsTeamAccepted)
             {
                 return Message("Submit", "Your team should be verified first. Please contact a staff for this.");
             }
@@ -191,9 +191,14 @@ namespace SatelliteSite.ContestModule.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Submit(TeamCodeSubmitModel model)
         {
-            if (Team == null || Team.Status != 1)
+            if (!Contest.HasTeam)
             {
                 ModelState.AddModelError("NoRegistration", "You should register first.");
+            }
+
+            if (!Contest.IsTeamAccepted)
+            {
+                ModelState.AddModelError("NotAccepted", "Team is not accepted yet.");
             }
 
             if (TooEarly && !Contest.IsJury)
@@ -224,7 +229,7 @@ namespace SatelliteSite.ContestModule.Controllers
                 code: model.Code,
                 language: lang,
                 problem: prob,
-                team: Team,
+                team: Contest.Team,
                 ipAddr: HttpContext.Connection.RemoteIpAddress,
                 via: "gym-page",
                 username: User.GetUserName());

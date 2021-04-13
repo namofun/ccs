@@ -29,6 +29,7 @@ namespace SatelliteSite.ContestModule
         public bool IsAdministrator => JuryLevel.HasValue && JuryLevel.Value >= Ccs.Entities.JuryLevel.Administrator;
         public JuryLevel? JuryLevel { get; set; }
         public bool HasTeam => Team != null;
+        public bool IsTeamAccepted => Team != null && Team.Status == 1;
 
         bool IContestFeature.Authenticated => _authenticated;
         bool IContestFeature.Contextualized => _contextualized;

@@ -32,7 +32,7 @@ namespace SatelliteSite.ContestModule.Controllers
         {
             if (page < 1) return BadRequest();
             var model = await Context.ListProblemsAsync(page, 50);
-            ViewBag.Statistics = await Context.StatisticsAsync(Team);
+            ViewBag.Statistics = await Context.StatisticsAsync(Contest.Team);
             ViewBag.GlobalStatistics = await Context.StatisticsGlobalAsync();
             return View(model);
         }
@@ -61,12 +61,12 @@ namespace SatelliteSite.ContestModule.Controllers
             const int PageCount = 15;
             var prob = await Context.FindProblemAsync(probid);
             if (prob == null) return NotFound();
-            if (Team == null) return DataTableAjax(Array.Empty<object>(), draw, 0);
+            if (Contest.Team == null) return DataTableAjax(Array.Empty<object>(), draw, 0);
 
             if (length != PageCount || start % PageCount != 0)
                 return BadRequest();
             start = start / PageCount + 1;
-            int teamid = Team.TeamId, cid = Team.ContestId, probId = prob.ProblemId;
+            int teamid = Contest.Team.TeamId, cid = Contest.Id, probId = prob.ProblemId;
 
             var model = await Context.ListSolutionsAsync(
                 selector: (s, j) => new { s.Id, s.Time, s.Language, j.Status, j.TotalScore },
@@ -84,7 +84,7 @@ namespace SatelliteSite.ContestModule.Controllers
             var prob = await Context.FindProblemAsync(probid);
             if (prob == null) return NotFound();
 
-            int cid = Team.ContestId, teamid = Team.TeamId, probId = prob.ProblemId;
+            int cid = Contest.Id, teamid = Contest.Team.TeamId, probId = prob.ProblemId;
             var subs = await Context.ListSolutionsAsync(
                 predicate: s => s.ProblemId == probId && s.TeamId == teamid && s.Id == submitid,
                 selector: (s, j) => new CodeViewModel
@@ -168,7 +168,7 @@ namespace SatelliteSite.ContestModule.Controllers
                     code: model.Code,
                     language: lang,
                     problem: prob,
-                    team: Team,
+                    team: Contest.Team,
                     ipAddr: HttpContext.Connection.RemoteIpAddress,
                     via: "problem-list",
                     username: User.GetUserName());

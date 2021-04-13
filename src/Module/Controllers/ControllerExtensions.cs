@@ -112,7 +112,7 @@ namespace SatelliteSite.ContestModule.Controllers
         public static async Task<IActionResult> GetRegister<T>(this ContestControllerBase<T> that, string homePage)
             where T : class, IContestContext
         {
-            if (that.Team != null)
+            if (that.Contest.Team != null)
             {
                 that.StatusMessage = "Already registered";
                 return that.RedirectToAction(homePage);
@@ -143,7 +143,7 @@ namespace SatelliteSite.ContestModule.Controllers
         public static async Task<IActionResult> PostRegister<T>(this ContestControllerBase<T> that, IRegisterProvider provider, string homePage, string registerPage = "Register")
             where T : class, IContestContext
         {
-            if (that.Team != null)
+            if (that.Contest.Team != null)
             {
                 that.StatusMessage = "Already registered";
                 return that.RedirectToAction(homePage);

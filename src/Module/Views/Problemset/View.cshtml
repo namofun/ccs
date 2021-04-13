@@ -1,7 +1,7 @@
 ﻿@model ProblemModel
 @{
     ViewData["Title"] = $"Problem {Model.ShortName}";
-    bool okSubmit = User.IsSignedIn() && Contest.HasTeam && Contest.Team.Status == 1;
+    bool okSubmit = User.IsSignedIn() && Contest.IsTeamAccepted;
 }
 
 <link rel="stylesheet" href="~/lib/katex/katex.min.css" />
