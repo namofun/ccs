@@ -97,6 +97,14 @@ namespace SatelliteSite.ContestModule.Models
             StatusAvailable = cont.Settings.StatusAvailable;
             Languages = cont.Settings.Languages;
             RegisterCategory = cont.Settings.RegisterCategory ?? new Dictionary<string, int>();
+
+            if (cont.Settings.RestrictIp.HasValue)
+            {
+                IpRanges = string.Join(';', cont.Settings.IpRanges);
+                RestrictToIpRanges = (cont.Settings.RestrictIp.Value & 1) == 1;
+                RestrictToMinimalSite = (cont.Settings.RestrictIp.Value & 2) == 2;
+                RestrictToLastLoginIp = (cont.Settings.RestrictIp.Value & 4) == 4;
+            }
         }
     }
 }
