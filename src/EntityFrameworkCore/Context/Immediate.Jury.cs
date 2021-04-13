@@ -12,12 +12,27 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace Ccs.Services
 {
     public partial class ImmediateContestContext : IJuryContext
     {
+        public virtual Task<IReadOnlyList<(IPAddress Address, int Subnet)>?> ListIpRangesAsync()
+        {
+            return Task.FromResult<IReadOnlyList<(IPAddress Address, int Subnet)>?>(
+                Contest.Settings.IpRanges?.Select(Convert).ToList());
+
+            static (IPAddress Address, int Subnet) Convert(string range)
+            {
+                var idx = range.IndexOf('/');
+                return (
+                    IPAddress.Parse(range.Substring(0, idx)),
+                    int.Parse(range.Substring(idx + 1)));
+            }
+        }
+
         public virtual async Task<IReadOnlyList<Language>> ListLanguagesAsync(bool filtered = true)
         {
             var langs = await Polygon.Languages.ListAsync(filtered ? true : default(bool?));

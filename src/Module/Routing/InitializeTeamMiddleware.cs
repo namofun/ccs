@@ -1,5 +1,6 @@
 ﻿#nullable enable
 using Ccs.Entities;
+using Ccs.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -52,6 +53,35 @@ namespace SatelliteSite.ContestModule.Routing
             {
                 var juryList = await feature.Context.ListJuriesAsync();
                 if (juryList.ContainsKey(uid)) level = juryList[uid].Item2;
+            }
+
+            bool restrictionFailed = false;
+            if (feature.Context.Contest.Settings.RestrictIp is int restrictIp)
+            {
+                if ((restrictIp & 1) == 1)
+                {
+                    var ranges = await feature.Context.ListIpRangesAsync();
+                    if (ranges == null) throw new NotImplementedException("Unknown configuration.");
+
+                    bool anySatisfied = false;
+                    var sourceIp = context.Connection.RemoteIpAddress;
+                    for (int i = 0; i < ranges.Count && !anySatisfied; i++)
+                    {
+                        anySatisfied |= sourceIp.IsInRange(ranges[i].Address, ranges[i].Subnet);
+                    }
+
+                    restrictionFailed = !anySatisfied;
+                }
+
+                if ((restrictIp & 2) == 2)
+                {
+                    restrictionFailed |= context.Features.Get<IMinimalSiteFeature>() == null;
+                }
+
+                if ((restrictIp & 4) == 4)
+                {
+                    // TODO: Check last login IP
+                }
             }
 
             feature.Authenticate(team, level);

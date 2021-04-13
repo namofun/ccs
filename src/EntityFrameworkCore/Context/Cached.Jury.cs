@@ -6,12 +6,19 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace Ccs.Services
 {
     public partial class CachedContestContext
     {
+        public override Task<IReadOnlyList<(IPAddress Address, int Subnet)>?> ListIpRangesAsync()
+        {
+            return CacheAsync("IpRanges", _options.Language,
+                async () => await base.ListIpRangesAsync());
+        }
+
         public override Task<IReadOnlyList<Language>> ListLanguagesAsync(bool filtered = true)
         {
             if (filtered)
@@ -44,6 +51,7 @@ namespace Ccs.Services
             await Ccs.UpdateAsync(Contest.Id, updateExpression);
             Expire("Core");
             Expire("Languages");
+            Expire("IpRanges");
 
             // The other occurrence is in Factory.cs
             var @new = await CacheAsync("Core", _options.Contest,

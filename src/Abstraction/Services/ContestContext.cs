@@ -39,6 +39,12 @@ namespace Ccs.Services
         Task<IReadOnlyList<Language>> ListLanguagesAsync(bool contestFiltered = true);
 
         /// <summary>
+        /// Fetch the IP ranges.
+        /// </summary>
+        /// <returns>The task for fetching IP ranges.</returns>
+        Task<IReadOnlyList<(IPAddress Address, int Subnet)>?> ListIpRangesAsync();
+
+        /// <summary>
         /// Finds the specified language.
         /// </summary>
         /// <param name="langid">The language ID.</param>
