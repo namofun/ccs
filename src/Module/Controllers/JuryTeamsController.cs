@@ -49,7 +49,7 @@ namespace SatelliteSite.ContestModule.Controllers
             var cats = await Context.ListCategoriesAsync();
             var affs = await Context.ListAffiliationsAsync();
             var sols = await Context.ListSolutionsAsync(teamid: teamid, all: all_submissions);
-            var members = await Context.GetTeamMemberAsync(team);
+            var members = await Context.GetTeamMember2Async(team);
 
             return View(new JuryViewTeamModel
             {

@@ -372,5 +372,18 @@ namespace Ccs.Services
                 .Select(Aggregator<TKey, TValue>.CreateExpression(aggregator))
                 .ToDictionaryAsync(k => k.Key, v => v.Value);
         }
+
+        public Task<List<TeamMemberModel>> GetTeamMember2Async(Team team)
+        {
+            int cid = team.ContestId, teamid = team.TeamId;
+            return Db.TeamMembers
+                .Where(m => m.ContestId == cid && m.TeamId == teamid)
+                .Join(
+                    inner: Db.Users,
+                    outerKeySelector: m => m.UserId,
+                    innerKeySelector: u => u.Id,
+                    resultSelector: (m, u) => new TeamMemberModel(m.UserId, u.UserName, m.LastLoginIp))
+                .ToListAsync();
+        }
     }
 }

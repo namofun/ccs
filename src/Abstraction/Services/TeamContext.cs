@@ -52,6 +52,13 @@ namespace Ccs.Services
         Task<IEnumerable<string>> GetTeamMemberAsync(Team team);
 
         /// <summary>
+        /// Gets the team member for specified team.
+        /// </summary>
+        /// <param name="team">The team.</param>
+        /// <returns>The task for getting member.</returns>
+        Task<List<Models.TeamMemberModel>> GetTeamMember2Async(Team team);
+
+        /// <summary>
         /// Creates a team with users.
         /// </summary>
         /// <param name="team">The original team model.</param>

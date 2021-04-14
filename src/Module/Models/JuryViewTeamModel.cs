@@ -15,7 +15,7 @@ namespace SatelliteSite.ContestModule.Models
 
         public Affiliation Affiliation { get; set; }
 
-        public IEnumerable<string> Members { get; set; }
+        public List<TeamMemberModel> Members { get; set; }
 
         public int TeamId { get; set; }
 
