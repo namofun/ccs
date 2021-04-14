@@ -391,6 +391,11 @@ namespace SatelliteSite.ContestModule
                     .HasTitle(string.Empty, "Generate statement LaTeX")
                     .HasLink("Contest", "JuryProblems", "GenerateStatement")
                     .RequireThat(c => Feature(c).Kind != CcsDefaults.KindProblemset);
+
+                menu.HasEntry(350)
+                    .HasTitle(string.Empty, "Import / export")
+                    .HasLink("Contest", "Jury", "ImportExport")
+                    .RequireThat(c => Feature(c).Kind != CcsDefaults.KindProblemset);
             });
 
             menus.Component(Polygon.ResourceDictionary.ComponentProblemOverview)
@@ -401,6 +406,8 @@ namespace SatelliteSite.ContestModule
 
             menus.Component(IdentityModule.ExtensionPointDefaults.UserDetail)
                 .HasComponent<Components.ContestStatistics.ContestStatisticsViewComponent>(10);
+
+            menus.Component(CcsDefaults.ComponentImportExport);
         }
 
         public void RegisterPolicies(IAuthorizationPolicyContainer container)

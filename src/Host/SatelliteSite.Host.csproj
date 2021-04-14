@@ -41,6 +41,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Connector.OpenXml\Ccs.Connector.OpenXml.csproj" />
     <ProjectReference Include="..\Connector.PDS\Ccs.Connector.PlagiarismDetect.csproj" />
     <ProjectReference Include="..\EntityFrameworkCore\Ccs.Storage.Relational.csproj" />
     <ProjectReference Include="..\Module\SatelliteSite.ContestModule.csproj" />

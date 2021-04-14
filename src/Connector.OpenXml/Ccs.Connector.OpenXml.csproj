@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+    <DescriptionAttach>The connector to exporting Office Documents</DescriptionAttach>
+  </PropertyGroup>
+
+  <Import Project="..\..\build\NugetPackage.Backend.props" />
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="ClosedXML" Version="0.95.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Module\SatelliteSite.ContestModule.csproj" />
+  </ItemGroup>
+
+</Project>

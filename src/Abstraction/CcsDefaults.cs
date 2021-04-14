@@ -51,6 +51,11 @@
         public const string JuryMenuAdmin = "Menu_JuryHome_Administrator";
 
         /// <summary>
+        /// The menu for import/export components
+        /// </summary>
+        public const string ComponentImportExport = "Component_Contest_ImportExport";
+
+        /// <summary>
         /// The kind for contests
         /// </summary>
         public const int KindDom = 0;

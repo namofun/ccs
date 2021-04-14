@@ -1,0 +1,24 @@
+﻿@inject IMenuProvider Menu 
+@{
+    ViewData["Title"] = "Import and export";
+}
+
+<h2 class="mt-2">@ViewData["Title"]</h2>
+
+<style>
+.importexport div.tile {
+  background-color: aliceblue;
+  padding: 1.5rem;
+  border-radius: .5rem;
+  height: 95%;
+  border: 1px solid #aad7ff;
+}
+
+.importexport div.tile h3 {
+  font-size: 22px;
+}
+</style>
+
+<div class="importexport">
+    @await Menu.Extend(CcsDefaults.ComponentImportExport).RenderAsync(Component)
+</div>

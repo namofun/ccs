@@ -384,5 +384,10 @@ namespace SatelliteSite.ContestModule.Controllers
         [HttpGet("[action]")]
         public async Task<IActionResult> Updates()
             => Json(await Context.GetUpdatesAsync());
+
+
+        [HttpGet("/[area]/{cid:c(3)}/jury/import-export")]
+        public IActionResult ImportExport()
+            => View();
     }
 }
