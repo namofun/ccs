@@ -296,6 +296,22 @@ namespace Ccs.Services
                 () => new Member { ContestId = cid, TeamId = teamid, UserId = uid, Temporary = temporary });
         }
 
+        public virtual Task UpdateMemberAsync(Member member, Expression<Func<Member, Member>> expression)
+        {
+            int cid = member.ContestId, teamid = member.TeamId, uid = member.UserId;
+            return Db.TeamMembers
+                .Where(m => m.ContestId == cid && m.TeamId == teamid && m.UserId == uid)
+                .BatchUpdateAsync(expression);
+        }
+
+        public virtual Task DetachMemberAsync(Member member)
+        {
+            int cid = member.ContestId, teamid = member.TeamId, uid = member.UserId;
+            return Db.TeamMembers
+                .Where(m => m.ContestId == cid && m.TeamId == teamid && m.UserId == uid)
+                .BatchDeleteAsync();
+        }
+
         public virtual async Task<List<Member>> LockOutTemporaryAsync(IUserManager userManager)
         {
             int cid = Contest.Id;

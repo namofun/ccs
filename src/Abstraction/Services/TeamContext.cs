@@ -92,6 +92,21 @@ namespace Ccs.Services
         Task AttachMemberAsync(Team team, IUser user, bool temporary);
 
         /// <summary>
+        /// Updates the specified member with expression.
+        /// </summary>
+        /// <param name="member">The member entity.</param>
+        /// <param name="expression">The expression for updating member.</param>
+        /// <returns>The task for updating member.</returns>
+        Task UpdateMemberAsync(Member member, Expression<Func<Member, Member>> expression);
+
+        /// <summary>
+        /// Detaches the specified member from the team.
+        /// </summary>
+        /// <param name="member">The member entity.</param>
+        /// <returns>The task for detaching member.</returns>
+        Task DetachMemberAsync(Member member);
+
+        /// <summary>
         /// Lists the teams with selected conditions.
         /// </summary>
         /// <param name="predicate">The conditions to match.</param>

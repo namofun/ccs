@@ -142,6 +142,18 @@ namespace Ccs.Services
             Expire($"Teams::User({user.Id})");
         }
 
+        public override async Task DetachMemberAsync(Member member)
+        {
+            await base.DetachMemberAsync(member);
+            Expire($"Teams::User({member.UserId})");
+        }
+
+        public override async Task UpdateMemberAsync(Member member, Expression<Func<Member, Member>> expression)
+        {
+            await base.UpdateMemberAsync(member, expression);
+            Expire($"Teams::User({member.UserId})");
+        }
+
         public override async Task<List<Member>> LockOutTemporaryAsync(IUserManager userManager)
         {
             var result = await base.LockOutTemporaryAsync(userManager);
