@@ -20,7 +20,15 @@ namespace SatelliteSite.ContestModule.Controllers
     {
         public override void OnActionExecuting(ActionExecutingContext context)
         {
-            if (!Contest.IsTeamAccepted)
+            if (Contest.IsRestrictionFailed)
+            {
+                context.Result = IsWindowAjax
+                    ? Message("403 Forbidden",
+                        "Access environment is restricted.",
+                        BootstrapColor.danger)
+                    : View("AccessDenied2");
+            }
+            else if (!Contest.IsTeamAccepted)
             {
                 context.Result = IsWindowAjax
                     ? Message("401 Unauthorized",

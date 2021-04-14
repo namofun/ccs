@@ -27,7 +27,7 @@ namespace SatelliteSite.ContestModule.Routing
             }
             else if (!context.User.IsSignedIn())
             {
-                feature.Authenticate(null, null);
+                feature.Authenticate(null, null, false);
                 return _next(context);
             }
             else
@@ -56,7 +56,9 @@ namespace SatelliteSite.ContestModule.Routing
             }
 
             bool restrictionFailed = false;
-            if (feature.Context.Contest.Settings.RestrictIp is int restrictIp)
+            if (team != null
+                && feature.Context.Contest.Kind == Ccs.CcsDefaults.KindDom
+                && feature.Context.Contest.Settings.RestrictIp is int restrictIp)
             {
                 if ((restrictIp & 1) == 1)
                 {
@@ -70,7 +72,7 @@ namespace SatelliteSite.ContestModule.Routing
                         anySatisfied |= sourceIp.IsInRange(ranges[i].Address, ranges[i].Subnet);
                     }
 
-                    restrictionFailed = !anySatisfied;
+                    restrictionFailed |= !anySatisfied;
                 }
 
                 if ((restrictIp & 2) == 2)
@@ -84,7 +86,7 @@ namespace SatelliteSite.ContestModule.Routing
                 }
             }
 
-            feature.Authenticate(team, level);
+            feature.Authenticate(team, level, restrictionFailed);
             await _next(context);
         }
     }

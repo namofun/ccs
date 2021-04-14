@@ -31,5 +31,8 @@ namespace Ccs.Services
 
         /// <summary>Whether status of team is accepted and no other restrictions are applied</summary>
         bool IsTeamAccepted { get; }
+
+        /// <summary>Whether restrictions are failed</summary>
+        bool IsRestrictionFailed { get; }
     }
 }

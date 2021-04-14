@@ -13,7 +13,7 @@ namespace SatelliteSite.ContestModule
 
         internal void Contextualize(IContestContext context);
 
-        internal void Authenticate(Team team, JuryLevel? level);
+        internal void Authenticate(Team team, JuryLevel? level, bool restrictionFailed);
     }
 
 
@@ -29,16 +29,18 @@ namespace SatelliteSite.ContestModule
         public bool IsAdministrator => JuryLevel.HasValue && JuryLevel.Value >= Ccs.Entities.JuryLevel.Administrator;
         public JuryLevel? JuryLevel { get; set; }
         public bool HasTeam => Team != null;
-        public bool IsTeamAccepted => Team != null && Team.Status == 1;
+        public bool IsTeamAccepted => Team != null && Team.Status == 1 && !IsRestrictionFailed;
+        public bool IsRestrictionFailed { get; set; }
 
         bool IContestFeature.Authenticated => _authenticated;
         bool IContestFeature.Contextualized => _contextualized;
 
-        void IContestFeature.Authenticate(Team team, JuryLevel? level)
+        void IContestFeature.Authenticate(Team team, JuryLevel? level, bool restrictionFailed)
         {
             if (_authenticated) throw new InvalidOperationException();
             Team = team;
             JuryLevel = level;
+            IsRestrictionFailed = restrictionFailed;
             _authenticated = true;
         }
 
