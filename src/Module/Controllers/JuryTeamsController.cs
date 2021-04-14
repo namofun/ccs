@@ -291,5 +291,129 @@ namespace SatelliteSite.ContestModule.Controllers
             StatusMessage = "Lockout finished.";
             return RedirectToAction(nameof(List));
         }
+
+
+        [HttpGet("{teamid}/[action]/{userid}")]
+        public async Task<IActionResult> Detach(int teamid, int userid)
+        {
+            var member = await Context.FindMemberByUserAsync(userid);
+            if (member == null || member.TeamId != teamid) return NotFound();
+            var team = await Context.FindTeamByIdAsync(teamid);
+            if (team == null) return NotFound();
+            var user = await UserManager.FindByIdAsync(userid);
+            if (user == null) return NotFound();
+
+            return AskPost(
+                title: "Detach user",
+                message: $"Are you sure to " +
+                    $"detach user {user.UserName} (u{userid}) " +
+                    $"from team {team.TeamName} (t{teamid})?",
+                type: BootstrapColor.danger);
+        }
+
+
+        [HttpPost("{teamid}/[action]/{userid}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Detach(int teamid, int userid, bool _ = true)
+        {
+            var member = await Context.FindMemberByUserAsync(userid);
+            if (member == null || member.TeamId != teamid) return NotFound();
+            var team = await Context.FindTeamByIdAsync(teamid);
+            if (team == null) return NotFound();
+
+            await Context.DetachMemberAsync(member);
+            await HttpContext.AuditAsync("detach", $"{teamid}", $"user {userid}");
+            StatusMessage = $"User {userid} detached successfully.";
+            return RedirectToAction(nameof(Detail));
+        }
+
+
+        [HttpGet("{teamid}/[action]/{userid}")]
+        public async Task<IActionResult> ResetRestrictions(int teamid, int userid)
+        {
+            var member = await Context.FindMemberByUserAsync(userid);
+            if (member == null || member.TeamId != teamid) return NotFound();
+            var team = await Context.FindTeamByIdAsync(teamid);
+            if (team == null) return NotFound();
+            var user = await UserManager.FindByIdAsync(userid);
+            if (user == null) return NotFound();
+
+            return AskPost(
+                title: "Reset access restrictions",
+                message: $"Are you sure to reset the access restrictions " +
+                    $"for user {user.UserName} (u{userid}) " +
+                    $"from team {team.TeamName} (t{teamid})?",
+                type: BootstrapColor.danger);
+        }
+
+
+        [HttpPost("{teamid}/[action]/{userid}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResetRestrictions(int teamid, int userid, bool _ = true)
+        {
+            var member = await Context.FindMemberByUserAsync(userid);
+            if (member == null || member.TeamId != teamid) return NotFound();
+            var team = await Context.FindTeamByIdAsync(teamid);
+            if (team == null) return NotFound();
+
+            await Context.UpdateMemberAsync(member, _ => new Member { LastLoginIp = null });
+            await HttpContext.AuditAsync("reset restriction", $"{teamid}", $"user {userid}");
+            StatusMessage = $"Restrictions for user {userid} reset successfully.";
+            return RedirectToAction(nameof(Detail));
+        }
+
+
+        [HttpGet("[action]/{userName?}")]
+        public async Task<IActionResult> TestUser(string userName)
+        {
+            if (userName != null)
+            {
+                var user = await UserManager.FindByNameAsync(userName);
+                if (user == null) return Content("No such user.", "text/html");
+                var member = await Context.FindMemberByUserAsync(user.Id);
+                if (member != null) return Content("This user is attached to another team.", "text/html");
+                return Content("", "text/html");
+            }
+            else
+            {
+                return Content("Please enter the username.", "text/html");
+            }
+        }
+
+
+        [HttpGet("{teamid}/[action]")]
+        public async Task<IActionResult> Attach(int teamid)
+        {
+            var team = await Context.FindTeamByIdAsync(teamid);
+            if (team == null) return NotFound();
+            return Window(new JuryAssignModel());
+        }
+
+
+        [HttpPost("{teamid}/[action]")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Attach(int teamid, JuryAssignModel model)
+        {
+            var team = await Context.FindTeamByIdAsync(teamid);
+            if (team == null) return NotFound();
+
+            var user = await UserManager.FindByNameAsync(model.UserName);
+            if (user == null)
+            {
+                StatusMessage = $"Error user {model.UserName} does not exist!";
+                return RedirectToAction(nameof(Detail));
+            }
+
+            var member = await Context.FindMemberByUserAsync(user.Id);
+            if (member != null)
+            {
+                StatusMessage = $"Error user {model.UserName} is attached to team {member.TeamId}.";
+                return RedirectToAction(nameof(Detail));
+            }
+
+            await Context.AttachMemberAsync(team, user, false);
+            StatusMessage = $"User {user.Id} attached successfully.";
+            return RedirectToAction(nameof(Detail));
+        }
     }
 }
