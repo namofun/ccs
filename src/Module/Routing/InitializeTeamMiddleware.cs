@@ -38,10 +38,12 @@ namespace SatelliteSite.ContestModule.Routing
 
         private async Task InvokeAsync(HttpContext context, IContestFeature feature)
         {
+            Member? member = null;
             Team? team = null;
             if (int.TryParse(context.User.GetUserId(), out int uid))
             {
-                team = await feature.Context.FindTeamByUserAsync(uid);
+                member = await feature.Context.FindMemberByUserAsync(uid);
+                if (member != null) team = await feature.Context.FindTeamByIdAsync(member.TeamId);
             }
 
             JuryLevel? level = null;
@@ -56,20 +58,22 @@ namespace SatelliteSite.ContestModule.Routing
             }
 
             bool restrictionFailed = false;
-            if (team != null
+            if (team != null && member != null
                 && feature.Context.Contest.Kind == Ccs.CcsDefaults.KindDom
                 && feature.Context.Contest.Settings.RestrictIp is int restrictIp)
             {
+                var clientIp = context.Connection.RemoteIpAddress;
+                if (clientIp.IsIPv4MappedToIPv6) clientIp = clientIp.MapToIPv4();
+
                 if ((restrictIp & 1) == 1)
                 {
                     var ranges = await feature.Context.ListIpRangesAsync();
                     if (ranges == null) throw new NotImplementedException("Unknown configuration.");
 
                     bool anySatisfied = false;
-                    var sourceIp = context.Connection.RemoteIpAddress;
                     for (int i = 0; i < ranges.Count && !anySatisfied; i++)
                     {
-                        anySatisfied |= sourceIp.IsInRange(ranges[i].Address, ranges[i].Subnet);
+                        anySatisfied |= clientIp.IsInRange(ranges[i].Address, ranges[i].Subnet);
                     }
 
                     restrictionFailed |= !anySatisfied;
@@ -82,7 +86,18 @@ namespace SatelliteSite.ContestModule.Routing
 
                 if ((restrictIp & 4) == 4)
                 {
-                    // TODO: Check last login IP
+                    var nowIp = clientIp.ToString();
+                    if (member.LastLoginIp != null)
+                    {
+                        restrictionFailed |= nowIp != member.LastLoginIp;
+                    }
+                    else
+                    {
+                        await ((ITeamContext)feature.Context)
+                            .UpdateMemberAsync(
+                                member,
+                                m => new Member { LastLoginIp = nowIp });
+                    }
                 }
             }
 

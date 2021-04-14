@@ -34,5 +34,10 @@
         /// The rating delta for Codeforces Rounds Rating
         /// </summary>
         public int? RatingDelta { get; set; }
+
+        /// <summary>
+        /// The last login IP
+        /// </summary>
+        public string? LastLoginIp { get; set; }
     }
 }
