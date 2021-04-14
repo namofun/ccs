@@ -14,5 +14,8 @@ namespace Ccs.Models
             Data = data;
             RefreshTime = DateTimeOffset.Now;
         }
+
+        public static ScoreboardModel Singleton { get; }
+            = new ScoreboardModel(new Dictionary<int, IScoreboardRow>());
     }
 }

@@ -238,6 +238,9 @@ namespace Ccs.Services
 
         public virtual async Task<ScoreboardModel> GetScoreboardAsync()
         {
+            if (Contest.Kind == CcsDefaults.KindProblemset)
+                return ScoreboardModel.Singleton;
+
             int cid = Contest.Id;
 
             var rankCaches = await Db.RankCache
