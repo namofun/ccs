@@ -199,18 +199,21 @@ namespace Ccs.Scoreboard.Query
 
             foreach (var r in scc.GroupBy(t => t.Key.Item1, v => v.Value))
             {
+                lastop1.TryGetValue(r.Key, out var ttp);
+                lastop2.TryGetValue(r.Key, out var ttr);
+
                 var item = new RankCache
                 {
                     ContestId = cid,
                     TeamId = r.Key,
+                    TotalTimePublic = ttp,
+                    TotalTimeRestricted = ttr,
                 };
 
                 foreach (var rr in r)
                 {
                     item.PointsPublic += rr.ScorePublic ?? 0;
                     item.PointsRestricted += rr.ScoreRestricted ?? 0;
-                    item.TotalTimePublic = lastop1.GetValueOrDefault(r.Key);
-                    item.TotalTimeRestricted = lastop2.GetValueOrDefault(r.Key);
                 }
 
                 rcc.Add(r.Key, item);

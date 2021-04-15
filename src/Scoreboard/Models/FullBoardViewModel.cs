@@ -110,13 +110,15 @@ namespace Ccs.Models
                     }
                 }
 
+                var aff = Affiliations.TryGetValue(item.AffiliationId, out var __aff) ? __aff : null;
+
                 yield return new TeamModel
                 {
                     ContestId = IsPublic ? default(int?) : ContestId,
                     TeamId = item.TeamId,
                     TeamName = item.TeamName,
-                    Affiliation = Affiliations.GetValueOrDefault(item.AffiliationId)?.Name ?? "",
-                    AffiliationId = Affiliations.GetValueOrDefault(item.AffiliationId)?.Abbreviation ?? "null",
+                    Affiliation = aff?.Name ?? "",
+                    AffiliationId = aff?.Abbreviation ?? "null",
                     Category = catName,
                     CategoryColor = cats[catid].Color,
                     Points = point,

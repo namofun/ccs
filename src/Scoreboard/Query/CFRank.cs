@@ -174,7 +174,7 @@ namespace Ccs.Scoreboard.Query
                         rcc.Add(s.TeamId,
                             new RankCache { ContestId = cid, TeamId = s.TeamId });
                     var rc = rcc[s.TeamId];
-                    int score = scores.GetValueOrDefault(sc.ProblemId);
+                    scores.TryGetValue(sc.ProblemId, out int score);
 
                     var time = sc.SolveTimePublic = (s.Time - args.StartTime).TotalSeconds;
                     var timee = (int)(time / 60);
