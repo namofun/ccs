@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Polygon.Entities;
 using SatelliteSite.ContestModule.Models;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -19,8 +18,7 @@ namespace SatelliteSite.ContestModule.Controllers
         public async Task<IActionResult> List(int? probid = null, string langid = null, int? teamid = null, bool all = false)
         {
             var model = await Context.ListSolutionsAsync(probid: probid, langid: langid, teamid: teamid, all: all);
-            var teamNames = await Context.GetTeamNamesAsync();
-            model.ForEach(a => a.AuthorName = teamNames.GetValueOrDefault(a.TeamId));
+            await Context.ApplyTeamNamesAsync(model);
             return View(model);
         }
 

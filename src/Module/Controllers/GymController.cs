@@ -29,11 +29,6 @@ namespace SatelliteSite.ContestModule.Controllers
 
         public override async Task OnActionExecutingAsync(ActionExecutingContext context)
         {
-            if ((Contest.StartTime ?? DateTimeOffset.MaxValue) >= DateTimeOffset.Now)
-            {
-                context.Result = NotStarted();
-            }
-
             ViewData["NavbarName"] = Ccs.CcsDefaults.NavbarGym;
             ViewData["BigUrl"] = Url.Action("Home", "Gym");
             ViewData["UseLightTheme"] = true;
@@ -50,6 +45,7 @@ namespace SatelliteSite.ContestModule.Controllers
         [HttpGet("[action]")]
         public async Task<IActionResult> Standings(int page = 1)
         {
+            if (TooEarly && !Contest.IsJury) return NotStarted();
             if (page <= 0) return BadRequest();
             var scb = await Context.GetScoreboardAsync();
             var orgs = await Context.ListCategoriesAsync();
@@ -73,6 +69,7 @@ namespace SatelliteSite.ContestModule.Controllers
         [HttpGet]
         public async Task<IActionResult> Home()
         {
+            if (TooEarly && !Contest.IsJury) return NotStarted();
             return View(new GymHomeViewModel
             {
                 Clarifications = await Context.ListClarificationsAsync(c => c.Recipient == null && c.Sender == null),
@@ -263,15 +260,21 @@ namespace SatelliteSite.ContestModule.Controllers
         [HttpGet("submissions")]
         public async Task<IActionResult> Submissions(int page = 1)
         {
-            if (TooEarly && !Contest.IsJury) return NotFound();
+            if (TooEarly && !Contest.IsJury) return NotStarted();
             if (page <= 0) return BadRequest();
             var model = await Context.ListSolutionsAsync(page, 50);
-            var tn = await Context.GetTeamNamesAsync();
-            foreach (var solu in model)
-            {
-                solu.AuthorName = tn.GetValueOrDefault(solu.TeamId, string.Empty);
-            }
+            await Context.ApplyTeamNamesAsync(model);
+            return View(model);
+        }
 
+
+        [HttpGet("my-submissions")]
+        public async Task<IActionResult> MySubmissions(int page = 1)
+        {
+            if (TooEarly && !Contest.IsJury) return NotStarted();
+            if (page <= 0) return BadRequest();
+            var model = await Context.ListSolutionsAsync(page: page, perPage: 50, teamid: Contest.Team?.TeamId ?? -100);
+            await Context.ApplyTeamNamesAsync(model);
             return View(model);
         }
     }

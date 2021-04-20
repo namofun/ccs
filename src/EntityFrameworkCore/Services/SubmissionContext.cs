@@ -54,6 +54,19 @@ namespace Ccs.Services
             return Polygon.Submissions.ListWithJudgingAsync((page, perPage), s => s.ContestId == cid);
         }
 
+        public Task<IPagedList<Solution>> ListSolutionsAsync(
+            int page, int perPage,
+            int? probid = null, string? langid = null, int? teamid = null)
+        {
+            int cid = Contest.Id;
+            return Polygon.Submissions.ListWithJudgingAsync(
+                (page, perPage),
+                Expr.Of<Submission>(s => s.ContestId == cid)!
+                    .CombineIf(probid.HasValue, s => s.ProblemId == probid)
+                    .CombineIf(langid != null, s => s.Language == langid)
+                    .CombineIf(teamid.HasValue, s => s.TeamId == teamid));
+        }
+
         public virtual async Task<Solution> FindSolutionAsync(int submitid)
         {
             int cid = Contest.Id;

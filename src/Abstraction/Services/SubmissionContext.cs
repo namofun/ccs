@@ -73,6 +73,19 @@ namespace Ccs.Services
         /// </summary>
         /// <param name="page">The page.</param>
         /// <param name="perPage">The count per page.</param>
+        /// <param name="probid">The problem ID.</param>
+        /// <param name="langid">The language ID.</param>
+        /// <param name="teamid">The team ID.</param>
+        /// <returns>The task for fetching solution list.</returns>
+        Task<IPagedList<Polygon.Models.Solution>> ListSolutionsAsync(
+            int page, int perPage,
+            int? probid = null, string? langid = null, int? teamid = null);
+
+        /// <summary>
+        /// Fetch solutions with contest.
+        /// </summary>
+        /// <param name="page">The page.</param>
+        /// <param name="perPage">The count per page.</param>
         /// <returns>The task for fetching solution list.</returns>
         Task<IPagedList<Polygon.Models.Solution>> ListSolutionsAsync(int page, int perPage);
 
