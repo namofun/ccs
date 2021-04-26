@@ -1,12 +1,12 @@
 ﻿<Project>
   <PropertyGroup>
     <GitRepositoryDirectory>$(MSBuildThisFileDirectory).git</GitRepositoryDirectory>
-    <SubstrateVersion>1.0.37</SubstrateVersion>
+    <SubstrateVersion>1.0.38</SubstrateVersion>
     <PreviewBuild>9</PreviewBuild>
     <AspNetCoreVersion>3.1.13</AspNetCoreVersion>
-    <PolygonVersion>1.0.16</PolygonVersion>
-    <TenantVersion>1.0.10</TenantVersion>
+    <PolygonVersion>1.0.17</PolygonVersion>
+    <TenantVersion>1.0.11</TenantVersion>
     <EFCoreBulkVersion>3.1.25</EFCoreBulkVersion>
-    <PlagVersion>1.2.18</PlagVersion>
+    <PlagVersion>1.2.19</PlagVersion>
   </PropertyGroup>
 </Project>

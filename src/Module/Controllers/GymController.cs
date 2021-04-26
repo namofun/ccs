@@ -275,7 +275,7 @@ namespace SatelliteSite.ContestModule.Controllers
             if (page <= 0) return BadRequest();
             var model = await Context.ListSolutionsAsync(page: page, perPage: 50, teamid: Contest.Team?.TeamId ?? -100);
             await Context.ApplyTeamNamesAsync(model);
-            return View(model);
+            return View("Submissions", model);
         }
     }
 }
