@@ -132,88 +132,20 @@ namespace SatelliteSite.ContestModule.Controllers
 
         [HttpGet("clarifications/add")]
         public IActionResult ClarificationAdd()
-        {
-            if (TooEarly) return Message("Clarification", "Contest has not started.");
-            return Window(new AddClarificationModel());
-        }
+            => CommonActions.ClarificationAdd(this);
 
 
         [HttpGet("clarifications/{clarid}")]
-        public async Task<IActionResult> ClarificationView(int clarid, bool needMore = true)
-        {
-            var toSee = await Context.FindClarificationAsync(clarid);
-            var clars = Enumerable.Empty<Clarification>();
-
-            if (toSee?.CheckPermission(Contest.Team.TeamId) ?? true)
-            {
-                clars = clars.Append(toSee);
-
-                if (needMore && toSee.ResponseToId.HasValue)
-                {
-                    int respid = toSee.ResponseToId.Value;
-                    var toSee2 = await Context.FindClarificationAsync(respid);
-                    if (toSee2 != null) clars = clars.Prepend(toSee2);
-                }
-            }
-
-            if (!clars.Any()) return NotFound();
-            ViewData["TeamName"] = Contest.Team.TeamName;
-            return Window(clars);
-        }
+        public Task<IActionResult> ClarificationView(int clarid, bool needMore = true)
+            => CommonActions.ClarificationView(this, clarid, needMore);
 
 
         [HttpPost("clarifications/add")]
         [HttpPost("clarifications/{clarid}/reply")]
         [ValidateAntiForgeryToken]
         [AuditPoint(AuditlogType.Clarification)]
-        public async Task<IActionResult> ClarificationReply(int? clarid, AddClarificationModel model)
-        {
-            var (cid, teamid) = (Contest.Id, Contest.Team.TeamId);
-
-            Clarification replit = null;
-            if (clarid.HasValue)
-            {
-                replit = await Context.FindClarificationAsync(clarid.Value);
-                if (replit == null)
-                {
-                    ModelState.AddModelError("xys::replyto", "The clarification replied to is not found.");
-                }
-            }
-
-            if (string.IsNullOrWhiteSpace(model.Body))
-                ModelState.AddModelError("xys::empty", "No empty clarification");
-
-            var probs = await Context.ListProblemsAsync();
-            var usage = probs.ClarificationCategories.SingleOrDefault(cp => model.Type == cp.Item1);
-            if (usage.Item1 == null)
-                ModelState.AddModelError("xys::error_cate", "The category specified is wrong.");
-
-            if (!ModelState.IsValid)
-            {
-                StatusMessage = string.Join('\n', ModelState.Values
-                    .SelectMany(m => m.Errors)
-                    .Select(e => e.ErrorMessage));
-            }
-            else
-            {
-                var clar = await Context.ClarifyAsync(
-                    new Clarification
-                    {
-                        Body = model.Body,
-                        SubmitTime = DateTimeOffset.Now,
-                        ContestId = cid,
-                        Sender = teamid,
-                        ResponseToId = model.ReplyTo,
-                        ProblemId = usage.Item3,
-                        Category = usage.Item2,
-                    });
-
-                await HttpContext.AuditAsync("added", $"{clar.Id}");
-                StatusMessage = "Clarification sent to the jury.";
-            }
-
-            return RedirectToAction(nameof(Home));
-        }
+        public Task<IActionResult> ClarificationReply(int? clarid, AddClarificationModel model)
+            => CommonActions.ClarificationReply(this, clarid, model, nameof(Home));
 
 
         [HttpGet("[action]")]

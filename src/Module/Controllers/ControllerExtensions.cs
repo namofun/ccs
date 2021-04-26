@@ -16,7 +16,8 @@ namespace SatelliteSite.ContestModule.Controllers
     /// </summary>
     internal static class CommonActions
     {
-        public static IActionResult GetPrint<T>(this ContestControllerBase<T> that)
+        public static IActionResult GetPrint<T>(
+            this ContestControllerBase<T> that)
             where T : class, IContestContext
         {
             if (!that.Contest.Settings.PrintingAvailable) return that.NotFound();
@@ -24,7 +25,9 @@ namespace SatelliteSite.ContestModule.Controllers
         }
 
 
-        public static async Task<IActionResult> PostPrint<T>(this ContestControllerBase<T> that, Models.AddPrintModel model)
+        public static async Task<IActionResult> PostPrint<T>(
+            this ContestControllerBase<T> that,
+            Models.AddPrintModel model)
             where T : class, IContestContext
         {
             if (!that.Contest.Settings.PrintingAvailable) return that.NotFound();
@@ -109,7 +112,9 @@ namespace SatelliteSite.ContestModule.Controllers
         }
 
 
-        public static async Task<IActionResult> GetRegister<T>(this ContestControllerBase<T> that, string homePage)
+        public static async Task<IActionResult> GetRegister<T>(
+            this ContestControllerBase<T> that,
+            string homePage)
             where T : class, IContestContext
         {
             if (that.Contest.Team != null)
@@ -140,7 +145,11 @@ namespace SatelliteSite.ContestModule.Controllers
         }
 
 
-        public static async Task<IActionResult> PostRegister<T>(this ContestControllerBase<T> that, IRegisterProvider provider, string homePage, string registerPage = "Register")
+        public static async Task<IActionResult> PostRegister<T>(
+            this ContestControllerBase<T> that,
+            IRegisterProvider provider,
+            string homePage,
+            string registerPage = "Register")
             where T : class, IContestContext
         {
             if (that.Contest.Team != null)
@@ -186,6 +195,115 @@ namespace SatelliteSite.ContestModule.Controllers
 
             that.StatusMessage = "Error " + that.ModelState.GetErrorStrings();
             return that.RedirectToAction(registerPage);
+        }
+
+
+        public static IActionResult ClarificationAdd<T>(
+            this ContestControllerBase<T> that)
+            where T : class, ICompeteContext
+        {
+            if (that.TooEarly)
+            {
+                return that.Message("Clarification", "Contest has not started.");
+            }
+            else
+            {
+                return that.Window(new Models.AddClarificationModel());
+            }
+        }
+
+
+        public static async Task<IActionResult> ClarificationView<T>(
+            this ContestControllerBase<T> that,
+            int clarid,
+            bool needMore = true)
+            where T : class, ICompeteContext
+        {
+            var toSee = await that.Context.FindClarificationAsync(clarid);
+            var clars = Enumerable.Empty<Clarification>();
+
+            if (toSee?.CheckPermission(that.Contest.Team.TeamId) ?? true)
+            {
+                clars = clars.Append(toSee);
+
+                if (needMore && toSee.ResponseToId.HasValue)
+                {
+                    int respid = toSee.ResponseToId.Value;
+                    var toSee2 = await that.Context.FindClarificationAsync(respid);
+                    if (toSee2 != null) clars = clars.Prepend(toSee2);
+                }
+            }
+
+            if (!clars.Any()) return that.NotFound();
+            that.ViewData["TeamName"] = that.Contest.Team.TeamName;
+            return that.Window(clars);
+        }
+
+
+        public static async Task<IActionResult> ClarificationReply<T>(
+            this ContestControllerBase<T> that,
+            int? clarid,
+            Models.AddClarificationModel model,
+            string HomePage)
+            where T : class, ICompeteContext
+        {
+            var (cid, teamid) = (that.Contest.Id, that.Contest.Team.TeamId);
+
+            Clarification replit = null;
+            if (clarid.HasValue)
+            {
+                replit = await that.Context.FindClarificationAsync(clarid.Value);
+
+                if (replit == null)
+                {
+                    that.ModelState.AddModelError(
+                        "xys::replyto",
+                        "The clarification replied to is not found.");
+                }
+            }
+
+            if (string.IsNullOrWhiteSpace(model.Body))
+            {
+                that.ModelState.AddModelError(
+                    "xys::empty",
+                    "No empty clarification");
+            }
+
+            var probs = await that.Context.ListProblemsAsync();
+            var usage = probs.ClarificationCategories.SingleOrDefault(cp => model.Type == cp.Item1);
+            if (usage.Item1 == null)
+            {
+                that.ModelState.AddModelError(
+                    "xys::error_cate",
+                    "The category specified is wrong.");
+            }
+
+            if (!that.ModelState.IsValid)
+            {
+                that.StatusMessage = string.Join('\n',
+                    that.ModelState.Values
+                        .SelectMany(m => m.Errors)
+                        .Select(e => e.ErrorMessage));
+            }
+            else
+            {
+                var clar = await that.Context.ClarifyAsync(
+                    new Clarification
+                    {
+                        Body = model.Body,
+                        SubmitTime = DateTimeOffset.Now,
+                        ContestId = cid,
+                        Sender = teamid,
+                        ResponseToId = model.ReplyTo,
+                        ProblemId = usage.Item3,
+                        Category = usage.Item2,
+                    });
+
+                await that.HttpContext.AuditAsync("added", $"{clar.Id}");
+                that.StatusMessage = "Clarification sent to the jury.";
+            }
+
+            return that.RedirectToAction(HomePage);
         }
     }
 }
