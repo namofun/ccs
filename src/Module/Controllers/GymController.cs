@@ -261,26 +261,42 @@ namespace SatelliteSite.ContestModule.Controllers
         }
 
 
-        [HttpGet("submissions")]
-        public async Task<IActionResult> Submissions(int page = 1)
+        private async Task<IActionResult> DoSubmissions(int page, int? verd, string lang, string prob, int? teamid, int filter, int reset)
         {
             if (TooEarly && !Contest.IsJury) return NotStarted();
             if (page <= 0) return BadRequest();
-            var model = await Context.ListSolutionsAsync(page, 50);
-            await Context.ApplyTeamNamesAsync(model);
-            return View(model);
-        }
 
+            var verd2 = (Polygon.Entities.Verdict?)verd;
+            if (filter != 1 || reset == 1)
+            {
+                verd2 = null;
+                lang = null;
+                prob = null;
+            }
 
-        [HttpGet("my-submissions")]
-        public async Task<IActionResult> MySubmissions(int page = 1)
-        {
-            if (TooEarly && !Contest.IsJury) return NotStarted();
-            if (page <= 0) return BadRequest();
-            var model = await Context.ListSolutionsAsync(page: page, perPage: 50, teamid: Contest.Team?.TeamId ?? -100);
+            ViewBag.Filters = new GymFilteringModel
+            {
+                Language = lang,
+                Problem = prob,
+                Verdict = verd2,
+            };
+
+            var probs = await Context.ListProblemsAsync();
+            var probid = prob != null ? (probs.Find(prob)?.ProblemId ?? -1) : default(int?);
+            var model = await Context.ListSolutionsAsync(page, 50, probid, lang, teamid, verd2);
             await Context.ApplyTeamNamesAsync(model);
             return View("Submissions", model);
         }
+
+
+        [HttpGet("submissions")]
+        public Task<IActionResult> Submissions(int page = 1, int? verd = null, string lang = null, string prob = null, int reset = 0, int filter = 0)
+            => DoSubmissions(page, verd, lang, prob, null, filter, reset);
+
+
+        [HttpGet("my-submissions")]
+        public Task<IActionResult> MySubmissions(int page = 1, int? verd = null, string lang = null, string prob = null, int reset = 0, int filter = 0)
+            => DoSubmissions(page, verd, lang, prob, Contest.Team?.TeamId ?? -100, filter, reset);
 
 
         [HttpGet("clarifications/add")]

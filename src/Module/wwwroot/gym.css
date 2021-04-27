@@ -36,17 +36,36 @@ table.table-gym > thead > tr {
   text-decoration: none;
 }
 
-.table-gym tbody tr td,
-.table-gym tbody tr th {
-  padding-top: .5em;
-  padding-bottom: .5em;
+.table-gym > tbody > tr > td,
+.table-gym > tbody > tr > th {
+  padding-top: .5rem;
+  padding-bottom: .5rem;
+}
+
+.table-gym.table-sm > tbody > tr > td,
+.table-gym.table-sm > tbody > tr > th {
+  padding-top: .3rem;
+  padding-bottom: .3rem;
+}
+
+.table-gym.table-sm > thead > tr > td,
+.table-gym.table-sm > thead > tr > th {
+  padding: .75rem;
+}
+
+table.table-text-middle > thead > tr > th,
+table.table-text-middle > thead > tr > td,
+table.table-text-middle > tbody > tr > th,
+table.table-text-middle > tbody > tr > td {
+  vertical-align: middle;
 }
 
 .table-gym thead > tr:first-child > th:first-child {
   border-top-left-radius: .26666667rem;
 }
 
-.table-gym thead > tr:first-child > th:last-child {
+.table-gym thead > tr:first-child > th:last-child,
+.table-gym thead > tr:first-child > th.non-lg-last-cell {
   border-top-right-radius: .26666667rem;
 }
 
@@ -54,7 +73,8 @@ table.table-gym > thead > tr {
   border-bottom-left-radius: .26666667rem;
 }
 
-.table-gym tbody > tr:last-child > td:last-child {
+.table-gym tbody > tr:last-child > td:last-child,
+.table-gym tbody > tr:last-child > td.non-lg-last-cell {
   border-bottom-right-radius: .26666667rem;
 }
 
@@ -81,6 +101,16 @@ table.table-gym > thead > tr {
 .container-gym .main h3,
 .container-gym .sidebar h3 {
   font-size: 1.5rem;
+}
+
+@media (min-width: 992px) {
+  .table-gym thead > tr:first-child > th.non-lg-last-cell {
+    border-top-right-radius: 0;
+  }
+
+  .table-gym tbody > tr:last-child > td.non-lg-last-cell {
+    border-bottom-right-radius: 0;
+  }
 }
 
 @media (min-width: 1200px) {

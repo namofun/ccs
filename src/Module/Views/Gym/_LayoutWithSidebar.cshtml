@@ -1,5 +1,7 @@
 ﻿@{
     Layout = "_Layout";
+    var right = ((int?)ViewData["SidebarSize"]) ?? 4;
+    var breakpoint = ((string)ViewData["SidebarBreakpoint"]) ?? "lg";
 }
 
 <link rel="stylesheet" href="~/lib/site-ccs/gym.css?v=@Contest.CcsVersion" />
@@ -8,11 +10,11 @@
 @{ TempData.Remove("StatusMessage"); }
 
 <div class="row">
-<div class="col-12 col-lg-8 main">
+<div class="col-12 col-@breakpoint-@(12-right) main">
     @RenderBody()
 </div>
 
-<div class="col-12 col-lg-4 sidebar">
+<div class="col-12 col-@breakpoint-@right sidebar">
     <h3 class="mt-lg-5">Contest</h3>
     <p>
         @Contest.Name

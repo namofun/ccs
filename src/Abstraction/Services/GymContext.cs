@@ -39,8 +39,9 @@ namespace Ccs.Services
         /// <param name="probid">The problem ID.</param>
         /// <param name="langid">The language ID.</param>
         /// <param name="teamid">The team ID.</param>
+        /// <param name="verdict">The judging verdict.</param>
         /// <returns>The task for fetching solution list.</returns>
-        Task<IPagedList<Solution>> ListSolutionsAsync(int page, int perPage, int? probid = null, string? langid = null, int? teamid = null);
+        Task<IPagedList<Solution>> ListSolutionsAsync(int page, int perPage, int? probid = null, string? langid = null, int? teamid = null, Verdict? verdict = null);
 
         /// <summary>
         /// Gets the testcase of the <paramref name="problem"/>.

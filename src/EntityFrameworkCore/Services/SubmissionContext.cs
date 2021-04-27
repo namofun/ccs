@@ -56,7 +56,7 @@ namespace Ccs.Services
 
         public Task<IPagedList<Solution>> ListSolutionsAsync(
             int page, int perPage,
-            int? probid = null, string? langid = null, int? teamid = null)
+            int? probid = null, string? langid = null, int? teamid = null, Verdict? verdict = null)
         {
             int cid = Contest.Id;
             return Polygon.Submissions.ListWithJudgingAsync(
