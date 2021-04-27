@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="../buildMultiTargeting/SatelliteSite.ContestModule.props" />
-</Project>

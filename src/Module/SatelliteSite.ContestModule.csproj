@@ -9,6 +9,8 @@
   <Import Project="..\..\build\NugetPackage.props" />
 
   <PropertyGroup>
+    <StaticWebAssetsDisableProjectBuildPropsFileGeneration>true</StaticWebAssetsDisableProjectBuildPropsFileGeneration>
+
     <ResolveCurrentProjectStaticWebAssetsInputsDependsOn>
       SetStaticWebAssetsBasePath;
       $(ResolveCurrentProjectStaticWebAssetsInputsDependsOn)
@@ -24,8 +26,6 @@
   <ItemGroup>
     <None Include="..\..\build\CopyDocumentXml.props" Pack="true" PackagePath="build\" Link="build\CopyDocumentXml.props" />
     <None Include="..\..\build\SatelliteSite.ContestModule.props" Pack="true" PackagePath="build\" Link="build\SatelliteSite.ContestModule.props" />
-    <None Include="..\..\build\SatelliteSite.ContestModule-buildMultiTargeting.props" Pack="true" PackagePath="buildMultiTargeting\SatelliteSite.ContestModule.props" Link="build\SatelliteSite.ContestModule-buildMultiTargeting.props" />
-    <None Include="..\..\build\SatelliteSite.ContestModule-buildTransitive.props" Pack="true" PackagePath="buildTransitive\SatelliteSite.ContestModule.props" Link="build\SatelliteSite.ContestModule-buildTransitive.props" />
   </ItemGroup>
 
   <ItemGroup>
