@@ -73,6 +73,8 @@ namespace Ccs.Services
 
         public IMemoryCache Cache { get; }
 
+        public IComparer<ContestListModel> Comparer { get; }
+
         public Task<List<ContestListModel>> GetContests()
             => CachedGetAsync("Contests", 5, async () =>
             {
@@ -81,7 +83,7 @@ namespace Ccs.Services
                     .Select(c => new ContestListModel(c.Id, c.Name, c.ShortName, c.StartTime, c.EndTimeSeconds, c.Kind, c.RankingStrategy, c.IsPublic, c.TeamCount, c.ProblemCount))
                     .ToListAsync();
 
-                list.Sort();
+                list.Sort(Comparer);
                 return list;
             });
 
@@ -106,10 +108,12 @@ namespace Ccs.Services
 
         public CachedContestRepository2(
             TContext context,
-            CachedContestRepository2Cache cache)
+            CachedContestRepository2Cache cache,
+            IComparer<ContestListModel> comparer)
         {
             Db = context;
             Cache = cache;
+            Comparer = comparer;
         }
 
         public Task<T> CachedGetAsync<T>(string key, int time, Func<Task<T>> valueFactory)

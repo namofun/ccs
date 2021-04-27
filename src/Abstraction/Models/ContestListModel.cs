@@ -3,9 +3,9 @@ using System;
 
 namespace Ccs.Models
 {
-    public class ContestListModel : IComparable<ContestListModel>
+    public class ContestListModel
     {
-        private readonly int _state;
+        internal readonly int _state;
 
         /// <inheritdoc cref="IContestInformation.Id" />
         public int ContestId { get; }
@@ -107,64 +107,6 @@ namespace Ccs.Models
                 ProblemCount,
                 registered,
                 isJury);
-        }
-
-        /// <inheritdoc />
-        public int CompareTo(ContestListModel other)
-        {
-            if (Kind != other.Kind)
-            {
-                return Kind.CompareTo(other.Kind);
-            }
-            else if (Kind == 2)
-            {
-                // When they are all problemsets
-                // The earlier created stays last.
-                return other.ContestId.CompareTo(ContestId);
-            }
-            else if (Kind == 1)
-            {
-                // When they are all gyms
-                if (!StartTime.HasValue && !other.StartTime.HasValue)
-                {
-                    // If this and that both have no start time, compare with cid.
-                    return ContestId.CompareTo(other.ContestId);
-                }
-                else if (StartTime.HasValue && other.StartTime.HasValue)
-                {
-                    // If both have start time, then the early one is bigger.
-                    return other.StartTime.Value.CompareTo(StartTime.Value);
-                }
-                else
-                {
-                    // If this has a start time and that doesn't, this > that.
-                    return StartTime.HasValue ? 1 : -1;
-                }
-            }
-            else
-            {
-                // When they are all contests
-                if (_state != other._state)
-                {
-                    // When they are not the same state, compare with current.
-                    return _state.CompareTo(other._state);
-                }
-                else if (_state == 1)
-                {
-                    // When they are both not scheduled, compare with cid.
-                    return ContestId.CompareTo(other.ContestId);
-                }
-                else if (_state == 2)
-                {
-                    // When they are both running, the earlier first.
-                    return StartTime!.Value.CompareTo(other.StartTime!.Value);
-                }
-                else
-                {
-                    // When they are both stopped, the earlier last.
-                    return other.StartTime!.Value.CompareTo(StartTime!.Value);
-                }
-            }
         }
     }
 }
