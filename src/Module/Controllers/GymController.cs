@@ -70,9 +70,13 @@ namespace SatelliteSite.ContestModule.Controllers
         public async Task<IActionResult> Home()
         {
             if (TooEarly && !Contest.IsJury) return NotStarted();
+
+            int teamid = Contest.Team?.TeamId ?? -100;
             return View(new GymHomeViewModel
             {
-                Clarifications = await Context.ListClarificationsAsync(c => c.Recipient == null && c.Sender == null),
+                Clarifications = await Context.ListClarificationsAsync(
+                    c => (c.Sender == null && c.Recipient == null)
+                      || c.Recipient == teamid || c.Sender == teamid),
                 Markdown = await Context.GetReadmeAsync(),
                 MeStatistics = Statistics,
                 AllStatistics = await Context.StatisticsGlobalAsync(),
@@ -277,5 +281,23 @@ namespace SatelliteSite.ContestModule.Controllers
             await Context.ApplyTeamNamesAsync(model);
             return View("Submissions", model);
         }
+
+
+        [HttpGet("clarifications/add")]
+        public IActionResult ClarificationAdd()
+            => CommonActions.ClarificationAdd(this);
+
+
+        [HttpGet("clarifications/{clarid}")]
+        public Task<IActionResult> ClarificationView(int clarid, bool needMore = true)
+            => CommonActions.ClarificationView(this, clarid, needMore);
+
+
+        [HttpPost("clarifications/add")]
+        [HttpPost("clarifications/{clarid}/reply")]
+        [ValidateAntiForgeryToken]
+        [AuditPoint(AuditlogType.Clarification)]
+        public Task<IActionResult> ClarificationReply(int? clarid, AddClarificationModel model)
+            => CommonActions.ClarificationReply(this, clarid, model, nameof(Home));
     }
 }

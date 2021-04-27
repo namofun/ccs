@@ -38,10 +38,18 @@
             {
                 <li>
                     <p>
-                        <b>@clar.Category @Model.Problems.Find(clar.ProblemId ?? -110)?.ShortName issue</b>
+                        <b>
+                            <i asp-show-if="clar.Recipient == null && Contest.Team != null && clar.Sender == Contest.Team?.TeamId" class="fas fa-question-circle" title="My Clarification Request"></i>
+                            <i asp-show-if="Contest.Team != null && clar.Recipient == Contest.Team?.TeamId" class="fas fa-dot-circle" title="Jury's Clarification Response"></i>
+                            <i asp-show-if="clar.Recipient == null && clar.Sender == null" class="fas fa-info-circle" title="Common Clarification"></i>
+                            @clar.Category @Model.Problems.Find(clar.ProblemId ?? -1)?.ShortName issue
+                        </b>
                         <br />
-                        @clar.Body
-                        <br />
+                        @foreach (var ln in clar.Body.TrimEnd().Split('\n'))
+                        {
+                            @ln
+                            <br />
+                        }
                         <span class="text-muted">@clar.SubmitTime.ToString("yyyy/MM/dd HH:mm")</span>
                     </p>
                 </li>
@@ -52,6 +60,7 @@
             <li>No announcement.</li>
         }
     </ul>
+    <a asp-show-if="Contest.IsTeamAccepted" asp-action="ClarificationAdd" data-toggle="ajaxWindow" data-target="req-clar">Request clarification &raquo;</a>
 </div>
 
 <div class="col-12 col-lg-4 sidebar">
@@ -73,7 +82,13 @@
         <br />
         <a class="mt-2 btn btn-sm btn-primary" asp-action="Register">Register</a>
     </p>
-    <p asp-show-if="Contest.Team != null">
+    <p asp-show-if="Contest.Team != null && !Contest.IsTeamAccepted">
+        You have registered as Team <b>@Contest.Team.TeamName</b>.
+        <br />
+        You haven't been accpeted for this contest.
+        If you believe this is a mistake, please contact a staff for help.
+    </p>
+    <p asp-show-if="Contest.IsTeamAccepted">
         You have registered as Team <b>@Contest.Team.TeamName</b>.
         <br />
         <a asp-action="MySubmissions">My submissions &raquo;</a>
@@ -84,7 +99,7 @@
 
 <style>
     .thead-light-2 { background: #F9FAFB; }
-    #eoj-scoreboard td { border-color: rgba(34,36,38,.1); }
+    #eoj-scoreboard td { border-color: #e8e9e9; }
     #eoj-scoreboard a[href] { color: #4183c4; text-decoration: none; }
     #eoj-scoreboard tbody tr td, .table tbody tr th { padding-top: .5em; padding-bottom: .5em; }
     #eoj-scoreboard thead > tr:first-child > th:first-child { border-top-left-radius: .26666667rem; }
