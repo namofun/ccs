@@ -8,7 +8,7 @@
 @functions {
     void ShowRow(TeamModel row)
     {
-        WriteLiteral("<tr class=\"text-center\"><td scope=\"row\">");
+        WriteLiteral("<tr><td scope=\"row\">");
         Write(row.Rank);
         WriteLiteral("</td><td class=\"text-left\"><a class=\"font-weight-semibold\">");
         Write(row.TeamName);
@@ -53,41 +53,27 @@
     }
 }
 
-<style>
-    .thead-light-2 { background: #F9FAFB; }
-    #eoj-scoreboard td { border-color: rgba(34,36,38,.1); }
-    #eoj-scoreboard a[href] { color: #4183c4; text-decoration: none; }
-    #eoj-scoreboard tbody tr td, .table tbody tr th { padding-top: .5em; padding-bottom: .5em; }
-    #eoj-scoreboard thead > tr:first-child > th:first-child { border-top-left-radius: .26666667rem; }
-    #eoj-scoreboard thead > tr:first-child > th:last-child { border-top-right-radius: .26666667rem; }
-    #eoj-scoreboard tfoot > tr:last-child > td:first-child { border-bottom-left-radius: .26666667rem; }
-    #eoj-scoreboard tfoot > tr:last-child > td:last-child { border-bottom-right-radius: .26666667rem; }
-    .head-box { min-width: 3em; max-width: 3em; width: 3em; }
-    #eoj-container { min-width: @(3*(Model.Problems.Count+2)+15)em; max-width: @(3*(Model.Problems.Count+2)+25)em; }
+<link rel="stylesheet" href="~/lib/site-ccs/gym.css?v=@Contest.CcsVersion" />
+<div class="container container-gym pl-0 pr-0" id="eoj-container">
+<partial name="_StatusMessage" model="@TempData["StatusMessage"]" />
+@{ TempData.Remove("StatusMessage"); }
 
-    @@media (min-width: 1200px) {
-        .head-box { min-width: 4em; max-width: 4em; width: 4em; }
-        #eoj-container { min-width: @(4*(Model.Problems.Count+2)+15)em; max-width: @(4*(Model.Problems.Count+2)+25)em; }
-    }
-</style>
-
-<div class="container-fluid pl-0 pr-0" id="eoj-container">
 <div class="row">
-<div class="col-12">
+<div class="col-12 main">
 <h2 class="mt-3 mb-2 text-md-center">@Contest.Name</h2>
 <span class="d-block text-md-center mb-3 text-muted" style="font-size:1.2em">
     @state.ToString(Contest.StartTime, Contest.EndTime)
 </span>
 
-<table class="table table-bordered center" style="table-layout:fixed" id="eoj-scoreboard">
+<table class="table table-gym text-center" style="table-layout:fixed">
     <thead>
-        <tr class="text-center thead-light-2">
+        <tr>
             <th class="head-box" title="Rank">#</th>
             <th class="text-left">Who</th>
             <th class="head-box" title="Score">=</th>
             @foreach (var prob in Model.Problems)
             {
-                <th class="head-box"><a asp-action="ProblemView" asp-route-prob="@prob.ShortName">@prob.ShortName</a></th>
+            <th class="head-box-md"><a asp-action="ProblemView" asp-route-prob="@prob.ShortName">@prob.ShortName</a></th>
             }
         </tr>
     </thead>
@@ -95,11 +81,11 @@
         @foreach (var row in sortOrder) { ShowRow(row); }
     </tbody>
     <tfoot>
-        <tr class="thead-light-2">
-            <td colspan="3"><span class="text-success">Accepted</span><br>Tried</td>
+        <tr>
+            <td colspan="3" class="text-left"><span class="text-success">Accepted</span><br>Tried</td>
             @foreach (var item in sortOrder.Statistics)
             {
-                <td class="text-center" style="width: 6.25%"><span class="text-success">@item.Accepted</span><br>@(item.Accepted + item.Rejected)</td>
+                <td style="width: 6.25%"><span class="text-success">@item.Accepted</span><br>@(item.Accepted + item.Rejected)</td>
             }
         </tr>
     </tfoot>
@@ -111,3 +97,11 @@
 </div>
 </div>
 </div>
+
+<style>
+    #eoj-container { min-width: @(3*(Model.Problems.Count+2)+15)rem; max-width: @(3*(Model.Problems.Count+2)+25)rem; }
+
+    @@media (min-width: 1200px) {
+        #eoj-container { min-width: @(4*(Model.Problems.Count+2)+15)rem; max-width: @(4*(Model.Problems.Count+2)+25)rem; }
+    }
+</style>
