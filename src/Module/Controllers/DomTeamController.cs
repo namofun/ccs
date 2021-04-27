@@ -1,5 +1,4 @@
-﻿using Ccs.Entities;
-using Ccs.Services;
+﻿using Ccs.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +6,6 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using SatelliteSite.ContestModule.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SatelliteSite.ContestModule.Controllers
@@ -209,8 +207,6 @@ namespace SatelliteSite.ContestModule.Controllers
         [HttpGet("[action]/{submitid}")]
         public async Task<IActionResult> Submission(int submitid)
         {
-            int teamid = Contest.Team.TeamId;
-
             var model = await Context.FindSolutionAsync(
                 submitid, (s, j) => new SubmissionViewModel
                 {
@@ -223,10 +219,10 @@ namespace SatelliteSite.ContestModule.Controllers
                     ProblemId = s.ProblemId,
                     CompilerOutput = j.CompileError,
                     SourceCode = s.SourceCode,
+                    TeamId = s.TeamId,
                 });
 
-            if (model == null) return NotFound();
-
+            if (model == null || model.TeamId != Contest.Team.TeamId) return NotFound();
             model.Problem = await Context.FindProblemAsync(model.ProblemId);
             model.Language = await Context.FindLanguageAsync(model.LanguageId);
             return Window(model);
