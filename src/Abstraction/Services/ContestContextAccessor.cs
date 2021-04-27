@@ -34,5 +34,8 @@ namespace Ccs.Services
 
         /// <summary>Whether restrictions are failed</summary>
         bool IsRestrictionFailed { get; }
+
+        /// <summary>The version of CCS</summary>
+        string CcsVersion { get; }
     }
 }

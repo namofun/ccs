@@ -1,77 +1,65 @@
 ﻿@model GymHomeViewModel
 @{
     ViewData["Title"] = "Dashboard";
+    Layout = "_LayoutWithSidebar";
 }
 
-<div class="container pl-0 pr-0">
-<partial name="_StatusMessage" model="@TempData["StatusMessage"]" />
-@{ TempData.Remove("StatusMessage"); }
-
-<div class="row">
-<div class="col-12 col-lg-8 main">
-    <h2 class="mt-4 mb-3">Problems</h2>
-    <table class="table table-bordered text-center" id="eoj-scoreboard">
-        <thead>
-            <tr class="thead-light-2">
-                <th class="head-box" title="Problem ID">#</th>
-                <th class="text-left">Title</th>
-                <th class="head-box-2" title="Passed Count">%</th>
+<h2 class="mt-4 mb-3">Problems</h2>
+<table class="table text-center table-gym">
+    <thead>
+        <tr>
+            <th class="head-box" title="Problem ID">#</th>
+            <th class="text-left">Title</th>
+            <th class="head-box-lg" title="Passed Count">%</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var prob in Model.Problems)
+        {
+            var ot = Model.MeStatistics?.GetValueOrDefault(prob.ProblemId) ?? default;
+            <tr class="@(ot.Accepted > 0 ? "accepted-problem" : ot.Total > 0 ? "rejected-problem" : "")">
+                <td class="prob-short-name" style="font-weight:bold">@prob.ShortName</td>
+                <td class="text-left"><a asp-action="ProblemView" asp-route-prob="@prob.ShortName">@prob.Title</a></td>
+                <td><i class="fas fa-user"></i> &times; @Model.AllStatistics.GetValueOrDefault(prob.ProblemId).AcceptedTeams</td>
             </tr>
-        </thead>
-        <tbody>
-            @foreach (var prob in Model.Problems)
-            {
-                var ot = Model.MeStatistics?.GetValueOrDefault(prob.ProblemId) ?? default;
-                <tr class="@(ot.Accepted > 0 ? "accepted-problem" : ot.Total > 0 ? "rejected-problem" : "")">
-                    <td class="prob-short-name" style="font-weight:bold">@prob.ShortName</td>
-                    <td class="text-left"><a asp-action="ProblemView" asp-route-prob="@prob.ShortName">@prob.Title</a></td>
-                    <td><i class="fas fa-user"></i> &times; @Model.AllStatistics.GetValueOrDefault(prob.ProblemId).AcceptedTeams</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-    <h3 class="mt-4 mt-lg-5 mb-3">Announcement</h3>
-    <ul class="list-unstyled">
-        @if (Model.Clarifications.Count > 0)
+        }
+    </tbody>
+</table>
+<h3 class="mt-4 mt-lg-5 mb-3">Announcement</h3>
+<ul class="list-unstyled">
+    @if (Model.Clarifications.Count > 0)
+    {
+        foreach (var clar in Model.Clarifications)
         {
-            foreach (var clar in Model.Clarifications)
-            {
-                <li>
-                    <p>
-                        <b>
-                            <i asp-show-if="clar.Recipient == null && Contest.Team != null && clar.Sender == Contest.Team?.TeamId" class="fas fa-question-circle" title="My Clarification Request"></i>
-                            <i asp-show-if="Contest.Team != null && clar.Recipient == Contest.Team?.TeamId" class="fas fa-dot-circle" title="Jury's Clarification Response"></i>
-                            <i asp-show-if="clar.Recipient == null && clar.Sender == null" class="fas fa-info-circle" title="Common Clarification"></i>
-                            @clar.Category @Model.Problems.Find(clar.ProblemId ?? -1)?.ShortName issue
-                        </b>
+            <li>
+                <p>
+                    <b>
+                        <i asp-show-if="clar.Recipient == null && Contest.Team != null && clar.Sender == Contest.Team?.TeamId" class="fas fa-question-circle" title="My Clarification Request"></i>
+                        <i asp-show-if="Contest.Team != null && clar.Recipient == Contest.Team?.TeamId" class="fas fa-dot-circle" title="Jury's Clarification Response"></i>
+                        <i asp-show-if="clar.Recipient == null && clar.Sender == null" class="fas fa-info-circle" title="Common Clarification"></i>
+                        @clar.Category @Model.Problems.Find(clar.ProblemId ?? -1)?.ShortName issue
+                    </b>
+                    <br />
+                    @foreach (var ln in clar.Body.TrimEnd().Split('\n'))
+                    {
+                        @ln
                         <br />
-                        @foreach (var ln in clar.Body.TrimEnd().Split('\n'))
-                        {
-                            @ln
-                            <br />
-                        }
-                        <span class="text-muted">@clar.SubmitTime.ToString("yyyy/MM/dd HH:mm")</span>
-                    </p>
-                </li>
-            }
+                    }
+                    <span class="text-muted">@clar.SubmitTime.ToString("yyyy/MM/dd HH:mm")</span>
+                </p>
+            </li>
         }
-        else
-        {
-            <li>No announcement.</li>
-        }
-    </ul>
+    }
+    else
+    {
+        <li>No announcement.</li>
+    }
+</ul>
+<p>
     <a asp-show-if="Contest.IsTeamAccepted" asp-action="ClarificationAdd" data-toggle="ajaxWindow" data-target="req-clar">Request clarification &raquo;</a>
-</div>
+</p>
 
-<div class="col-12 col-lg-4 sidebar">
-    <h3 class="mt-lg-5">Contest</h3>
-    <p>
-        @Contest.Name
-        <br />
-        Start Time: @Html.CstTime(Contest.StartTime)
-        <br />
-        End Time: @Html.CstTime(Contest.StartTime + Contest.EndTime)
-    </p>
+@section Sidebar {
     @Html.Raw(Model.Markdown)
     <h3 class="mt-4">Practice</h3>
     <p asp-show-if="Contest.Team == null && Contest.Settings.RegisterCategory == null">
@@ -93,27 +81,4 @@
         <br />
         <a asp-action="MySubmissions">My submissions &raquo;</a>
     </p>
-</div>
-</div>
-</div>
-
-<style>
-    .thead-light-2 { background: #F9FAFB; }
-    #eoj-scoreboard td { border-color: #e8e9e9; }
-    #eoj-scoreboard a[href] { color: #4183c4; text-decoration: none; }
-    #eoj-scoreboard tbody tr td, .table tbody tr th { padding-top: .5em; padding-bottom: .5em; }
-    #eoj-scoreboard thead > tr:first-child > th:first-child { border-top-left-radius: .26666667rem; }
-    #eoj-scoreboard thead > tr:first-child > th:last-child { border-top-right-radius: .26666667rem; }
-    #eoj-scoreboard tbody > tr:last-child > td:first-child { border-bottom-left-radius: .26666667rem; }
-    #eoj-scoreboard tbody > tr:last-child > td:last-child { border-bottom-right-radius: .26666667rem; }
-    .head-box { min-width: 3em; max-width: 3em; width: 3em; }
-    .head-box-2 { min-width: 5.5em; max-width: 5.5em; width: 5.5em; }
-    .accepted-problem td.prob-short-name { color: #28a745 !important; }
-    .rejected-problem td.prob-short-name { color: #dc3545 !important; }
-    .main h3, .sidebar h3 { font-size: 1.5rem; }
-
-    @@media (min-width: 1200px) {
-        .head-box { min-width: 4.5em; max-width: 4.5em; width: 4.5em; }
-        .head-box-2 { min-width: 6.5em; max-width: 6.5em; width: 6.5em; }
-    }
-</style>
+}

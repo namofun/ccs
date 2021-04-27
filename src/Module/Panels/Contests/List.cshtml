@@ -97,8 +97,13 @@
     });
 </script>
 
-<p>
-    <a asp-action="Add" asp-route-kind="0" class="btn btn-primary" title="Add new contest"><i class="fas fa-plus"></i>&nbsp;Add new contest</a>
-    <a asp-action="Add" asp-route-kind="1" class="btn btn-success" title="Add new contest"><i class="fas fa-plus"></i>&nbsp;Add new practice</a>
-    <a asp-action="Add" asp-route-kind="2" class="btn btn-secondary" title="Add new contest"><i class="fas fa-plus"></i>&nbsp;Add new problemset</a>
-</p>
+<div class="dropdown">
+    <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownCreateMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <i class="fas fa-plus"></i> Create
+    </button>
+    <div class="dropdown-menu" aria-labelledby="dropdownCreateMenuButton">
+        <a class="dropdown-item" asp-action="Add" asp-route-kind="0" title="Create new contest">New contest</a>
+        <a class="dropdown-item" asp-action="Add" asp-route-kind="1" title="Create new practice">New practice</a>
+        <a class="dropdown-item" asp-action="Add" asp-route-kind="2" title="Create new problemset">New problemset</a>
+    </div>
+</div>

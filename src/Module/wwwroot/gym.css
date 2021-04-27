@@ -1,0 +1,142 @@
+/* Gym table design, inspired by EOJ */
+
+table.table-gym {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+table.table-gym > thead > tr {
+  background: #F9FAFB;
+}
+
+.table-gym td,
+.table-gym th {
+  border-top: 0 solid;
+  border-left: 0 solid;
+  border-right: 1px solid;
+  border-bottom: 1px solid;
+  border-color: #e8e9e9;
+}
+
+.table-gym > thead > tr:first-child > th {
+  border-top-width: 1px;
+}
+
+.table-gym > thead > tr > th {
+  border-color: #dee2e6;
+}
+
+.table-gym > tbody > tr > td:first-child,
+.table-gym > thead > tr > th:first-child {
+  border-left-width: 1px;
+}
+
+.table-gym a[href] {
+  color: #4183c4;
+  text-decoration: none;
+}
+
+.table-gym tbody tr td,
+.table-gym tbody tr th {
+  padding-top: .5em;
+  padding-bottom: .5em;
+}
+
+.table-gym thead > tr:first-child > th:first-child {
+  border-top-left-radius: .26666667rem;
+}
+
+.table-gym thead > tr:first-child > th:last-child {
+  border-top-right-radius: .26666667rem;
+}
+
+.table-gym tbody > tr:last-child > td:first-child {
+  border-bottom-left-radius: .26666667rem;
+}
+
+.table-gym tbody > tr:last-child > td:last-child {
+  border-bottom-right-radius: .26666667rem;
+}
+
+.head-box {
+  min-width: 3em;
+  max-width: 3em;
+  width: 3em;
+}
+
+.head-box-lg {
+  min-width: 5.5em;
+  max-width: 5.5em;
+  width: 5.5em;
+}
+
+.accepted-problem td.prob-short-name {
+  color: #28a745 !important;
+}
+
+.rejected-problem td.prob-short-name {
+  color: #dc3545 !important;
+}
+
+.container-gym .main h3,
+.container-gym .sidebar h3 {
+  font-size: 1.5rem;
+}
+
+@media (min-width: 1200px) {
+  .head-box {
+    min-width: 4.5em;
+    max-width: 4.5em;
+    width: 4.5em;
+  }
+
+  .head-box-lg {
+    min-width: 6.5em;
+    max-width: 6.5em;
+    width: 6.5em;
+  }
+}
+
+#problem-descibe-parent h1:first-child {
+  font-size: 2rem;
+  text-align: center;
+  margin-top: 1rem;
+}
+
+#problem-descibe-parent h1:first-child ~ ul {
+  text-align: center;
+}
+
+#problem-descibe-parent #problem-descibe p {
+  font-size: 1.05em;
+}
+
+#problem-descibe-parent #problem-descibe p > code,
+#problem-descibe-parent #problem-descibe li > code {
+  font-size: 100%;
+  background: rgba(27, 31, 35, 0.05);
+  color: #24292e;
+  padding: .2em .4em;
+  border-radius: .2em;
+}
+
+#problem-descibe-parent span.katex-src ~ .katex {
+  font-size: 1.1em;
+}
+
+@media print {
+  body.gym-problem-view-can-print {
+    font-size: 1.3em;
+    margin: 1cm;
+    padding-top: 0;
+  }
+
+  body.gym-problem-view-can-print .input-output-copier,
+  body.gym-problem-view-can-print .sidebar {
+    display: none;
+  }
+
+  body.gym-problem-view-can-print #problem-descibe {
+    margin: 0em !important;
+  }
+}

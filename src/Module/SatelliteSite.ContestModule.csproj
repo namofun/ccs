@@ -8,6 +8,19 @@
 
   <Import Project="..\..\build\NugetPackage.props" />
 
+  <PropertyGroup>
+    <ResolveCurrentProjectStaticWebAssetsInputsDependsOn>
+      SetStaticWebAssetsBasePath;
+      $(ResolveCurrentProjectStaticWebAssetsInputsDependsOn)
+    </ResolveCurrentProjectStaticWebAssetsInputsDependsOn>
+  </PropertyGroup>
+
+  <Target Name="SetStaticWebAssetsBasePath">
+    <PropertyGroup>
+      <StaticWebAssetBasePath>/lib/site-ccs</StaticWebAssetBasePath>
+    </PropertyGroup>
+  </Target>
+
   <ItemGroup>
     <None Include="..\..\build\CopyDocumentXml.props" Pack="true" PackagePath="build\" Link="build\CopyDocumentXml.props" />
     <None Include="..\..\build\SatelliteSite.ContestModule.props" Pack="true" PackagePath="build\" Link="build\SatelliteSite.ContestModule.props" />

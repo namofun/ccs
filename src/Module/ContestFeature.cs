@@ -2,6 +2,7 @@
 using Ccs.Models;
 using Ccs.Services;
 using System;
+using System.Reflection;
 
 namespace SatelliteSite.ContestModule
 {
@@ -19,6 +20,8 @@ namespace SatelliteSite.ContestModule
 
     internal class ContestFeature : IContestFeature, IContestContextAccessor
     {
+        private static readonly GitVersionAttribute _versionAttr = typeof(ContestModule<>).Assembly.GetCustomAttribute<GitVersionAttribute>();
+        private static readonly string _version = _versionAttr.Branch + "-" + _versionAttr.Version.Substring(0, 7);
         private bool _authenticated;
         private bool _contextualized;
 
@@ -31,6 +34,7 @@ namespace SatelliteSite.ContestModule
         public bool HasTeam => Team != null;
         public bool IsTeamAccepted => Team != null && Team.Status == 1 && !IsRestrictionFailed;
         public bool IsRestrictionFailed { get; set; }
+        public string CcsVersion => _version;
 
         bool IContestFeature.Authenticated => _authenticated;
         bool IContestFeature.Contextualized => _contextualized;

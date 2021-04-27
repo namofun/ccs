@@ -1,0 +1,27 @@
+﻿@{
+    Layout = "_Layout";
+}
+
+<link rel="stylesheet" href="~/lib/site-ccs/gym.css?v=@Contest.CcsVersion" />
+<div class="container container-gym pl-0 pr-0">
+<partial name="_StatusMessage" model="@TempData["StatusMessage"]" />
+@{ TempData.Remove("StatusMessage"); }
+
+<div class="row">
+<div class="col-12 col-lg-8 main">
+    @RenderBody()
+</div>
+
+<div class="col-12 col-lg-4 sidebar">
+    <h3 class="mt-lg-5">Contest</h3>
+    <p>
+        @Contest.Name
+        <br />
+        Start Time: @Html.CstTime(Contest.StartTime)
+        <br />
+        End Time: @Html.CstTime(Contest.StartTime + Contest.EndTime)
+    </p>
+    @RenderSection("Sidebar", required: false)
+</div>
+</div>
+</div>
