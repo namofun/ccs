@@ -85,13 +85,13 @@
         WriteLiteral("<td class=\"testcase-results\">");
         int t = 0;
         bool judgingPending = sub.Verdict == Verdict.Pending || sub.Verdict == Verdict.Running;
-        foreach (var item in sub.Details)
+        foreach (var item in sub.RunVerdicts)
         {
             t++;
             WriteLiteral("<span class=\"verdict-sm badge badge-");
-            WriteLiteral(verdIcons[(int)item.Status].Item1);
+            WriteLiteral(verdIcons[(int)item].Item1);
             WriteLiteral("\">");
-            WriteLiteral(verdIcons[(int)item.Status].Item2);
+            WriteLiteral(verdIcons[(int)item].Item2);
             WriteLiteral("</span>");
         }
         for (; t < tc; t++)

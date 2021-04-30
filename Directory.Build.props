@@ -4,7 +4,7 @@
     <SubstrateVersion>1.0.38</SubstrateVersion>
     <PreviewBuild>10</PreviewBuild>
     <AspNetCoreVersion>3.1.13</AspNetCoreVersion>
-    <PolygonVersion>1.0.17</PolygonVersion>
+    <PolygonVersion>1.0.18</PolygonVersion>
     <TenantVersion>1.0.11</TenantVersion>
     <EFCoreBulkVersion>3.1.25</EFCoreBulkVersion>
     <PlagVersion>1.2.19</PlagVersion>

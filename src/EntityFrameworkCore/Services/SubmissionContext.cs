@@ -60,11 +60,12 @@ namespace Ccs.Services
         {
             int cid = Contest.Id;
             return Polygon.Submissions.ListWithJudgingAsync(
-                (page, perPage),
-                Expr.Of<Submission>(s => s.ContestId == cid)!
-                    .CombineIf(probid.HasValue, s => s.ProblemId == probid)
-                    .CombineIf(langid != null, s => s.Language == langid)
-                    .CombineIf(teamid.HasValue, s => s.TeamId == teamid));
+                pagination: (page, perPage),
+                predicate: Expr.Of<Submission, Judging>((s, j) => s.ContestId == cid)!
+                    .CombineIf(probid.HasValue, (s, j) => s.ProblemId == probid)
+                    .CombineIf(langid != null, (s, j) => s.Language == langid)
+                    .CombineIf(teamid.HasValue, (s, j) => s.TeamId == teamid)
+                    .CombineIf(verdict.HasValue, (s, j) => j.Status == verdict));
         }
 
         public virtual async Task<Solution> FindSolutionAsync(int submitid)

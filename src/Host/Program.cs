@@ -15,6 +15,7 @@ namespace SatelliteSite
         {
             Current = CreateHostBuilder(args).Build();
             Current.AutoMigrate<DefaultContext>();
+            Current.MigratePolygonV1();
             Current.Run();
         }
 
