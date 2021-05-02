@@ -183,3 +183,18 @@ table.table-text-middle > tbody > tr > td {
     margin: 0em !important;
   }
 }
+
+.penalty-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+.penalty-list > li {
+  padding: 0.1rem 0;
+}
+
+.penalty-list a[data-ignore="True"] {
+  cursor: default;
+  pointer-events: none;
+  color: inherit;
+}

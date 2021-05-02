@@ -1,0 +1,50 @@
+﻿@model IReadOnlyList<Solution>
+@{
+    Team team = ViewBag.Team;
+    ProblemModel prob = ViewBag.Problem;
+    ViewData["Title"] = "Penalty details";
+
+    IReadOnlyDictionary<int, (int Accepted, int Total)> substat = ViewBag.SubmissionStatistics;
+    var avp = substat?.Where(sc => sc.Value.Accepted > 0).Select(sc => sc.Key).ToHashSet() ?? new HashSet<int>();
+    var notIgnore = Contest.Settings.StatusAvailable == 1 || Contest.Team?.TeamId == team.TeamId || (Contest.Settings.StatusAvailable == 2 && avp.Contains(prob.ProblemId));
+    if (ViewData.ContainsKey("InAjax"))
+    {
+        Layout = null;
+<div class="modal fade" id="modal-@ViewData["HandleKey"]" tabindex="-1" role="dialog" aria-labelledby="modal-@ViewData["HandleKey"]-label" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered" style="max-width:40rem" role="document">
+<div class="modal-content">
+<div class="modal-body">
+<ul class="penalty-list my-1 mx-2">
+    @foreach (var item in Model)
+    {
+    <li>@Html.CstTime(item.Time)&nbsp;&nbsp;<verdict value="@item.Verdict" /><razor asp-show-if="Contest.RankingStrategy == CcsDefaults.RuleIOI">: @(item.TotalScore?.ToString() ?? "N/A")</razor> → <a asp-action="Submission" asp-route-sid="@item.SubmissionId" data-ignore="@(!notIgnore)">@item.SubmissionId</a>, <span class="text-variant">@item.Language</span></li>
+    }
+</ul>
+</div>
+</div>
+</div>
+</div>
+    }
+    else
+    {
+<link rel="stylesheet" href="~/lib/site-ccs/gym.css?v=@Contest.CcsVersion" />
+<div class="container container-gym pl-0 pr-0">
+<partial name="_StatusMessage" model="@TempData["StatusMessage"]" />
+@{ TempData.Remove("StatusMessage"); }
+
+<div class="row">
+<div class="col-12 main">
+<h2 class="mt-3 mb-2">Penalty Details</h2>
+<h5>Team @team.TeamName on Problem @prob.ShortName</h5>
+
+<ul class="penalty-list">
+    @foreach (var item in Model)
+    {
+    <li>@Html.CstTime(item.Time) <verdict value="@item.Verdict" /> → <a asp-action="Submission" asp-route-sid="@item.SubmissionId" data-ignore="@(!notIgnore)">@item.SubmissionId</a>, <span class="text-variant">@item.Language</span></li>
+    }
+</ul>
+</div>
+</div>
+</div>
+    }
+}

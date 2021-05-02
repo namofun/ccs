@@ -289,6 +289,20 @@ namespace SatelliteSite.ContestModule.Controllers
         }
 
 
+        [HttpGet("standings/penalty")]
+        public async Task<IActionResult> Penalty(int teamid, string probid)
+        {
+            var team = await Context.FindTeamByIdAsync(teamid);
+            var prob = await Context.FindProblemAsync(probid);
+            if (team == null || prob == null) return NotFound();
+
+            ViewBag.Team = team;
+            ViewBag.Problem = prob;
+            var model = await Context.ListSolutionsAsync(probid: prob.ProblemId, teamid: teamid, all: true);
+            return View(model);
+        }
+
+
         [HttpGet("submissions")]
         public Task<IActionResult> Submissions(int page = 1, int? verd = null, string lang = null, string prob = null, int reset = 0, int filter = 0)
             => DoSubmissions(page, verd, lang, prob, null, filter, reset);

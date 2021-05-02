@@ -8,7 +8,9 @@
 @functions {
     void ShowRow(TeamModel row)
     {
-        WriteLiteral("<tr><td scope=\"row\">");
+        WriteLiteral("<tr data-team-id=\"");
+        Write(row.TeamId);
+        WriteLiteral("\"><td scope=\"row\">");
         Write(row.Rank);
         WriteLiteral("</td><td class=\"text-left\"><a class=\"font-weight-semibold\">");
         Write(row.TeamName);
@@ -19,7 +21,7 @@
             foreach (var userName in Model.TeamMembers[row.TeamId])
             {
                 WriteLiteral(fst ? " : <a href=\"" : ", <a href=\"");
-                Write(Url.Action("Show", "Profile", new { area = "Account", username = userName }));
+                Write(Url.RouteUrl("AccountProfile", new { username = userName }));
                 WriteLiteral("\">");
                 Write(userName);
                 WriteLiteral("</a>");
@@ -33,10 +35,10 @@
         {
             if (penalty == null || penalty.JudgedCount == 0)
             {
-                WriteLiteral("<td></td>");
+                WriteLiteral("<td class=\"text-center score-cell\"></td>");
                 continue;
             }
-            WriteLiteral("<td class=\"text-center\"><a><span class=\"font-weight-bold");
+            WriteLiteral("<td class=\"text-center score-cell\"><span class=\"font-weight-bold");
             WriteLiteral(Contest.RankingStrategy == CcsDefaults.RuleXCPC || Contest.RankingStrategy == CcsDefaults.RuleCodeforces ? penalty.Score.HasValue ? " text-success" : " text-danger" : "");
             WriteLiteral("\">");
             WriteLiteral(Contest.RankingStrategy switch
@@ -47,7 +49,7 @@
                 _ => "",
             });
             WriteLiteral(penalty.PendingCount > 0 ? "?" : "");
-            WriteLiteral("</span></a></td>");
+            WriteLiteral("</span></td>");
         }
         WriteLiteral("</tr>\r\n");
     }
@@ -73,7 +75,7 @@
             <th class="head-box" title="Score">=</th>
             @foreach (var prob in Model.Problems)
             {
-            <th class="head-box-md"><a asp-action="ProblemView" asp-route-prob="@prob.ShortName">@prob.ShortName</a></th>
+            <th class="head-box-md prob-cell"><a asp-action="ProblemView" asp-route-prob="@prob.ShortName">@prob.ShortName</a></th>
             }
         </tr>
     </thead>
@@ -105,3 +107,13 @@
         #eoj-container { min-width: @(4*(Model.Problems.Count+2)+15)rem; max-width: @(4*(Model.Problems.Count+2)+25)rem; }
     }
 </style>
+
+<script>
+    $('.score-cell').dblclick(function () {
+        let $team_id = $(this).parent().data('team-id');
+        let $prob_id = $('.prob-cell').eq($(this).index() - 3).text();
+        let $url = '@Url.Action("Penalty")?teamid=' + $team_id + '&probid=' + $prob_id;
+        showWindow('penalty-detail', $url);
+        return false;
+    });
+</script>
