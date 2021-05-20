@@ -373,7 +373,7 @@ namespace Ccs.Services
                 .ToDictionaryAsync(k => k.Key, v => v.Value);
         }
 
-        public Task<List<TeamMemberModel>> GetTeamMember2Async(Team team)
+        public virtual Task<List<TeamMemberModel>> GetTeamMember2Async(Team team)
         {
             int cid = team.ContestId, teamid = team.TeamId;
             return Db.TeamMembers
@@ -382,8 +382,30 @@ namespace Ccs.Services
                     inner: Db.Users,
                     outerKeySelector: m => m.UserId,
                     innerKeySelector: u => u.Id,
-                    resultSelector: (m, u) => new TeamMemberModel(m.UserId, u.UserName, m.LastLoginIp))
+                    resultSelector: (m, u) => new TeamMemberModel(m.TeamId, m.UserId, u.UserName, m.LastLoginIp))
                 .ToListAsync();
+        }
+
+        public virtual async Task<Monitor> GetMonitorAsync(Expression<Func<Team, bool>> predicate)
+        {
+            int cid = Contest.Id;
+            var baseQuery = Db.Teams.Where(t => t.ContestId == cid).Where(predicate);
+            var teams = await baseQuery.ToListAsync();
+
+            var members = await baseQuery
+                .Join(
+                    inner: Db.TeamMembers,
+                    outerKeySelector: t => new { t.ContestId, t.TeamId },
+                    innerKeySelector: m => new { m.ContestId, m.TeamId },
+                    resultSelector: (t, m) => m)
+                .Join(
+                    inner: Db.Users,
+                    outerKeySelector: m => m.UserId,
+                    innerKeySelector: u => u.Id,
+                    resultSelector: (m, u) => new TeamMemberModel(m.TeamId, m.UserId, u.UserName, m.LastLoginIp))
+                .ToListAsync();
+
+            return new Monitor(teams, members);
         }
     }
 }

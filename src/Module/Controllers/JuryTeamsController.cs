@@ -8,6 +8,7 @@ using SatelliteSite.ContestModule.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace SatelliteSite.ContestModule.Controllers
@@ -414,6 +415,29 @@ namespace SatelliteSite.ContestModule.Controllers
             await Context.AttachMemberAsync(team, user, false);
             StatusMessage = $"User {user.Id} attached successfully.";
             return RedirectToAction(nameof(Detail));
+        }
+
+
+        [HttpGet("[action]")]
+        public async Task<IActionResult> Monitoring(
+            [FromQuery(Name = "affiliations[]")] int[] affiliations,
+            [FromQuery(Name = "categories[]")] int[] categories)
+        {
+            if (categories?.Length == 0) categories = null;
+            if (affiliations?.Length == 0) affiliations = null;
+            var teamsCond = Expr.Of<Team>(t => t.Status == 1)
+                .CombineIf(categories != null, t => categories.Contains(t.CategoryId))
+                .CombineIf(affiliations != null, t => affiliations.Contains(t.AffiliationId));
+
+            var cats = await Context.ListCategoriesAsync();
+            var affs = await Context.ListAffiliationsAsync();
+            var teams = await Context.GetMonitorAsync(teamsCond);
+
+            ViewBag.Categories = cats;
+            ViewBag.Affiliations = affs;
+            ViewBag.FilteredCategories = categories;
+            ViewBag.FilteredAffiliations = affiliations;
+            return View(teams);
         }
     }
 }

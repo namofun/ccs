@@ -1,4 +1,5 @@
 ﻿using Ccs.Entities;
+using Ccs.Models;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
@@ -172,5 +173,12 @@ namespace Ccs.Services
             Expression<Func<Team, TKey>> grouping,
             Expression<Func<IGrouping<TKey, Team>, TValue>> aggregator)
             where TKey : notnull;
+
+        /// <summary>
+        /// Gets the monitor status for teams satisfying conditions. 
+        /// </summary>
+        /// <param name="predicate">The predicate.</param>
+        /// <returns>The task for monitor status.</returns>
+        Task<Monitor> GetMonitorAsync(Expression<Func<Team, bool>> predicate);
     }
 }

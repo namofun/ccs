@@ -6,6 +6,11 @@
     public class TeamMemberModel
     {
         /// <summary>
+        /// The team ID
+        /// </summary>
+        public int TeamId { get; }
+
+        /// <summary>
         /// The user ID
         /// </summary>
         public int UserId { get; }
@@ -23,8 +28,9 @@
         /// <summary>
         /// Instantiate the <see cref="TeamMemberModel"/>.
         /// </summary>
-        public TeamMemberModel(int userId, string userName, string? lastLoginIp)
+        public TeamMemberModel(int teamid, int userId, string userName, string? lastLoginIp)
         {
+            TeamId = teamid;
             UserId = userId;
             UserName = userName;
             LastLoginIp = lastLoginIp;

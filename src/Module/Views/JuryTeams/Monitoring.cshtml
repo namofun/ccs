@@ -1,0 +1,201 @@
+﻿@model Monitor
+@{
+    ViewData["Title"] = "Teams Monitoring";
+    int[] filtered_category = ViewBag.FilteredCategories;
+    int[] filtered_affiliation = ViewBag.FilteredAffiliations;
+    IReadOnlyDictionary<int, Tenant.Entities.Category> categories = ViewBag.Categories;
+    IReadOnlyDictionary<int, Tenant.Entities.Affiliation> affiliations = ViewBag.Affiliations;
+    var localhosts = new List<IGrouping<string, TeamMemberModel>>();
+    var notlogin = new List<IGrouping<string, TeamMemberModel>>();
+    var multiTeams = new List<IGrouping<string, TeamMemberModel>>();
+    var multiMachines = new List<IGrouping<string, TeamMemberModel>>();
+    var normal = new List<IGrouping<string, TeamMemberModel>>();
+
+    foreach (var item in Model.SelectMany(t => t).GroupBy(t => t.LastLoginIp ?? "n/a"))
+    {
+        if (item.Key == "n/a")
+        {
+            notlogin.Add(item);
+        }
+        else if (item.Key == "::1" || item.Key == "127.0.0.1")
+        {
+            localhosts.Add(item);
+        }
+        else if (item.Select(a => a.TeamId).Distinct().Count() > 1)
+        {
+            multiTeams.Add(item);
+        }
+        else if (Model[item.Select(a => a.TeamId).First()].Select(t => t.LastLoginIp).Distinct().Count() > 1)
+        {
+            multiMachines.Add(item);
+        }
+        else
+        {
+            normal.Add(item);
+        }
+    }
+}
+
+@functions {
+    async Task<string> DisplayCard(string color, IGrouping<string, TeamMemberModel> item)
+    {
+        var cnt = item.Count();
+        <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+            <div class="tile tile-@color">
+                <h3 class="mb-3">@item.Key</h3>
+                @if (cnt > 5)
+                {
+                    <details>
+                        <summary>@cnt items</summary>
+                        <ul class="mb-0 pl-3">
+                            @foreach (var member in item)
+                            {
+                                <li><a asp-action="Detail" asp-route-teamid="@member.TeamId">@member.UserName (u@(member.UserId)) → @Model[member.TeamId].Key.TeamName (t@(member.TeamId))</a></li>
+                            }
+                        </ul>
+                    </details>
+                }
+                else
+                {
+                    <ul class="mb-0 pl-3">
+                        @foreach (var member in item)
+                        {
+                            <li><a asp-action="Detail" asp-route-teamid="@member.TeamId">@member.UserName (u@(member.UserId)) → @Model[member.TeamId].Key.TeamName (t@(member.TeamId))</a></li>
+                        }
+                    </ul>
+                }
+            </div>
+        </div>
+        return "";
+    }
+}
+
+<h2 class="mt-2">@ViewData["Title"]</h2>
+
+<div class="dropdown mb-3">
+    <button class="btn btn-outline-secondary btn-sm m-2 dropdown-toggle" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false" id="filter-toggle">
+        <i class="fas fa-filter"></i>
+        Filter
+        @(filtered_affiliation is null ? "" : "(affiliations)")
+        @(filtered_category is null ? "" : "(categories)")
+    </button>
+
+    <div class="dropdown-menu" aria-labelledby="filter-toggle">
+        <form asp-action="Monitoring" method="get">
+            <div class="m-2 p-2 form-inline">
+                <select class="form-control mr-2" multiple size="8" name="affiliations[]">
+                    @foreach (var aff in affiliations.Values)
+                    {
+                        <option issel="@(filtered_affiliation?.Contains(aff.Id) ?? false)" value="@aff.Id">@aff.Name</option>
+                    }
+                </select>
+                <select class="form-control mr-2" multiple size="8" name="categories[]">
+                    @foreach (var grp in categories.Values)
+                    {
+                        <option issel="@(filtered_category?.Contains(grp.Id) ?? false)" value="@grp.Id">@grp.Name</option>
+                    }
+                </select>
+                <input type="submit" class="btn btn-primary btn-sm align-top" name="filter" value="filter" />
+                <a class="btn btn-secondary btn-sm align-top" asp-action="Monitoring">clear</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+.machines div.tile {
+  padding: 1.5rem;
+  border-radius: .5rem;
+}
+
+.machines div.tile.tile-warning {
+  background-color: #fff6e2;
+  border: 1px solid #ffeeba;
+}
+
+.machines div.tile.tile-danger {
+  background-color: #fbe8ea;
+  border: 1px solid #f5c6cb;
+}
+
+.machines div.tile.tile-secondary {
+  background-color: #f4f5f6;
+  border: 1px solid #bbb;
+}
+
+.machines div.tile.tile-primary {
+  background-color: aliceblue;
+  border: 1px solid #aad7ff;
+}
+
+.machines div.tile h3 {
+  font-size: 22px;
+}
+
+.machines div.tile ul > li > a {
+  color: inherit;
+}
+</style>
+
+@if (multiTeams.Count > 0)
+{
+    <h4>Multiple Users on Same IP</h4>
+    <div class="machines row">
+        @foreach (var item in multiTeams)
+        {
+            @await DisplayCard("danger", item)
+        }
+    </div>
+}
+
+@if (multiMachines.Count > 0)
+{
+    <h4>Teams using Multiple Machines</h4>
+    <div class="machines row">
+        @foreach (var item in multiMachines)
+        {
+            @await DisplayCard("danger", item)
+        }
+    </div>
+}
+
+@if (notlogin.Count > 0)
+{
+    <h4>Never logged in</h4>
+    <div class="machines row">
+        @foreach (var item in notlogin)
+        {
+            @await DisplayCard("warning", item)
+        }
+    </div>
+}
+
+@if (localhosts.Count > 0)
+{
+    <h4>Localhost IP</h4>
+    <div class="machines row">
+        @foreach (var item in localhosts)
+        {
+            @await DisplayCard("secondary", item)
+        }
+    </div>
+}
+
+@if (normal.Count > 0)
+{
+    <h4>Normal Teams</h4>
+    <div class="machines row">
+        @foreach (var item in normal)
+        {
+            @await DisplayCard("primary", item)
+        }
+    </div>
+}
+
+@if (Model.Count == 0)
+{
+    <div class="alert alert-warning">
+        No teams selected.
+    </div>
+}
