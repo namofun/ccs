@@ -73,6 +73,14 @@ namespace Ccs.Connector.PlagiarismDetect.Controllers
         [HttpGet("[action]")]
         public IActionResult Create()
         {
+            if (!User.IsInRoles("Administrator,PlagUser"))
+            {
+                return Message(
+                    title: "403 Forbidden",
+                    message: "Only users with plagiarism creation permission can create a set.",
+                    type: BootstrapColor.danger);
+            }
+
             return Window(new CreateSetModel
             {
                 Name = Contest.Name,
@@ -83,6 +91,14 @@ namespace Ccs.Connector.PlagiarismDetect.Controllers
         [HttpPost("[action]")]
         public async Task<IActionResult> Create(CreateSetModel model)
         {
+            if (!User.IsInRoles("Administrator,PlagUser"))
+            {
+                return Message(
+                    title: "403 Forbidden",
+                    message: "Only users with plagiarism creation permission can create a set.",
+                    type: BootstrapColor.danger);
+            }
+
             var set = await Service.CreateSetAsync(
                 new SetCreation
                 {

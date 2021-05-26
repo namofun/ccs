@@ -37,7 +37,7 @@
 }
 
 @functions {
-    async Task<string> DisplayCard(string color, IGrouping<string, TeamMemberModel> item)
+    string DisplayCard(string color, IGrouping<string, TeamMemberModel> item)
     {
         var cnt = item.Count();
         <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
@@ -50,7 +50,7 @@
                         <ul class="mb-0 pl-3">
                             @foreach (var member in item)
                             {
-                                <li><a asp-action="Detail" asp-route-teamid="@member.TeamId">@member.UserName (u@(member.UserId)) → @Model[member.TeamId].Key.TeamName (t@(member.TeamId))</a></li>
+                                <li><a href="@Url.Action("Detail", new { teamid = member.TeamId })">@member.UserName (u@(member.UserId)) → @Model[member.TeamId].Key.TeamName (t@(member.TeamId))</a></li>
                             }
                         </ul>
                     </details>
@@ -60,7 +60,7 @@
                     <ul class="mb-0 pl-3">
                         @foreach (var member in item)
                         {
-                            <li><a asp-action="Detail" asp-route-teamid="@member.TeamId">@member.UserName (u@(member.UserId)) → @Model[member.TeamId].Key.TeamName (t@(member.TeamId))</a></li>
+                            <li><a href="@Url.Action("Detail", new { teamid = member.TeamId })">@member.UserName (u@(member.UserId)) → @Model[member.TeamId].Key.TeamName (t@(member.TeamId))</a></li>
                         }
                     </ul>
                 }
@@ -144,7 +144,7 @@
     <div class="machines row">
         @foreach (var item in multiTeams)
         {
-            @await DisplayCard("danger", item)
+            @DisplayCard("danger", item)
         }
     </div>
 }
@@ -155,7 +155,7 @@
     <div class="machines row">
         @foreach (var item in multiMachines)
         {
-            @await DisplayCard("danger", item)
+            @DisplayCard("danger", item)
         }
     </div>
 }
@@ -166,7 +166,7 @@
     <div class="machines row">
         @foreach (var item in notlogin)
         {
-            @await DisplayCard("warning", item)
+            @DisplayCard("warning", item)
         }
     </div>
 }
@@ -177,7 +177,7 @@
     <div class="machines row">
         @foreach (var item in localhosts)
         {
-            @await DisplayCard("secondary", item)
+            @DisplayCard("secondary", item)
         }
     </div>
 }
@@ -188,7 +188,7 @@
     <div class="machines row">
         @foreach (var item in normal)
         {
-            @await DisplayCard("primary", item)
+            @DisplayCard("primary", item)
         }
     </div>
 }
