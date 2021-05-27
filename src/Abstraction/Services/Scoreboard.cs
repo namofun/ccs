@@ -32,6 +32,13 @@ namespace Ccs.Services
             IEnumerable<ScoreCache> scores);
 
         /// <summary>
+        /// Removes all caches from the contest and set up the new ranks and scores.
+        /// </summary>
+        /// <param name="data">The scoreboard data.</param>
+        /// <returns>The task for refreshing scoreboard cells.</returns>
+        Task RefreshAsync(ScoreboardRawData data);
+
+        /// <summary>
         /// Updates the score cache, or insert the default value.
         /// </summary>
         /// <param name="cid">The contest ID.</param>

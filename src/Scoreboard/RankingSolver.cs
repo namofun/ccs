@@ -66,17 +66,16 @@ namespace Ccs.Scoreboard
         }
 
         /// <inheritdoc />
-        public Task Handle(ScoreboardRefreshEvent notification, CancellationToken cancellationToken)
+        public async Task Handle(ScoreboardRefreshEvent notification, CancellationToken cancellationToken)
         {
             if (notification.Contest.Kind == CcsDefaults.KindProblemset)
             {
-                return Store
-                    .RebuildStatisticsAsync(notification.Contest.Id);
+                await Store.RebuildStatisticsAsync(notification.Contest.Id);
             }
             else
             {
-                return Select(notification.Contest)
-                    .RefreshCache(Store, notification);
+                var data = await Select(notification.Contest).RefreshCache(Store, notification);
+                await Store.RefreshAsync(data);
             }
         }
 

@@ -63,6 +63,6 @@ namespace Ccs.Scoreboard
         /// <param name="store">The scoreboard store.</param>
         /// <param name="args">The scoreboard refresh event.</param>
         /// <returns>The task for updating scoreboard.</returns>
-        Task RefreshCache(IScoreboard store, ScoreboardRefreshEvent args);
+        Task<ScoreboardRawData> RefreshCache(IScoreboard store, ScoreboardRefreshEvent args);
     }
 }

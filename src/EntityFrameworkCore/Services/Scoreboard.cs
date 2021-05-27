@@ -152,6 +152,11 @@ namespace Ccs.Services
             await Db.SaveChangesAsync();
         }
 
+        public Task RefreshAsync(ScoreboardRawData data)
+        {
+            return RefreshAsync(data.ContestId, data.RankCache, data.ScoreCache);
+        }
+
         public Task CreateBalloonAsync(int id)
         {
             Db.Set<Balloon>().Add(new Balloon { SubmissionId = id });

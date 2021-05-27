@@ -145,7 +145,7 @@ namespace Ccs.Scoreboard.Query
 
 
         /// <inheritdoc />
-        public async Task RefreshCache(IScoreboard store, ScoreboardRefreshEvent args)
+        public async Task<ScoreboardRawData> RefreshCache(IScoreboard store, ScoreboardRefreshEvent args)
         {
             int cid = args.Contest.Id;
             var scores = await store.GetModeScoresAsync(cid);
@@ -193,7 +193,7 @@ namespace Ccs.Scoreboard.Query
                 sc.SubmissionPublic = sc.IsCorrectPublic ? sc.SubmissionPublic : sc.SubmissionRestricted + 1;
             }
 
-            await store.RefreshAsync(cid, rcc.Values, scc.Values);
+            return new ScoreboardRawData(cid, rcc.Values, scc.Values);
         }
     }
 }

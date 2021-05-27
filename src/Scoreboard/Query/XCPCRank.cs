@@ -165,7 +165,7 @@ namespace Ccs.Scoreboard.Query
 
 
         /// <inheritdoc />
-        public async Task RefreshCache(IScoreboard store, ScoreboardRefreshEvent args)
+        public async Task<ScoreboardRawData> RefreshCache(IScoreboard store, ScoreboardRefreshEvent args)
         {
             int cid = args.Contest.Id;
             var results = await store.FetchSolutionsAsync(cid, args.Deadline);
@@ -235,7 +235,7 @@ namespace Ccs.Scoreboard.Query
                 }
             }
 
-            await store.RefreshAsync(cid, rcc.Values, scc.Values);
+            return new ScoreboardRawData(cid, rcc.Values, scc.Values);
         }
     }
 }
