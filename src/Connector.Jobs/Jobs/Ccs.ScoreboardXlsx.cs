@@ -33,7 +33,7 @@ namespace Ccs.Connector.Jobs
         {
             return new JobDescription
             {
-                SuggestedFileName = $"c{args.ContestId}-scoreboard.xlsx",
+                SuggestedFileName = $"c{args.ContestId}-scoreboard" + (args.IncludeUpsolving ? "-upsolving" : "") + ".xlsx",
                 Arguments = args.ToJson(),
                 JobType = "Ccs.ScoreboardXlsx",
                 OwnerId = owner,

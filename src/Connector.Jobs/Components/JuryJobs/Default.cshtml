@@ -4,6 +4,7 @@
 @{
     var affs = await Contest.Context.ListAffiliationsAsync();
     var cats = await Contest.Context.ListCategoriesAsync();
+    var probs = await Contest.Context.ListProblemsAsync();
 }
 
 <h4>Complicated Export (background jobs)</h4>
@@ -49,7 +50,7 @@
 <div class="col-md-6 mb-3">
 <div class="tile">
 <h3 class="mb-3">Export submissions <i title="zip archive" class="fas fa-file-archive" style="color:#743f30"></i></h3>
-<form asp-controller="JuryJobs" asp-action="ScoreboardXlsx" method="post">
+<form asp-controller="JuryJobs" asp-action="SubmissionZip" method="post">
     <div class="form-group">
         <label class="d-block">Affiliations</label>
         @foreach (var aff in affs.Values)
@@ -67,6 +68,16 @@
             <div class="custom-control custom-checkbox d-inline-block mr-2">
                 <input type="checkbox" name="categories" value="@cat.Id" checked class="custom-control-input" id="CETc100cat@(cat.Id)">
                 <label class="custom-control-label" for="CETc100cat@(cat.Id)">@cat.Name</label>
+            </div>
+        }
+    </div>
+    <div class="form-group">
+        <label class="d-block">Problems</label>
+        @foreach (var prob in probs)
+        {
+            <div class="custom-control custom-checkbox d-inline-block mr-2" title="@prob.Title">
+                <input type="checkbox" name="problems" value="@prob.ProblemId" checked class="custom-control-input" id="CETc100prob@(prob.ProblemId)">
+                <label class="custom-control-label" for="CETc100prob@(prob.ProblemId)">@prob.ShortName</label>
             </div>
         }
     </div>

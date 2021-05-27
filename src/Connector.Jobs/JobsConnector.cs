@@ -15,6 +15,7 @@ namespace Ccs.Connector.Jobs
         public override void RegisterServices(IServiceCollection services)
         {
             services.AddJobExecutor<ScoreboardXlsx>();
+            services.AddJobExecutor<SubmissionZip>();
         }
 
         public override void RegisterMenu(IMenuContributor menus)
