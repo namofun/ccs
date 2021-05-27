@@ -21,8 +21,9 @@ namespace Ccs.Connector.Jobs.Controllers
 
         [HttpPost]
         public async Task<IActionResult> ScoreboardXlsx(
-            [FromQuery] int[] affiliations = null,
-            [FromQuery] int[] categories = null)
+            int[] affiliations = null,
+            int[] categories = null,
+            bool afterend = false)
         {
             if (Contest.RankingStrategy == CcsDefaults.RuleCodeforces) return StatusCode(501);
             if (!Contest.StartTime.HasValue) return BadRequest();
@@ -34,6 +35,7 @@ namespace Ccs.Connector.Jobs.Controllers
                 FilteredAffiliations = affiliations,
                 FilteredCategories = categories,
                 ContestId = Contest.Id,
+                IncludeUpsolving = afterend,
             };
 
             var job = await _scheduler.ScheduleAsync(

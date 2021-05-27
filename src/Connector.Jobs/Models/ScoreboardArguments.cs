@@ -7,5 +7,7 @@
         public int[] FilteredCategories { get; set; }
 
         public int ContestId { get; set; }
+
+        public bool IncludeUpsolving { get; set; }
     }
 }

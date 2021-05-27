@@ -6,18 +6,21 @@
     var cats = await Contest.Context.ListCategoriesAsync();
 }
 
-<div class="row">
+<h4>Complicated Export (background jobs)</h4>
+
+<div class="row mb-4">
+
 <div class="col-md-6 mb-3">
 <div class="tile">
-<h3 class="mb-3">Export scoreboard <i class="fas fa-file-excel" style="color:#117e43"></i></h3>
+<h3 class="mb-3">Export scoreboard <i title="excel workbook" class="fas fa-file-excel" style="color:#117e43"></i></h3>
 <form asp-controller="JuryJobs" asp-action="ScoreboardXlsx" method="post">
     <div class="form-group">
         <label class="d-block">Affiliations</label>
         @foreach (var aff in affs.Values)
         {
             <div class="custom-control custom-checkbox d-inline-block mr-2">
-                <input type="checkbox" name="affiliations" value="@aff.Id" checked class="custom-control-input" id="c100aff@(aff.Id)">
-                <label class="custom-control-label" for="c100aff@(aff.Id)">@aff.Name</label>
+                <input type="checkbox" name="affiliations" value="@aff.Id" checked class="custom-control-input" id="CESc100aff@(aff.Id)">
+                <label class="custom-control-label" for="CESc100aff@(aff.Id)">@aff.Name</label>
             </div>
         }
     </div>
@@ -26,13 +29,65 @@
         @foreach (var cat in cats.Values)
         {
             <div class="custom-control custom-checkbox d-inline-block mr-2">
-                <input type="checkbox" name="categories" value="@cat.Id" checked class="custom-control-input" id="c100cat@(cat.Id)">
-                <label class="custom-control-label" for="c100cat@(cat.Id)">@cat.Name</label>
+                <input type="checkbox" name="categories" value="@cat.Id" checked class="custom-control-input" id="CESc100cat@(cat.Id)">
+                <label class="custom-control-label" for="CESc100cat@(cat.Id)">@cat.Name</label>
             </div>
         }
     </div>
-    <button type="submit" class="btn btn-sm btn-primary mb-3"><i class="fa fa-download"></i> Export</button>
+    <div class="form-group">
+        <label class="d-block">Other</label>
+        <div class="custom-control custom-checkbox d-inline-block mr-2">
+            <input type="checkbox" name="afterend" value="True" class="custom-control-input" id="CESafterend">
+            <label class="custom-control-label" for="CESafterend">Include upsolving</label>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-sm btn-primary mb-0"><i class="fa fa-download"></i> Export</button>
 </form>
 </div>
 </div>
+
+<div class="col-md-6 mb-3">
+<div class="tile">
+<h3 class="mb-3">Export submissions <i title="zip archive" class="fas fa-file-archive" style="color:#743f30"></i></h3>
+<form asp-controller="JuryJobs" asp-action="ScoreboardXlsx" method="post">
+    <div class="form-group">
+        <label class="d-block">Affiliations</label>
+        @foreach (var aff in affs.Values)
+        {
+            <div class="custom-control custom-checkbox d-inline-block mr-2">
+                <input type="checkbox" name="affiliations" value="@aff.Id" checked class="custom-control-input" id="CETc100aff@(aff.Id)">
+                <label class="custom-control-label" for="CETc100aff@(aff.Id)">@aff.Name</label>
+            </div>
+        }
+    </div>
+    <div class="form-group">
+        <label class="d-block">Categories</label>
+        @foreach (var cat in cats.Values)
+        {
+            <div class="custom-control custom-checkbox d-inline-block mr-2">
+                <input type="checkbox" name="categories" value="@cat.Id" checked class="custom-control-input" id="CETc100cat@(cat.Id)">
+                <label class="custom-control-label" for="CETc100cat@(cat.Id)">@cat.Name</label>
+            </div>
+        }
+    </div>
+    <div class="form-group">
+        <label class="d-block">Time</label>
+        <div class="custom-control custom-checkbox d-inline-block mr-2">
+            <input type="checkbox" name="beforestart" value="True" class="custom-control-input" id="CETbeforestart">
+            <label class="custom-control-label" for="CETbeforestart">Before contest</label>
+        </div>
+        <div class="custom-control custom-checkbox d-inline-block mr-2">
+            <input type="checkbox" name="during" value="True" checked class="custom-control-input" id="CETduring">
+            <label class="custom-control-label" for="CETduring">During contest</label>
+        </div>
+        <div class="custom-control custom-checkbox d-inline-block mr-2">
+            <input type="checkbox" name="afterend" value="True" class="custom-control-input" id="CETafterend">
+            <label class="custom-control-label" for="CETafterend">After contest</label>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-sm btn-primary mb-0"><i class="fa fa-download"></i> Export</button>
+</form>
+</div>
+</div>
+
 </div>
