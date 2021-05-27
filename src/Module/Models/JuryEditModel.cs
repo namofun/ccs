@@ -100,7 +100,7 @@ namespace SatelliteSite.ContestModule.Models
 
             if (cont.Settings.RestrictIp.HasValue)
             {
-                IpRanges = string.Join(';', cont.Settings.IpRanges);
+                IpRanges = string.Join(';', cont.Settings.IpRanges ?? Array.Empty<string>());
                 RestrictToIpRanges = (cont.Settings.RestrictIp.Value & 1) == 1;
                 RestrictToMinimalSite = (cont.Settings.RestrictIp.Value & 2) == 2;
                 RestrictToLastLoginIp = (cont.Settings.RestrictIp.Value & 4) == 4;
