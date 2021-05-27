@@ -1,0 +1,113 @@
+﻿using Ccs.Models;
+using Ccs.Services;
+using Jobs.Entities;
+using Jobs.Models;
+using Jobs.Services;
+using Microsoft.Extensions.Logging;
+using System;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace Ccs.Connector.Jobs
+{
+    public class ScoreboardXlsx : IJobExecutorProvider
+    {
+        private readonly IContestContextFactory _factory;
+        private readonly IJobFileProvider _files;
+
+        public ScoreboardXlsx(
+            IContestContextFactory factory,
+            IJobFileProvider files)
+        {
+            _factory = factory;
+            _files = files;
+        }
+
+        public string Type => "Ccs.ScoreboardXlsx";
+
+        public static JobDescription Create(Models.ScoreboardArguments args, int owner)
+        {
+            return new JobDescription
+            {
+                SuggestedFileName = $"c{args.ContestId}-scoreboard.xlsx",
+                Arguments = args.ToJson(),
+                JobType = "Ccs.ScoreboardXlsx",
+                OwnerId = owner,
+            };
+        }
+
+        public IJobExecutor Create(IServiceProvider serviceProvider)
+        {
+            return new Executor(_factory, serviceProvider, _files);
+        }
+
+        private class Executor : IJobExecutor
+        {
+            private readonly IContestContextFactory _factory;
+            private readonly IServiceProvider _serviceProvider;
+            private readonly IJobFileProvider _files;
+
+            public Executor(
+                IContestContextFactory factory,
+                IServiceProvider serviceProvider,
+                IJobFileProvider files)
+            {
+                _factory = factory;
+                _serviceProvider = serviceProvider;
+                _files = files;
+            }
+
+            public async Task<JobStatus> ExecuteAsync(string arguments, Guid guid, ILogger logger)
+            {
+                var args = arguments.AsJson<Models.ScoreboardArguments>();
+                var context = await _factory.CreateAsync(args.ContestId, _serviceProvider, true);
+                var contest = context.Contest;
+
+                if (context == null)
+                {
+                    logger.LogError("Unknown contest ID specified.");
+                    return JobStatus.Failed;
+                }
+
+                if (!contest.StartTime.HasValue
+                    || contest.RankingStrategy == CcsDefaults.RuleCodeforces
+                    || contest.Kind == CcsDefaults.KindProblemset)
+                {
+                    logger.LogError("Export constraint failed.");
+                    return JobStatus.Failed;
+                }
+
+                var scb = await context.GetScoreboardAsync();
+                var affs = await context.ListAffiliationsAsync();
+                var orgs = await context.ListCategoriesAsync();
+                var probs = await context.ListProblemsAsync();
+
+                var board = new FullBoardViewModel
+                {
+                    UpdateTime = scb.RefreshTime,
+                    Problems = probs,
+                    IsPublic = false,
+                    Categories = orgs,
+                    ContestId = contest.Id,
+                    RankingStrategy = contest.RankingStrategy,
+                    Affiliations = affs,
+                    RankCache = scb.Data.Values
+                        .WhereIf(args.FilteredAffiliations != null, r => args.FilteredAffiliations.Contains(r.AffiliationId))
+                        .WhereIf(args.FilteredCategories != null, r => args.FilteredCategories.Contains(r.CategoryId)),
+                };
+
+                logger.LogInformation("Data loaded.");
+
+                using var workbook = Scoreboard.OpenXmlScoreboard.Create(board, contest.Name);
+                using var memoryStream = new MemoryStream();
+                workbook.SaveAs(memoryStream);
+                memoryStream.Position = 0;
+
+                await _files.WriteStreamAsync(guid + "/main", memoryStream);
+                logger.LogInformation("Export succeeded.");
+                return JobStatus.Finished;
+            }
+        }
+    }
+}

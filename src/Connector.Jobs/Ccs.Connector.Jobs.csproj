@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+    <DescriptionAttach>The connector to export as background jobs.</DescriptionAttach>
+  </PropertyGroup>
+
+  <Import Project="..\..\build\NugetPackage.Backend.props" />
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="ClosedXML" Version="0.95.4" />
+    <PackageReference Include="SatelliteSite.JobsModule" Version="$(SubstrateVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Module\SatelliteSite.ContestModule.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\Connector.OpenXml\OpenXmlExtensions.cs" />
+    <Compile Include="..\Connector.OpenXml\OpenXmlScoreboard.cs" />
+  </ItemGroup>
+
+</Project>

@@ -40,6 +40,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ccs.Connector.PlagiarismDet
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ccs.Connector.OpenXml", "src\Connector.OpenXml\Ccs.Connector.OpenXml.csproj", "{5599FC07-0F7D-4313-9559-C5085E6A05C5}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ccs.Connector.Jobs", "src\Connector.Jobs\Ccs.Connector.Jobs.csproj", "{8CD1CA48-A329-4E17-A41C-22F9D6F4BF1D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -170,6 +172,18 @@ Global
 		{5599FC07-0F7D-4313-9559-C5085E6A05C5}.Release|x64.Build.0 = Release|Any CPU
 		{5599FC07-0F7D-4313-9559-C5085E6A05C5}.Release|x86.ActiveCfg = Release|Any CPU
 		{5599FC07-0F7D-4313-9559-C5085E6A05C5}.Release|x86.Build.0 = Release|Any CPU
+		{8CD1CA48-A329-4E17-A41C-22F9D6F4BF1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8CD1CA48-A329-4E17-A41C-22F9D6F4BF1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8CD1CA48-A329-4E17-A41C-22F9D6F4BF1D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{8CD1CA48-A329-4E17-A41C-22F9D6F4BF1D}.Debug|x64.Build.0 = Debug|Any CPU
+		{8CD1CA48-A329-4E17-A41C-22F9D6F4BF1D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8CD1CA48-A329-4E17-A41C-22F9D6F4BF1D}.Debug|x86.Build.0 = Debug|Any CPU
+		{8CD1CA48-A329-4E17-A41C-22F9D6F4BF1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8CD1CA48-A329-4E17-A41C-22F9D6F4BF1D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8CD1CA48-A329-4E17-A41C-22F9D6F4BF1D}.Release|x64.ActiveCfg = Release|Any CPU
+		{8CD1CA48-A329-4E17-A41C-22F9D6F4BF1D}.Release|x64.Build.0 = Release|Any CPU
+		{8CD1CA48-A329-4E17-A41C-22F9D6F4BF1D}.Release|x86.ActiveCfg = Release|Any CPU
+		{8CD1CA48-A329-4E17-A41C-22F9D6F4BF1D}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -185,6 +199,7 @@ Global
 		{73466571-4429-4220-81F6-E61297252510} = {ADA4B71F-A85F-44D6-969A-976C34A660A5}
 		{DA85E9EB-D808-4B26-B4D4-9E553E627077} = {37978533-6CEF-46D7-8A00-D4C403E9A1BD}
 		{5599FC07-0F7D-4313-9559-C5085E6A05C5} = {37978533-6CEF-46D7-8A00-D4C403E9A1BD}
+		{8CD1CA48-A329-4E17-A41C-22F9D6F4BF1D} = {37978533-6CEF-46D7-8A00-D4C403E9A1BD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {000EA67D-DBD2-448C-9B2E-6393348CC090}

@@ -29,6 +29,7 @@
     <PackageReference Include="SatelliteSite.HostBuilder" Version="$(SubstrateVersion)" />
     <PackageReference Include="SatelliteSite.IdentityModule" Version="$(SubstrateVersion)" />
     <PackageReference Include="SatelliteSite.TelemetryModule" Version="$(SubstrateVersion)" />
+    <PackageReference Include="SatelliteSite.JobsModule" Version="$(SubstrateVersion)" />
     <PackageReference Include="XiaoYang.EntityFrameworkCore.Bulk.SqlServer" Version="$(EFCoreBulkVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="$(AspNetCoreVersion)" />
   </ItemGroup>
@@ -41,6 +42,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Connector.Jobs\Ccs.Connector.Jobs.csproj" />
     <ProjectReference Include="..\Connector.OpenXml\Ccs.Connector.OpenXml.csproj" />
     <ProjectReference Include="..\Connector.PDS\Ccs.Connector.PlagiarismDetect.csproj" />
     <ProjectReference Include="..\EntityFrameworkCore\Ccs.Storage.Relational.csproj" />

@@ -1,0 +1,38 @@
+﻿@namespace Ccs.Connector.Jobs.Components.JuryJobs
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@inject Ccs.Services.IContestContextAccessor Contest
+@{
+    var affs = await Contest.Context.ListAffiliationsAsync();
+    var cats = await Contest.Context.ListCategoriesAsync();
+}
+
+<div class="row">
+<div class="col-md-6 mb-3">
+<div class="tile">
+<h3 class="mb-3">Export scoreboard <i class="fas fa-file-excel" style="color:#117e43"></i></h3>
+<form asp-controller="JuryJobs" asp-action="ScoreboardXlsx" method="post">
+    <div class="form-group">
+        <label class="d-block">Affiliations</label>
+        @foreach (var aff in affs.Values)
+        {
+            <div class="custom-control custom-checkbox d-inline-block mr-2">
+                <input type="checkbox" name="affiliations" value="@aff.Id" checked class="custom-control-input" id="c100aff@(aff.Id)">
+                <label class="custom-control-label" for="c100aff@(aff.Id)">@aff.Name</label>
+            </div>
+        }
+    </div>
+    <div class="form-group">
+        <label class="d-block">Categories</label>
+        @foreach (var cat in cats.Values)
+        {
+            <div class="custom-control custom-checkbox d-inline-block mr-2">
+                <input type="checkbox" name="categories" value="@cat.Id" checked class="custom-control-input" id="c100cat@(cat.Id)">
+                <label class="custom-control-label" for="c100cat@(cat.Id)">@cat.Name</label>
+            </div>
+        }
+    </div>
+    <button type="submit" class="btn btn-sm btn-primary mb-3"><i class="fa fa-download"></i> Export</button>
+</form>
+</div>
+</div>
+</div>

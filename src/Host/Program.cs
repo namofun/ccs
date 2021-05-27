@@ -30,6 +30,7 @@ namespace SatelliteSite
                 .AddModule<PlagModule.PlagModule<Plag.Backend.StorageBackendRole<PdsContext>>>()
                 .AddModule<TelemetryModule.TelemetryModule>()
                 .AddModule<HostModule>()
+                .AddModule<JobsModule.JobsModule<MyUser, DefaultContext>>()
                 .AddDatabase<DefaultContext>((c, b) => b.UseSqlServer(c.GetConnectionString("UserDbConnection"), b => b.UseBulk()))
                 .AddDatabase<PdsContext>((c, b) => b.UseSqlServer(c.GetConnectionString("PlagDbConnection"), b => b.UseBulk()))
                 .ConfigureSubstrateDefaults<DefaultContext>();
