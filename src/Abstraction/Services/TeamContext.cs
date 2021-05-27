@@ -115,6 +115,12 @@ namespace Ccs.Services
         Task DetachMemberAsync(Member member);
 
         /// <summary>
+        /// Gets the scoreboard row.
+        /// </summary>
+        /// <returns>The task for getting scoreboard row.</returns>
+        Task<List<ScoreboardRow>> GetScoreboardRowsAsync();
+
+        /// <summary>
         /// Lists the teams with selected conditions.
         /// </summary>
         /// <param name="predicate">The conditions to match.</param>

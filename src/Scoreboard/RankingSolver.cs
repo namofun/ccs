@@ -7,7 +7,6 @@ using Polygon.Entities;
 using Polygon.Events;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -46,7 +45,7 @@ namespace Ccs.Scoreboard
         /// </summary>
         /// <param name="contest">The contest entity.</param>
         /// <returns>The ranking strategy.</returns>
-        private IRankingStrategy Select(IContestInformation contest)
+        public static IRankingStrategy Select(IContestInformation contest)
         {
             if (contest == null ||
                 contest.RankingStrategy > Strategies.Count ||

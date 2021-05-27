@@ -407,5 +407,14 @@ namespace Ccs.Services
 
             return new Monitor(teams, members);
         }
+
+        public virtual Task<List<ScoreboardRow>> GetScoreboardRowsAsync()
+        {
+            int cid = Contest.Id;
+            return Db.Teams
+                .Where(t => t.ContestId == cid && t.Status == 1)
+                .Select(t => new ScoreboardRow(t.TeamId, t.TeamName, t.CategoryId, t.AffiliationId))
+                .ToListAsync();
+        }
     }
 }

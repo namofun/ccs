@@ -16,14 +16,14 @@ namespace Ccs.Events
 
         public IContestContext Context { get; }
 
-        public ScoreboardRefreshEvent(IContestContext context)
+        public ScoreboardRefreshEvent(IContestContext context, DateTimeOffset? overrideEndTime = null)
         {
             Context = context;
             var contest = context.Contest;
             Contest = contest;
             var now = DateTimeOffset.Now;
             StartTime = Contest.StartTime ?? now;
-            var endTime = (Contest.StartTime + Contest.EndTime) ?? now;
+            var endTime = overrideEndTime ?? (Contest.StartTime + Contest.EndTime) ?? now;
             if (now < endTime) endTime = now;
             Deadline = endTime;
             FreezeTime = Contest.StartTime + Contest.FreezeTime;

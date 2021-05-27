@@ -1,10 +1,13 @@
 ﻿using Ccs.Models;
+using Ccs.Scoreboard;
 using Ccs.Services;
 using Jobs.Entities;
 using Jobs.Models;
 using Jobs.Services;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -47,6 +50,7 @@ namespace Ccs.Connector.Jobs
             private readonly IContestContextFactory _factory;
             private readonly IServiceProvider _serviceProvider;
             private readonly IJobFileProvider _files;
+            private readonly IScoreboard _scoreboard;
 
             public Executor(
                 IContestContextFactory factory,
@@ -56,6 +60,7 @@ namespace Ccs.Connector.Jobs
                 _factory = factory;
                 _serviceProvider = serviceProvider;
                 _files = files;
+                _scoreboard = serviceProvider.GetRequiredService<IScoreboard>();
             }
 
             public async Task<JobStatus> ExecuteAsync(string arguments, Guid guid, ILogger logger)
@@ -78,7 +83,27 @@ namespace Ccs.Connector.Jobs
                     return JobStatus.Failed;
                 }
 
-                var scb = await context.GetScoreboardAsync();
+                logger.LogInformation("Calculating scoreboard...");
+
+                DateTimeOffset? endTime = args.IncludeUpsolving
+                    ? DateTimeOffset.Now
+                    : (contest.StartTime + contest.EndTime);
+
+                var raw = await RankingSolver.Select(contest)
+                    .RefreshCache(
+                        _scoreboard,
+                        new Events.ScoreboardRefreshEvent(context, endTime));
+
+                var rankCaches = raw.RankCache.ToDictionary(r => r.TeamId);
+                var scoreCaches = raw.ScoreCache.ToLookup(r => r.TeamId);
+                var teams1 = await ((ITeamContext)context).GetScoreboardRowsAsync();
+                var teams = teams1.ToDictionary(
+                    k => k.TeamId,
+                    v => v.With(rankCaches.GetValueOrDefault(v.TeamId), scoreCaches[v.TeamId]));
+
+                logger.LogInformation("Loading other things from database...");
+
+                var scb = new ScoreboardModel(teams);
                 var affs = await context.ListAffiliationsAsync();
                 var orgs = await context.ListCategoriesAsync();
                 var probs = await context.ListProblemsAsync();
@@ -99,7 +124,7 @@ namespace Ccs.Connector.Jobs
 
                 logger.LogInformation("Data loaded.");
 
-                using var workbook = Scoreboard.OpenXmlScoreboard.Create(board, contest.Name);
+                using var workbook = OpenXmlScoreboard.Create(board, contest.Name);
                 using var memoryStream = new MemoryStream();
                 workbook.SaveAs(memoryStream);
                 memoryStream.Position = 0;
