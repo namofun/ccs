@@ -1,6 +1,4 @@
-﻿using ClosedXML.Excel;
-
-namespace Ccs.Scoreboard
+﻿namespace ClosedXML.Excel
 {
     public static class OpenXmlExtensions
     {

@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
-    <DescriptionAttach>The connector to exporting Office Documents</DescriptionAttach>
+    <DescriptionAttach>The connector to export Office Documents</DescriptionAttach>
   </PropertyGroup>
 
   <Import Project="..\..\build\NugetPackage.Backend.props" />
