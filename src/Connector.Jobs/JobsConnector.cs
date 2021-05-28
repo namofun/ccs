@@ -21,7 +21,7 @@ namespace Ccs.Connector.Jobs
         public override void RegisterMenu(IMenuContributor menus)
         {
             menus.Component(CcsDefaults.ComponentImportExport)
-                .HasComponent<Components.JuryJobs.JuryJobsViewComponent>(120);
+                .HasComponent<Components.JuryJobs.JuryJobsViewComponent>(200);
         }
     }
 }
