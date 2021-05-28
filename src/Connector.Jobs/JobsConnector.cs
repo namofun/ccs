@@ -16,6 +16,7 @@ namespace Ccs.Connector.Jobs
         {
             services.AddJobExecutor<ScoreboardXlsx>();
             services.AddJobExecutor<SubmissionZip>();
+            services.AddScoped<BackgroundViewRenderService>();
         }
 
         public override void RegisterMenu(IMenuContributor menus)

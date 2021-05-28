@@ -1,0 +1,95 @@
+﻿@namespace Ccs.Connector.Jobs.Views.JuryJobs
+@using Ccs.Connector.Jobs.Models 
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@model TeamReport
+@{
+    Layout = null;
+}
+
+@functions {
+    static readonly (string, string, string, string)[] verdIcons = new[]
+    {
+        ("secondary", "?", "unknown", "queued"), // 0
+        ("danger", "t", "timelimit", "incorrect"),
+        ("danger", "m", "memory-limit", "incorrect"),
+        ("danger", "r", "run-error", "incorrect"),
+        ("danger", "o", "output-limit", "incorrect"),
+        ("danger", "w", "wrong-answer", "incorrect"), // 5
+        ("secondary", "c", "compiler-error", "incorrect"),
+        ("danger", "w", "wrong-answer", "incorrect"),
+        ("secondary", "?", "queued", "queued"),
+        ("info", "?", "running", "queued"),
+        ("warning", "?", "undefined", "incorrect"), // 10
+        ("success", "✓", "correct", "correct"),
+    };
+}
+
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Report of @Model.TeamName</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap-reboot.min.css" integrity="sha512-wV3xzHEw4kJUF4G0fyXSefKmUVhwwbOdZinJvOxmysxAXSZBl17porgPOcQBDBQTEwgGevxXGWAAQ/UPaSd0nw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap-grid.min.css" integrity="sha512-cKoGpmS4czjv58PNt1YTHxg0wUDlctZyp9KUxQpdbAft+XqnyKvDvcGX0QYCgCohQenOuyGSl8l1f7/+axAqyg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        .text-center { text-align: center; }
+        table { width: 100%; border-top: 1px solid #ddd; }
+        table > thead > tr > th { border-bottom: 2px solid #ddd; padding: 3px; }
+        table > tbody > tr > td { border-bottom: 1px solid #ddd; padding: 3px; }
+        pre { padding: 1em; border: 1px solid #ddd; white-space: pre-wrap; word-wrap: break-word; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+    <h2 class="text-center">@Model.ContestName</h2>
+    <p class="text-center">
+        START: @Model.StartTime.ToString("yyyy/M/d HH:mm:ss zzz")
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        END: @Model.EndTime.ToString("yyyy/M/d HH:mm:ss zzz")
+        <br />
+        TEAM: @Model.TeamName (t@(Model.TeamId))
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        SCORE: @Model.RankCache.PointsPublic
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        @(Model.Rule == CcsDefaults.RuleXCPC ? "PENALTY" : "TOTAL"): @(Model.Rule == CcsDefaults.RuleXCPC ? Model.RankCache.TotalTimePublic : Model.Problems.Select(p => p.Score).Sum())
+    </p>
+    <hr />
+    @foreach (var prob in Model.Problems)
+    {
+        <h4 class="text-center mt-3 mb-3">Problem @(prob.ShortName). @prob.Title</h4>
+        if (!Model.Solutions.Contains(prob.ProblemId))
+        {
+            <p class="text-center mt-3 mb-3">No Submissions</p>
+        }
+        else
+        {
+            var s = Model.SourceCodes[prob.ProblemId];
+            <table class="mt-3 mb-3">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>time</th>
+                        <th>lang</th>
+                        <th>result</th>
+                        <th>test results</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var sol in Model.Solutions[prob.ProblemId].OrderBy(s => s.Time))
+                    {
+                        <tr>
+                            <td style="@(s.Item1 == sol.SubmissionId ? "font-weight:bold" : "")">@sol.SubmissionId</td>
+                            <td>@((sol.Time - Model.StartTime).ToDeltaString())</td>
+                            <td>@sol.Language</td>
+                            <td>@verdIcons[(int)sol.Verdict].Item3</td>
+                            <td>@string.Join("", sol.RunVerdicts.Select(r => verdIcons[(int)r].Item2))@(new string('?', Math.Max(0, prob.TestcaseCount - sol.RunVerdicts.Count())))</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <pre class="mt-3 mb-3">@s.Item2.UnBase64()</pre>
+        }
+        <hr class="mt-4 mb-3" />
+    }
+    <p>Report generated: @DateTimeOffset.Now.ToString("yyyy/M/d HH:mm:ss zzz")</p>
+</body>
+</html>

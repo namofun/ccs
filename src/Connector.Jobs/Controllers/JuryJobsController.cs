@@ -11,7 +11,7 @@ namespace Ccs.Connector.Jobs.Controllers
 {
     [Area("Contest")]
     [Authorize(Policy = "ContestIsJury")]
-    [Route("[area]/{cid:c(3)}/jury/import-export/[action]-jobs")]
+    [Route("[area]/{cid:c(3)}/jury/import-export/jobs")]
     public class JuryJobsController : JuryControllerBase<IContestContext>
     {
         private readonly IJobScheduler _scheduler;
@@ -19,7 +19,7 @@ namespace Ccs.Connector.Jobs.Controllers
             => _scheduler = scheduler;
 
 
-        [HttpPost]
+        [HttpPost("[action]")]
         public async Task<IActionResult> ScoreboardXlsx(
             int[] affiliations = null,
             int[] categories = null,
@@ -50,7 +50,7 @@ namespace Ccs.Connector.Jobs.Controllers
         }
 
 
-        [HttpPost]
+        [HttpPost("[action]")]
         public async Task<IActionResult> SubmissionZip(
             int[] affiliations = null,
             int[] categories = null,
@@ -85,6 +85,15 @@ namespace Ccs.Connector.Jobs.Controllers
                 $"Submission export job scheduled. " +
                 $"You can view {job.JobId} later in your export files.";
             return RedirectToAction("ImportExport", "Jury");
+        }
+
+
+        [HttpGet("team-report/preview/{teamid}")]
+        public async Task<IActionResult> TeamReportPreview(int teamid)
+        {
+            var report = await Context.GenerateReport(teamid);
+            if (report == null) return NotFound();
+            return View(report);
         }
     }
 }
