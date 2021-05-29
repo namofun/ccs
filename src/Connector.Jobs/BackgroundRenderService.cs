@@ -32,10 +32,10 @@ namespace Ccs.Connector.Jobs
             _serviceProvider = serviceProvider;
         }
 
-        public async Task<string> RenderToStringAsync(string viewName, object model)
+        public async Task<string> RenderToStringAsync(ActionDescriptor ad, string viewName, object model)
         {
             var httpContext = new DefaultHttpContext { RequestServices = _serviceProvider };
-            var actionContext = new ActionContext(httpContext, new RouteData(), new ActionDescriptor());
+            var actionContext = new ActionContext(httpContext, new RouteData(new RouteValueDictionary(ad.RouteValues)), ad);
 
             using var sw = new StringWriter();
             var viewResult = _razorViewEngine.FindView(actionContext, viewName, false);

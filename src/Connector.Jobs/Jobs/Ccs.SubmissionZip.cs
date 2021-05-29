@@ -64,14 +64,13 @@ namespace Ccs.Connector.Jobs
             {
                 var args = arguments.AsJson<Models.SubmissionArguments>();
                 var context = await _factory.CreateAsync(args.ContestId, _serviceProvider, true);
-                var contest = context.Contest;
-
                 if (context == null)
                 {
                     logger.LogError("Unknown contest ID specified.");
                     return JobStatus.Failed;
                 }
 
+                var contest = context.Contest;
                 if (contest.Kind == CcsDefaults.KindProblemset)
                 {
                     logger.LogError("Export constraint failed.");

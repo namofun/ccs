@@ -67,14 +67,13 @@ namespace Ccs.Connector.Jobs
             {
                 var args = arguments.AsJson<Models.ScoreboardArguments>();
                 var context = await _factory.CreateAsync(args.ContestId, _serviceProvider, true);
-                var contest = context.Contest;
-
                 if (context == null)
                 {
                     logger.LogError("Unknown contest ID specified.");
                     return JobStatus.Failed;
                 }
 
+                var contest = context.Contest;
                 if (!contest.StartTime.HasValue
                     || contest.RankingStrategy == CcsDefaults.RuleCodeforces
                     || contest.Kind == CcsDefaults.KindProblemset)

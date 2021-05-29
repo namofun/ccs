@@ -60,6 +60,11 @@ namespace SatelliteSite
             {
                 options.Keyword = "hahaahahahahha";
             });
+
+            services.Configure<Ccs.Connector.Jobs.ExportPdfOptions>(options =>
+            {
+                options.Url = "http://localhost:43982/api/render";
+            });
         }
     }
 }
