@@ -29,33 +29,48 @@
 <head>
     <meta charset="utf-8" />
     <title>Report of @Model.TeamName</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap-reboot.min.css" integrity="sha512-wV3xzHEw4kJUF4G0fyXSefKmUVhwwbOdZinJvOxmysxAXSZBl17porgPOcQBDBQTEwgGevxXGWAAQ/UPaSd0nw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap-grid.min.css" integrity="sha512-cKoGpmS4czjv58PNt1YTHxg0wUDlctZyp9KUxQpdbAft+XqnyKvDvcGX0QYCgCohQenOuyGSl8l1f7/+axAqyg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
-        .text-center { text-align: center; }
+        /* Most of these come from bootstrap */
+        *::before, *::after { box-sizing: border-box; } html { font-family: sans-serif; line-height: 1.15; -webkit-text-size-adjust: 100%; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); } article, aside, figcaption, figure, footer, header, hgroup, main, nav, section { display: block; }
+        body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"; font-size: 1rem; font-weight: 400; line-height: 1.5; color: #212529; text-align: left; background-color: #fff; }
+        [tabindex="-1"]:focus:not(:focus-visible) { outline: 0 !important; } hr { box-sizing: content-box; height: 0; overflow: visible; } h1, h2, h3, h4, h5, h6 { margin-top: 0; margin-bottom: 0.5rem; } p { margin-top: 0; margin-bottom: 1rem; }
+        abbr[title], abbr[data-original-title] { text-decoration: underline; -webkit-text-decoration: underline dotted; text-decoration: underline dotted; cursor: help; border-bottom: 0; -webkit-text-decoration-skip-ink: none; text-decoration-skip-ink: none; }
+        address { margin-bottom: 1rem; font-style: normal; line-height: inherit; } ol, ul, dl { margin-top: 0; margin-bottom: 1rem; } ol ol, ul ul, ol ul, ul ol { margin-bottom: 0; } dt { font-weight: 700; } dd { margin-bottom: .5rem; margin-left: 0; }
+        blockquote { margin: 0 0 1rem; } b, strong { font-weight: bolder; } small { font-size: 80%; } sub, sup { position: relative; font-size: 75%; line-height: 0; vertical-align: baseline; } sub { bottom: -.25em; } sup { top: -.5em; }
+        a, a:hover, a:not([href]):not([class]), a:not([href]):not([class]):hover { color: inherit; text-decoration: none; } pre, code, kbd, samp { font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size: 1em; }
+        pre { overflow: auto; -ms-overflow-style: scrollbar; } img { display: none; } svg { overflow: hidden; vertical-align: middle; } table { border-collapse: collapse; } caption { padding-top: 0.75rem; padding-bottom: 0.75rem; color: #6c757d; text-align: left; caption-side: bottom; }
+        th { text-align: inherit; text-align: -webkit-match-parent; } label { display: inline-block; margin-bottom: 0.5rem; } output { display: inline-block; } summary { display: list-item; cursor: pointer; } [hidden] { display: none !important; }
+        .text-center { text-align: center; } .mt-3, .my-3 { margin-top: 1rem !important; } .mb-3, .my-3 { margin-bottom: 1rem !important; } .mt-4, .my-4 { margin-top: 1.5rem !important; } .mb-4, .my-4 { margin-bottom: 1.5rem !important; }
+
+        /* Custom styles */
         table { width: 100%; border-top: 1px solid #ddd; }
         table > thead > tr > th { border-bottom: 2px solid #ddd; padding: 3px; }
         table > tbody > tr > td { border-bottom: 1px solid #ddd; padding: 3px; }
-        pre { padding: 1em; border: 1px solid #ddd; white-space: pre-wrap; word-wrap: break-word; font-size: 0.9em; }
+        pre:not(.katex-src) { padding: 1em; border: 1px solid #ddd; white-space: pre-wrap; word-wrap: break-word; font-size: 0.9em; }
+        pre.katex-src { text-align: center; }
+        .statement-section > h1, .statement-section > ul { display: none; }
     </style>
 </head>
 <body>
     <h2 class="text-center">@Model.ContestName</h2>
     <p class="text-center">
-        START: @Model.StartTime.ToString("yyyy/M/d HH:mm:ss zzz")
+        <b>START</b>: @Model.StartTime.ToString("yyyy/M/d HH:mm:ss zzz")
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        END: @Model.EndTime.ToString("yyyy/M/d HH:mm:ss zzz")
+        <b>END</b>: @Model.EndTime.ToString("yyyy/M/d HH:mm:ss zzz")
         <br />
-        TEAM: @Model.TeamName (t@(Model.TeamId))
+        <b>TEAM</b>: @Model.TeamName (t@(Model.TeamId))
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        SCORE: @Model.RankCache.PointsPublic
+        <b>SCORE</b>: @Model.RankCache.PointsPublic
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        @(Model.Rule == CcsDefaults.RuleXCPC ? "PENALTY" : "TOTAL"): @(Model.Rule == CcsDefaults.RuleXCPC ? Model.RankCache.TotalTimePublic : Model.Problems.Select(p => p.Score).Sum())
+        <b>@(Model.Rule == CcsDefaults.RuleXCPC ? "PENALTY" : "TOTAL")</b>: @(Model.Rule == CcsDefaults.RuleXCPC ? Model.RankCache.TotalTimePublic : Model.Problems.Select(p => p.Score).Sum())
     </p>
     <hr />
     @foreach (var prob in Model.Problems)
     {
         <h4 class="text-center mt-3 mb-3">Problem @(prob.ShortName). @prob.Title</h4>
+        <div class="statement-section">
+            @Html.Raw(prob.Statement)
+        </div>
         if (!Model.Solutions.Contains(prob.ProblemId))
         {
             <p class="text-center mt-3 mb-3">No Submissions</p>
@@ -63,7 +78,8 @@
         else
         {
             var s = Model.SourceCodes[prob.ProblemId];
-            <table class="mt-3 mb-3">
+            <h3 style="margin-top:0.5rem">Submissions</h3>
+            <table class="mb-3">
                 <thead>
                     <tr>
                         <th>ID</th>
@@ -77,16 +93,41 @@
                     @foreach (var sol in Model.Solutions[prob.ProblemId].OrderBy(s => s.Time))
                     {
                         <tr>
-                            <td style="@(s.Item1 == sol.SubmissionId ? "font-weight:bold" : "")">@sol.SubmissionId</td>
+                            <td style="@(s.Item1 == sol.SubmissionId ? "font-weight:bold" : "")">@sol.SubmissionId @(s.Item1 == sol.SubmissionId ? "*" : "")</td>
                             <td>@((sol.Time - Model.StartTime).ToDeltaString())</td>
                             <td>@sol.Language</td>
-                            <td>@verdIcons[(int)sol.Verdict].Item3</td>
+                            <td>@(Model.Rule == 0 ? verdIcons[(int)sol.Verdict].Item3 : $"{sol.TotalScore} / {prob.Score}")</td>
                             <td>@string.Join("", sol.RunVerdicts.Select(r => verdIcons[(int)r].Item2))@(new string('?', Math.Max(0, prob.TestcaseCount - sol.RunVerdicts.Count())))</td>
                         </tr>
                     }
                 </tbody>
             </table>
-            <pre class="mt-3 mb-3">@s.Item2.UnBase64()</pre>
+            <h3>Source Code</h3>
+            <pre style="margin-top:0">@s.Item2.UnBase64()</pre>
+            <h3>Judging Details</h3>
+            <table class="mb-3">
+                <thead>
+                    <tr>
+                        <th>testcase</th>
+                        <th>result</th>
+                        <th>score</th>
+                        <th>time</th>
+                        <th>memory</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var (jr, tc) in Model.Details[s.Item1])
+                    {
+                        <tr>
+                            <td>@tc.Rank</td>
+                            <td>@(jr == null ? "unused" : verdIcons[(int)jr.Status].Item3)</td>
+                            <td>@(jr?.Status == Polygon.Entities.Verdict.Accepted ? tc.Point : 0)</td>
+                            <td>@(jr == null ? "N/A" : (jr.ExecuteTime + "ms"))</td>
+                            <td>@(jr == null ? "N/A" : (jr.ExecuteMemory + "kb"))</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         }
         <hr class="mt-4 mb-3" />
     }

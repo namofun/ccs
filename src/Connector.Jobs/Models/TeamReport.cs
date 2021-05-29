@@ -1,5 +1,6 @@
 ﻿using Ccs.Entities;
 using Ccs.Models;
+using Polygon.Entities;
 using Polygon.Models;
 using System;
 using System.Collections.Generic;
@@ -32,5 +33,7 @@ namespace Ccs.Connector.Jobs.Models
         public ILookup<int, Solution> Solutions { get; set; }
 
         public IReadOnlyDictionary<int, (int, string)> SourceCodes { get; set; }
+
+        public IReadOnlyDictionary<int, IEnumerable<(JudgingRun, Testcase)>> Details { get; set; }
     }
 }
