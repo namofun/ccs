@@ -70,12 +70,7 @@ namespace SatelliteSite.ContestModule
             services.AddMediatRAssembly(typeof(Ccs.Scoreboard.RankingSolver).Assembly);
             services.AddSingleton<IRatingCalculator, Ccs.Scoreboard.Rating.EloRatingCalculator>();
             services.AddSingleton(SeparatedContestListModelComparer.Instance);
-
-            services.ConfigureApplicationBuilder(options =>
-            {
-                options.PointBeforeRouting.Add(app => app.UseMiddleware<InitializeContestMiddleware>());
-                options.PointBetweenAuth.Add(app => app.UseMiddleware<InitializeTeamMiddleware>());
-            });
+            services.ConfigureOptions<MiddlewareConfigurator>();
 
             services.ConfigureRouting(options =>
             {

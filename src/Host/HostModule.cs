@@ -48,7 +48,7 @@ namespace SatelliteSite
 
             services.ConfigureApplicationBuilder(options =>
             {
-                options.PointBeforeUrlRewriting.Add(app => app.UseMiddleware<Test46160Middleware>());
+                options.PointBeforeUrlRewriting.Insert(0, app => app.UseMiddleware<Test46160Middleware>());
             });
 
             services.AddFakeJudgehost()
@@ -59,6 +59,7 @@ namespace SatelliteSite
             services.Configure<MinimalSiteOptions>(options =>
             {
                 options.Keyword = "hahaahahahahha";
+                options.RealIpHeaderName = "Jluds-hhh";
             });
 
             services.Configure<Ccs.Connector.Jobs.ExportPdfOptions>(options =>
