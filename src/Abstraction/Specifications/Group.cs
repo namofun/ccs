@@ -56,6 +56,7 @@ namespace Ccs.Specifications
             Hidden = !c.IsPublic;
             Color = c.Color;
             Id = $"{c.Id}";
+            IcpcId = "xylab" + Id;
             Name = c.Name;
             SortOrder = c.SortOrder;
         }

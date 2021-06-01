@@ -108,13 +108,16 @@ namespace Ccs.Services
 
             foreach (var g in events.GroupBy(e => e.EventTime).OrderBy(gg => gg.Key))
             {
-                Db.ContestEvents.AddRange(g);
-                current += await Db.SaveChangesAsync();
-
-                if (current / 50 != last)
+                foreach (var e in g)
                 {
-                    last = current / 50;
-                    await events.LogAsync($"Processing... ({current} / {events.Count})");
+                    Db.ContestEvents.Add(e);
+                    current += await Db.SaveChangesAsync();
+
+                    if (current / 50 != last)
+                    {
+                        last = current / 50;
+                        await events.LogAsync($"Processing... ({current} / {events.Count})");
+                    }
                 }
             }
 

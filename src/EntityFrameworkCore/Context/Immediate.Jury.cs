@@ -115,14 +115,13 @@ namespace Ccs.Services
                 .BatchDeleteAsync();
         }
 
-        public virtual Task<int> GetMaxEventIdAsync()
+        public virtual Task<Event> GetMaxEventAsync()
         {
             int cid = Contest.Id;
             return Db.ContestEvents
                 .Where(e => e.ContestId == cid)
                 .OrderByDescending(e => e.Id)
-                .Select(e => e.Id)
-                .FirstOrDefaultAsync(); ;
+                .FirstOrDefaultAsync();
         }
 
         public virtual async Task<string> GetReadmeAsync(bool source)

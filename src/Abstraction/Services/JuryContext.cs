@@ -33,10 +33,10 @@ namespace Ccs.Services
         Task CleanEventsAsync();
 
         /// <summary>
-        /// Fetch the ID of the latest event.
+        /// Fetch the of the latest event.
         /// </summary>
         /// <returns>The task for ID of event.</returns>
-        Task<int> GetMaxEventIdAsync();
+        Task<Event> GetMaxEventAsync();
 
         /// <summary>
         /// Fetch the event for a contest after some ID.

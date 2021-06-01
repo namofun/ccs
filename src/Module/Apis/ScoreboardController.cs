@@ -1,4 +1,5 @@
-﻿using Ccs.Models;
+﻿using Ccs;
+using Ccs.Models;
 using Ccs.Services;
 using Ccs.Specifications;
 using Microsoft.AspNetCore.Authorization;
@@ -30,8 +31,11 @@ namespace SatelliteSite.ContestModule.Apis
             [FromRoute] int cid,
             [FromQuery] bool @public)
         {
-            if (!Contest.StartTime.HasValue || Contest.Kind == 2)
+            if (!Contest.StartTime.HasValue
+                || Contest.Kind == CcsDefaults.KindProblemset
+                || Contest.RankingStrategy != CcsDefaults.RuleXCPC)
                 return null;
+
             var scb = await Context.GetScoreboardAsync();
             var affs = await Context.ListAffiliationsAsync();
             var orgs = await Context.ListCategoriesAsync();
@@ -43,7 +47,7 @@ namespace SatelliteSite.ContestModule.Apis
                 UpdateTime = scb.RefreshTime,
                 Problems = probs,
                 IsPublic = @public,
-                Categories = orgs,
+                Categories = orgs.Values.Where(c => c.IsPublic).ToDictionary(a => a.Id),
                 ContestId = Contest.Id,
                 RankingStrategy = Contest.RankingStrategy,
                 Affiliations = affs,
@@ -63,12 +67,12 @@ namespace SatelliteSite.ContestModule.Apis
                     Problems = opt.Select(i => MakeProblem(t.Problems[i], probs[i]))
                 });
 
-            var maxEventId = await Context.GetMaxEventIdAsync();
+            var maxEvent = await Context.GetMaxEventAsync();
             return new Scoreboard
             {
-                Time = Contest.StartTime.Value,
-                ContestTime = DateTimeOffset.Now - Contest.StartTime.Value,
-                EventId = $"{maxEventId}",
+                Time = AbstractEvent.TrimToMilliseconds(maxEvent.EventTime),
+                ContestTime = maxEvent.EventTime - Contest.StartTime.Value,
+                EventId = $"{maxEvent.Id}",
                 State = new State(Contest),
                 Rows = go,
             };
@@ -84,9 +88,9 @@ namespace SatelliteSite.ContestModule.Apis
                     Label = p.ShortName
                 };
             }
-            else if (s.Score.HasValue)
+            else
             {
-                return new Scoreboard.ProblemSolved
+                return new Scoreboard.Problem
                 {
                     FirstToSolve = s.IsFirstToSolve,
                     NumJudged = s.JudgedCount,
@@ -95,17 +99,6 @@ namespace SatelliteSite.ContestModule.Apis
                     Solved = s.Score.HasValue,
                     Label = p.ShortName,
                     Time = s.Score ?? 0
-                };
-            }
-            else
-            {
-                return new Scoreboard.Problem
-                {
-                    NumJudged = s.JudgedCount,
-                    NumPending = s.PendingCount,
-                    ProblemId = $"{p.ProblemId}",
-                    Solved = s.Score.HasValue,
-                    Label = p.ShortName,
                 };
             }
         }

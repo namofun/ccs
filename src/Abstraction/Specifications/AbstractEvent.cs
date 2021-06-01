@@ -11,11 +11,29 @@ namespace Ccs.Specifications
     /// </summary>
     public abstract class AbstractEvent
     {
+        public static DateTimeOffset TrimToMilliseconds(DateTimeOffset value)
+            => DateTimeOffset.FromUnixTimeMilliseconds(value.ToUnixTimeMilliseconds()).ToOffset(value.Offset);
+
+        private class CdsCompatibleDateTimeOffsetJsonConverter : JsonConverter<DateTimeOffset>
+        {
+            public override DateTimeOffset Read(
+                ref Utf8JsonReader reader,
+                Type typeToConvert,
+                JsonSerializerOptions options)
+                => throw new InvalidOperationException();
+
+            public override void Write(
+                Utf8JsonWriter writer,
+                DateTimeOffset value,
+                JsonSerializerOptions options)
+                => writer.WriteStringValue(TrimToMilliseconds(value));
+        }
+
         private static readonly JsonSerializerOptions _jsonOptions
             = new JsonSerializerOptions
             {
                 Encoder = JavaScriptEncoder.Create(UnicodeRanges.BasicLatin, UnicodeRanges.CjkUnifiedIdeographs),
-                Converters = { new TimeSpanJsonConverter() },
+                Converters = { new TimeSpanJsonConverter(), new CdsCompatibleDateTimeOffsetJsonConverter() },
             };
 
         /// <summary>
