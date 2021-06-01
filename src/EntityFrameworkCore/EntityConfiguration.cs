@@ -125,6 +125,12 @@ namespace Ccs.Entities
 
             entity.Property(e => e.TotalTimePublic)
                 .HasDefaultValue(0);
+
+            entity.Property(e => e.LastAcRestricted)
+                .HasDefaultValue(0);
+
+            entity.Property(e => e.LastAcPublic)
+                .HasDefaultValue(0);
         }
 
         public void Configure(EntityTypeBuilder<ScoreCache> entity)

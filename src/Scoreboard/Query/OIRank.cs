@@ -40,8 +40,10 @@ namespace Ccs.Scoreboard.Query
             => isPublic
                 ? source.OrderByDescending(a => a.RankCache.PointsPublic)
                     .ThenBy(a => a.RankCache.TotalTimePublic)
+                    .ThenBy(a => a.TeamName)
                 : source.OrderByDescending(a => a.RankCache.PointsRestricted)
-                    .ThenBy(a => a.RankCache.TotalTimeRestricted);
+                    .ThenBy(a => a.RankCache.TotalTimeRestricted)
+                    .ThenBy(a => a.TeamName);
 
 
         /// <inheritdoc />

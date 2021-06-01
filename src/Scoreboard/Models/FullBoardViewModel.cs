@@ -45,6 +45,7 @@ namespace Ccs.Models
             int last_rank = 0;
             int last_point = int.MinValue;
             int last_penalty = int.MinValue;
+            int last_ac = int.MinValue;
             var cats = new Dictionary<int, Category>();
             src = RankingSolver.Strategies[RankingStrategy].SortByRule(src, ispublic);
 
@@ -60,10 +61,12 @@ namespace Ccs.Models
 
                 int point = ispublic ? item.RankCache.PointsPublic : item.RankCache.PointsRestricted;
                 int penalty = ispublic ? item.RankCache.TotalTimePublic : item.RankCache.TotalTimeRestricted;
+                int lastac = ispublic ? item.RankCache.LastAcPublic : item.RankCache.LastAcRestricted;
                 rank++;
-                if (last_point != point || last_penalty != penalty) last_rank = rank;
+                if (last_point != point || last_penalty != penalty || last_ac != lastac) last_rank = rank;
                 last_point = point;
                 last_penalty = penalty;
+                last_ac = lastac;
 
                 var prob = new ScoreCellModel[Problems.Count];
 

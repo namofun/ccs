@@ -40,8 +40,12 @@ namespace Ccs.Scoreboard.Query
             => isPublic
                 ? source.OrderByDescending(a => a.RankCache.PointsPublic)
                     .ThenBy(a => a.RankCache.TotalTimePublic)
+                    .ThenBy(a => a.RankCache.LastAcPublic)
+                    .ThenBy(a => a.TeamName)
                 : source.OrderByDescending(a => a.RankCache.PointsRestricted)
-                    .ThenBy(a => a.RankCache.TotalTimeRestricted);
+                    .ThenBy(a => a.RankCache.TotalTimeRestricted)
+                    .ThenBy(a => a.RankCache.LastAcRestricted)
+                    .ThenBy(a => a.TeamName);
 
 
         /// <inheritdoc />
@@ -90,18 +94,23 @@ namespace Ccs.Scoreboard.Query
                 {
                     PointsRestricted    = 1,
                     TotalTimeRestricted = score + 20 * (s.SubmissionRestricted - 1),
+                    LastAcRestricted    = score,
+
 
                     PointsPublic    = showRestricted ? 0 : 1,
                     TotalTimePublic = showRestricted ? 0 : score + 20 * (s.SubmissionRestricted - 1),
+                    LastAcPublic    = showRestricted ? 0 : score,
                 },
 
                 update: (r, e) => new RankCache
                 {
                     PointsRestricted    = r.PointsRestricted    + e.PointsRestricted,
                     TotalTimeRestricted = r.TotalTimeRestricted + e.TotalTimeRestricted,
+                    LastAcRestricted    = r.LastAcRestricted > e.LastAcRestricted ? r.LastAcRestricted : e.LastAcRestricted,
 
                     PointsPublic    = r.PointsPublic    + e.PointsPublic,
                     TotalTimePublic = r.TotalTimePublic + e.TotalTimePublic,
+                    LastAcPublic    = showRestricted || r.LastAcPublic > e.LastAcPublic ? r.LastAcPublic : e.LastAcPublic,
                 });
         }
 
@@ -207,6 +216,7 @@ namespace Ccs.Scoreboard.Query
                     int penalty = (sc.SubmissionRestricted - 1) * 20 + sc.ScoreRestricted.Value;
                     rc.PointsRestricted++;
                     rc.TotalTimeRestricted += penalty;
+                    rc.LastAcRestricted = sc.ScoreRestricted.Value;
 
                     if (!fb.Contains((s.ProblemId, s.SortOrder)))
                     {
@@ -231,6 +241,7 @@ namespace Ccs.Scoreboard.Query
                         var rc = rcc[s.TeamId];
                         rc.PointsPublic = rc.PointsRestricted;
                         rc.TotalTimePublic = rc.TotalTimeRestricted;
+                        rc.LastAcPublic = rc.LastAcRestricted;
                     }
                 }
             }

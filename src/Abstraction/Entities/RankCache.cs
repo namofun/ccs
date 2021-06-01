@@ -31,6 +31,11 @@
         public int TotalTimeRestricted { get; set; }
 
         /// <summary>
+        /// The last accpeted time (Restricted)
+        /// </summary>
+        public int LastAcRestricted { get; set; }
+
+        /// <summary>
         /// The total points (Public)
         /// </summary>
         public int PointsPublic { get; set; }
@@ -39,5 +44,10 @@
         /// The penalty time (Public)
         /// </summary>
         public int TotalTimePublic { get; set; }
+
+        /// <summary>
+        /// The last accpeted time (Restricted)
+        /// </summary>
+        public int LastAcPublic { get; set; }
     }
 }

@@ -41,7 +41,8 @@ namespace Ccs.Scoreboard.Query
         /// <inheritdoc />
         public IEnumerable<IScoreboardRow> SortByRule(IEnumerable<IScoreboardRow> source, bool isPublic)
             => source.OrderByDescending(a => a.RankCache.PointsPublic)
-                .ThenBy(a => a.RankCache.TotalTimePublic);
+                .ThenBy(a => a.RankCache.TotalTimePublic)
+                .ThenBy(a => a.TeamName);
 
 
         /// <inheritdoc />
