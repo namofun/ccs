@@ -7,23 +7,29 @@
 
 <h2 class="mt-2">@ViewData["Title"]</h2>
 
-<div class="alert alert-info" asp-show-if="Contest.GetState() >= ContestState.Frozen">
+<div class="row" asp-show-if="Contest.GetState() >= ContestState.Frozen">
+<div class="col-12 col-lg-6">
+<div class="alert alert-info">
     <i class="fas fa-snowflake"></i>
-    Scoreboard of c@(Contest.Id) (@Contest.ShortName) is now frozen.
+    Scoreboard of @Contest.Name is now frozen.
+</div>
+</div>
 </div>
 
 <div class="table-wrapper">
-    <table class="data-table table table-sm table-striped" style="width:auto">
-        <thead class="">
+    <table class="data-table table table-sm table-striped table-hover" style="width:auto">
+        <thead class="thead-light">
             <tr>
                 <th scope="col" class="sortable searchable"></th>
                 <th scope="col" class="sortable searchable">ID</th>
                 <th scope="col" class="sortable searchable">time</th>
                 <th scope="col" class="sortable searchable">solved</th>
                 <th scope="col" class="sortable searchable">team</th>
-                <th scope="col" class="sortable searchable">loc.</th>
+                <th scope="col" class="sortable searchable">affiliation</th>
+                <th scope="col" class="sortable searchable">location</th>
                 <th scope="col" class="sortable searchable">category</th>
-                <th scope="col" class="sortable searchable">comments</th>
+                <th scope="col" class="sortable searchable">total</th>
+                <th scope="col" class="sortable searchable">awards</th>
                 <th scope="col"></th>
             </tr>
         </thead>
@@ -31,39 +37,19 @@
             @foreach (var ball in Model)
             {
                 <tr class="@(ball.Done ? "disabled" : "")">
-                    <td data-sort="@(ball.Done ? "1" : "0")"><i class="far fa-@(ball.Done ? "check-circle" : "hourglass")"></i></td>
+                    <td><i class="far fa-@(ball.Done ? "check-circle" : "hourglass")"></i></td>
                     <td>@ball.SubmissionId</td>
-                    <td data-sort="@ball.Time.ToUnixTimeSeconds()">@ball.Time.ToString("HH:mm")</td>
+                    <td>@ball.Time.ToString("HH:mm")</td>
                     <td><i style="color: @ball.BalloonColor" class="fas fa-golf-ball"></i> @ball.ProblemShortName</td>
                     <td>@ball.TeamName</td>
+                    <td title="@ball.AffiliationName">@ball.AffiliationShortName.ToUpper()</td>
                     <td>@ball.Location</td>
                     <td>@ball.CategoryName</td>
-                    <td><razor asp-show-if="ball.FirstToSolve">first to solve</razor></td>
+                    <td>@for (var b = ball; b != null; b = b.Previous) {<i style="color: @b.BalloonColor" class="fas fa-golf-ball"></i>}</td>
+                    <td><razor asp-show-if="ball.FirstToSolve">first for problem</razor></td>
                     <td><a asp-show-if="!ball.Done" asp-action="SetDone" asp-route-id="@ball.Id"><i class="fas fa-running"></i></a></td>
                 </tr>
             }
         </tbody>
     </table>
 </div>
-
-<script>
-    $().ready(function () {
-        $('.data-table').DataTable({
-            "paging": false,
-            "searching": true,
-            "ordering": true,
-            "order": [[0, 'asc']],
-            "info": false,
-            "autoWidth": true,
-            "language": {
-                "searchPlaceholder": "filter table",
-                "search": "_INPUT_",
-            },
-            'aoColumnDefs': [
-                { aTargets: ['sortable'], bSortable: true },
-                { aTargets: ['searchable'], bSearchable: true },
-                { aTargets: ['_all'], bSortable: false, bSearchable: false }
-            ],
-        });
-    });
-</script>

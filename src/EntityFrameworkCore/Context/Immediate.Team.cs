@@ -253,10 +253,9 @@ namespace Ccs.Services
                 .Where(t => t.ContestId == cid)
                 .ToLookupAsync(a => a.TeamId, a => a);
 
-            var teams = await Db.Teams
-                .Where(t => t.ContestId == cid && t.Status == 1)
-                .Select(t => new ScoreboardRow(t.TeamId, t.TeamName, t.CategoryId, t.AffiliationId))
-                .ToDictionaryAsync(
+            var rows1 = await GetScoreboardRowsAsync();
+
+            var teams = rows1.ToDictionary(
                     a => a.TeamId,
                     v => v.With(rankCaches.GetValueOrDefault(v.TeamId), scoreCaches[v.TeamId]));
 
@@ -413,7 +412,7 @@ namespace Ccs.Services
             int cid = Contest.Id;
             return Db.Teams
                 .Where(t => t.ContestId == cid && t.Status == 1)
-                .Select(t => new ScoreboardRow(t.TeamId, t.TeamName, t.CategoryId, t.AffiliationId))
+                .Select(t => new ScoreboardRow(t.TeamId, t.TeamName, t.CategoryId, t.AffiliationId, t.Location))
                 .ToListAsync();
         }
     }

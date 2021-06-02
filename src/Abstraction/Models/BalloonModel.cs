@@ -18,6 +18,11 @@ namespace Ccs.Models
         public int SubmissionId { get; }
 
         /// <summary>
+        /// The team ID
+        /// </summary>
+        public int TeamId { get; }
+
+        /// <summary>
         /// Whether the balloon has been handed out
         /// </summary>
         public bool Done { get; }
@@ -46,12 +51,22 @@ namespace Ccs.Models
         /// <summary>
         /// The team name
         /// </summary>
-        public string TeamName { get; }
+        public string TeamName { get; set; }
+
+        /// <summary>
+        /// The name of team affiliation
+        /// </summary>
+        public string AffiliationName { get; set; }
+
+        /// <summary>
+        /// The short name of team affiliation
+        /// </summary>
+        public string AffiliationShortName { get; set; }
 
         /// <summary>
         /// The name of team category
         /// </summary>
-        public string CategoryName { get; }
+        public string CategoryName { get; set; }
 
         /// <summary>
         /// Whether team is first to solve this problem
@@ -66,12 +81,17 @@ namespace Ccs.Models
         /// <summary>
         /// The location of team
         /// </summary>
-        public string Location { get; }
+        public string Location { get; set; }
 
         /// <summary>
         /// The sort order for this team
         /// </summary>
-        public int SortOrder { get; }
+        public int SortOrder { get; set; }
+
+        /// <summary>
+        /// The previous balloon
+        /// </summary>
+        public BalloonModel? Previous { get; set; }
 
         /// <summary>
         /// Instantiate a model for balloons.
@@ -84,25 +104,20 @@ namespace Ccs.Models
         /// <param name="done">Whether has been sent.</param>
         /// <param name="probid">The problem ID.</param>
         /// <param name="teamid">The team ID.</param>
-        /// <param name="teamName">The team name.</param>
-        /// <param name="teamLoc">The team location.</param>
         /// <param name="time">The submit time.</param>
-        /// <param name="catName">The category name.</param>
-        /// <param name="sortOrder">The sort order.</param>
-        public BalloonModel(
-            int bid, int submitid, bool done,
-            int probid, int teamid, string teamName, string? teamLoc,
-            DateTimeOffset time, string catName, int sortOrder)
+        public BalloonModel(int bid, int submitid, bool done, int probid, int teamid, DateTimeOffset time)
         {
             Id = bid;
             SubmissionId = submitid;
             Done = done;
-            TeamName = $"t{teamid}: {teamName}";
-            CategoryName = catName;
+            TeamId = teamid;
+            TeamName = $"t{teamid}";
             Time = time;
             ProblemId = probid;
-            Location = teamLoc ?? string.Empty;
-            SortOrder = sortOrder;
+            Location = string.Empty;
+            CategoryName = "Unknown";
+            AffiliationName = "Unknown";
+            AffiliationShortName = "UKE";
         }
     }
 }

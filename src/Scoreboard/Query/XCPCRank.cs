@@ -238,7 +238,6 @@ namespace Ccs.Scoreboard.Query
                     sc.SubmissionPublic = sc.SubmissionRestricted;
                     sc.IsCorrectPublic = sc.IsCorrectRestricted;
                     sc.ScorePublic = sc.ScoreRestricted;
-                    balloons.Add(s.SubmissionId);
 
                     if (s.Status == Verdict.Accepted)
                     {
@@ -246,6 +245,7 @@ namespace Ccs.Scoreboard.Query
                         rc.PointsPublic = rc.PointsRestricted;
                         rc.TotalTimePublic = rc.TotalTimeRestricted;
                         rc.LastAcPublic = rc.LastAcRestricted;
+                        balloons.Add(s.SubmissionId);
                     }
                 }
             }

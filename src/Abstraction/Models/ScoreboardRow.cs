@@ -31,6 +31,11 @@ namespace Ccs.Models
         int AffiliationId { get; }
 
         /// <summary>
+        /// The team location
+        /// </summary>
+        string? TeamLocation { get; }
+
+        /// <summary>
         /// The navigation to rank cache
         /// </summary>
         RankCache RankCache { get; }
@@ -67,12 +72,16 @@ namespace Ccs.Models
         /// <inheritdoc />
         public IEnumerable<ScoreCache> ScoreCache => _scoreCache ?? throw new InvalidOperationException();
 
-        public ScoreboardRow(int teamId, string teamName, int catId, int affId)
+        /// <inheritdoc />
+        public string? TeamLocation { get; }
+
+        public ScoreboardRow(int teamId, string teamName, int catId, int affId, string? location)
         {
             TeamId = teamId;
             TeamName = teamName;
             CategoryId = catId;
             AffiliationId = affId;
+            TeamLocation = location;
         }
 
         public IScoreboardRow With(RankCache? rankCache, IEnumerable<ScoreCache>? scoreCache)

@@ -28,6 +28,8 @@ namespace SatelliteSite.ContestModule.Models
 
         public IEnumerable<ScoreCache> ScoreCache { get; set; }
 
+        public string TeamLocation => null;
+
         protected override IEnumerable<SortOrderModel> GetEnumerable()
         {
             yield return new SortOrderModel(GetSingleScore(), null);
