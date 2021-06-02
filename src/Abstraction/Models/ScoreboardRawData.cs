@@ -1,4 +1,5 @@
 ﻿using Ccs.Entities;
+using System;
 using System.Collections.Generic;
 
 namespace Ccs.Models
@@ -24,13 +25,23 @@ namespace Ccs.Models
         public IEnumerable<ScoreCache> ScoreCache { get; }
 
         /// <summary>
+        /// The addition balloons
+        /// </summary>
+        public IEnumerable<int> AdditionBalloon { get; }
+
+        /// <summary>
         /// Initialize the raw data.
         /// </summary>
-        public ScoreboardRawData(int cid, IEnumerable<RankCache> ranks, IEnumerable<ScoreCache> scores)
+        public ScoreboardRawData(
+            int cid,
+            IEnumerable<RankCache> ranks,
+            IEnumerable<ScoreCache> scores,
+            IEnumerable<int>? balloons = null)
         {
             ContestId = cid;
             RankCache = ranks;
             ScoreCache = scores;
+            AdditionBalloon = balloons ?? Array.Empty<int>();
         }
     }
 }

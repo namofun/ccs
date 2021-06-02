@@ -96,7 +96,6 @@ namespace Ccs.Scoreboard.Query
                     TotalTimeRestricted = score + 20 * (s.SubmissionRestricted - 1),
                     LastAcRestricted    = score,
 
-
                     PointsPublic    = showRestricted ? 0 : 1,
                     TotalTimePublic = showRestricted ? 0 : score + 20 * (s.SubmissionRestricted - 1),
                     LastAcPublic    = showRestricted ? 0 : score,
@@ -112,6 +111,9 @@ namespace Ccs.Scoreboard.Query
                     TotalTimePublic = r.TotalTimePublic + e.TotalTimePublic,
                     LastAcPublic    = showRestricted || r.LastAcPublic > e.LastAcPublic ? r.LastAcPublic : e.LastAcPublic,
                 });
+
+            if (showRestricted || !contest.Settings.BalloonAvailable) return;
+            await store.CreateBalloonAsync(args.Judging.SubmissionId);
         }
 
 
@@ -182,6 +184,7 @@ namespace Ccs.Scoreboard.Query
             var scc = new Dictionary<(int, int), ScoreCache>();
             var fb = new HashSet<(int, int)>();
             var oks = new List<int>();
+            var balloons = new List<int>();
 
             foreach (var s in results)
             {
@@ -235,6 +238,7 @@ namespace Ccs.Scoreboard.Query
                     sc.SubmissionPublic = sc.SubmissionRestricted;
                     sc.IsCorrectPublic = sc.IsCorrectRestricted;
                     sc.ScorePublic = sc.ScoreRestricted;
+                    balloons.Add(s.SubmissionId);
 
                     if (s.Status == Verdict.Accepted)
                     {
@@ -246,7 +250,8 @@ namespace Ccs.Scoreboard.Query
                 }
             }
 
-            return new ScoreboardRawData(cid, rcc.Values, scc.Values);
+            if (!args.Contest.Settings.BalloonAvailable) balloons.Clear();
+            return new ScoreboardRawData(cid, rcc.Values, scc.Values, balloons);
         }
     }
 }

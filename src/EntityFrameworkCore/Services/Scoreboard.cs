@@ -142,19 +142,22 @@ namespace Ccs.Services
             return Db.Set<ScoreCache>().UpsertAsync(insert, update);
         }
 
-        public async Task RefreshAsync(int cid, IEnumerable<RankCache> ranks, IEnumerable<ScoreCache> scores)
+        public async Task RefreshAsync(ScoreboardRawData data)
         {
+            int cid = data.ContestId;
             await Db.Set<ScoreCache>().Where(s => s.ContestId == cid).BatchDeleteAsync();
             await Db.Set<RankCache>().Where(s => s.ContestId == cid).BatchDeleteAsync();
 
-            Db.Set<ScoreCache>().AddRange(scores);
-            Db.Set<RankCache>().AddRange(ranks);
+            Db.Set<ScoreCache>().AddRange(data.ScoreCache);
+            Db.Set<RankCache>().AddRange(data.RankCache);
             await Db.SaveChangesAsync();
-        }
 
-        public Task RefreshAsync(ScoreboardRawData data)
-        {
-            return RefreshAsync(data.ContestId, data.RankCache, data.ScoreCache);
+            if (data.AdditionBalloon != null && data.AdditionBalloon.Any())
+            {
+                await Db.Set<Balloon>().UpsertAsync(
+                    data.AdditionBalloon.Select(b => new { sid = b }),
+                    b => new Balloon { SubmissionId = b.sid, Done = false });
+            }
         }
 
         public Task CreateBalloonAsync(int id)

@@ -31,6 +31,8 @@ namespace Ccs.Entities
 
             entity.HasKey(e => e.Id);
 
+            entity.HasAlternateKey(e => e.SubmissionId);
+
             entity.HasOne<Submission>()
                 .WithMany()
                 .HasForeignKey(e => e.SubmissionId)
