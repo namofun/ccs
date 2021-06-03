@@ -53,7 +53,15 @@ namespace SatelliteSite.ContestModule.Routing
             var ctx = await _factory.CreateAsync(cid, context.RequestServices);
             feature.Contextualize(ctx);
             context.Features.Set<IContestFeature>(feature);
-            if (feature.Context != null) context.Items[nameof(cid)] = cid;
+
+            if (feature.Context != null)
+            {
+                context.Items[nameof(cid)] = cid;
+
+                // the event of contest state change
+                await ctx.EnsureLastStateAsync();
+            }
+
             await _next(context);
         }
     }

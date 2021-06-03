@@ -92,11 +92,12 @@ namespace Ccs.Services
             if (state != lastState) await WriteLastStateAsync(state, lastState);
         }
 
-        public Task EmitEventAsync(Specifications.AbstractEvent @event, string action)
+        public async Task EmitEventAsync(Specifications.AbstractEvent @event, string action)
         {
-            if (Contest.Kind != CcsDefaults.KindDom || !Contest.Settings.EventAvailable) return Task.CompletedTask;
+            if (Contest.Kind != CcsDefaults.KindDom || !Contest.Settings.EventAvailable) return;
+            await EnsureLastStateAsync();
             Db.ContestEvents.Add(@event.ToEvent(action, Contest.Id));
-            return Db.SaveChangesAsync();
+            await Db.SaveChangesAsync();
         }
 
         public async Task EmitEventAsync(EventBatch events)

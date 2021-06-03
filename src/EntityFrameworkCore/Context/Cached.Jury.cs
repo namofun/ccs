@@ -52,6 +52,7 @@ namespace Ccs.Services
             Expire("Core");
             Expire("Languages");
             Expire("IpRanges");
+            Expire("State");
 
             // The other occurrence is in Factory.cs
             var @new = await CacheAsync("Core", _options.Contest,

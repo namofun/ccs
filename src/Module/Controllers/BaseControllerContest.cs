@@ -81,10 +81,6 @@ namespace SatelliteSite.ContestModule.Controllers
             ActionExecutingContext context, ActionExecutionDelegate next)
         {
             _accessor = HttpContext.Features.Get<IContestFeature>();
-
-            // the event of contest state change
-            await _accessor.Context.EnsureLastStateAsync();
-
             if (!Contest.IsPublic && !_accessor.JuryLevel.HasValue && !_accessor.HasTeam)
             {
                 context.Result = NotFound();
