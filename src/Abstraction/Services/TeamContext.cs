@@ -40,6 +40,27 @@ namespace Ccs.Services
         Task<Category?> FindCategoryAsync(int id, bool filtered = true);
 
         /// <summary>
+        /// Deletes the specified category.
+        /// </summary>
+        /// <param name="category">The category entity.</param>
+        /// <returns>The task for deleting category.</returns>
+        Task DeleteCategoryAsync(Category category);
+
+        /// <summary>
+        /// Creates an category.
+        /// </summary>
+        /// <param name="category">The category entity.</param>
+        /// <returns>The task for creating category.</returns>
+        Task<Category> CreateCategoryAsync(Category category);
+
+        /// <summary>
+        /// Updates an category.
+        /// </summary>
+        /// <param name="category">The category entity.</param>
+        /// <returns>The task for updating category.</returns>
+        Task UpdateCategoryAsync(Category category);
+
+        /// <summary>
         /// Gets the team members as a lookup dictionary.
         /// </summary>
         /// <returns>The task for getting this lookup.</returns>

@@ -257,6 +257,11 @@ namespace Ccs.Entities
 
             entity.Property(e => e.UnfreezeTimeSeconds)
                 .HasColumnName("UnfreezeTime");
+
+            entity.HasMany<Category>()
+                .WithOne()
+                .HasForeignKey(c => c.ContestId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
 
         public void Configure(EntityTypeBuilder<Member> entity)

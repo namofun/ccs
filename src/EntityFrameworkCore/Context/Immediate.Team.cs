@@ -57,25 +57,28 @@ namespace Ccs.Services
 
         public virtual Task<Affiliation?> FindAffiliationAsync(int id, bool filtered = true)
         {
+            int cid = Contest.Id;
             return Db.Affiliations
                 .Where(a => a.Id == id)
-                .WhereIf(filtered, a => Db.Teams.Select(a => a.AffiliationId).Contains(a.Id))
+                .WhereIf(filtered, a => Db.Teams.Where(t => t.TeamId == cid).Select(t => t.AffiliationId).Contains(a.Id))
                 .FirstOrDefaultAsync()!;
         }
 
         public virtual Task<Affiliation?> FindAffiliationAsync(string id, bool filtered = true)
         {
+            int cid = Contest.Id;
             return Db.Affiliations
                 .Where(a => a.Abbreviation == id)
-                .WhereIf(filtered, a => Db.Teams.Select(a => a.AffiliationId).Contains(a.Id))
+                .WhereIf(filtered, a => Db.Teams.Where(t => t.TeamId == cid).Select(t => t.AffiliationId).Contains(a.Id))
                 .FirstOrDefaultAsync()!;
         }
 
         public virtual Task<Category?> FindCategoryAsync(int id, bool filtered = true)
         {
+            int cid = Contest.Id;
             return Db.Categories
-                .Where(a => a.Id == id)
-                .WhereIf(filtered, a => Db.Teams.Select(a => a.CategoryId).Contains(a.Id))
+                .Where(a => a.Id == id && (a.ContestId == null || a.ContestId == cid))
+                .WhereIf(filtered, a => Db.Teams.Where(t => t.TeamId == cid).Select(t => t.CategoryId).Contains(a.Id))
                 .FirstOrDefaultAsync()!;
         }
 
@@ -124,7 +127,9 @@ namespace Ccs.Services
                         .Select(a => a.CategoryId)
                         .Contains(a.Id));
             else
-                results = await Get<ICategoryStore>().ListAsync();
+                results = await Get<ICategoryStore>().ListAsync(
+                    a => a.ContestId == null ||
+                         a.ContestId == cid);
 
             return results.ToDictionary(a => a.Id);
         }
@@ -414,6 +419,44 @@ namespace Ccs.Services
                 .Where(t => t.ContestId == cid && t.Status == 1)
                 .Select(t => new ScoreboardRow(t.TeamId, t.TeamName, t.CategoryId, t.AffiliationId, t.Location))
                 .ToListAsync();
+        }
+
+        public virtual Task DeleteCategoryAsync(Category category)
+        {
+            if (category.ContestId != Contest.Id)
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+
+            return Get<ICategoryStore>().DeleteAsync(category);
+        }
+
+        public virtual Task<Category> CreateCategoryAsync(Category category)
+        {
+            if (category.ContestId != Contest.Id)
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+
+            return Get<ICategoryStore>().CreateAsync(category);
+        }
+
+        public virtual Task UpdateCategoryAsync(Category category)
+        {
+            if (category.ContestId != Contest.Id)
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+
+            return Get<ICategoryStore>().UpdateAsync(
+                category.Id,
+                _ => new Category
+                {
+                    Color = category.Color,
+                    IsPublic = category.IsPublic,
+                    Name = category.Name,
+                    SortOrder = category.SortOrder,
+                });
         }
     }
 }

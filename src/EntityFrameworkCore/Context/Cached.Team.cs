@@ -188,5 +188,27 @@ namespace Ccs.Services
             var allowed = await GetVisibleTenantsAsync();
             return tenants.Any(a => allowed.Contains(a));
         }
+
+        public override async Task<Category> CreateCategoryAsync(Category category)
+        {
+            var c = await base.CreateCategoryAsync(category);
+            Expire("Teams::Categories(Filtered=True)");
+            Expire("Teams::Categories(Filtered=False)");
+            return c;
+        }
+
+        public override async Task DeleteCategoryAsync(Category category)
+        {
+            await base.DeleteCategoryAsync(category);
+            Expire("Teams::Categories(Filtered=True)");
+            Expire("Teams::Categories(Filtered=False)");
+        }
+
+        public override async Task UpdateCategoryAsync(Category category)
+        {
+            await base.UpdateCategoryAsync(category);
+            Expire("Teams::Categories(Filtered=True)");
+            Expire("Teams::Categories(Filtered=False)");
+        }
     }
 }

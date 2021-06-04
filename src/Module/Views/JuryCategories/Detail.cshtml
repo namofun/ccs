@@ -32,6 +32,11 @@
     </div>
 </div>
 
+<p>
+    <a asp-action="Edit" class="btn btn-primary" title="Edit"><i class="fas fa-edit"></i>&nbsp;Edit</a>
+    <a asp-action="Delete" class="btn btn-danger" title="Delete" data-toggle="ajaxWindow" data-target="deleteCategory"><i class="fas fa-trash-alt"></i>&nbsp;Delete</a>
+</p>
+
 @if (Model.Teams.Any())
 {
 <h3>Teams</h3>
@@ -47,7 +52,7 @@
 <tbody>
 @foreach (var team in Model.Teams)
 {
-    <tr asp-action="Detail" asp-route-teamid="@team.TeamId">
+    <tr asp-controller="JuryTeams" asp-action="Detail" asp-route-teamid="@team.TeamId">
         <td use-a>@team.TeamId</td>
         <td use-a>@team.TeamName</td>
     </tr>

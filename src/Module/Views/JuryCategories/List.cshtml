@@ -3,7 +3,7 @@
     ViewData["Title"] = "Categories";
 }
 
-<h2 class="mt-2">@ViewData["Title"]</h2>
+<h2 class="mt-2 mb-3">@ViewData["Title"]</h2>
 
 <div class="table-wrapper">
     <table class="data-table table table-sm table-striped" style="width:auto">
@@ -12,9 +12,10 @@
                 <th scope="col" class="sortable searchable">ID</th>
                 <th scope="col" class="sortable searchable">sort</th>
                 <th scope="col" class="sortable searchable">name</th>
-                <th scope="col" class="sortable searchable">color</th>
                 <th scope="col" class="sortable">visible</th>
                 <th scope="col" class="sortable"># teams</th>
+                <th></th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -23,14 +24,19 @@
                 <tr asp-action="Detail" asp-route-catid="@cat.Id" role="row" data-target="gotoUrl">
                     <td use-a>@cat.Id</td>
                     <td use-a>@cat.SortOrder</td>
-                    <td use-a>@cat.Name</td>
-                    <td style="background:@cat.Color" use-a>@cat.Color</td>
+                    <td style="background:@cat.Color" use-a>@cat.Name</td>
                     <td use-a>@(cat.IsPublic ? "yes" : "no")</td>
                     <td use-a>@Model.TeamCount.GetValueOrDefault(cat.Id)</td>
+                    <td><a asp-action="Edit" asp-route-catid="@cat.Id"><i class="fas fa-edit"></i></a></td>
+                    <td><a asp-action="Delete" asp-route-catid="@cat.Id" data-toggle="ajaxWindow" data-target="delete"><i class="fas fa-trash-alt"></i></a></td>
                 </tr>
             }
         </tbody>
     </table>
+</div>
+
+<div class="d-none" id="global-switcher-src">
+    <a asp-area="Dashboard" asp-controller="Categories" asp-action="List" class="btn btn-sm btn-outline-secondary">→ Common</a>
 </div>
 
 <script>
@@ -39,7 +45,7 @@
             "paging": false,
             "searching": true,
             "ordering": true,
-            "order": [[5, 'desc']],
+            "order": [[4, 'desc'], [1, 'asc']],
             "info": false,
             "autoWidth": true,
             "language": {
@@ -52,9 +58,12 @@
                 { aTargets: ['_all'], bSortable: false, bSearchable: false }
             ],
         });
+
+        $('.dataTables_wrapper .row:first-child .col-md-6:first-child').html($('#global-switcher-src').html());
     });
 </script>
 
-<h3 class="mt-3">Related links</h3>
-<p class="mb-2"><a asp-controller="Jury" asp-action="Edit">Change the team registration category</a></p>
-<p class="mb-2"><a asp-area="Dashboard" asp-controller="Categories" asp-action="List" class="@(User.IsInRole("Administrator") ? "" : "disabled")">Edit the categories</a></p>
+<p>
+    <a asp-action="Add" class="btn btn-primary" title="Add"><i class="fas fa-edit"></i> Add new category</a>
+    <a asp-controller="Jury" asp-action="Edit" class="btn btn-info"><i class="fas fa-magic"></i> Self registration</a>
+</p>
