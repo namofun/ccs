@@ -139,7 +139,7 @@
             </tr>
         </table>
 
-        <p>
+        <p asp-show-if="Contest.IsJury">
             <a asp-action="Edit" class="btn btn-primary"><i class="fas fa-edit"></i> Edit</a>
             <a asp-action="Description" class="btn btn-info"><i class="fab fa-markdown"></i> Description</a>
         </p>
@@ -173,7 +173,7 @@
             </tbody>
         </table>
     </div>
-    <div class="col-lg-4 col-xxl-3">
+    <div class="col-lg-4 col-xxl-3" asp-show-if="Contest.IsJury">
         <div class="card mb-3">
             <div class="card-header">
                 Related links

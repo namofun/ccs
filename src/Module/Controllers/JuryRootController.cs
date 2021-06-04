@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace SatelliteSite.ContestModule.Controllers
 {
     [Area("Contest")]
-    [Authorize(Policy = "ContestIsJury")]
+    [Authorize(Policy = "ContestIsBalloonRunner")]
     [Route("[area]/{cid:c(7)}/[controller]")]
     public class JuryController : JuryControllerBase<IJuryContext>
     {
@@ -29,6 +29,7 @@ namespace SatelliteSite.ContestModule.Controllers
 
 
         [HttpGet("/[area]/{cid:c(1)}/[controller]/[action]")]
+        [Authorize(Policy = "ContestIsJury")]
         public Task<IActionResult> Scoreboard(
             [FromQuery(Name = "affiliations[]")] int[] affiliations,
             [FromQuery(Name = "categories[]")] int[] categories,
@@ -64,6 +65,7 @@ namespace SatelliteSite.ContestModule.Controllers
 
 
         [HttpGet("[action]")]
+        [Authorize(Policy = "ContestIsJury")]
         public async Task<IActionResult> Auditlog(int page = 1)
         {
             if (page <= 0) return NotFound();
@@ -229,6 +231,7 @@ namespace SatelliteSite.ContestModule.Controllers
 
 
         [HttpGet("[action]")]
+        [Authorize(Policy = "ContestIsJury")]
         public async Task<IActionResult> Edit()
         {
             ViewBag.Categories = await Context.ListCategoriesAsync(false);
@@ -240,6 +243,7 @@ namespace SatelliteSite.ContestModule.Controllers
         [HttpPost("[action]")]
         [ValidateAntiForgeryToken]
         [AuditPoint(AuditlogType.Contest)]
+        [Authorize(Policy = "ContestIsJury")]
         public async Task<IActionResult> Edit(JuryEditModel model)
         {
             // check the category id
@@ -362,6 +366,7 @@ namespace SatelliteSite.ContestModule.Controllers
 
 
         [HttpGet("[action]")]
+        [Authorize(Policy = "ContestIsJury")]
         public async Task<IActionResult> Description()
         {
             var content = await Context.GetReadmeAsync(true);
@@ -372,6 +377,7 @@ namespace SatelliteSite.ContestModule.Controllers
         [HttpPost("[action]")]
         [ValidateAntiForgeryToken]
         [AuditPoint(AuditlogType.Contest)]
+        [Authorize(Policy = "ContestIsJury")]
         public async Task<IActionResult> Description(JuryMarkdownModel model)
         {
             model.Markdown ??= "";
@@ -387,6 +393,7 @@ namespace SatelliteSite.ContestModule.Controllers
 
 
         [HttpGet("/[area]/{cid:c(3)}/jury/import-export")]
+        [Authorize(Policy = "ContestIsJury")]
         public IActionResult ImportExport()
             => View();
     }

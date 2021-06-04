@@ -10,6 +10,7 @@ using SatelliteSite;
 using SatelliteSite.ContestModule.Routing;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using JuryLevel = Ccs.Entities.JuryLevel;
 
 [assembly: RoleDefinition(30, "CDS", "cds_api", "CDS API user")]
 [assembly: RoleDefinition(31, "ContestCreator", "cont", "Contest Creator")]
@@ -124,7 +125,20 @@ namespace SatelliteSite.ContestModule
                     .HasTitle("fas fa-address-book", "Teams")
                     .HasIdentifier("menu_teams")
                     .HasBadge("teams", BootstrapColor.warning)
+                    .RequireThat(ctx => Feature(ctx).JuryLevel >= JuryLevel.Jury)
                     .ActiveWhenController("JuryTeams");
+
+                menu.HasEntry(150)
+                    .HasLink("Contest", "JuryBalloons", "List")
+                    .HasTitle("fas fa-map-marker-alt", "Balloons")
+                    .ActiveWhenController("JuryBalloons")
+                    .RequireThat(ctx => Feature(ctx).Settings.BalloonAvailable && Feature(ctx).JuryLevel == JuryLevel.BalloonRunner);
+
+                menu.HasEntry(160)
+                    .HasLink("Contest", "JuryPrintings", "List")
+                    .HasTitle("fas fa-file-alt", "Printings")
+                    .ActiveWhenController("JuryPrintings")
+                    .RequireThat(ctx => Feature(ctx).Settings.PrintingAvailable && Feature(ctx).JuryLevel == JuryLevel.BalloonRunner);
 
                 menu.HasEntry(200)
                     .HasLink("Contest", "JuryClarifications", "List")
@@ -132,11 +146,12 @@ namespace SatelliteSite.ContestModule
                     .HasIdentifier("menu_clarifications")
                     .HasBadge("clarifications", BootstrapColor.info)
                     .ActiveWhenController("JuryClarifications")
-                    .RequireThat(ctx => Feature(ctx).Kind != CcsDefaults.KindProblemset);
+                    .RequireThat(ctx => Feature(ctx).Kind != CcsDefaults.KindProblemset && Feature(ctx).JuryLevel >= JuryLevel.Jury);
 
                 menu.HasEntry(300)
                     .HasLink("Contest", "JurySubmissions", "List")
                     .HasTitle("fas fa-file-code", "Submissions")
+                    .RequireThat(ctx => Feature(ctx).JuryLevel >= JuryLevel.Jury)
                     .ActiveWhenController("JurySubmissions");
 
                 menu.HasEntry(400)
@@ -145,13 +160,13 @@ namespace SatelliteSite.ContestModule
                     .HasIdentifier("menu_rejudgings")
                     .HasBadge("rejudgings", BootstrapColor.info)
                     .ActiveWhenController("JuryRejudgings")
-                    .RequireThat(ctx => Feature(ctx).Kind != CcsDefaults.KindProblemset);
+                    .RequireThat(ctx => Feature(ctx).Kind != CcsDefaults.KindProblemset && Feature(ctx).JuryLevel >= JuryLevel.Jury);
 
                 menu.HasEntry(500)
                     .HasLink("Contest", "Jury", "Scoreboard")
                     .HasTitle("fas fa-list-ol", "Scoreboard")
                     .ActiveWhenAction("Scoreboard")
-                    .RequireThat(ctx => Feature(ctx).Kind == CcsDefaults.KindDom);
+                    .RequireThat(ctx => Feature(ctx).Kind == CcsDefaults.KindDom && Feature(ctx).JuryLevel >= JuryLevel.Jury);
 
                 menu.HasEntry(600)
                     .HasLink("Contest", "DomTeam", "Home")
@@ -207,7 +222,7 @@ namespace SatelliteSite.ContestModule
                 menu.HasEntry(600)
                     .HasLink("Contest", "Jury", "Home")
                     .HasTitle("fas fa-arrow-right", "Jury")
-                    .RequireThat(ctx => Feature(ctx).IsJury);
+                    .RequireThat(ctx => Feature(ctx).JuryLevel.HasValue);
 
                 menu.HasEntry(601)
                     .HasLink("Contest", "DomTeam", "Home")
@@ -241,7 +256,7 @@ namespace SatelliteSite.ContestModule
                 menu.HasEntry(600)
                     .HasLink("Contest", "Jury", "Home")
                     .HasTitle("fas fa-arrow-right", "Jury")
-                    .RequireThat(ctx => Feature(ctx).IsJury);
+                    .RequireThat(ctx => Feature(ctx).JuryLevel.HasValue);
             });
 
             menus.Menu(CcsDefaults.NavbarProblemset, menu =>
@@ -408,13 +423,13 @@ namespace SatelliteSite.ContestModule
 
         public void RegisterPolicies(IAuthorizationPolicyContainer container)
         {
-            var balloon = new ContestJuryRequirement(Ccs.Entities.JuryLevel.BalloonRunner);
-            var jury = new ContestJuryRequirement(Ccs.Entities.JuryLevel.Jury);
-            var admin = new ContestJuryRequirement(Ccs.Entities.JuryLevel.Administrator);
+            var balloon = new ContestJuryRequirement(JuryLevel.BalloonRunner);
+            var jury = new ContestJuryRequirement(JuryLevel.Jury);
+            var admin = new ContestJuryRequirement(JuryLevel.Administrator);
             var team = new ContestTeamRequirement();
             var visible = new ContestVisibleRequirement();
 
-            container.AddPolicy("ContestIsBalloonRunner", b => b.AddRequirements(jury));
+            container.AddPolicy("ContestIsBalloonRunner", b => b.AddRequirements(balloon));
             container.AddPolicy("ContestIsJury", b => b.AddRequirements(jury));
             container.AddPolicy("ContestIsAdministrator", b => b.AddRequirements(admin));
             container.AddPolicy("ContestVisible", b => b.AddRequirements(visible));
