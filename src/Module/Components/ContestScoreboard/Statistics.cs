@@ -16,7 +16,7 @@ namespace SatelliteSite.ContestModule.Components.ContestScoreboard
 
         public static void WriteTo(ProblemStatisticsModel[] model, int tot, TextWriter writer, HtmlEncoder encoder)
         {
-            writer.Write("<tr style=\"border-top: 2px solid black;\">");
+            writer.Write("<tr class=\"sortorder_summary\">");
             writer.Write("<td id=\"scoresummary\" title=\"Summary\" colspan=\"4\">Summary</td>");
             writer.Write("<td title=\"total solved\" class=\"scorenc\">");
             writer.Write(tot);
