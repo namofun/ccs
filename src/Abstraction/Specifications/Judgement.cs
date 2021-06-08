@@ -63,12 +63,17 @@ namespace Ccs.Specifications
         [JsonPropertyName("valid")]
         public bool Valid { get; }
 
+        /// <summary>
+        /// Whether to override the time in rejudgings
+        /// </summary>
+        private readonly DateTimeOffset? _fakeTime;
+
         /// <inheritdoc />
         protected override string EndpointType => "judgements";
 
         /// <inheritdoc />
         protected override DateTimeOffset GetTime(string action) =>
-            (action == "create" ? StartTime : EndTime!).Value;
+            _fakeTime ?? (action == "create" ? StartTime : EndTime!).Value;
 
         /// <summary>
         /// Construct a <see cref="Judgement"/>.
@@ -76,8 +81,10 @@ namespace Ccs.Specifications
         /// <param name="j">The judging entity.</param>
         /// <param name="contestTime">The contest start time.</param>
         /// <param name="verdict">The verdict to use instead.</param>
-        public Judgement(Polygon.Entities.Judging j, DateTimeOffset contestTime, Polygon.Entities.Verdict? verdict = null)
+        /// <param name="fakeTime">The fake event time for rejudgings.</param>
+        public Judgement(Polygon.Entities.Judging j, DateTimeOffset contestTime, Polygon.Entities.Verdict? verdict = null, DateTimeOffset? fakeTime = null)
         {
+            _fakeTime = fakeTime;
             Id = $"{j.Id}";
             SubmissionId = $"{j.SubmissionId}";
             JudgementTypeId = JudgementType.For(verdict ?? j.Status);

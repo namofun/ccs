@@ -191,7 +191,6 @@ namespace Ccs.Entities
                 .IsUnicode(false);
 
             entity.Property(e => e.Content)
-                .HasMaxLength(2048)
                 .IsRequired();
         }
 
