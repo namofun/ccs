@@ -68,6 +68,7 @@ namespace SatelliteSite.ContestModule.Apis
                 });
 
             var maxEvent = await Context.GetMaxEventAsync();
+            maxEvent ??= new Ccs.Entities.Event { EventTime = DateTimeOffset.Now };
             return new Scoreboard
             {
                 Time = AbstractEvent.TrimToMilliseconds(maxEvent.EventTime),
