@@ -52,6 +52,8 @@ namespace Ccs.Scoreboard.Query
         /// <remarks>The race condition caused by FirstToSolve query can be ignored. FirstToSolve field isn't important.</remarks>
         public async Task Accept(IScoreboard store, IContestInformation contest, JudgingFinishedEvent args)
         {
+            var penaltyTime = contest.Settings.PenaltyTime ?? 20;
+
             bool fb = await store.IsFirstToSolveAsync(
                 cid: args.ContestId!.Value,
                 teamid: args.TeamId,
@@ -93,11 +95,11 @@ namespace Ccs.Scoreboard.Query
                 insert: s => new RankCache
                 {
                     PointsRestricted    = 1,
-                    TotalTimeRestricted = score + 20 * (s.SubmissionRestricted - 1),
+                    TotalTimeRestricted = score + penaltyTime * (s.SubmissionRestricted - 1),
                     LastAcRestricted    = score,
 
                     PointsPublic    = showRestricted ? 0 : 1,
-                    TotalTimePublic = showRestricted ? 0 : score + 20 * (s.SubmissionRestricted - 1),
+                    TotalTimePublic = showRestricted ? 0 : score + penaltyTime * (s.SubmissionRestricted - 1),
                     LastAcPublic    = showRestricted ? 0 : score,
                 },
 
@@ -179,6 +181,7 @@ namespace Ccs.Scoreboard.Query
         public async Task<ScoreboardRawData> RefreshCache(IScoreboard store, ScoreboardRefreshEvent args)
         {
             int cid = args.Contest.Id;
+            var penaltyTime = args.Contest.Settings.PenaltyTime ?? 20;
             var results = await store.FetchSolutionsAsync(cid, args.Deadline);
             var rcc = new Dictionary<int, RankCache>();
             var scc = new Dictionary<(int, int), ScoreCache>();
@@ -216,7 +219,7 @@ namespace Ccs.Scoreboard.Query
                     sc.ScoreRestricted = timee < 0 ? -(((int)-timee) / 60) : ((int)timee) / 60;
                     oks.Add(s.SubmissionId);
 
-                    int penalty = (sc.SubmissionRestricted - 1) * 20 + sc.ScoreRestricted.Value;
+                    int penalty = (sc.SubmissionRestricted - 1) * penaltyTime + sc.ScoreRestricted.Value;
                     rc.PointsRestricted++;
                     rc.TotalTimeRestricted += penalty;
                     rc.LastAcRestricted = sc.ScoreRestricted.Value;

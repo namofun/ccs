@@ -48,6 +48,10 @@ namespace Ccs.Entities
         [JsonPropertyName("restrict-ip-range")]
         public string[]? IpRanges { get; set; }
 
+        /// <inheritdoc />
+        [JsonPropertyName("penalty-time")]
+        public int? PenaltyTime { get; set; }
+
         /// <summary>
         /// Parse the settings out from the <paramref name="settingsJson"/>.
         /// </summary>
@@ -72,6 +76,7 @@ namespace Ccs.Entities
                 StatusAvailable = StatusAvailable,
                 RestrictIp = RestrictIp,
                 IpRanges = IpRanges,
+                PenaltyTime = PenaltyTime,
             };
         }
 

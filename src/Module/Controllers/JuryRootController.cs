@@ -310,6 +310,11 @@ namespace SatelliteSite.ContestModule.Controllers
                 | (model.RestrictToMinimalSite ? 2 : 0)
                 | (model.RestrictToLastLoginIp ? 4 : 0);
 
+            var penaltyTime =
+                Contest.RankingStrategy == CcsDefaults.RuleXCPC
+                && model.PenaltyTime != 20
+                ? model.PenaltyTime : default(int?);
+
             var settings = Contest.Settings.Clone();
             settings.BalloonAvailable = model.UseBalloon;
             settings.EventAvailable = model.UseEvents;
@@ -317,6 +322,7 @@ namespace SatelliteSite.ContestModule.Controllers
             settings.PrintingAvailable = model.UsePrintings;
             settings.RegisterCategory = defaultCat;
             settings.StatusAvailable = model.StatusAvailable;
+            settings.PenaltyTime = penaltyTime;
             settings.RestrictIp = restriction == 0 ? default(int?) : restriction;
             settings.IpRanges = model.IpRanges?.Split(';', StringSplitOptions.RemoveEmptyEntries);
             var settingsJson = settings.ToString();

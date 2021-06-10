@@ -48,6 +48,10 @@ namespace SatelliteSite.ContestModule.Models
         [DisplayName("Status availability")]
         public int StatusAvailable { get; set; }
 
+        [DisplayName("Penalty Time")]
+        [Range(0, 100)]
+        public int PenaltyTime { get; set; }
+
         [Required]
         [DisplayName("Shortname")]
         public string ShortName { get; set; }
@@ -96,6 +100,7 @@ namespace SatelliteSite.ContestModule.Models
             UseEvents = cont.Settings.EventAvailable;
             StatusAvailable = cont.Settings.StatusAvailable;
             Languages = cont.Settings.Languages;
+            PenaltyTime = cont.Settings.PenaltyTime ?? 20;
             RegisterCategory = cont.Settings.RegisterCategory ?? new Dictionary<string, int>();
 
             if (cont.Settings.RestrictIp.HasValue)

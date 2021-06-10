@@ -78,6 +78,14 @@ namespace Ccs.Models
         string[]? IpRanges { get; }
 
         /// <summary>
+        /// The penalty time for XCPC rules
+        /// </summary>
+        /// <remarks>
+        /// Defaults to 20min if null.
+        /// </remarks>
+        int? PenaltyTime { get; }
+
+        /// <summary>
         /// Clone a copy of this settings.
         /// </summary>
         /// <remarks>This is not a performance-significant function.</remarks>

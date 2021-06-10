@@ -90,6 +90,10 @@
                     <label class="custom-control-label" asp-for="UseEvents"></label>
                 </div>
             </div>
+            <div class="form-group" asp-show-if="Contest.Kind != CcsDefaults.KindProblemset && Contest.RankingStrategy == CcsDefaults.RuleXCPC">
+                <label asp-for="PenaltyTime"></label>
+                <input type="number" asp-for="PenaltyTime" class="form-control" />
+            </div>
             <div class="form-group" asp-show-if="Contest.Kind == CcsDefaults.KindDom">
                 <label>Access Restrictions</label>
                 <div class="custom-control custom-checkbox">

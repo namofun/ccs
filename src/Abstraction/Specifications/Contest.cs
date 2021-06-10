@@ -74,14 +74,14 @@ namespace Ccs.Specifications
         /// <param name="c">The contest entity.</param>
         public Contest(IContestInformation c)
         {
-            FormalName = c.Name ?? "Demo Contest via Project CCS";
-            Name = c.Name ?? "Demo Contest";
+            FormalName = c.Name ?? "(unnamed)";
+            Name = c.Name ?? "(unnamed)";
             ShortName = c.ShortName ?? "DOMjudge";
             Id = $"{c.Id}";
-            PenaltyTime = 20;
+            PenaltyTime = c.Settings.PenaltyTime ?? 20;
             StartTime = c.StartTime;
             EndTime = c.StartTime + c.EndTime;
-            Duration = EndTime - StartTime ?? TimeSpan.FromHours(5);
+            Duration = c.EndTime ?? TimeSpan.FromHours(5);
             ScoreboardFreezeDuration = c.EndTime - c.FreezeTime;
         }
     }
