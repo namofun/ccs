@@ -7,11 +7,11 @@ namespace Ccs.Models
     {
         readonly IEnumerable<TeamModel> _inner;
 
-        public ProblemStatisticsModel[] Statistics { get; }
+        public ProblemStatisticsModel[]? Statistics { get; }
 
         public SortOrderModel(
             IEnumerable<TeamModel> items,
-            ProblemStatisticsModel[] stats)
+            ProblemStatisticsModel[]? stats)
         {
             _inner = items;
             Statistics = stats;

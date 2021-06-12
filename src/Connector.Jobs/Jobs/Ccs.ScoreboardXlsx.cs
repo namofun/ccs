@@ -104,21 +104,13 @@ namespace Ccs.Connector.Jobs
 
                 var affs = await context.ListAffiliationsAsync();
                 var orgs = await context.ListCategoriesAsync();
-                var scb = new ScoreboardModel(teams, orgs, affs, RankingSolver.Select(contest));
                 var probs = await context.ListProblemsAsync();
+                var scb = new ScoreboardModel(contest.Id, teams, orgs, affs, probs, RankingSolver.Select(contest));
 
-                var board = new FullBoardViewModel
+                var board = new FullBoardViewModel(scb, false)
                 {
-                    UpdateTime = scb.RefreshTime,
-                    Problems = probs,
-                    IsPublic = false,
-                    Categories = orgs,
-                    ContestId = contest.Id,
-                    RankingStrategy = contest.RankingStrategy,
-                    Affiliations = affs,
-                    RankCache = scb.Data.Values
-                        .WhereIf(args.FilteredAffiliations != null, r => args.FilteredAffiliations.Contains(r.AffiliationId))
-                        .WhereIf(args.FilteredCategories != null, r => args.FilteredCategories.Contains(r.CategoryId)),
+                    FilteredAffiliations = args.FilteredAffiliations?.ToHashSet(),
+                    FilteredCategories = args.FilteredCategories?.ToHashSet(),
                 };
 
                 logger.LogInformation("Data loaded.");

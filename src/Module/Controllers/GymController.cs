@@ -48,21 +48,8 @@ namespace SatelliteSite.ContestModule.Controllers
             if (TooEarly && !Contest.IsJury) return NotStarted();
             if (page <= 0) return BadRequest();
             var scb = await Context.GetScoreboardAsync();
-            var orgs = await Context.ListCategoriesAsync();
-            var orgid = orgs.Values.Where(o => o.IsPublic).Select(a => a.Id).ToHashSet();
-
-            return View(new GymStandingViewModel
-            {
-                OrganizationIds = orgid,
-                CurrentPage = page,
-                RankCache = scb.Data.Values,
-                UpdateTime = scb.RefreshTime,
-                Problems = await Context.ListProblemsAsync(),
-                TeamMembers = await Context.GetTeamMembersAsync(),
-                Statistics = await Context.StatisticsGlobalAsync(),
-                ContestId = Contest.Id,
-                RankingStrategy = Contest.RankingStrategy,
-            });
+            var members = await Context.GetTeamMembersAsync();
+            return View(new GymStandingViewModel(scb, members));
         }
 
 

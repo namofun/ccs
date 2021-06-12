@@ -261,13 +261,14 @@ namespace Ccs.Services
             var rows1 = await GetScoreboardRowsAsync();
             var affs = await ListAffiliationsAsync(true);
             var cats = await ListCategoriesAsync(true);
+            var probs = await ListProblemsAsync();
 
             var teams = rows1.ToDictionary(
                     a => a.TeamId,
                     v => v.With(rankCaches.GetValueOrDefault(v.TeamId), scoreCaches[v.TeamId]));
 
             var rules = Get<IReadOnlyList<Scoreboard.IRankingStrategy>>();
-            return new ScoreboardModel(teams, cats, affs, rules[Contest.RankingStrategy]);
+            return new ScoreboardModel(Contest.Id, teams, cats, affs, probs, rules[Contest.RankingStrategy]);
         }
 
         public virtual async Task<IReadOnlyDictionary<int, (int, int)>> StatisticsAsync(Team? team)

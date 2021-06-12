@@ -35,21 +35,26 @@
     <br />
 
     <div class="card-deck">
-        @foreach (var (_, grp) in Model.Categories)
-        {
-            <div class="card" style="font-family: Roboto, sans-serif;">
-                <div class="card-header">@grp.Name</div>
-                <div class="card-body">
-                    <ul class="list-group list-group-flush">
-                        @foreach (var affid in Model.RankCache.Where(g => g.CategoryId == grp.Id).Select(g => g.AffiliationId).Distinct())
-                        {
-                            var aff = Model.Affiliations.Values.SingleOrDefault(a => a.Id == affid);
-                            <li class="list-group-item">@aff?.Name</li>
-                        }
-                    </ul>
-                </div>
+@foreach (var sortOrder in Model.RankCaches)
+{
+    foreach (var category in Model.Categories.Values)
+    {
+        if (category.SortOrder != sortOrder.Key || !category.IsPublic) { continue; }
+        var used_affs = sortOrder.Where(r => r.CategoryId == category.Id).Select(r => r.AffiliationId).ToHashSet();
+        if (used_affs.Count == 0) { continue; }
+        <div class="card" style="font-family: Roboto, sans-serif;">
+            <div class="card-header">@category.Name</div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    @foreach (var affid in used_affs)
+                    {
+                        <li class="list-group-item">@Model.Affiliations.GetValueOrDefault(affid)?.Name</li>
+                    }
+                </ul>
             </div>
-        }
+        </div>
+    }
+}
     </div>
 }
 else

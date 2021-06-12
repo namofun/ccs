@@ -36,6 +36,15 @@ namespace Ccs.Scoreboard.Query
     public class OIRank : IRankingStrategy
     {
         /// <inheritdoc />
+        public int Id => 1;
+
+        /// <inheritdoc />
+        public string Name => "OI";
+
+        /// <inheritdoc />
+        public string FullName => "IOI";
+
+        /// <inheritdoc />
         public IEnumerable<IScoreboardRow> SortByRule(IEnumerable<IScoreboardRow> source, bool isPublic)
             => isPublic
                 ? source.OrderByDescending(a => a.RankCache.PointsPublic)

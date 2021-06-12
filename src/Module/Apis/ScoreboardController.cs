@@ -37,25 +37,8 @@ namespace SatelliteSite.ContestModule.Apis
                 return null;
 
             var scb = await Context.GetScoreboardAsync();
-            var affs = await Context.ListAffiliationsAsync();
-            var orgs = await Context.ListCategoriesAsync();
-            var probs = await Context.ListProblemsAsync();
-
-            var board = new FullBoardViewModel
-            {
-                RankCache = scb.Data.Values,
-                UpdateTime = scb.RefreshTime,
-                Problems = probs,
-                IsPublic = @public,
-                Categories = orgs.Values.Where(c => c.IsPublic).ToDictionary(a => a.Id),
-                ContestId = Contest.Id,
-                RankingStrategy = Contest.RankingStrategy,
-                Affiliations = affs,
-            };
-
-            var opt = new int[probs.Count];
-            for (int i = 0; i < probs.Count; i++)
-                opt[i] = i;
+            var board = new FullBoardViewModel(scb, @public, !@public);
+            var probs = board.Problems;
 
             var go = board
                 .SelectMany(a => a)
@@ -64,7 +47,7 @@ namespace SatelliteSite.ContestModule.Apis
                     Rank = t.Rank.Value,
                     TeamId = $"{t.TeamId}",
                     Score = new Scoreboard.Score(t.Points, t.Penalty),
-                    Problems = opt.Select(i => MakeProblem(t.Problems[i], probs[i]))
+                    Problems = Enumerable.Range(0, probs.Count).Select(i => MakeProblem(t.Problems[i], probs[i]))
                 });
 
             var maxEvent = await Context.GetMaxEventAsync();

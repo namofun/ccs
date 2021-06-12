@@ -1,135 +1,78 @@
-﻿#nullable disable
-using Ccs.Entities;
-using Ccs.Scoreboard;
+﻿#nullable enable
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Tenant.Entities;
 
 namespace Ccs.Models
 {
     public class FullBoardViewModel : BoardViewModel
     {
-        public DateTimeOffset UpdateTime { get; set; }
+        public DateTimeOffset UpdateTime { get; }
 
-        public IEnumerable<IScoreboardRow> RankCache { get; set; }
+        public SortOrderLookup RankCaches { get; }
 
-        public IReadOnlyDictionary<int, Category> Categories { get; set; }
+        public IReadOnlyDictionary<int, Category> Categories { get; }
 
-        public IReadOnlyDictionary<int, Affiliation> Affiliations { get; set; }
+        public IReadOnlyDictionary<int, Affiliation> Affiliations { get; }
 
-        public bool IsPublic { get; set; }
+        public HashSet<int>? FilteredAffiliations { get; set; }
 
-        protected override IEnumerable<SortOrderModel> GetEnumerable()
+        public HashSet<int>? FilteredCategories { get; set; }
+
+        public bool IsPublic { get; }
+
+        public bool ShowHiddenCategories { get; }
+
+        public FullBoardViewModel(ScoreboardModel scoreboard, bool isPublic, bool showHidden = true)
+            : base(scoreboard.ContestId, scoreboard.RankingStrategy, scoreboard.Problems)
         {
-            var rt = RankCache
-                .Where(a => Categories.ContainsKey(a.CategoryId))
-                .GroupBy(a => Categories[a.CategoryId].SortOrder)
-                .OrderBy(g => g.Key);
+            UpdateTime = scoreboard.RefreshTime;
+            Categories = scoreboard.Categories;
+            Affiliations = scoreboard.Affiliations;
+            IsPublic = isPublic;
+            RankCaches = isPublic ? scoreboard.Public : scoreboard.Restricted;
+            ShowHiddenCategories = showHidden;
+        }
 
-            foreach (var g in rt)
+        public override IEnumerator<SortOrderModel> GetEnumerator()
+        {
+            foreach (var src in RankCaches)
             {
                 var prob = new ProblemStatisticsModel[Problems.Count];
                 for (int i = 0; i < Problems.Count; i++)
                     prob[i] = new ProblemStatisticsModel();
-                yield return new SortOrderModel(GetViewModel(IsPublic, g, prob), prob);
-            }
-        }
 
-        private IEnumerable<TeamModel> GetViewModel(
-            bool ispublic,
-            IEnumerable<IScoreboardRow> src,
-            ProblemStatisticsModel[] stat)
-        {
-            int rank = 0;
-            int last_rank = 0;
-            int last_point = int.MinValue;
-            int last_penalty = int.MinValue;
-            int last_ac = int.MinValue;
-            var cats = new Dictionary<int, Category>();
-            src = RankingSolver.Strategies[RankingStrategy].SortByRule(src, ispublic);
-
-            foreach (var item in src)
-            {
-                int catid = item.CategoryId;
-                string catName = null;
-                if (!cats.Keys.Contains(catid))
+                var teams = new List<TeamModel>();
+                int rank = 0, last_rank = 0;
+                (int point, int penalty, int lastac) last = (int.MinValue, int.MinValue, int.MinValue);
+                foreach (var item in src)
                 {
-                    cats.Add(catid, Categories[catid]);
-                    catName = Categories[catid].Name;
+                    if (!Affiliations.ContainsKey(item.AffiliationId)
+                        || !Categories.ContainsKey(item.CategoryId)
+                        || (FilteredAffiliations?.Contains(item.AffiliationId) ?? false)
+                        || (FilteredCategories?.Contains(item.CategoryId) ?? false)
+                        || (!Categories[item.CategoryId].IsPublic && !ShowHiddenCategories))
+                        continue;
+
+                    var team = CreateTeamViewModel(
+                        item,
+                        Affiliations[item.AffiliationId],
+                        Categories[item.CategoryId],
+                        IsPublic,
+                        prob);
+
+                    rank++;
+                    var now = (team.Points, team.Penalty, team.LastAc);
+                    if (last != now) (last_rank, last) = (rank, now);
+
+                    team.ContestId = IsPublic ? default(int?) : ContestId;
+                    team.Rank = last_rank;
+                    team.ShowRank = last_rank == rank;
+                    teams.Add(team);
                 }
 
-                int point = ispublic ? item.RankCache.PointsPublic : item.RankCache.PointsRestricted;
-                int penalty = ispublic ? item.RankCache.TotalTimePublic : item.RankCache.TotalTimeRestricted;
-                int lastac = ispublic ? item.RankCache.LastAcPublic : item.RankCache.LastAcRestricted;
-                rank++;
-                if (last_point != point || last_penalty != penalty || last_ac != lastac) last_rank = rank;
-                last_point = point;
-                last_penalty = penalty;
-                last_ac = lastac;
-
-                var prob = new ScoreCellModel[Problems.Count];
-
-                foreach (var pp in item.ScoreCache)
-                {
-                    var p = Problems.Find(pp.ProblemId);
-                    if (p == null) continue;
-                    var pid = p.Rank - 1;
-
-                    if (ispublic)
-                    {
-                        prob[pid] = new ScoreCellModel
-                        {
-                            PendingCount = pp.PendingPublic,
-                            IsFirstToSolve = pp.FirstToSolve,
-                            JudgedCount = pp.SubmissionPublic,
-                            Score = pp.ScorePublic,
-                            SolveTime = pp.SolveTimePublic,
-                        };
-                    }
-                    else
-                    {
-                        prob[pid] = new ScoreCellModel
-                        {
-                            PendingCount = pp.PendingRestricted,
-                            IsFirstToSolve = pp.FirstToSolve,
-                            JudgedCount = pp.SubmissionRestricted,
-                            Score = pp.ScoreRestricted,
-                            SolveTime = pp.SolveTimeRestricted,
-                        };
-                    }
-
-                    if (prob[pid].Score.HasValue)
-                    {
-                        stat[pid].FirstSolve ??= prob[pid].Score;
-                        stat[pid].Accepted++;
-                        stat[pid].Rejected += prob[pid].JudgedCount - 1;
-                        stat[pid].Pending += prob[pid].PendingCount;
-                    }
-                    else
-                    {
-                        stat[pid].Rejected += prob[pid].JudgedCount;
-                        stat[pid].Pending += prob[pid].PendingCount;
-                    }
-                }
-
-                var aff = Affiliations.TryGetValue(item.AffiliationId, out var __aff) ? __aff : null;
-
-                yield return new TeamModel
-                {
-                    ContestId = IsPublic ? default(int?) : ContestId,
-                    TeamId = item.TeamId,
-                    TeamName = item.TeamName,
-                    Affiliation = aff?.Name ?? "",
-                    AffiliationId = aff?.Abbreviation ?? "null",
-                    Category = catName,
-                    CategoryColor = cats[catid].Color,
-                    Points = point,
-                    Penalty = penalty,
-                    Rank = last_rank,
-                    ShowRank = last_rank == rank,
-                    Problems = prob,
-                };
+                if (teams.Count == 0) continue;
+                yield return new SortOrderModel(teams, prob);
             }
         }
     }

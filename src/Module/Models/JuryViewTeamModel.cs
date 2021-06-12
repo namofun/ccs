@@ -1,4 +1,4 @@
-﻿#nullable disable
+﻿#nullable enable
 using Ccs.Entities;
 using Ccs.Models;
 using Polygon.Models;
@@ -7,72 +7,80 @@ using Tenant.Entities;
 
 namespace SatelliteSite.ContestModule.Models
 {
-    public class JuryViewTeamModel : BoardViewModel, IScoreboardRow
+    public class JuryViewTeamModel
     {
-        public List<Solution> Solutions { get; set; }
+        public IReadOnlyList<Solution> Solutions { get; }
 
-        public Category Category { get; set; }
+        public Category Category { get; }
 
-        public Affiliation Affiliation { get; set; }
+        public Affiliation Affiliation { get; }
 
-        public List<TeamMemberModel> Members { get; set; }
+        public IReadOnlyList<TeamMemberModel> Members { get; }
 
-        public int TeamId { get; set; }
+        public int Status { get; }
 
-        public string TeamName { get; set; }
+        public int TeamId { get; }
 
-        public int Kind { get; set; }
+        public string TeamName { get; }
 
-        public int Status { get; set; }
+        public string? TeamLocation { get; }
 
-        public int CategoryId => Category.Id;
+        public BoardViewModel? Board { get; }
 
-        public int AffiliationId => Affiliation.Id;
-
-        public RankCache RankCache { get; set; }
-
-        public IEnumerable<ScoreCache> ScoreCache { get; set; }
-
-        public string TeamLocation => null;
-
-        protected override IEnumerable<SortOrderModel> GetEnumerable()
+        public JuryViewTeamModel(
+            Team team,
+            Category category,
+            Affiliation affiliation,
+            IReadOnlyList<TeamMemberModel> members,
+            IReadOnlyList<Solution> solutions,
+            ScoreboardModel scoreboard)
         {
-            yield return new SortOrderModel(GetSingleScore(), null);
+            Solutions = solutions;
+            Category = category;
+            Affiliation = affiliation;
+            Members = members;
+            Status = team.Status;
+            TeamId = team.TeamId;
+            TeamName = team.TeamName;
+            TeamLocation = team.Location;
+
+            if (scoreboard.Data.ContainsKey(TeamId))
+            {
+                Board = new TinyBoard(scoreboard, TeamId, category, affiliation);
+            }
         }
 
-        private IEnumerable<TeamModel> GetSingleScore()
+        private class TinyBoard : BoardViewModel
         {
-            var prob = new ScoreCellModel[Problems.Count];
+            private readonly IScoreboardRow _row;
+            private readonly Category _category;
+            private readonly Affiliation _affiliation;
 
-            foreach (var pp in ScoreCache)
+            public TinyBoard(
+                ScoreboardModel scb,
+                int teamid,
+                Category category,
+                Affiliation affiliation)
+                : base(scb.ContestId,
+                      scb.RankingStrategy,
+                      scb.Problems)
             {
-                var p = Problems.Find(pp.ProblemId);
-                if (p == null) continue;
-                var pid = p.Rank - 1;
-
-                prob[pid] = new ScoreCellModel
-                {
-                    PendingCount = pp.PendingRestricted,
-                    IsFirstToSolve = pp.FirstToSolve,
-                    JudgedCount = pp.SubmissionRestricted,
-                    Score = pp.ScoreRestricted,
-                    SolveTime = pp.SolveTimeRestricted,
-                };
+                _row = scb.Data[teamid];
+                _category = category;
+                _affiliation = affiliation;
             }
 
-            yield return new TeamModel
+            public override IEnumerator<SortOrderModel> GetEnumerator()
             {
-                TeamId = TeamId,
-                TeamName = TeamName,
-                Affiliation = Affiliation.Name,
-                AffiliationId = Affiliation.Abbreviation,
-                Category = Category.Name,
-                CategoryColor = Category.Color,
-                Points = RankCache.PointsRestricted,
-                Penalty = RankCache.TotalTimeRestricted,
-                ShowRank = true,
-                Problems = prob,
-            };
+                yield return new SortOrderModel(GetSingleScore(), null);
+            }
+
+            private IEnumerable<TeamModel> GetSingleScore()
+            {
+                var team = CreateTeamViewModel(_row, _affiliation, _category, false);
+                team.ShowRank = true;
+                yield return team;
+            }
         }
     }
 }

@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using SatelliteSite.ContestModule.Models;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SatelliteSite.ContestModule.Controllers
@@ -65,12 +64,8 @@ namespace SatelliteSite.ContestModule.Controllers
         public async Task<IActionResult> Home()
         {
             var scb = await Context.GetScoreboardAsync();
-            var bq = scb.Data.GetValueOrDefault(Contest.Team.TeamId);
-            var cats = await Context.ListCategoriesAsync();
-            var affs = await Context.ListAffiliationsAsync();
-            var probs = await Context.ListProblemsAsync();
-
             int teamid = Contest.Team.TeamId;
+
             var clars = await Context.ListClarificationsAsync(
                 c => (c.Sender == null && c.Recipient == null)
                 || c.Recipient == teamid || c.Sender == teamid);
@@ -88,20 +83,7 @@ namespace SatelliteSite.ContestModule.Controllers
                     ProblemId = s.ProblemId,
                 });
 
-            return View(new TeamHomeViewModel
-            {
-                RankCache = bq.RankCache,
-                ScoreCache = bq.ScoreCache,
-                TeamId = bq.TeamId,
-                TeamName = bq.TeamName,
-                ContestId = Contest.Id,
-                RankingStrategy = Contest.RankingStrategy,
-                Problems = probs,
-                Affiliation = affs[bq.AffiliationId],
-                Category = cats[bq.CategoryId],
-                Clarifications = clars,
-                Submissions = submits,
-            });
+            return View(new TeamHomeViewModel(scb, teamid, clars, submits));
         }
 
 

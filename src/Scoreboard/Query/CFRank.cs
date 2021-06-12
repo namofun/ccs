@@ -39,6 +39,15 @@ namespace Ccs.Scoreboard.Query
     public class CFRank : IRankingStrategy
     {
         /// <inheritdoc />
+        public int Id => 2;
+
+        /// <inheritdoc />
+        public string Name => "CF";
+
+        /// <inheritdoc />
+        public string FullName => "Codeforces";
+
+        /// <inheritdoc />
         public IEnumerable<IScoreboardRow> SortByRule(IEnumerable<IScoreboardRow> source, bool isPublic)
             => source.OrderByDescending(a => a.RankCache.PointsPublic)
                 .ThenBy(a => a.RankCache.TotalTimePublic)

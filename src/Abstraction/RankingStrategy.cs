@@ -14,6 +14,21 @@ namespace Ccs.Scoreboard
     public interface IRankingStrategy
     {
         /// <summary>
+        /// The ID of this rule
+        /// </summary>
+        int Id { get; }
+
+        /// <summary>
+        /// The name of this rule
+        /// </summary>
+        string Name { get; }
+
+        /// <summary>
+        /// The full name of this rule
+        /// </summary>
+        string FullName { get; }
+
+        /// <summary>
         /// Sort the teams with correct rules.
         /// </summary>
         /// <param name="source">The source team scoreboard information.</param>

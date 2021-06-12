@@ -2,16 +2,18 @@
 @{
     ViewData["Title"] = "Standings";
     var state = Contest.GetState();
-    var sortOrder = Model.Single();
+    var stat = new ProblemStatisticsModel[Model.Problems.Count];
+    for (int i = 0; i < Model.Problems.Count; i++) stat[i] = new ProblemStatisticsModel();
+    bool firstSortOrder = true;
 }
 
 @functions {
-    void ShowRow(TeamModel row)
+    void ShowRow(TeamModel row, bool firstSortOrder)
     {
         WriteLiteral("<tr data-team-id=\"");
         Write(row.TeamId);
         WriteLiteral("\"><td scope=\"row\">");
-        Write(row.Rank);
+        Write(firstSortOrder ? row.Rank?.ToString() : "*");
         WriteLiteral("</td><td class=\"text-left\"><a class=\"font-weight-semibold\">");
         Write(row.TeamName);
         WriteLiteral("</a>");
@@ -80,12 +82,27 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var row in sortOrder) { ShowRow(row); }
+        @foreach (var sortOrder in Model)
+        {
+            foreach (var row in sortOrder)
+            {
+                ShowRow(row, firstSortOrder);
+            }
+
+            firstSortOrder = false;
+            for (int i = 0; i < Model.Problems.Count; i++)
+            {
+                stat[i].Accepted += sortOrder.Statistics[i].Accepted;
+                stat[i].FirstSolve ??= sortOrder.Statistics[i].FirstSolve;
+                stat[i].Pending += sortOrder.Statistics[i].Pending;
+                stat[i].Rejected += sortOrder.Statistics[i].Rejected;
+            }
+        }
     </tbody>
     <tfoot>
         <tr>
             <td colspan="3" class="text-left"><span class="text-success">Accepted</span><br>Tried</td>
-            @foreach (var item in sortOrder.Statistics)
+            @foreach (var item in stat)
             {
                 <td style="width: 6.25%"><span class="text-success">@item.Accepted</span><br>@(item.Accepted + item.Rejected)</td>
             }

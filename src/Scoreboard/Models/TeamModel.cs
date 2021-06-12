@@ -26,6 +26,8 @@ namespace Ccs.Models
 
         public int Penalty { get; set; }
 
+        public int LastAc { get; set; }
+
         public ScoreCellModel[] Problems { get; set; }
     }
 }

@@ -1,5 +1,4 @@
-﻿#nullable disable
-using Ccs.Entities;
+﻿#nullable enable
 using System.Collections;
 using System.Collections.Generic;
 
@@ -7,22 +6,89 @@ namespace Ccs.Models
 {
     public abstract class BoardViewModel : IEnumerable<SortOrderModel>
     {
-        public int ContestId { get; set; }
+        public int ContestId { get; }
 
-        public int RankingStrategy { get; set; }
+        public int RankingStrategy { get; }
 
-        public HashSet<(string, string)> ShowCategory { get; private set; }
+        public ProblemCollection Problems { get; }
 
-        public ProblemCollection Problems { get; set; }
-
-        protected abstract IEnumerable<SortOrderModel> GetEnumerable();
-
-        public IEnumerator<SortOrderModel> GetEnumerator()
-        {
-            ShowCategory = new HashSet<(string, string)>();
-            return GetEnumerable().GetEnumerator();
-        }
+        public abstract IEnumerator<SortOrderModel> GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+        protected TeamModel CreateTeamViewModel(
+            IScoreboardRow row,
+            Tenant.Entities.Affiliation? aff,
+            Tenant.Entities.Category? cat,
+            bool ispublic,
+            ProblemStatisticsModel[]? stat = null)
+        {
+            var prob = new ScoreCellModel[Problems.Count];
+
+            foreach (var pp in row.ScoreCache)
+            {
+                var p = Problems.Find(pp.ProblemId);
+                if (p == null) continue;
+                var pid = p.Rank - 1;
+
+                if (ispublic)
+                {
+                    prob[pid] = new ScoreCellModel
+                    {
+                        PendingCount = pp.PendingPublic,
+                        IsFirstToSolve = pp.FirstToSolve,
+                        JudgedCount = pp.SubmissionPublic,
+                        Score = pp.ScorePublic,
+                        SolveTime = pp.SolveTimePublic,
+                    };
+                }
+                else
+                {
+                    prob[pid] = new ScoreCellModel
+                    {
+                        PendingCount = pp.PendingRestricted,
+                        IsFirstToSolve = pp.FirstToSolve,
+                        JudgedCount = pp.SubmissionRestricted,
+                        Score = pp.ScoreRestricted,
+                        SolveTime = pp.SolveTimeRestricted,
+                    };
+                }
+
+                if (stat == null) continue;
+                if (prob[pid].Score.HasValue)
+                {
+                    if (prob[pid].IsFirstToSolve) stat[pid].FirstSolve ??= prob[pid].Score;
+                    stat[pid].Accepted++;
+                    stat[pid].Rejected += prob[pid].JudgedCount - 1;
+                    stat[pid].Pending += prob[pid].PendingCount;
+                }
+                else
+                {
+                    stat[pid].Rejected += prob[pid].JudgedCount;
+                    stat[pid].Pending += prob[pid].PendingCount;
+                }
+            }
+
+            return new TeamModel
+            {
+                TeamId = row.TeamId,
+                TeamName = row.TeamName,
+                Affiliation = aff?.Name ?? "",
+                AffiliationId = aff?.Abbreviation ?? "null",
+                Category = cat?.Name ?? "",
+                CategoryColor = cat?.Color ?? "#ffffff",
+                Points = ispublic ? row.RankCache.PointsPublic : row.RankCache.PointsRestricted,
+                Penalty = ispublic ? row.RankCache.TotalTimePublic : row.RankCache.TotalTimeRestricted,
+                LastAc = ispublic ? row.RankCache.LastAcPublic : row.RankCache.LastAcRestricted,
+                Problems = prob,
+            };
+        }
+
+        protected BoardViewModel(int cid, int rule, ProblemCollection problems)
+        {
+            ContestId = cid;
+            RankingStrategy = rule;
+            Problems = problems;
+        }
     }
 }

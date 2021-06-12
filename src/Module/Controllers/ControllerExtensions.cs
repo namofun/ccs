@@ -70,41 +70,21 @@ namespace SatelliteSite.ContestModule.Controllers
                 throw new NotSupportedException();
             }
 
-            var probs = await that.Context.ListProblemsAsync();
-            var scb = await that.Context.GetScoreboardAsync();
-            var affs = await that.Context.ListAffiliationsAsync();
-            var orgs = await that.Context.ListCategoriesAsync();
-
-            if (!isJury)
-            {
-                orgs = orgs.Values.Where(o => o.IsPublic).ToDictionary(c => c.Id);
-            }
-
-            var board = new FullBoardViewModel
-            {
-                RankCache = scb.Data.Values,
-                UpdateTime = scb.RefreshTime,
-                Problems = probs,
-                IsPublic = isPublic && !isJury,
-                Categories = orgs,
-                ContestId = that.Contest.Id,
-                RankingStrategy = that.Contest.RankingStrategy,
-                Affiliations = affs,
-            };
-
             if (clear) filtered_categories = filtered_affiliations = Array.Empty<int>();
+            var scb = await that.Context.GetScoreboardAsync();
+            var board = new FullBoardViewModel(scb, isPublic && !isJury, isJury);
 
             if (filtered_affiliations.Length > 0)
             {
                 var aff2 = filtered_affiliations.ToHashSet();
-                board.RankCache = board.RankCache.Where(t => aff2.Contains(t.AffiliationId));
+                board.FilteredAffiliations = aff2;
                 that.ViewData["Filter_affiliations"] = aff2;
             }
 
             if (filtered_categories.Length > 0)
             {
                 var cat2 = filtered_categories.ToHashSet();
-                board.RankCache = board.RankCache.Where(t => cat2.Contains(t.CategoryId));
+                board.FilteredCategories = cat2;
                 that.ViewData["Filter_categories"] = cat2;
             }
 

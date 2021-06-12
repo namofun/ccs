@@ -46,29 +46,11 @@ namespace SatelliteSite.ContestModule.Controllers
             if (team == null) return NotFound();
 
             var scb = await Context.GetScoreboardAsync();
-            var bq = scb.Data.GetValueOrDefault(teamid);
-            var cats = await Context.ListCategoriesAsync();
-            var affs = await Context.ListAffiliationsAsync();
+            var cat = await Context.FindCategoryAsync(team.CategoryId, false);
+            var aff = await Context.FindAffiliationAsync(team.AffiliationId, false);
             var sols = await Context.ListSolutionsAsync(teamid: teamid, all: all_submissions);
             var members = await Context.GetTeamMember2Async(team);
-
-            return View(new JuryViewTeamModel
-            {
-                ContestId = Contest.Id,
-                RankingStrategy = Contest.RankingStrategy,
-                Kind = Contest.Kind,
-                // For problemsets, don't show problems.
-                Problems = Contest.Kind == Ccs.CcsDefaults.KindProblemset ? null : await Context.ListProblemsAsync(),
-                Affiliation = affs[team.AffiliationId],
-                Category = cats[team.CategoryId],
-                Solutions = sols,
-                Members = members,
-                TeamId = team.TeamId,
-                TeamName = team.TeamName,
-                Status = team.Status,
-                ScoreCache = bq?.ScoreCache ?? Enumerable.Empty<ScoreCache>(),
-                RankCache = bq?.RankCache ?? RankCache.Empty,
-            });
+            return View(new JuryViewTeamModel(team, cat, aff, members, sols, scb));
         }
 
 

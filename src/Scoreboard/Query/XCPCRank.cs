@@ -36,6 +36,15 @@ namespace Ccs.Scoreboard.Query
     public class XCPCRank : IRankingStrategy
     {
         /// <inheritdoc />
+        public int Id => 0;
+
+        /// <inheritdoc />
+        public string Name => "XCPC";
+
+        /// <inheritdoc />
+        public string FullName => "ACM-ICPC";
+
+        /// <inheritdoc />
         public IEnumerable<IScoreboardRow> SortByRule(IEnumerable<IScoreboardRow> source, bool isPublic)
             => isPublic
                 ? source.OrderByDescending(a => a.RankCache.PointsPublic)

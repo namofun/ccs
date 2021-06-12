@@ -4,7 +4,6 @@ using Ccs.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SatelliteSite.ContestModule.Controllers;
-using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -26,22 +25,10 @@ namespace Ccs.Connector.OpenXml.Controllers
 
             if (!Contest.StartTime.HasValue) return BadRequest();
             var scb = await Context.GetScoreboardAsync();
-            var affs = await Context.ListAffiliationsAsync();
-            var orgs = await Context.ListCategoriesAsync();
-            var probs = await Context.ListProblemsAsync();
-
-            var board = new FullBoardViewModel
+            var board = new FullBoardViewModel(scb, false)
             {
-                UpdateTime = scb.RefreshTime,
-                Problems = probs,
-                IsPublic = false,
-                Categories = orgs,
-                ContestId = Contest.Id,
-                RankingStrategy = Contest.RankingStrategy,
-                Affiliations = affs,
-                RankCache = scb.Data.Values
-                    .WhereIf(affiliations != null, r => affiliations.Contains(r.AffiliationId))
-                    .WhereIf(categories != null, r => categories.Contains(r.CategoryId)),
+                FilteredAffiliations = affiliations?.ToHashSet(),
+                FilteredCategories = categories?.ToHashSet(),
             };
 
             using var workbook = OpenXmlScoreboard.Create(board, Contest.Name);

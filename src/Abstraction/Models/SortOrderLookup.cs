@@ -37,6 +37,7 @@ namespace Ccs.Models
             Scoreboard.IRankingStrategy sort)
             => _sortOrders = rows
                 .Select(g => new SortOrder(sort.SortByRule(g, isPublic).ToList(), g.Key))
+                .OrderBy(s => s.Key)
                 .ToDictionary(s => s.Key);
 
         public SortOrderLookup(

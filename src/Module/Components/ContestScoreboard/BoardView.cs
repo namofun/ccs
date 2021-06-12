@@ -22,6 +22,7 @@ namespace SatelliteSite.ContestModule.Components.ContestScoreboard
 
         public void WriteTo(TextWriter writer, HtmlEncoder encoder)
         {
+            var showCategory = new System.Collections.Generic.HashSet<(string, string)>();
             writer.WriteLine("<table class=\"scoreboard center\">");
             writer.WriteLine("<colgroup><col id=\"scorerank\"/><col/><col id=\"scorelogos\"/><col id=\"scoreteamname\"/></colgroup>");
             writer.WriteLine("<colgroup><col id=\"scoresolv\"/><col id=\"scoretotal\"/></colgroup>");
@@ -71,7 +72,7 @@ namespace SatelliteSite.ContestModule.Components.ContestScoreboard
                     totalPoints += team.Points;
                     TeamRow.WriteTo(team, writer, encoder, _inJury, _urlHelper);
                     if (team.Category != null)
-                        _model.ShowCategory.Add((team.CategoryColor, team.Category));
+                        showCategory.Add((team.CategoryColor, team.Category));
                 }
 
                 if (sortOrder.Statistics != null)
@@ -81,7 +82,7 @@ namespace SatelliteSite.ContestModule.Components.ContestScoreboard
 
             writer.Write("</table><style>");
 
-            foreach (var (color, _) in _model.ShowCategory)
+            foreach (var (color, _) in showCategory)
             {
                 writer.Write(".cl_");
                 writer.Write(color[1..]);
@@ -93,7 +94,7 @@ namespace SatelliteSite.ContestModule.Components.ContestScoreboard
             writer.WriteLine("</style>");
 
             if (_usefoot)
-                Footer.WriteTo(_model.ShowCategory, writer, encoder, _model.RankingStrategy);
+                Footer.WriteTo(showCategory, writer, encoder, _model.RankingStrategy);
         }
     }
 }
