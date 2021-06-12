@@ -86,6 +86,16 @@ namespace Ccs.Models
         int? PenaltyTime { get; }
 
         /// <summary>
+        /// Whether to enable scoreboard paging
+        /// </summary>
+        /// <remarks>
+        /// <list type="bullet">If this field is false, the scoreboard paging will be disabled.</list>
+        /// <list type="bullet">If this field is true, the scoreboard will display 100 entries per page.</list>
+        /// <list type="bullet">If this field is null, it will be determined by whether the number of teams exceeds 400.</list>
+        /// </remarks>
+        bool? ScoreboardPaging { get; set; }
+
+        /// <summary>
         /// Clone a copy of this settings.
         /// </summary>
         /// <remarks>This is not a performance-significant function.</remarks>

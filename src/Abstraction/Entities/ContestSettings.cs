@@ -52,6 +52,10 @@ namespace Ccs.Entities
         [JsonPropertyName("penalty-time")]
         public int? PenaltyTime { get; set; }
 
+        /// <inheritdoc />
+        [JsonPropertyName("scoreboard-paging")]
+        public bool? ScoreboardPaging { get; set; }
+
         /// <summary>
         /// Parse the settings out from the <paramref name="settingsJson"/>.
         /// </summary>
@@ -77,6 +81,7 @@ namespace Ccs.Entities
                 RestrictIp = RestrictIp,
                 IpRanges = IpRanges,
                 PenaltyTime = PenaltyTime,
+                ScoreboardPaging = ScoreboardPaging,
             };
         }
 

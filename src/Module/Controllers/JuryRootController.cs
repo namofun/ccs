@@ -315,6 +315,14 @@ namespace SatelliteSite.ContestModule.Controllers
                 && model.PenaltyTime != 20
                 ? model.PenaltyTime : default(int?);
 
+            var scoreboardPagingEnabled =
+                model.UseScoreboardPaging switch
+                {
+                    1 => true,
+                    2 => false,
+                    _ => default(bool?),
+                };
+
             var settings = Contest.Settings.Clone();
             settings.BalloonAvailable = model.UseBalloon;
             settings.EventAvailable = model.UseEvents;
@@ -323,6 +331,7 @@ namespace SatelliteSite.ContestModule.Controllers
             settings.RegisterCategory = defaultCat;
             settings.StatusAvailable = model.StatusAvailable;
             settings.PenaltyTime = penaltyTime;
+            settings.ScoreboardPaging = scoreboardPagingEnabled;
             settings.RestrictIp = restriction == 0 ? default(int?) : restriction;
             settings.IpRanges = model.IpRanges?.Split(';', StringSplitOptions.RemoveEmptyEntries);
             var settingsJson = settings.ToString();

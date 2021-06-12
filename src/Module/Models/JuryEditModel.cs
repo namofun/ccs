@@ -36,6 +36,9 @@ namespace SatelliteSite.ContestModule.Models
         [DisplayName("Restrict to last login IP")]
         public bool RestrictToLastLoginIp { get; set; }
 
+        [DisplayName("Use scoreboard paging")]
+        public int UseScoreboardPaging { get; set; }
+
         [DisplayName("Emit CCS events")]
         public bool UseEvents { get; set; }
 
@@ -102,6 +105,7 @@ namespace SatelliteSite.ContestModule.Models
             Languages = cont.Settings.Languages;
             PenaltyTime = cont.Settings.PenaltyTime ?? 20;
             RegisterCategory = cont.Settings.RegisterCategory ?? new Dictionary<string, int>();
+            UseScoreboardPaging = !cont.Settings.ScoreboardPaging.HasValue ? 0 : cont.Settings.ScoreboardPaging.Value ? 1 : 2;
 
             if (cont.Settings.RestrictIp.HasValue)
             {
