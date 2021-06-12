@@ -244,7 +244,7 @@ namespace Ccs.Services
         public virtual async Task<ScoreboardModel> GetScoreboardAsync()
         {
             if (Contest.Kind == CcsDefaults.KindProblemset)
-                return ScoreboardModel.Singleton;
+                return ScoreboardModel.Empty;
 
             int cid = Contest.Id;
 
@@ -259,12 +259,15 @@ namespace Ccs.Services
                 .ToLookupAsync(a => a.TeamId, a => a);
 
             var rows1 = await GetScoreboardRowsAsync();
+            var affs = await ListAffiliationsAsync(true);
+            var cats = await ListCategoriesAsync(true);
 
             var teams = rows1.ToDictionary(
                     a => a.TeamId,
                     v => v.With(rankCaches.GetValueOrDefault(v.TeamId), scoreCaches[v.TeamId]));
 
-            return new ScoreboardModel(teams);
+            var rules = Get<IReadOnlyList<Scoreboard.IRankingStrategy>>();
+            return new ScoreboardModel(teams, cats, affs, rules[Contest.RankingStrategy]);
         }
 
         public virtual async Task<IReadOnlyDictionary<int, (int, int)>> StatisticsAsync(Team? team)

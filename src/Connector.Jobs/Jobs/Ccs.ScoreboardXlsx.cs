@@ -102,9 +102,9 @@ namespace Ccs.Connector.Jobs
 
                 logger.LogInformation("Loading other things from database...");
 
-                var scb = new ScoreboardModel(teams);
                 var affs = await context.ListAffiliationsAsync();
                 var orgs = await context.ListCategoriesAsync();
+                var scb = new ScoreboardModel(teams, orgs, affs, RankingSolver.Select(contest));
                 var probs = await context.ListProblemsAsync();
 
                 var board = new FullBoardViewModel

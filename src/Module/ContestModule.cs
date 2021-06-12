@@ -72,6 +72,7 @@ namespace SatelliteSite.ContestModule
             services.AddSingleton<IRatingCalculator, Ccs.Scoreboard.Rating.EloRatingCalculator>();
             services.AddSingleton(SeparatedContestListModelComparer.Instance);
             services.ConfigureOptions<MiddlewareConfigurator>();
+            services.AddSingleton(Ccs.Scoreboard.RankingSolver.Strategies);
 
             services.ConfigureRouting(options =>
             {
