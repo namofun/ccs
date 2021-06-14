@@ -84,5 +84,10 @@
         /// The ranking strategy for Codeforces
         /// </summary>
         public const int RuleCodeforces = 2;
+
+        /// <summary>
+        /// The default scoreboard paging size
+        /// </summary>
+        public const int DefaultScoreboardPagingSize = 50;
     }
 }

@@ -14,9 +14,9 @@ namespace SatelliteSite.ContestModule.Components.ContestScoreboard
 
         public void WriteTo(TextWriter writer, HtmlEncoder encoder) => WriteTo(_cats, writer, encoder, _rs);
 
-        public static void WriteTo(HashSet<(string, string)> cats, TextWriter writer, HtmlEncoder encoder, int rs = 0)
+        public static void WriteTo(HashSet<(string, string)> cats, TextWriter writer, HtmlEncoder encoder, int rs = 0, bool leavePre = true)
         {
-            writer.WriteLine("<p><br /><br /></p>");
+            if (leavePre) writer.WriteLine("<p><br /><br /></p>");
             writer.WriteLine("<table id=\"cell_legend\" class=\"scoreboard scorelegend\">");
             writer.WriteLine("<thead><tr><th scope=\"col\">Cell colours</th></tr></thead><tbody>");
 

@@ -1,6 +1,7 @@
 ﻿using Ccs.Models;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.IO;
 using System.Text.Encodings.Web;
 
@@ -8,16 +9,19 @@ namespace SatelliteSite.ContestModule.Components.ContestScoreboard
 {
     public class BoardView : IHtmlContent
     {
+        private const int PagingSize = Ccs.CcsDefaults.DefaultScoreboardPagingSize;
         private readonly BoardViewModel _model;
         private readonly bool _usefoot, _inJury;
         private readonly IUrlHelper _urlHelper;
+        private readonly int? _page;
 
-        public BoardView(BoardViewModel model, bool useFoot, bool inJury, IUrlHelper urlHelper)
+        public BoardView(BoardViewModel model, bool useFoot, bool inJury, IUrlHelper urlHelper, int? page)
         {
             _model = model;
             _usefoot = useFoot;
             _inJury = inJury;
             _urlHelper = urlHelper;
+            _page = page;
         }
 
         public void WriteTo(TextWriter writer, HtmlEncoder encoder)
@@ -61,22 +65,30 @@ namespace SatelliteSite.ContestModule.Components.ContestScoreboard
             }
 
             writer.WriteLine("</tr></thead>");
+            int firstRow = 0, lastRow = int.MaxValue, maxRow = 0;
+            if (_page.HasValue)
+            {
+                // display: [first, last)
+                firstRow = (_page.Value - 1) * PagingSize;
+                lastRow = firstRow + PagingSize;
+            }
 
             foreach (var sortOrder in _model)
             {
-                int totalPoints = 0;
+                if (sortOrder.Count < firstRow) continue;
+                if (sortOrder.Count > maxRow) maxRow = sortOrder.Count;
                 writer.WriteLine("<tbody>");
 
-                foreach (var team in sortOrder)
+                for (int i = firstRow; i < lastRow && i < sortOrder.Count; i++)
                 {
-                    totalPoints += team.Points;
+                    var team = sortOrder[i];
                     TeamRow.WriteTo(team, writer, encoder, _inJury, _urlHelper);
                     if (team.Category != null)
                         showCategory.Add((team.CategoryColor, team.Category));
                 }
 
                 if (sortOrder.Statistics != null)
-                    Statistics.WriteTo(sortOrder.Statistics, totalPoints, writer, encoder);
+                    Statistics.WriteTo(sortOrder.Statistics, writer, encoder);
                 writer.WriteLine("</tbody>");
             }
 
@@ -93,8 +105,30 @@ namespace SatelliteSite.ContestModule.Components.ContestScoreboard
 
             writer.WriteLine("</style>");
 
+            if (_page.HasValue)
+            {
+                int page = _page ?? 7;
+                int minimalPage = 1, maximumPage = (maxRow - 1) / PagingSize + 1;
+                int l = Math.Max(minimalPage, page - 3);
+                int r = Math.Min(page + 3, maximumPage);
+
+                void WritePageLink(string page, bool disabled = false, bool current = false)
+                    => writer.Write(disabled
+                        ? "<li class=\"page-item disabled\"><a class=\"page-link\" href=\"#\" tabindex=\"-1\" aria-disabled=\"true\">" + page + "</a></li>"
+                        : "<li class=\"page-item" + (current ? " active\" aria-current=\"page" : "") + "\"><a class=\"page-link\" href=\"#\">" + page + "</a></li>");
+
+                writer.Write("<ul class=\"pagination justify-content-center mt-3 mb-3 dom-pagination\">");
+                WritePageLink("&laquo;");
+                WritePageLink("&lsaquo;");
+                for (int i = l; i <= r; i++)
+                    WritePageLink(i.ToString(), current: i == page);
+                WritePageLink("&rsaquo;");
+                WritePageLink("&raquo;");
+                writer.Write("</ul>");
+            }
+
             if (_usefoot)
-                Footer.WriteTo(showCategory, writer, encoder, _model.RankingStrategy);
+                Footer.WriteTo(showCategory, writer, encoder, _model.RankingStrategy, !_page.HasValue);
         }
     }
 }

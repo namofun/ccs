@@ -1,6 +1,7 @@
 ﻿using Ccs.Models;
 using Microsoft.AspNetCore.Html;
 using System.IO;
+using System.Linq;
 using System.Text.Encodings.Web;
 
 namespace SatelliteSite.ContestModule.Components.ContestScoreboard
@@ -8,18 +9,16 @@ namespace SatelliteSite.ContestModule.Components.ContestScoreboard
     public class Statistics : IHtmlContent
     {
         private readonly ProblemStatisticsModel[] _model;
-        private readonly int _tot;
+        public Statistics(ProblemStatisticsModel[] model) => _model = model;
+        public void WriteTo(TextWriter writer, HtmlEncoder encoder) => WriteTo(_model, writer, encoder);
 
-        public Statistics(ProblemStatisticsModel[] model, int tot) => (_model, _tot) = (model, tot);
-
-        public void WriteTo(TextWriter writer, HtmlEncoder encoder) => WriteTo(_model, _tot, writer, encoder);
-
-        public static void WriteTo(ProblemStatisticsModel[] model, int tot, TextWriter writer, HtmlEncoder encoder)
+        public static void WriteTo(ProblemStatisticsModel[] model, TextWriter writer, HtmlEncoder encoder)
         {
+#warning be careful about OI rules
             writer.Write("<tr class=\"sortorder_summary\">");
             writer.Write("<td id=\"scoresummary\" title=\"Summary\" colspan=\"4\">Summary</td>");
             writer.Write("<td title=\"total solved\" class=\"scorenc\">");
-            writer.Write(tot);
+            writer.Write(model.Sum(r => r.Accepted));
             writer.Write("</td><td></td>");
 
             foreach (var item in model)

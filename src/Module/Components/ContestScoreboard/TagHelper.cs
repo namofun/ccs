@@ -23,6 +23,9 @@ namespace SatelliteSite.ContestModule.Components.ContestScoreboard
         [HtmlAttributeName("in-jury")]
         public bool InJury { get; set; }
 
+        [HtmlAttributeName("page")]
+        public int? Page { get; set; }
+
         [HtmlAttributeNotBound]
         [ViewContext]
         public ViewContext ViewContext { get; set; }
@@ -39,7 +42,7 @@ namespace SatelliteSite.ContestModule.Components.ContestScoreboard
             base.Process(context, output);
             output.TagName = null;
             var urlHelper = UrlHelperFactory.GetUrlHelper(ViewContext);
-            output.Content.SetHtmlContent(new BoardView(Model, UseFooter, InJury, urlHelper));
+            output.Content.SetHtmlContent(new BoardView(Model, UseFooter, InJury, urlHelper, Page));
         }
     }
 }

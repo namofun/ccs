@@ -72,14 +72,9 @@ namespace SatelliteSite.ContestModule.Models
 
             public override IEnumerator<SortOrderModel> GetEnumerator()
             {
-                yield return new SortOrderModel(GetSingleScore(), null);
-            }
-
-            private IEnumerable<TeamModel> GetSingleScore()
-            {
                 var team = CreateTeamViewModel(_row, _affiliation, _category, false);
                 team.ShowRank = true;
-                yield return team;
+                yield return new SortOrderModel(new[] { team }, null);
             }
         }
     }

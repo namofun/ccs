@@ -3,28 +3,26 @@ using System.Collections.Generic;
 
 namespace Ccs.Models
 {
-    public class SortOrderModel : IEnumerable<TeamModel>
+    public class SortOrderModel : IReadOnlyList<TeamModel>
     {
-        readonly IEnumerable<TeamModel> _inner;
+        readonly IReadOnlyList<TeamModel> _inner;
 
         public ProblemStatisticsModel[]? Statistics { get; }
 
+        public int Count => _inner.Count;
+
+        public TeamModel this[int index] => _inner[index];
+
+        public IEnumerator<TeamModel> GetEnumerator() => _inner.GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator() => _inner.GetEnumerator();
+
         public SortOrderModel(
-            IEnumerable<TeamModel> items,
+            IReadOnlyList<TeamModel> items,
             ProblemStatisticsModel[]? stats)
         {
             _inner = items;
             Statistics = stats;
-        }
-
-        public IEnumerator<TeamModel> GetEnumerator()
-        {
-            return _inner.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return _inner.GetEnumerator();
         }
     }
 }

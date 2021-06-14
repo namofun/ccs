@@ -49,8 +49,8 @@ namespace Ccs.Models
                 {
                     if (!Affiliations.ContainsKey(item.AffiliationId)
                         || !Categories.ContainsKey(item.CategoryId)
-                        || (FilteredAffiliations?.Contains(item.AffiliationId) ?? false)
-                        || (FilteredCategories?.Contains(item.CategoryId) ?? false)
+                        || !(FilteredAffiliations?.Contains(item.AffiliationId) ?? true)
+                        || !(FilteredCategories?.Contains(item.CategoryId) ?? true)
                         || (!Categories[item.CategoryId].IsPublic && !ShowHiddenCategories))
                         continue;
 
