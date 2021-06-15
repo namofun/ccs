@@ -55,6 +55,8 @@ namespace SatelliteSite.ContestModule
             _contextualized = true;
         }
 
+        ContestState IContestTime.GetState(DateTimeOffset? nowTime) => Context.Contest.GetState(nowTime);
+        bool IContestInformation.ShouldScoreboardPaging() => Context.Contest.ShouldScoreboardPaging();
         int IContestInformation.Id => Context.Contest.Id;
         string IContestInformation.Name => Context.Contest.Name;
         string IContestInformation.ShortName => Context.Contest.ShortName;

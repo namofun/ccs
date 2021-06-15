@@ -19,6 +19,8 @@ namespace Ccs.Models
 
         public HashSet<int>? FilteredCategories { get; set; }
 
+        public HashSet<int>? FavoriteTeams { get; set; }
+
         public bool IsPublic { get; }
 
         public bool ShowHiddenCategories { get; }

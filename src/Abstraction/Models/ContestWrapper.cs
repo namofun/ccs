@@ -66,5 +66,17 @@ namespace Ccs.Models
             EndTime = entity.EndTimeSeconds.HasValue ? TimeSpan.FromSeconds(entity.EndTimeSeconds.Value) : default(TimeSpan?);
             UnfreezeTime = entity.UnfreezeTimeSeconds.HasValue ? TimeSpan.FromSeconds(entity.UnfreezeTimeSeconds.Value) : default(TimeSpan?);
         }
+
+        /// <inheritdoc />
+        public Entities.ContestState GetState(DateTimeOffset? nowTime)
+        {
+            return EntityInterfaceExtensions.GetState(this, nowTime);
+        }
+
+        /// <inheritdoc />
+        public bool ShouldScoreboardPaging()
+        {
+            return Settings.ScoreboardPaging ?? TeamCount >= 400;
+        }
     }
 }

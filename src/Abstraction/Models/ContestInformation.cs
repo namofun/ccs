@@ -51,5 +51,11 @@
         /// The contest settings
         /// </summary>
         IContestSettings Settings { get; }
+
+        /// <summary>
+        /// Checks whether the scoreboard paging should be enabled.
+        /// </summary>
+        /// <returns>The value indicating that.</returns>
+        bool ShouldScoreboardPaging();
     }
 }

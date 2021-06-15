@@ -16,5 +16,11 @@ namespace Ccs.Models
 
         /// <inheritdoc />
         public TimeSpan? UnfreezeTime { get; set; }
+
+        /// <inheritdoc />
+        public Entities.ContestState GetState(DateTimeOffset? nowTime)
+        {
+            return EntityInterfaceExtensions.GetState(this, nowTime);
+        }
     }
 }

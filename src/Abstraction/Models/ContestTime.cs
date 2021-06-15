@@ -26,5 +26,12 @@ namespace Ccs.Models
         /// The unfreeze time
         /// </summary>
         TimeSpan? UnfreezeTime { get; }
+
+        /// <summary>
+        /// Gets the state of contest.
+        /// </summary>
+        /// <param name="nowTime">The current datetime.</param>
+        /// <returns>The state of contest.</returns>
+        Entities.ContestState GetState(DateTimeOffset? nowTime = null);
     }
 }

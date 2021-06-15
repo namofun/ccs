@@ -62,13 +62,20 @@ namespace SatelliteSite.ContestModule.Controllers
         public static async Task<IActionResult> DomScoreboard<T>(
             this ContestControllerBase<T> that,
             bool isPublic, bool isJury, bool clear,
-            int[] filtered_affiliations, int[] filtered_categories)
+            int[] filtered_affiliations, int[] filtered_categories, int? page)
             where T : class, IContestContext
         {
             if (that.Contest.Kind != Ccs.CcsDefaults.KindDom)
             {
                 throw new NotSupportedException();
             }
+
+            var pageVal = that.Contest.ShouldScoreboardPaging()
+                ? page ?? 1
+                : default(int?);
+
+            that.ViewData["Paging"] = pageVal;
+            if (pageVal.HasValue && pageVal < 1) return that.BadRequest();
 
             if (clear) filtered_categories = filtered_affiliations = Array.Empty<int>();
             var scb = await that.Context.GetScoreboardAsync();
@@ -86,6 +93,27 @@ namespace SatelliteSite.ContestModule.Controllers
                 var cat2 = filtered_categories.ToHashSet();
                 board.FilteredCategories = cat2;
                 that.ViewData["Filter_categories"] = cat2;
+            }
+
+            if (that.Request.Cookies.TryGetValue("domjudge_teamselection", out var teamselection))
+            {
+                try
+                {
+                    var vals = teamselection.AsJson<string[]>();
+                    if (vals != null && vals.Length <= 20 && vals.Length > 0)
+                    {
+                        var teams = new HashSet<int>();
+                        for (int i = 0; i < vals.Length; i++)
+                            if (int.TryParse(vals[i], out int teamid))
+                                teams.Add(teamid);
+                        board.FavoriteTeams = teams;
+                    }
+                }
+                catch
+                {
+                    // The field `domjudge_teamselection` is wrongly set.
+                    that.Response.Cookies.Delete("domjudge_teamselection");
+                }
             }
 
             return that.View("Scoreboard", board);

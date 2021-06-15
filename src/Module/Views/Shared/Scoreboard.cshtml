@@ -16,6 +16,29 @@
     var freezeLength = (int)((Contest.EndTime - Contest.FreezeTime)?.TotalMinutes ?? 0);
 }
 
+@section Header {
+    <style>
+        @@media screen {
+            .scoreheader th { text-align: center; box-shadow: -1px 0px 0px 0px silver inset, 0px 3px 0px 0px black; border: none; background: #fff; position: sticky; top: 0px; z-index: 1; }
+            .scoreboard > tbody:first-of-type > tr:first-child { border-top: 0!important; }
+            .scoreboard > tbody:first-of-type > tr:first-child > td { padding-top: 3px; }
+        }
+
+        @@media print {
+            body { padding-top: 0; }
+            .scoreheader { border-bottom: 2px solid black !important; }
+        }
+
+        .sortorder_summary td, #scoresummary { border-top: 2px solid black; }
+
+        .dom-pagination .page-link { margin-left: 3px; margin-right: 3px; border-radius: .25rem; border: 1.5px solid transparent; color: rgba(0,0,0,.8); }
+        .dom-pagination .active .page-link { color: #000; font-weight: 700; background-color: transparent; border: 1.5px solid black; }
+        .dom-pagination .active .page-link:hover { background-color: #e9ecef; }
+        .dom-pagination .page-link:focus { box-shadow: 0 0 0 0.2rem rgb(0 0 0 / 15%); }
+        .dom-pagination .page-item.disabled .page-link { border-color: transparent; color: #aaa; }
+    </style>
+} 
+
 <div class="card">
     <div class="card-header" style="font-family: Roboto, sans-serif; display: flex;">
         <span style="font-weight: bold;">@Contest.Name</span>
@@ -90,7 +113,7 @@ else
         </div>
     </div>
 
-    <domjudge-scoreboard model="Model" use-footer="true" in-jury="@ViewData.ContainsKey("InJury")" />
+    <domjudge-scoreboard model="Model" use-footer="true" in-jury="@ViewData.ContainsKey("InJury")" page="@((int?)ViewData["Paging"])" />
 }
 
 <p id="lastmod">
@@ -131,24 +154,5 @@ else
             };
         });
     </script>
-    <style>
-        @@media screen {
-            .scoreheader { border-bottom: 0 !important; }
-            .scoreheader th { text-align: center; box-shadow: -1px 0px 0px 0px silver inset, 0px 2px 0px 0px black; border: none; background: #fff; position: sticky; top: 0px; z-index: 1; }
-            .scoreboard > tbody:first-of-type > tr:first-child > td { padding-top: 2px; }
-        }
-
-        @@media print {
-            body { padding-top: 0; }
-            .scoreheader { border-bottom: 2px solid black !important; }
-        }
-
-        .sortorder_summary td, #scoresummary { border-top: 2px solid black; }
-
-        .dom-pagination .page-link { margin-left: 3px; margin-right: 3px; border-radius: .25rem; border: 1.5px solid transparent; color: rgba(0,0,0,.8); }
-        .dom-pagination .active .page-link { color: #000; font-weight: 700; background-color: transparent; border: 1.5px solid black; }
-        .dom-pagination .active .page-link:hover { background-color: #e9ecef; }
-        .dom-pagination .page-link:focus { box-shadow: 0 0 0 0.2rem rgb(0 0 0 / 15%); }
-    </style>
     }
 }

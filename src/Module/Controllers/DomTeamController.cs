@@ -45,8 +45,9 @@ namespace SatelliteSite.ContestModule.Controllers
         public Task<IActionResult> Scoreboard(
             [FromQuery(Name = "affiliations[]")] int[] affiliations,
             [FromQuery(Name = "categories[]")] int[] categories,
+            [FromQuery(Name = "page")] int? page = 1,
             [FromQuery(Name = "clear")] string clear = "")
-            => CommonActions.DomScoreboard(this, !TooLate, false, clear == "clear", affiliations, categories);
+            => CommonActions.DomScoreboard(this, !TooLate, false, clear == "clear", affiliations, categories, page);
 
 
         [HttpGet("[action]")]

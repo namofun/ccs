@@ -39,8 +39,9 @@ namespace Ccs.Models
         /// <param name="time">The contest time.</param>
         /// <param name="nowTime">The current datetime.</param>
         /// <returns>The state of contest.</returns>
-        public static ContestState GetState(this IContestTime time, DateTimeOffset? nowTime = null)
+        public static ContestState GetState(IContestTime time, DateTimeOffset? nowTime = null)
         {
+            // The implementation cannot depend on IContestTime.GetState().
             var now = nowTime ?? DateTimeOffset.Now;
             DateTimeOffset? start = time.StartTime;
 

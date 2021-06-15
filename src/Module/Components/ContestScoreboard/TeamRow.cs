@@ -16,9 +16,11 @@ namespace SatelliteSite.ContestModule.Components.ContestScoreboard
 
         public void WriteTo(TextWriter writer, HtmlEncoder encoder) => WriteTo(_model, writer, encoder, _inJury, _urlHelper);
 
-        public static void WriteTo(TeamModel model, TextWriter writer, HtmlEncoder encoder, bool inJury, IUrlHelper urlHelper)
+        public static void WriteTo(TeamModel model, TextWriter writer, HtmlEncoder encoder, bool inJury, IUrlHelper urlHelper, string styleClass = "")
         {
-            writer.Write("<tr class=\"\" id=\"team:");
+            writer.Write("<tr class=\"");
+            writer.Write(styleClass);
+            writer.Write("\" id=\"team:");
             writer.Write(model.TeamId);
             writer.Write("\">");
 
