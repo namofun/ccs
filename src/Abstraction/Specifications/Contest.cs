@@ -6,8 +6,16 @@ namespace Ccs.Specifications
 {
     /// <summary>
     /// Provides information on the current contest.
-    /// <a href="https://clics.ecs.baylor.edu/index.php?title=Contest_API_2020#Contests">More detail</a>
     /// </summary>
+    /// <remarks>
+    /// References:
+    /// <list type="bullet">
+    /// <a href="https://clics.ecs.baylor.edu/index.php?title=Contest_API_2020#Contests">Contest API 2020 (baylor wiki)</a>
+    /// </list>
+    /// <list type="bullet">
+    /// <a href="https://github.com/icpc/ccs-specs/blob/master/Contest_API.md">CCS Specs (GitHub)</a>
+    /// </list>
+    /// </remarks>
     public class Contest : AbstractEvent
     {
         /// <summary>
@@ -64,7 +72,17 @@ namespace Ccs.Specifications
         /// </summary>
         [JsonPropertyName("end_time")]
         public DateTimeOffset? EndTime { get; }
-        
+
+        /// <summary>
+        /// What type of scoreboard is used for the contest
+        /// </summary>
+        /// <remarks>
+        /// Must be either <c>pass-fail</c> or <c>score</c>.
+        /// Defaults to <c>pass-fail</c> if missing or <c>null</c>.
+        /// </remarks>
+        [JsonPropertyName("scoreboard_type")]
+        public string? ScoreboardType { get; }
+
         /// <inheritdoc />
         protected override string EndpointType => "contests";
 
@@ -83,6 +101,13 @@ namespace Ccs.Specifications
             EndTime = c.StartTime + c.EndTime;
             Duration = c.EndTime ?? TimeSpan.FromHours(5);
             ScoreboardFreezeDuration = c.EndTime - c.FreezeTime;
+
+            ScoreboardType = c.RankingStrategy switch
+            {
+                CcsDefaults.RuleXCPC => "pass-fail",
+                CcsDefaults.RuleIOI => "score",
+                _ => null,
+            };
         }
     }
 }

@@ -28,6 +28,13 @@ namespace Ccs.Specifications
         public string? JudgementTypeId { get; }
 
         /// <summary>
+        /// Score for this judgement
+        /// </summary>
+        /// <remarks>Only relevant if <c>contest:scoreboard_type</c> is <c>score</c>. Defaults to 100 if missing</remarks>
+        [JsonPropertyName("judgement_score")]
+        public int? JudgementScore { get; }
+
+        /// <summary>
         /// Absolute time when judgement started
         /// </summary>
         [JsonPropertyName("start_time")]
@@ -96,6 +103,7 @@ namespace Ccs.Specifications
             {
                 EndContestTime = j.StopTime!.Value - contestTime;
                 EndTime = j.StopTime!.Value;
+                JudgementScore = j.TotalScore;
                 if (JudgementTypeId != "CE" && JudgementTypeId != "JE")
                     MaxRunTime = j.ExecuteTime / 1000.0;
             }
