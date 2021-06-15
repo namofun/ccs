@@ -8,6 +8,8 @@ namespace SatelliteSite.ContestModule.Models
     {
         public ILookup<int, string> TeamMembers { get; }
 
+        public int Page { get; set; }
+
         public GymStandingViewModel(
             ScoreboardModel scoreboard,
             ILookup<int, string> teamMembers)

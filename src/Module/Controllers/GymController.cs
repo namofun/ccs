@@ -46,10 +46,10 @@ namespace SatelliteSite.ContestModule.Controllers
         public async Task<IActionResult> Standings(int page = 1)
         {
             if (TooEarly && !Contest.IsJury) return NotStarted();
-            if (page <= 0) return BadRequest();
+            if (Contest.ShouldScoreboardPaging() && page <= 0) return BadRequest();
             var scb = await Context.GetScoreboardAsync();
             var members = await Context.GetTeamMembersAsync();
-            return View(new GymStandingViewModel(scb, members));
+            return View(new GymStandingViewModel(scb, members) { Page = page });
         }
 
 

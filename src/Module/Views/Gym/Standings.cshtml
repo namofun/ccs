@@ -5,6 +5,9 @@
     var stat = new ProblemStatisticsModel[Model.Problems.Count];
     for (int i = 0; i < Model.Problems.Count; i++) stat[i] = new ProblemStatisticsModel();
     bool firstSortOrder = true;
+    int totalRows = 0, start = 0, end = int.MaxValue;
+    const int PagingSize = CcsDefaults.DefaultScoreboardPagingSize;
+    if (Contest.ShouldScoreboardPaging()) { start = PagingSize * (Model.Page - 1); end = start + PagingSize; }
 }
 
 @functions {
@@ -84,11 +87,14 @@
     <tbody>
         @foreach (var sortOrder in Model)
         {
-            foreach (var row in sortOrder)
+            for (int i = Math.Max(0, start); i < end && i < sortOrder.Count; i++)
             {
-                ShowRow(row, firstSortOrder);
+                ShowRow(sortOrder[i], firstSortOrder);
             }
 
+            totalRows += sortOrder.Count;
+            start -= sortOrder.Count;
+            end -= sortOrder.Count;
             firstSortOrder = false;
             for (int i = 0; i < Model.Problems.Count; i++)
             {
@@ -109,8 +115,25 @@
         </tr>
     </tfoot>
 </table>
-
-<small class="text-muted mt-2 text-right d-block">
+</div>
+<div class="col-md-6">
+    @if (Contest.ShouldScoreboardPaging())
+    {
+        int maximumPage = (totalRows - 1) / PagingSize + 1;
+        <ul class="pagination pagination-sm">
+            <li class="page-item @(Model.Page == 1 ? "disabled" : "")"><a class="page-link" asp-route-page="1">&laquo;</a></li>
+            <li class="page-item @(Model.Page == 1 ? "disabled" : "")"><a class="page-link" asp-route-page="@(Model.Page - 1)">&lsaquo;</a></li>
+            @for (int i = Math.Max(1, Model.Page - 3); i <= maximumPage && i <= Model.Page + 3; i++)
+            {
+                <li class="page-item @(i == Model.Page ? "active" : "")"><a class="page-link" asp-route-page="@i">@i</a></li>
+            }
+            <li class="page-item @(Model.Page == maximumPage ? "disabled" : "")"><a class="page-link" asp-route-page="@(Model.Page + 1)">&rsaquo;</a></li>
+            <li class="page-item @(Model.Page == maximumPage ? "disabled" : "")"><a class="page-link" asp-route-page="@maximumPage">&raquo;</a></li>
+        </ul>
+    }
+</div>
+<div class="col-md-6 text-md-right">
+<small class="text-muted">
     Last Update: @Html.CstTime(Model.UpdateTime, false)
 </small>
 </div>
