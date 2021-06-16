@@ -31,9 +31,11 @@ namespace SatelliteSite.ContestModule.Apis
             [FromRoute] int cid,
             [FromQuery] bool @public)
         {
+            bool isXcpc = Contest.RankingStrategy == CcsDefaults.RuleXCPC;
+            bool isOi = Contest.RankingStrategy == CcsDefaults.RuleIOI;
             if (!Contest.StartTime.HasValue
                 || Contest.Kind == CcsDefaults.KindProblemset
-                || Contest.RankingStrategy != CcsDefaults.RuleXCPC)
+                || (!isXcpc && !isOi))
                 return null;
 
             var scb = await Context.GetScoreboardAsync();
@@ -46,8 +48,8 @@ namespace SatelliteSite.ContestModule.Apis
                 {
                     Rank = t.Rank.Value,
                     TeamId = $"{t.TeamId}",
-                    Score = new Scoreboard.Score(t.Points, t.Penalty),
-                    Problems = Enumerable.Range(0, probs.Count).Select(i => MakeProblem(t.Problems[i], probs[i]))
+                    Score = new Scoreboard.Score(isXcpc, t.Points, t.Penalty, t.LastAc),
+                    Problems = Enumerable.Range(0, probs.Count).Select(i => MakeProblem(t.Problems[i], probs[i], isXcpc)),
                 });
 
             var maxEvent = await Context.GetMaxEventAsync();
@@ -62,12 +64,13 @@ namespace SatelliteSite.ContestModule.Apis
             };
         }
 
-        private Scoreboard.Problem MakeProblem(ScoreCellModel s, ProblemModel p)
+        private Scoreboard.Problem MakeProblem(ScoreCellModel s, ProblemModel p, bool xcpc)
         {
             if (s == null)
             {
                 return new Scoreboard.Problem
                 {
+                    IsPassFail = xcpc,
                     ProblemId = $"{p.ProblemId}",
                     Label = p.ShortName
                 };
@@ -76,11 +79,13 @@ namespace SatelliteSite.ContestModule.Apis
             {
                 return new Scoreboard.Problem
                 {
+                    IsPassFail = xcpc,
                     FirstToSolve = s.IsFirstToSolve,
                     NumJudged = s.JudgedCount,
                     NumPending = s.PendingCount,
                     ProblemId = $"{p.ProblemId}",
                     Solved = s.Score.HasValue,
+                    Score = s.Score ?? 0,
                     Label = p.ShortName,
                     Time = s.Score ?? 0
                 };

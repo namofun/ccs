@@ -50,29 +50,94 @@ namespace Ccs.Specifications
         /// <summary>
         /// The class for score object.
         /// </summary>
+        [JsonConverter(typeof(ScoreJsonConverter))]
         public class Score
         {
             /// <summary>
+            /// Whether the scoreboard is <c>pass-fail</c> or <c>score</c>
+            /// </summary>
+            [JsonIgnore]
+            public bool IsPassFail { get; set; }
+
+            /// <summary>
             /// Number of problems solved by the team
             /// </summary>
+            /// <remarks>Required iff <c>contest:scoreboard_type</c> is <c>pass-fail</c></remarks>
             [JsonPropertyName("num_solved")]
             public int NumSolved { get; set; }
 
             /// <summary>
             /// Total penalty time accrued by the team
             /// </summary>
+            /// <remarks>Required iff <c>contest:scoreboard_type</c> is <c>pass-fail</c></remarks>
             [JsonPropertyName("total_time")]
             public int TotalTime { get; set; }
 
             /// <summary>
+            /// Total score of problems by the team
+            /// </summary>
+            /// <remarks>Required iff <c>contest:scoreboard_type</c> is <c>score</c></remarks>
+            [JsonPropertyName("score")]
+            public double PartialScore { get; set; }
+
+            /// <summary>
+            /// Time of last score improvement used for tiebreaking purposes
+            /// </summary>
+            [JsonPropertyName("time")]
+            public int LastAccepted { get; set; }
+
+            /// <summary>
             /// Construct a <see cref="Score"/>.
             /// </summary>
-            /// <param name="a">The number solved.</param>
-            /// <param name="b">The total penalty.</param>
-            public Score(int a, int b)
+            public Score(bool isXcpc, int points, int penalty, int lastac)
             {
-                NumSolved = a;
-                TotalTime = b;
+                if (isXcpc)
+                {
+                    IsPassFail = true;
+                    TotalTime = penalty;
+                    NumSolved = points;
+                    LastAccepted = lastac;
+                }
+                else
+                {
+                    IsPassFail = false;
+                    PartialScore = points;
+                    LastAccepted = penalty;
+                }
+            }
+
+            /// <inheritdoc />
+            private class ScoreJsonConverter : JsonConverter<Score>
+            {
+                /// <inheritdoc />
+                public override Score Read(
+                    ref Utf8JsonReader reader,
+                    Type typeToConvert,
+                    JsonSerializerOptions options)
+                    => throw new InvalidOperationException();
+
+                /// <inheritdoc />
+                public override void Write(
+                    Utf8JsonWriter writer,
+                    Score value,
+                    JsonSerializerOptions options)
+                {
+                    writer.WriteStartObject();
+
+                    if (value.IsPassFail)
+                    {
+                        writer.WriteNumber("num_solved", value.NumSolved);
+                        writer.WriteNumber("total_time", value.TotalTime);
+                        writer.WriteNumber("time", value.LastAccepted);
+                    }
+                    else
+                    {
+                        writer.WriteNumber("score", value.PartialScore);
+                        writer.WriteNumber("time", value.LastAccepted);
+                    }
+
+                    writer.WriteEndObject();
+                }
             }
         }
 
@@ -82,6 +147,12 @@ namespace Ccs.Specifications
         [JsonConverter(typeof(ProblemJsonConverter))]
         public class Problem
         {
+            /// <summary>
+            /// Whether the scoreboard is <c>pass-fail</c> or <c>score</c>
+            /// </summary>
+            [JsonIgnore]
+            public bool IsPassFail { get; set; }
+
             /// <summary>
             /// Identifier of the problem
             /// </summary>
@@ -109,11 +180,22 @@ namespace Ccs.Specifications
             /// <summary>
             /// Whether the team solved this problem
             /// </summary>
+            /// <remarks>Required iff <c>contest:scoreboard_type</c> is <c>pass-fail</c></remarks>
             [JsonPropertyName("solved")]
             public bool Solved { get; set; }
 
             /// <summary>
-            /// minutes into the contest when this problem was solved by the team
+            /// The score of the last submission from team
+            /// </summary>
+            /// <remarks>
+            /// Required iff <c>contest:scoreboard_type</c> is <c>score</c> and <c>solved</c> is missing.
+            /// If missing or null defaults to 100 if solved is true and 0 if solved is false
+            /// </remarks>
+            [JsonPropertyName("score")]
+            public double Score { get; set; }
+
+            /// <summary>
+            /// Minutes into the contest when this problem was solved by the team
             /// </summary>
             /// <remarks>Required iff <c>solved=true</c></remarks>
             [JsonPropertyName("time")]
@@ -124,38 +206,46 @@ namespace Ccs.Specifications
             /// </summary>
             [JsonPropertyName("first_to_solve")]
             public bool FirstToSolve { get; set; }
-        }
-
-        /// <inheritdoc />
-        private class ProblemJsonConverter : JsonConverter<Problem>
-        {
-            /// <inheritdoc />
-            public override Problem Read(
-                ref Utf8JsonReader reader,
-                Type typeToConvert,
-                JsonSerializerOptions options)
-                => throw new InvalidOperationException();
 
             /// <inheritdoc />
-            public override void Write(
-                Utf8JsonWriter writer,
-                Problem value,
-                JsonSerializerOptions options)
+            private class ProblemJsonConverter : JsonConverter<Problem>
             {
-                writer.WriteStartObject();
-                writer.WriteString("label", value.Label);
-                writer.WriteString("problem_id", value.ProblemId);
-                writer.WriteNumber("num_judged", value.NumJudged);
-                writer.WriteNumber("num_pending", value.NumPending);
-                writer.WriteBoolean("solved", value.Solved);
+                /// <inheritdoc />
+                public override Problem Read(
+                    ref Utf8JsonReader reader,
+                    Type typeToConvert,
+                    JsonSerializerOptions options)
+                    => throw new InvalidOperationException();
 
-                if (value.Solved)
+                /// <inheritdoc />
+                public override void Write(
+                    Utf8JsonWriter writer,
+                    Problem value,
+                    JsonSerializerOptions options)
                 {
-                    writer.WriteBoolean("first_to_solve", value.FirstToSolve);
-                    writer.WriteNumber("time", value.Time);
-                }
+                    writer.WriteStartObject();
+                    writer.WriteString("label", value.Label);
+                    writer.WriteString("problem_id", value.ProblemId);
+                    writer.WriteNumber("num_judged", value.NumJudged);
+                    writer.WriteNumber("num_pending", value.NumPending);
 
-                writer.WriteEndObject();
+                    if (value.IsPassFail)
+                    {
+                        writer.WriteBoolean("solved", value.Solved);
+
+                        if (value.Solved)
+                        {
+                            writer.WriteBoolean("first_to_solve", value.FirstToSolve);
+                            writer.WriteNumber("time", value.Time);
+                        }
+                    }
+                    else
+                    {
+                        writer.WriteNumber("score", value.Score);
+                    }
+
+                    writer.WriteEndObject();
+                }
             }
         }
 
