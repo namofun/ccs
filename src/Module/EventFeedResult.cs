@@ -35,7 +35,7 @@ namespace SatelliteSite.ContestModule
 
                 foreach (var item in events)
                 {
-                    await WriteAsync($"{{\"id\":\"{item.Id}\",\"type\":\"{item.EndpointType}\",\"op\":\"{item.Action}\",\"data\":{item.Content}}}\n");
+                    await WriteAsync($"{{\"id\":\"{item.Id}\",\"type\":\"{item.EndpointType}\",\"op\":\"{item.Action}\",\"data\":{item.Content},\"time\":\"{item.EventTime:yyyy-MM-dd'T'HH:mm:ss.fffzzz}\"}}\n");
                 }
 
                 if (!_keepAlive) break;

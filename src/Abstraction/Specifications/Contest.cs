@@ -13,7 +13,7 @@ namespace Ccs.Specifications
     /// <a href="https://clics.ecs.baylor.edu/index.php?title=Contest_API_2020#Contests">Contest API 2020 (baylor wiki)</a>
     /// </list>
     /// <list type="bullet">
-    /// <a href="https://github.com/icpc/ccs-specs/blob/master/Contest_API.md">CCS Specs (GitHub)</a>
+    /// <a href="https://ccs-specs.icpc.io/contest_api">CCS Specs (GitHub)</a>
     /// </list>
     /// </remarks>
     public class Contest : AbstractEvent

@@ -64,7 +64,7 @@ namespace Ccs.Services
         public async Task Handle(JudgingBeginEvent notification, CancellationToken cancellationToken)
         {
             var ctx = await TryGetContest(notification, notification.ContestId);
-            if (ctx == null) return;
+            if (ctx == null || !notification.Judging.Active) return;
 
             await ctx.EmitEventAsync(
                 new Judgement(notification.Judging, ctx.Contest.StartTime ?? DateTimeOffset.Now));
@@ -73,7 +73,7 @@ namespace Ccs.Services
         public async Task Handle(JudgingRunEmittedEvent notification, CancellationToken cancellationToken)
         {
             var ctx = await TryGetContest(notification, notification.ContestId);
-            if (ctx == null) return;
+            if (ctx == null || !notification.Judging.Active) return;
 
             for (int i = 0; i < notification.Runs.Count; i++)
             {
@@ -95,13 +95,13 @@ namespace Ccs.Services
             var ctx = await TryGetContest(notification, notification.Rejudging.ContestId);
             if (ctx == null) return;
 
-            var results = await ((IRejudgingContext)ctx).ViewAsync(notification.Rejudging);
+            var rejudging = notification.Rejudging;
+            var results = await ((IRejudgingContext)ctx).ViewAsync(rejudging);
             var now = DateTimeOffset.Now;
             var contestTime = ctx.Contest.StartTime.Value;
 
             using var batch = new Models.EventBatch(ctx.Contest.Id, now, null);
-            batch.AddUpdate(results.Select(r => r.OldJudging), j => new Judgement(j, contestTime, null, now));
-            batch.AddUpdate(results.Select(r => r.NewJudging), j => new Judgement(j, contestTime, null, now));
+            batch.AddCreate(results.Select(r => r.NewJudging), j => new Judgement(j, contestTime, null, now));
 
             await ctx.EnsureLastStateAsync();
             await ctx.EmitEventAsync(batch);

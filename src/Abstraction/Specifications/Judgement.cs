@@ -32,7 +32,7 @@ namespace Ccs.Specifications
         /// </summary>
         /// <remarks>Only relevant if <c>contest:scoreboard_type</c> is <c>score</c>. Defaults to 100 if missing</remarks>
         [JsonPropertyName("judgement_score")]
-        public int? JudgementScore { get; }
+        public double? JudgementScore { get; }
 
         /// <summary>
         /// Absolute time when judgement started
@@ -67,6 +67,7 @@ namespace Ccs.Specifications
         /// <summary>
         /// If this judgement is valid and active
         /// </summary>
+        /// <remarks>This is not CCS compatible property</remarks>
         [JsonPropertyName("valid")]
         public bool Valid { get; }
 
