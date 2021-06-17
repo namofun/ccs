@@ -54,7 +54,7 @@ namespace Ccs.Services
         public async Task Handle(JudgingFinishedEvent notification, CancellationToken cancellationToken)
         {
             var ctx = await TryGetContest(notification, notification.ContestId);
-            if (ctx == null) return;
+            if (ctx == null || !notification.Judging.Active) return;
 
             await ctx.EmitEventAsync(
                 new Judgement(notification.Judging, ctx.Contest.StartTime ?? DateTimeOffset.Now),
