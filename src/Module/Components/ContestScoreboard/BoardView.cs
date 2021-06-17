@@ -98,7 +98,7 @@ namespace SatelliteSite.ContestModule.Components.ContestScoreboard
                 for (int i = firstRow; i < lastRow && i < sortOrder.Count; i++)
                     WriteTeamRow(sortOrder[i], i == firstRow);
                 if (sortOrder.Statistics != null && sortOrder.Count >= firstRow)
-                    Statistics.WriteTo(sortOrder.Statistics, writer, encoder);
+                    Statistics.WriteTo(sortOrder.Statistics, writer, encoder, _model.RankingStrategy);
                 writer.WriteLine("</tbody>");
 
                 for (int i = 0; favoriteTeams != null && i < sortOrder.Count; i++)

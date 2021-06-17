@@ -57,10 +57,12 @@ namespace Ccs.Models
                 if (stat == null) continue;
                 if (prob[pid].Score.HasValue)
                 {
-                    if (prob[pid].IsFirstToSolve) stat[pid].FirstSolve ??= prob[pid].Score;
+                    var score = prob[pid].Score!.Value;
+                    if (prob[pid].IsFirstToSolve) stat[pid].FirstSolve ??= score;
                     stat[pid].Accepted++;
                     stat[pid].Rejected += prob[pid].JudgedCount - 1;
                     stat[pid].Pending += prob[pid].PendingCount;
+                    stat[pid].MaxScore = System.Math.Max(stat[pid].MaxScore, score);
                 }
                 else
                 {
