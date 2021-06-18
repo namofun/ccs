@@ -31,7 +31,18 @@ namespace Ccs.Models
                 if (p == null) continue;
                 var pid = p.Rank - 1;
 
-                if (ispublic)
+                if (RankingStrategy == CcsDefaults.RuleCodeforces)
+                {
+                    prob[pid] = new ScoreCellModel
+                    {
+                        PendingCount = pp.PendingRestricted,
+                        JudgedCount = pp.SubmissionPublic,
+                        Score = pp.ScorePublic,
+                        SolveTime = pp.SolveTimePublic,
+                        FailedSystemTest = pp.FirstToSolve,
+                    };
+                }
+                else if (ispublic)
                 {
                     prob[pid] = new ScoreCellModel
                     {
@@ -71,6 +82,7 @@ namespace Ccs.Models
                 }
             }
 
+            ispublic |= RankingStrategy == CcsDefaults.RuleCodeforces;
             return new TeamModel
             {
                 TeamId = row.TeamId,

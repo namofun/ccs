@@ -37,6 +37,7 @@ namespace Ccs.Services
                    Status = j.Status,
                    SubmissionId = s.Id,
                    TeamId = s.TeamId,
+                   RejudgingId = j.RejudgingId,
                    Time = s.Time,
                    TotalScore = j.TotalScore ?? 0,
                    SortOrder = c.SortOrder,

@@ -12,6 +12,8 @@
 
         public bool IsFirstToSolve { get; set; }
 
+        public bool FailedSystemTest { get; set; }
+
         public string StyleClass
         {
             get
@@ -22,6 +24,8 @@
                     return "score_correct score_first";
                 else if (Score.HasValue)
                     return "score_correct";
+                else if (FailedSystemTest)
+                    return "score_incorrect score_fst";
                 else
                     return "score_incorrect";
             }

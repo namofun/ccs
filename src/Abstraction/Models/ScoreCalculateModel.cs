@@ -34,6 +34,11 @@ namespace Ccs.Models
         public Verdict Status { get; set; }
 
         /// <summary>
+        /// The rejudging ID
+        /// </summary>
+        public int? RejudgingId { get; set; }
+
+        /// <summary>
         /// The total score
         /// </summary>
         public int TotalScore { get; set; }

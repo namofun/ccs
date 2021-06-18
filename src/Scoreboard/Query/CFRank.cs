@@ -98,6 +98,7 @@ namespace Ccs.Scoreboard.Query
         /// </remarks>
         public Task Reject(IScoreboard store, IContestInformation contest, JudgingFinishedEvent args)
         {
+            #warning Should check whether this is system test
             bool fst = args.Judging.Active && args.Judging.RejudgingId.HasValue;
 
             return store.ScoreUpdateAsync(
@@ -197,6 +198,11 @@ namespace Ccs.Scoreboard.Query
                     sc.SubmissionPublic = sc.SubmissionRestricted + 1;
                     sc.IsCorrectPublic = true;
                     sc.SolveTimePublic = time;
+                }
+                else if (s.Status < Verdict.CompileError)
+                {
+                    // Should check whether this is system test
+                    sc.FirstToSolve = s.RejudgingId.HasValue;
                 }
 
                 sc.SubmissionRestricted++;
