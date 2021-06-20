@@ -105,7 +105,7 @@ namespace Ccs.Connector.Jobs
                 var affs = await context.ListAffiliationsAsync();
                 var orgs = await context.ListCategoriesAsync();
                 var probs = await context.ListProblemsAsync();
-                var scb = new ScoreboardModel(contest.Id, teams, orgs, affs, probs, RankingSolver.Select(contest));
+                var scb = new ScoreboardModel(contest.Id, teams, orgs, affs, probs, contest, RankingSolver.Select(contest));
 
                 var board = new FullBoardViewModel(scb, false)
                 {

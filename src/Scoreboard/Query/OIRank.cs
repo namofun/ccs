@@ -33,7 +33,7 @@ namespace Ccs.Scoreboard.Query
     /// <c>TotalTime</c> means the last submit time.
     /// </list>
     /// </remarks>
-    public class OIRank : IRankingStrategy
+    public class OIRank : IRankingStrategyV2
     {
         /// <inheritdoc />
         public int Id => 1;
@@ -43,6 +43,18 @@ namespace Ccs.Scoreboard.Query
 
         /// <inheritdoc />
         public string FullName => "IOI";
+
+        /// <inheritdoc />
+        public IReadOnlyList<(string StyleClass, string Name)> CellColors { get; }
+            = new[]
+            {
+                ("score_first", "Solved"),
+                ("score_correct", "Partially correct"),
+                ("score_incorrect", "Tried, incorrect"),
+                ("score_pending", "Tried, pending"),
+                ("score_neutral", "Untried"),
+            };
+
 
         /// <inheritdoc />
         public IEnumerable<IScoreboardRow> SortByRule(IEnumerable<IScoreboardRow> source, bool isPublic)
@@ -231,6 +243,49 @@ namespace Ccs.Scoreboard.Query
             }
 
             return new ScoreboardRawData(cid, rcc.Values, scc.Values);
+        }
+
+
+        /// <inheritdoc />
+        public IReadOnlyList<(string, string, string)> GetStatistics(ProblemStatisticsModel model, ProblemModel problem, IContestTime time)
+        {
+            return new[]
+            {
+                ("user", "number of teams submitted", $"{model.Accepted}"),
+                ("hockey-puck", "number of submissions", $"{model.Accepted + model.Rejected}"),
+                ("question-circle", "number of pending submissions", $"{model.Pending}"),
+                ("lightbulb", "current maximum score", $"{model.MaxScore}pts"),
+            };
+        }
+
+
+        /// <inheritdoc />
+        public int GetTotalSolved(ProblemStatisticsModel[] models)
+        {
+            return models.Sum(r => r.MaxScore);
+        }
+
+
+        /// <inheritdoc />
+        public (int Points, int Penalty, int LastAc) GetRanks(RankCache cache, bool isPublic)
+        {
+            return isPublic
+                ? (cache.PointsPublic, cache.TotalTimePublic, cache.TotalTimePublic)
+                : (cache.PointsRestricted, cache.TotalTimeRestricted, cache.TotalTimeRestricted);
+        }
+
+
+        /// <inheritdoc />
+        public ScoreCellModel ToCell(ScoreCache cache, bool isPublic)
+        {
+            return new ScoreCellModel
+            {
+                PendingCount = isPublic ? cache.PendingPublic    : cache.PendingRestricted,
+                JudgedCount  = isPublic ? cache.SubmissionPublic : cache.SubmissionRestricted,
+                Score        = isPublic ? cache.ScorePublic      : cache.ScoreRestricted,
+                SolveTime    = isPublic ? cache.SolveTimePublic  : cache.SolveTimeRestricted,
+                IsFirstToSolve = cache.FirstToSolve,
+            };
         }
     }
 }

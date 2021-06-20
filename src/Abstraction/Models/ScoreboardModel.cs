@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Ccs.Scoreboard;
+using System;
 using System.Collections.Generic;
 using Tenant.Entities;
 
@@ -18,7 +19,9 @@ namespace Ccs.Models
 
         public int ContestId { get; }
 
-        public int RankingStrategy { get; }
+        public IContestTime ContestTime { get; }
+
+        public IRankingStrategy RankingStrategy { get; }
 
         public SortOrderLookup Public { get; }
 
@@ -26,7 +29,8 @@ namespace Ccs.Models
 
         public ScoreboardModel(
             int cid,
-            int rule,
+            IRankingStrategy rule,
+            IContestTime time,
             IReadOnlyDictionary<int, IScoreboardRow> data,
             IReadOnlyDictionary<int, Category> categories,
             IReadOnlyDictionary<int, Affiliation> affiliations,
@@ -43,6 +47,7 @@ namespace Ccs.Models
             Public = @public;
             Restricted = restricted;
             Problems = problems;
+            ContestTime = time;
         }
 
         public ScoreboardModel(
@@ -51,10 +56,12 @@ namespace Ccs.Models
             IReadOnlyDictionary<int, Category> categories,
             IReadOnlyDictionary<int, Affiliation> affiliations,
             ProblemCollection problems,
-            Scoreboard.IRankingStrategy rankingStrategy)
+            IContestTime time,
+            IRankingStrategy rankingStrategy)
             : this(
                   cid,
-                  rankingStrategy.Id,
+                  rankingStrategy,
+                  time,
                   data,
                   categories,
                   affiliations,
@@ -66,7 +73,7 @@ namespace Ccs.Models
 
         public static ScoreboardModel Empty { get; }
             = new ScoreboardModel(
-                0, 0,
+                0, null!, new TimeOnlyModel(),
                 new Dictionary<int, IScoreboardRow>(),
                 new Dictionary<int, Category>(),
                 new Dictionary<int, Affiliation>(),

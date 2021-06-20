@@ -98,7 +98,7 @@ namespace SatelliteSite.ContestModule.Components.ContestScoreboard
                 for (int i = firstRow; i < lastRow && i < sortOrder.Count; i++)
                     WriteTeamRow(sortOrder[i], i == firstRow);
                 if (sortOrder.Statistics != null && sortOrder.Count >= firstRow)
-                    Statistics.WriteTo(sortOrder.Statistics, writer, encoder, _model.RankingStrategy);
+                    Statistics.WriteTo(sortOrder.Statistics, _model.RankingStrategy, _model.Problems, _model.ContestTime, writer, encoder);
                 writer.WriteLine("</tbody>");
 
                 for (int i = 0; favoriteTeams != null && i < sortOrder.Count; i++)
@@ -154,7 +154,7 @@ namespace SatelliteSite.ContestModule.Components.ContestScoreboard
             }
 
             if (_usefoot)
-                Footer.WriteTo(showCategory, writer, encoder, _model.RankingStrategy, !_page.HasValue);
+                Footer.WriteTo(showCategory, _model.RankingStrategy, writer, encoder, !_page.HasValue);
         }
     }
 }

@@ -35,9 +35,7 @@ namespace SatelliteSite.ContestModule.Models
             int teamid,
             IReadOnlyList<Clarification> clars,
             IReadOnlyList<SubmissionViewModel> submits)
-            : base(scb.ContestId,
-                  scb.RankingStrategy,
-                  scb.Problems)
+            : base(scb)
         {
             var row = scb.Data[teamid];
             RankCache = row.RankCache;

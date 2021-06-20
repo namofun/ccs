@@ -36,7 +36,7 @@ namespace Ccs.Scoreboard.Query
     /// <c>TotalTimePublic</c> means the last submit time.
     /// </list>
     /// </remarks>
-    public class CFRank : IRankingStrategy
+    public class CFRank : IRankingStrategyV2
     {
         /// <inheritdoc />
         public int Id => 2;
@@ -46,6 +46,18 @@ namespace Ccs.Scoreboard.Query
 
         /// <inheritdoc />
         public string FullName => "Codeforces";
+
+        /// <inheritdoc />
+        public IReadOnlyList<(string StyleClass, string Name)> CellColors { get; }
+            = new[]
+            {
+                ("score_correct", "Solved"),
+                ("score_incorrect", "Tried, incorrect"),
+                ("score_fst", "Failed system test"),
+                ("score_pending", "Tried, pending"),
+                ("score_neutral", "Untried"),
+            };
+
 
         /// <inheritdoc />
         public IEnumerable<IScoreboardRow> SortByRule(IEnumerable<IScoreboardRow> source, bool isPublic)
@@ -210,6 +222,57 @@ namespace Ccs.Scoreboard.Query
             }
 
             return new ScoreboardRawData(cid, rcc.Values, scc.Values);
+        }
+
+
+        /// <inheritdoc />
+        public IReadOnlyList<(string, string, string)> GetStatistics(ProblemStatisticsModel model, ProblemModel problem, IContestTime time)
+        {
+            var nowTime = DateTimeOffset.Now;
+            var endTime = time.StartTime + time.EndTime;
+            var startTime = time.StartTime ?? nowTime;
+            if (nowTime < startTime) nowTime = startTime;
+            int minScore = problem.Score * 3 / 10;
+            int rateScore = problem.Score - (int)(nowTime - startTime).TotalMinutes * (problem.Score / 250);
+
+            return new[]
+            {
+                ("thumbs-up", "number of accepted submissions", $"{model.Accepted}"),
+                ("thumbs-down", "number of rejected submissions", $"{model.Rejected}"),
+                ("question-circle", "number of pending submissions", $"{model.Pending}"),
+                ("clock", "score submit now",
+                    endTime.HasValue && DateTimeOffset.Now < endTime.Value
+                        ? Math.Max(minScore, rateScore) + "pts"
+                        : "n/a"),
+            };
+        }
+
+
+        /// <inheritdoc />
+        public int GetTotalSolved(ProblemStatisticsModel[] models)
+        {
+            return models.Sum(r => r.Accepted);
+        }
+
+
+        /// <inheritdoc />
+        public (int Points, int Penalty, int LastAc) GetRanks(RankCache cache, bool isPublic)
+        {
+            return (cache.PointsPublic, cache.TotalTimePublic, cache.TotalTimePublic);
+        }
+
+
+        /// <inheritdoc />
+        public ScoreCellModel ToCell(ScoreCache cache, bool isPublic)
+        {
+            return new ScoreCellModel
+            {
+                PendingCount = cache.PendingRestricted,
+                JudgedCount = cache.SubmissionPublic,
+                Score = cache.ScorePublic,
+                SolveTime = cache.SolveTimePublic,
+                FailedSystemTest = cache.FirstToSolve,
+            };
         }
     }
 }

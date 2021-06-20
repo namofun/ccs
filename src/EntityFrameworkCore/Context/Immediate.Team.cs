@@ -268,7 +268,7 @@ namespace Ccs.Services
                     v => v.With(rankCaches.GetValueOrDefault(v.TeamId), scoreCaches[v.TeamId]));
 
             var rules = Get<IReadOnlyList<Scoreboard.IRankingStrategy>>();
-            return new ScoreboardModel(Contest.Id, teams, cats, affs, probs, rules[Contest.RankingStrategy]);
+            return new ScoreboardModel(Contest.Id, teams, cats, affs, probs, new TimeOnlyModel(Contest), rules[Contest.RankingStrategy]);
         }
 
         public virtual async Task<IReadOnlyDictionary<int, (int, int)>> StatisticsAsync(Team? team)

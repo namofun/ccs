@@ -26,7 +26,7 @@ namespace Ccs.Models
         public bool ShowHiddenCategories { get; }
 
         public FullBoardViewModel(ScoreboardModel scoreboard, bool isPublic, bool showHidden = true)
-            : base(scoreboard.ContestId, scoreboard.RankingStrategy, scoreboard.Problems)
+            : base(scoreboard)
         {
             UpdateTime = scoreboard.RefreshTime;
             Categories = scoreboard.Categories;

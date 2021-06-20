@@ -1,4 +1,5 @@
 ﻿#nullable enable
+using Ccs.Scoreboard;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -8,9 +9,11 @@ namespace Ccs.Models
     {
         public int ContestId { get; }
 
-        public int RankingStrategy { get; }
+        public IRankingStrategyV2 RankingStrategy { get; }
 
         public ProblemCollection Problems { get; }
+
+        public IContestTime ContestTime { get; }
 
         public abstract IEnumerator<SortOrderModel> GetEnumerator();
 
@@ -30,40 +33,7 @@ namespace Ccs.Models
                 var p = Problems.Find(pp.ProblemId);
                 if (p == null) continue;
                 var pid = p.Rank - 1;
-
-                if (RankingStrategy == CcsDefaults.RuleCodeforces)
-                {
-                    prob[pid] = new ScoreCellModel
-                    {
-                        PendingCount = pp.PendingRestricted,
-                        JudgedCount = pp.SubmissionPublic,
-                        Score = pp.ScorePublic,
-                        SolveTime = pp.SolveTimePublic,
-                        FailedSystemTest = pp.FirstToSolve,
-                    };
-                }
-                else if (ispublic)
-                {
-                    prob[pid] = new ScoreCellModel
-                    {
-                        PendingCount = pp.PendingPublic,
-                        IsFirstToSolve = pp.FirstToSolve,
-                        JudgedCount = pp.SubmissionPublic,
-                        Score = pp.ScorePublic,
-                        SolveTime = pp.SolveTimePublic,
-                    };
-                }
-                else
-                {
-                    prob[pid] = new ScoreCellModel
-                    {
-                        PendingCount = pp.PendingRestricted,
-                        IsFirstToSolve = pp.FirstToSolve,
-                        JudgedCount = pp.SubmissionRestricted,
-                        Score = pp.ScoreRestricted,
-                        SolveTime = pp.SolveTimeRestricted,
-                    };
-                }
+                prob[pid] = RankingStrategy.ToCell(pp, ispublic);
 
                 if (stat == null) continue;
                 if (prob[pid].Score.HasValue)
@@ -82,7 +52,7 @@ namespace Ccs.Models
                 }
             }
 
-            ispublic |= RankingStrategy == CcsDefaults.RuleCodeforces;
+            var (points, penalty, lastac) = RankingStrategy.GetRanks(row.RankCache, ispublic);
             return new TeamModel
             {
                 TeamId = row.TeamId,
@@ -91,18 +61,24 @@ namespace Ccs.Models
                 AffiliationId = aff?.Abbreviation ?? "null",
                 Category = cat?.Name ?? "",
                 CategoryColor = cat?.Color ?? "#ffffff",
-                Points = ispublic ? row.RankCache.PointsPublic : row.RankCache.PointsRestricted,
-                Penalty = ispublic ? row.RankCache.TotalTimePublic : row.RankCache.TotalTimeRestricted,
-                LastAc = ispublic ? row.RankCache.LastAcPublic : row.RankCache.LastAcRestricted,
+                Points = points,
+                Penalty = penalty,
+                LastAc = lastac,
                 Problems = prob,
             };
         }
 
-        protected BoardViewModel(int cid, int rule, ProblemCollection problems)
+        protected BoardViewModel(int cid, IRankingStrategy rule, ProblemCollection problems, IContestTime time)
         {
             ContestId = cid;
-            RankingStrategy = rule;
+            RankingStrategy = (rule as IRankingStrategyV2) ?? NullRank.Instance;
             Problems = problems;
+            ContestTime = time;
+        }
+
+        protected BoardViewModel(ScoreboardModel scb)
+            : this(scb.ContestId, scb.RankingStrategy, scb.Problems, scb.ContestTime)
+        {
         }
     }
 }

@@ -22,5 +22,23 @@ namespace Ccs.Models
         {
             return EntityInterfaceExtensions.GetState(this, nowTime);
         }
+
+        /// <summary>
+        /// Initialize an time only model.
+        /// </summary>
+        public TimeOnlyModel()
+        {
+        }
+
+        /// <summary>
+        /// Initialize an time only model from existing time.
+        /// </summary>
+        public TimeOnlyModel(IContestTime time)
+        {
+            StartTime = time.StartTime;
+            EndTime = time.EndTime;
+            FreezeTime = time.FreezeTime;
+            UnfreezeTime = time.UnfreezeTime;
+        }
     }
 }

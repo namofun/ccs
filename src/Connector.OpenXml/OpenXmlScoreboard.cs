@@ -46,7 +46,7 @@ namespace Ccs.Scoreboard
 
                     for (int i = 0; i < team.Problems.Length; i++)
                     {
-                        if (board.RankingStrategy == CcsDefaults.RuleXCPC)
+                        if (board.RankingStrategy.Id == CcsDefaults.RuleXCPC)
                         {
                             if (team.Problems[i] == null) continue;
                             var prob = team.Problems[i];
@@ -57,7 +57,7 @@ namespace Ccs.Scoreboard
                                     ? $"(-{prob.JudgedCount})"
                                     : $"{prob.Score} (+{prob.JudgedCount})");
                         }
-                        else if (board.RankingStrategy == CcsDefaults.RuleIOI)
+                        else if (board.RankingStrategy.Id == CcsDefaults.RuleIOI)
                         {
                             if (!(team.Problems[i]?.Score is int sc)) continue;
                             row.Cell(5 + i).Align().Value(sc);

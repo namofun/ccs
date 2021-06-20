@@ -61,9 +61,7 @@ namespace SatelliteSite.ContestModule.Models
                 int teamid,
                 Category category,
                 Affiliation affiliation)
-                : base(scb.ContestId,
-                      scb.RankingStrategy,
-                      scb.Problems)
+                : base(scb)
             {
                 _row = scb.Data[teamid];
                 _category = category;

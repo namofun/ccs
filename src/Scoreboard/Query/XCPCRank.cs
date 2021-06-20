@@ -33,7 +33,7 @@ namespace Ccs.Scoreboard.Query
     /// <c>TotalTime</c> means the penalty time.
     /// </list>
     /// </remarks>
-    public class XCPCRank : IRankingStrategy
+    public class XCPCRank : IRankingStrategyV2
     {
         /// <inheritdoc />
         public int Id => 0;
@@ -43,6 +43,18 @@ namespace Ccs.Scoreboard.Query
 
         /// <inheritdoc />
         public string FullName => "ACM-ICPC";
+
+        /// <inheritdoc />
+        public IReadOnlyList<(string StyleClass, string Name)> CellColors { get; }
+            = new[]
+            {
+                ("score_first", "Solved first"),
+                ("score_correct", "Solved"),
+                ("score_incorrect", "Tried, incorrect"),
+                ("score_pending", "Tried, pending"),
+                ("score_neutral", "Untried"),
+            };
+
 
         /// <inheritdoc />
         public IEnumerable<IScoreboardRow> SortByRule(IEnumerable<IScoreboardRow> source, bool isPublic)
@@ -264,6 +276,49 @@ namespace Ccs.Scoreboard.Query
 
             if (!args.Contest.Settings.BalloonAvailable) balloons.Clear();
             return new ScoreboardRawData(cid, rcc.Values, scc.Values, balloons);
+        }
+
+
+        /// <inheritdoc />
+        public IReadOnlyList<(string, string, string)> GetStatistics(ProblemStatisticsModel model, ProblemModel problem, IContestTime time)
+        {
+            return new[]
+            {
+                ("thumbs-up", "number of accepted submissions", $"{model.Accepted}"),
+                ("thumbs-down", "number of rejected submissions", $"{model.Rejected}"),
+                ("question-circle", "number of pending submissions", $"{model.Pending}"),
+                ("clock", "first solved", model.FirstSolve.HasValue ? model.FirstSolve.Value + "min" : "n/a"),
+            };
+        }
+
+
+        /// <inheritdoc />
+        public int GetTotalSolved(ProblemStatisticsModel[] models)
+        {
+            return models.Sum(r => r.Accepted);
+        }
+
+
+        /// <inheritdoc />
+        public (int Points, int Penalty, int LastAc) GetRanks(RankCache cache, bool isPublic)
+        {
+            return isPublic
+                ? (cache.PointsPublic, cache.TotalTimePublic, cache.LastAcPublic)
+                : (cache.PointsRestricted, cache.TotalTimeRestricted, cache.LastAcRestricted);
+        }
+
+
+        /// <inheritdoc />
+        public ScoreCellModel ToCell(ScoreCache cache, bool isPublic)
+        {
+            return new ScoreCellModel
+            {
+                PendingCount = isPublic ? cache.PendingPublic    : cache.PendingRestricted,
+                JudgedCount  = isPublic ? cache.SubmissionPublic : cache.SubmissionRestricted,
+                Score        = isPublic ? cache.ScorePublic      : cache.ScoreRestricted,
+                SolveTime    = isPublic ? cache.SolveTimePublic  : cache.SolveTimeRestricted,
+                IsFirstToSolve = cache.FirstToSolve,
+            };
         }
     }
 }
