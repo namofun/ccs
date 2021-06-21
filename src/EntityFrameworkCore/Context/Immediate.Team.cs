@@ -243,7 +243,7 @@ namespace Ccs.Services
 
         public virtual async Task<ScoreboardModel> GetScoreboardAsync()
         {
-            if (Contest.Kind == CcsDefaults.KindProblemset)
+            if (Contest.Feature == CcsDefaults.KindProblemset)
                 return ScoreboardModel.Empty;
 
             int cid = Contest.Id;

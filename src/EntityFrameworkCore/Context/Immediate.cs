@@ -86,7 +86,7 @@ namespace Ccs.Services
 
         public async Task EnsureLastStateAsync()
         {
-            if (Contest.Kind != CcsDefaults.KindDom || !Contest.Settings.EventAvailable) return;
+            if (!Contest.Settings.EventAvailable) return;
             var state = Contest.GetState();
             var lastState = (await GetLastStateAsync()).GetState();
             if (state != lastState) await WriteLastStateAsync(state, lastState);
@@ -94,7 +94,7 @@ namespace Ccs.Services
 
         public async Task EmitEventAsync(Specifications.AbstractEvent @event, string action)
         {
-            if (Contest.Kind != CcsDefaults.KindDom || !Contest.Settings.EventAvailable) return;
+            if (!Contest.Settings.EventAvailable) return;
             await EnsureLastStateAsync();
             Db.ContestEvents.Add(@event.ToEvent(action, Contest.Id));
             await Db.SaveChangesAsync();
@@ -102,7 +102,7 @@ namespace Ccs.Services
 
         public async Task EmitEventAsync(EventBatch events)
         {
-            if (Contest.Kind != CcsDefaults.KindDom || !Contest.Settings.EventAvailable) return;
+            if (!Contest.Settings.EventAvailable) return;
 
             await events.LogAsync($"A batch of {events.Count} events has been submitted.");
             int last = 0, current = 0;

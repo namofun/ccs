@@ -37,9 +37,7 @@ namespace Ccs.Services
                 ctx = await Factory.CreateAsync(cid.Value);
             }
 
-            if (ctx == null) return null;
-            if (ctx.Contest.Kind == CcsDefaults.KindDom && ctx.Contest.Settings.EventAvailable) return ctx;
-            return null;
+            return ctx != null && ctx.Contest.Settings.EventAvailable ? ctx : null;
         }
 
         public async Task Handle(ClarificationCreateEvent notification, CancellationToken cancellationToken)

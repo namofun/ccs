@@ -69,7 +69,7 @@
     <a asp-controller="JuryClarifications" asp-action="Send" asp-route-teamto="@Model.TeamId" class="btn btn-secondary" title="Send message"><i class="fas fa-envelope"></i>&nbsp;Send message</a>
 </p>
 
-<razor asp-show-if="Model.Status == 1 && Contest.Kind != CcsDefaults.KindProblemset">
+<razor asp-show-if="Model.Status == 1 && Contest.Feature != CcsDefaults.KindProblemset">
     <h3>Score</h3>
     <domjudge-scoreboard model="Model.Board" />
 </razor>

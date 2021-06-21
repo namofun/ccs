@@ -67,7 +67,7 @@ namespace Ccs.Scoreboard
         /// <inheritdoc />
         public async Task Handle(ScoreboardRefreshEvent notification, CancellationToken cancellationToken)
         {
-            if (notification.Contest.Kind == CcsDefaults.KindProblemset)
+            if (notification.Contest.Feature == CcsDefaults.KindProblemset)
             {
                 await Store.RebuildStatisticsAsync(notification.Contest.Id);
             }
@@ -83,7 +83,7 @@ namespace Ccs.Scoreboard
         {
             if (notification.Submission.ContestId == 0) return;
             var context = await Factory.CreateAsync(notification.Submission.ContestId);
-            if (context == null || context.Contest.Kind == CcsDefaults.KindProblemset) return;
+            if (context == null || context.Contest.Feature == CcsDefaults.KindProblemset) return;
             var contest = context.Contest;
             if (contest.GetState(notification.Submission.Time) >= ContestState.Ended) return;
             await Select(contest).Pending(Store, contest, notification);
@@ -95,7 +95,7 @@ namespace Ccs.Scoreboard
             if (notification.ContestId == null) return;
             if (!notification.Judging.Active) return;
             var context = await Factory.CreateAsync(notification.ContestId.Value);
-            if (context == null || context.Contest.Kind == CcsDefaults.KindProblemset) return;
+            if (context == null || context.Contest.Feature == CcsDefaults.KindProblemset) return;
             var contest = context.Contest;
             if (contest.GetState(notification.SubmitTime) >= ContestState.Ended) return;
 

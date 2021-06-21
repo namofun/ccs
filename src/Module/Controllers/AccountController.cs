@@ -29,7 +29,7 @@ namespace SatelliteSite.ContestModule.Controllers
             if (feature == null) context.Result = BadRequest();
             var ccs = HttpContext.Features.Get<IContestFeature>();
 
-            ViewData["NavbarName"] = ccs.Context.Contest.Kind switch
+            ViewData["NavbarName"] = ccs.Context.Contest.Feature switch
             {
                 0 => Ccs.CcsDefaults.NavbarPublic,
                 1 => Ccs.CcsDefaults.NavbarGym,

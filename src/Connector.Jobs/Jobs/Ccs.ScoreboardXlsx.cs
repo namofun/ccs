@@ -76,7 +76,7 @@ namespace Ccs.Connector.Jobs
                 var contest = context.Contest;
                 if (!contest.StartTime.HasValue
                     || contest.RankingStrategy == CcsDefaults.RuleCodeforces
-                    || contest.Kind == CcsDefaults.KindProblemset)
+                    || contest.Feature == CcsDefaults.KindProblemset)
                 {
                     logger.LogError("Export constraint failed.");
                     return JobStatus.Failed;

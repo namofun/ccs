@@ -147,7 +147,7 @@ namespace SatelliteSite.ContestModule
                     .HasIdentifier("menu_clarifications")
                     .HasBadge("clarifications", BootstrapColor.info)
                     .ActiveWhenController("JuryClarifications")
-                    .RequireThat(ctx => Feature(ctx).Kind != CcsDefaults.KindProblemset && Feature(ctx).JuryLevel >= JuryLevel.Jury);
+                    .RequireThat(ctx => Feature(ctx).Feature != CcsDefaults.KindProblemset && Feature(ctx).JuryLevel >= JuryLevel.Jury);
 
                 menu.HasEntry(300)
                     .HasLink("Contest", "JurySubmissions", "List")
@@ -161,28 +161,28 @@ namespace SatelliteSite.ContestModule
                     .HasIdentifier("menu_rejudgings")
                     .HasBadge("rejudgings", BootstrapColor.info)
                     .ActiveWhenController("JuryRejudgings")
-                    .RequireThat(ctx => Feature(ctx).Kind != CcsDefaults.KindProblemset && Feature(ctx).JuryLevel >= JuryLevel.Jury);
+                    .RequireThat(ctx => Feature(ctx).Feature != CcsDefaults.KindProblemset && Feature(ctx).JuryLevel >= JuryLevel.Jury);
 
                 menu.HasEntry(500)
                     .HasLink("Contest", "Jury", "Scoreboard")
                     .HasTitle("fas fa-list-ol", "Scoreboard")
                     .ActiveWhenAction("Scoreboard")
-                    .RequireThat(ctx => Feature(ctx).Kind == CcsDefaults.KindDom && Feature(ctx).JuryLevel >= JuryLevel.Jury);
+                    .RequireThat(ctx => Feature(ctx).Feature == CcsDefaults.KindDom && Feature(ctx).JuryLevel >= JuryLevel.Jury);
 
                 menu.HasEntry(600)
                     .HasLink("Contest", "DomTeam", "Home")
                     .HasTitle("fas fa-arrow-right", "Team")
-                    .RequireThat(ctx => Feature(ctx).Kind == CcsDefaults.KindDom && Feature(ctx).HasTeam);
+                    .RequireThat(ctx => Feature(ctx).Feature == CcsDefaults.KindDom && Feature(ctx).HasTeam);
 
                 menu.HasEntry(601)
                     .HasLink("Contest", "Gym", "Home")
                     .HasTitle("fas fa-arrow-right", "Gym")
-                    .RequireThat(ctx => Feature(ctx).Kind == CcsDefaults.KindGym);
+                    .RequireThat(ctx => Feature(ctx).Feature == CcsDefaults.KindGym);
 
                 menu.HasEntry(602)
                     .HasLink("Contest", "Problemset", "List")
                     .HasTitle("fas fa-arrow-right", "Problemset")
-                    .RequireThat(ctx => Feature(ctx).Kind == CcsDefaults.KindProblemset);
+                    .RequireThat(ctx => Feature(ctx).Feature == CcsDefaults.KindProblemset);
             });
 
             menus.Menu(CcsDefaults.NavbarGym, menu =>
@@ -343,7 +343,7 @@ namespace SatelliteSite.ContestModule
                 menu.HasEntry(100)
                     .HasTitle(string.Empty, "Clarifications")
                     .HasLink("Contest", "JuryClarifications", "List")
-                    .RequireThat(ctx => Feature(ctx).Kind != CcsDefaults.KindProblemset);
+                    .RequireThat(ctx => Feature(ctx).Feature != CcsDefaults.KindProblemset);
 
                 menu.HasEntry(150)
                     .HasTitle(string.Empty, "Internal Errors")
@@ -363,17 +363,17 @@ namespace SatelliteSite.ContestModule
                 menu.HasEntry(250)
                     .HasTitle(string.Empty, "Rejudgings")
                     .HasLink("Contest", "JuryRejudgings", "List")
-                    .RequireThat(ctx => Feature(ctx).Kind != CcsDefaults.KindProblemset);
+                    .RequireThat(ctx => Feature(ctx).Feature != CcsDefaults.KindProblemset);
 
                 menu.HasEntry(300)
                     .HasTitle(string.Empty, "Scoreboard")
                     .HasLink("Contest", "Jury", "Scoreboard")
-                    .RequireThat(c => Feature(c).Kind == CcsDefaults.KindDom);
+                    .RequireThat(c => Feature(c).Feature == CcsDefaults.KindDom);
 
                 menu.HasEntry(350)
                     .HasTitle(string.Empty, "Statistics/Analysis")
                     .HasLink("Contest", "JuryAnalysis", "Overview")
-                    .RequireThat(c => Feature(c).Kind != CcsDefaults.KindProblemset);
+                    .RequireThat(c => Feature(c).Feature != CcsDefaults.KindProblemset);
 
                 menu.HasEntry(400)
                     .HasTitle(string.Empty, "Submissions")
@@ -393,7 +393,7 @@ namespace SatelliteSite.ContestModule
                 menu.HasEntry(102)
                     .HasTitle(string.Empty, "Reset event feed")
                     .HasLink("Contest", "Jury", "ResetEventFeed")
-                    .RequireThat(c => Feature(c).Kind == CcsDefaults.KindDom && Feature(c).Settings.EventAvailable);
+                    .RequireThat(c => Feature(c).Settings.EventAvailable);
 
                 menu.HasEntry(150)
                     .HasTitle(string.Empty, "Audit log")
@@ -402,12 +402,12 @@ namespace SatelliteSite.ContestModule
                 menu.HasEntry(200)
                     .HasTitle(string.Empty, "Generate statement LaTeX")
                     .HasLink("Contest", "JuryProblems", "GenerateStatement")
-                    .RequireThat(c => Feature(c).Kind != CcsDefaults.KindProblemset);
+                    .RequireThat(c => Feature(c).Feature != CcsDefaults.KindProblemset);
 
                 menu.HasEntry(350)
                     .HasTitle(string.Empty, "Import / export")
                     .HasLink("Contest", "Jury", "ImportExport")
-                    .RequireThat(c => Feature(c).Kind != CcsDefaults.KindProblemset);
+                    .RequireThat(c => Feature(c).Feature != CcsDefaults.KindProblemset);
             });
 
             menus.Component(Polygon.ResourceDictionary.ComponentProblemOverview)

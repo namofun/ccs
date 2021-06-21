@@ -98,11 +98,11 @@ namespace SatelliteSite.ContestModule.Controllers
         [HttpGet("{submitid}/[action]")]
         public async Task<IActionResult> Rejudge(int submitid)
         {
-            if (Contest.Kind == Ccs.CcsDefaults.KindProblemset)
+            if (Contest.Feature == Ccs.CcsDefaults.KindProblemset)
             {
                 return Message(
                     title: "Rejudging",
-                    message: "Rejudging not supported. Please submit this solution again.");
+                    message: "Rejudging not supported in problem sets. Please submit this solution again.");
             }
 
             var sub = await Context.FindSubmissionAsync(submitid);

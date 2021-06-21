@@ -34,7 +34,7 @@ namespace SatelliteSite.ContestModule.Apis
             bool isXcpc = Contest.RankingStrategy == CcsDefaults.RuleXCPC;
             bool isOi = Contest.RankingStrategy == CcsDefaults.RuleIOI;
             if (!Contest.StartTime.HasValue
-                || Contest.Kind == CcsDefaults.KindProblemset
+                || Contest.Feature == CcsDefaults.KindProblemset
                 || (!isXcpc && !isOi))
                 return null;
 

@@ -64,7 +64,7 @@ namespace SatelliteSite.ContestModule.Controllers
         [HttpGet("[action]")]
         public async Task<IActionResult> Choose()
         {
-            if (Contest.Kind == Ccs.CcsDefaults.KindProblemset) return StatusCode(503);
+            if (Contest.Feature == Ccs.CcsDefaults.KindProblemset) return StatusCode(503);
 
             var problems = await Context.ListProblemsAsync(true);
             var recent = await Context.ListPolygonAsync(User);
@@ -82,7 +82,7 @@ namespace SatelliteSite.ContestModule.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Choose(ChooseProblemModel model)
         {
-            if (Contest.Kind == Ccs.CcsDefaults.KindProblemset) return StatusCode(503);
+            if (Contest.Feature == Ccs.CcsDefaults.KindProblemset) return StatusCode(503);
 
             var problems = await Context.ListProblemsAsync(true);
             var recent = await Context.ListPolygonAsync(User);
@@ -183,7 +183,7 @@ namespace SatelliteSite.ContestModule.Controllers
         [HttpGet("[action]")]
         public async Task<IActionResult> Descriptions()
         {
-            if (Contest.Kind == Ccs.CcsDefaults.KindProblemset) return StatusCode(503);
+            if (Contest.Feature == Ccs.CcsDefaults.KindProblemset) return StatusCode(503);
 
             var problems = await Context.ListProblemsAsync();
             var list = new List<ProblemModel>();
@@ -309,7 +309,7 @@ namespace SatelliteSite.ContestModule.Controllers
         public async Task<IActionResult> GenerateStatement(
             [FromServices] IStatementWriter writer)
         {
-            if (Contest.Kind == Ccs.CcsDefaults.KindProblemset) return StatusCode(503);
+            if (Contest.Feature == Ccs.CcsDefaults.KindProblemset) return StatusCode(503);
 
             var stmts = await Context.GetStatementsAsync();
             var startTime = Contest.StartTime ?? DateTimeOffset.Now;

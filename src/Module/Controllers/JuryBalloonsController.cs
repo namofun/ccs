@@ -8,7 +8,7 @@ namespace SatelliteSite.ContestModule.Controllers
 {
     [Area("Contest")]
     [Authorize(Policy = "ContestIsBalloonRunner")]
-    [Route("[area]/{cid:c(1)}/jury/balloon")]
+    [Route("[area]/{cid:c(3)}/jury/balloon")]
     public class JuryBalloonsController : JuryControllerBase<IBalloonContext>
     {
         public override void OnActionExecuting(ActionExecutingContext context)

@@ -21,7 +21,7 @@ namespace SatelliteSite.ContestModule.Routing
             if (routeDirection == RouteDirection.UrlGeneration) return true;
             var feature = httpContext.Features.Get<IContestFeature>();
             if (feature?.Context == null) return false;
-            return (_allowdMask & (1 << feature.Context.Contest.Kind)) != 0;
+            return (_allowdMask & (1 << feature.Context.Contest.Feature)) != 0;
         }
     }
 }

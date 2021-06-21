@@ -65,7 +65,7 @@ namespace Ccs.Services
 
         public virtual async Task<ProblemCollection> ListProblemsAsync(bool nonCached = false)
         {
-            if (Contest.Kind == CcsDefaults.KindProblemset)
+            if (Contest.Feature == CcsDefaults.KindProblemset)
             {
                 Logger.ImproperCall("ListProblemsAsync(bool) -> Task<ProblemCollection>", Contest);
             }

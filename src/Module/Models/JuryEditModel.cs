@@ -149,16 +149,16 @@ namespace SatelliteSite.ContestModule.Models
                 };
 
             var settings = contest.Settings.Clone();
-            settings.BalloonAvailable = UseBalloon;
-            settings.EventAvailable = UseEvents;
+            settings.BalloonAvailable = contest.Kind == Ccs.CcsDefaults.KindDom && UseBalloon;
+            settings.EventAvailable = contest.Kind == Ccs.CcsDefaults.KindDom && UseEvents;
             settings.Languages = Languages;
-            settings.PrintingAvailable = UsePrintings;
+            settings.PrintingAvailable = contest.Kind == Ccs.CcsDefaults.KindDom && UsePrintings;
             settings.RegisterCategory = defaultCat;
             settings.StatusAvailable = StatusAvailable;
             settings.PenaltyTime = penaltyTime;
             settings.ScoreboardPaging = scoreboardPagingEnabled;
-            settings.PreferGymUI = PreferGymUI ? true : default(bool?);
-            settings.RestrictIp = restriction == 0 ? default(int?) : restriction;
+            settings.PreferGymUI = contest.Kind == Ccs.CcsDefaults.KindDom && PreferGymUI ? true : default(bool?);
+            settings.RestrictIp = contest.Kind != Ccs.CcsDefaults.KindDom || restriction == 0 ? default(int?) : restriction;
             settings.IpRanges = IpRanges?.Split(';', StringSplitOptions.RemoveEmptyEntries);
             return settings;
         }

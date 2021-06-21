@@ -16,12 +16,12 @@ namespace SatelliteSite.ContestModule.Controllers
     [Route("[area]/{cid:c(7)}/[controller]")]
     public class JuryController : JuryControllerBase<IJuryContext>
     {
-        [HttpGet("/[area]/{cid:c(1)}/[controller]/[action]")]
+        [HttpGet("/[area]/{cid:c(3)}/[controller]/[action]")]
         public IActionResult Print()
             => CommonActions.GetPrint(this);
 
 
-        [HttpPost("/[area]/{cid:c(1)}/[controller]/[action]")]
+        [HttpPost("/[area]/{cid:c(3)}/[controller]/[action]")]
         [ValidateAntiForgeryToken]
         [AuditPoint(AuditlogType.Printing)]
         public Task<IActionResult> Print(AddPrintModel model)
@@ -43,7 +43,7 @@ namespace SatelliteSite.ContestModule.Controllers
             => View();
 
 
-        [HttpGet("/[area]/{cid:c(1)}/[controller]/[action]")]
+        [HttpGet("/[area]/{cid:c(3)}/[controller]/[action]")]
         [Authorize(Policy = "ContestIsAdministrator")]
         public IActionResult ResetEventFeed()
         {
@@ -52,7 +52,7 @@ namespace SatelliteSite.ContestModule.Controllers
         }
 
 
-        [HttpPost("/[area]/{cid:c(1)}/[controller]/[action]")]
+        [HttpPost("/[area]/{cid:c(3)}/[controller]/[action]")]
         [ValidateAntiForgeryToken]
         [Authorize(Policy = "ContestIsAdministrator")]
         [AuditPoint(AuditlogType.Contest)]

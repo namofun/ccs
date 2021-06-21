@@ -19,7 +19,7 @@ namespace Ccs.Connector.PlagiarismDetect
                 menu.HasEntry(250)
                     .HasTitle(string.Empty, "Plagiarism Detect")
                     .HasLink("Contest", "JuryPlagiarism", "Index")
-                    .RequireThat(c => c.HttpContext.Features.Get<IContestFeature>().Kind != CcsDefaults.KindProblemset);
+                    .RequireThat(c => c.HttpContext.Features.Get<IContestFeature>().Feature != CcsDefaults.KindProblemset);
             });
         }
     }
