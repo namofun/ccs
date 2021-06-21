@@ -1,5 +1,6 @@
 ﻿using Ccs.Entities;
 using Ccs.Models;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -15,8 +16,10 @@ namespace Ccs.Services
     {
         public IContestDbContext Db { get; }
 
-        public ContestRepository(TContext context)
-            => Db = context;
+        public IMediator Mediator { get; }
+
+        public ContestRepository(TContext context, IMediator mediator)
+            => (Db, Mediator) = (context, mediator);
 
         public Task<Contest?> FindAsync(int cid)
             => Db.Contests
@@ -62,13 +65,16 @@ namespace Ccs.Services
 
         public async Task<Contest> CreateAndAssignAsync(int kind, ClaimsPrincipal user)
         {
-            var e = Db.Contests.Add(new Contest { Kind = kind });
+            var e1 = new Events.ContestCreateEvent(new Contest { Kind = kind }, false);
+            await Mediator.Publish(e1);
+            var e = Db.Contests.Add(e1.Contest);
             await Db.SaveChangesAsync();
 
             var uid = int.Parse(user.GetUserId()!);
             Db.ContestJuries.Add(new Jury { ContestId = e.Entity.Id, UserId = uid, Level = JuryLevel.Administrator });
             await Db.SaveChangesAsync();
 
+            await Mediator.Publish(new Events.ContestCreateEvent(e.Entity, true));
             return e.Entity;
         }
 
