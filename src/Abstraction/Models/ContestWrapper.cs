@@ -82,5 +82,14 @@ namespace Ccs.Models
         {
             return Settings.ScoreboardPaging ?? TeamCount >= 400;
         }
+
+        /// <inheritdoc />
+        bool IContestInformation.ShouldSubmissionAvailable(bool sameTeam, bool passProblem)
+        {
+            return sameTeam ||
+                !(Settings.StatusAvailable == 0
+                    || (Kind == CcsDefaults.KindDom && GetState(null) < Entities.ContestState.Ended)
+                    || (Settings.StatusAvailable == 2 && !passProblem));
+        }
     }
 }

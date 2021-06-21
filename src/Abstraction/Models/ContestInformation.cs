@@ -65,6 +65,14 @@
         IContestSettings Settings { get; }
 
         /// <summary>
+        /// Checks whether the submission is available to current user.
+        /// </summary>
+        /// <param name="sameTeam">Whether current team is the same team as submission.</param>
+        /// <param name="passProblem">Whether current team has passed the problem.</param>
+        /// <returns>The available option.</returns>
+        bool ShouldSubmissionAvailable(bool sameTeam, bool passProblem);
+
+        /// <summary>
         /// Checks whether the scoreboard paging should be enabled.
         /// </summary>
         /// <returns>The value indicating that.</returns>

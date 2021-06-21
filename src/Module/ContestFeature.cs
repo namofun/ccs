@@ -57,6 +57,7 @@ namespace SatelliteSite.ContestModule
 
         ContestState IContestTime.GetState(DateTimeOffset? nowTime) => Context.Contest.GetState(nowTime);
         bool IContestInformation.ShouldScoreboardPaging() => Context.Contest.ShouldScoreboardPaging();
+        bool IContestInformation.ShouldSubmissionAvailable(bool sameTeam, bool passProblem) => Context.Contest.ShouldSubmissionAvailable(sameTeam, passProblem);
         int IContestInformation.Id => Context.Contest.Id;
         string IContestInformation.Name => Context.Contest.Name;
         string IContestInformation.ShortName => Context.Contest.ShortName;

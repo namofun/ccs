@@ -6,7 +6,7 @@
 
     IReadOnlyDictionary<int, (int Accepted, int Total)> substat = ViewBag.SubmissionStatistics;
     var avp = substat?.Where(sc => sc.Value.Accepted > 0).Select(sc => sc.Key).ToHashSet() ?? new HashSet<int>();
-    var notIgnore = Contest.Settings.StatusAvailable == 1 || Contest.Team?.TeamId == team.TeamId || (Contest.Settings.StatusAvailable == 2 && avp.Contains(prob.ProblemId));
+    var notIgnore = Contest.ShouldSubmissionAvailable(Contest.Team?.TeamId == team.TeamId, avp.Contains(prob.ProblemId));
     if (ViewData.ContainsKey("InAjax"))
     {
         Layout = null;

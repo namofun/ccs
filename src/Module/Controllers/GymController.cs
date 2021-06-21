@@ -102,8 +102,9 @@ namespace SatelliteSite.ContestModule.Controllers
 
             if (model.Problem == null
                 || model.Language == null
-                || (Contest.Settings.StatusAvailable == 0 && model.TeamId != Contest.Team?.TeamId)
-                || (Contest.Settings.StatusAvailable == 2 && Statistics.GetValueOrDefault(model.ProblemId).Accepted == 0))
+                || !Contest.ShouldSubmissionAvailable(
+                    model.TeamId == Contest.Team?.TeamId,
+                    Statistics.GetValueOrDefault(model.ProblemId).Accepted != 0))
             {
                 return Forbid();
             }

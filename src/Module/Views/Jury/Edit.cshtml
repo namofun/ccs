@@ -59,25 +59,26 @@
                 <label asp-for="Languages">Languages</label>
                 <select asp-for="Languages" class="form-control custom-select form-control" multiple asp-items="langSel"></select>
             </div>
-            <div class="form-group" asp-show-if="Contest.Kind != CcsDefaults.KindDom">
+            <div class="form-group">
                 <label asp-for="StatusAvailable"></label>
-                <div class="custom-control custom-radio">
+                <div class="custom-control custom-radio mb-2">
                     <input type="radio" value="0" class="custom-control-input" id="StatusAvailable_0" asp-for="StatusAvailable">
                     <label class="custom-control-label" for="StatusAvailable_0">Users can see only his submissions</label>
                 </div>
-                <div class="custom-control custom-radio">
+                <div class="custom-control custom-radio mb-2">
                     <input type="radio" value="1" class="custom-control-input" id="StatusAvailable_1" asp-for="StatusAvailable">
                     <label class="custom-control-label" for="StatusAvailable_1">Users can see all submissions</label>
                 </div>
-                <div class="custom-control custom-radio">
+                <div class="custom-control custom-radio mb-2">
                     <input type="radio" value="2" class="custom-control-input" id="StatusAvailable_2" asp-for="StatusAvailable">
                     <label class="custom-control-label" for="StatusAvailable_2">Users can see submissions for problems he solved</label>
                 </div>
                 <span asp-validation-for="StatusAvailable" class="text-danger"></span>
+                <small class="text-muted">For normal contest with gym UI, this option will be applied after contest.</small>
             </div>
             <div class="form-group" asp-show-if="Contest.Kind == CcsDefaults.KindDom">
                 <label>Others</label>
-                <div class="custom-control custom-checkbox" asp-show-if="Contest.RankingStrategy == CcsDefaults.RuleXCPC">
+                <div class="custom-control custom-checkbox mb-2" asp-show-if="Contest.RankingStrategy == CcsDefaults.RuleXCPC">
                     <input type="checkbox" class="custom-control-input" asp-for="UseBalloon">
                     <label class="custom-control-label" asp-for="UseBalloon"></label>
                 </div>
@@ -85,11 +86,11 @@
                     <input type="checkbox" class="custom-control-input" asp-for="UsePrintings">
                     <label class="custom-control-label" asp-for="UsePrintings"></label>
                 </div>
-                <div class="custom-control custom-checkbox" asp-show-if="Contest.RankingStrategy == CcsDefaults.RuleXCPC">
+                <div class="custom-control custom-checkbox mt-2" asp-show-if="Contest.RankingStrategy == CcsDefaults.RuleXCPC">
                     <input type="checkbox" class="custom-control-input" asp-for="UseEvents">
                     <label class="custom-control-label" asp-for="UseEvents"></label>
                 </div>
-                <div class="custom-control custom-checkbox">
+                <div class="custom-control custom-checkbox mt-2">
                     <input type="checkbox" class="custom-control-input" asp-for="PreferGymUI">
                     <label class="custom-control-label" asp-for="PreferGymUI"></label>
                 </div>
