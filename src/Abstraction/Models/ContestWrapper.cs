@@ -26,6 +26,9 @@ namespace Ccs.Models
         public int Kind { get; }
 
         /// <inheritdoc />
+        public int Feature { get; }
+
+        /// <inheritdoc />
         public IContestSettings Settings { get; }
 
         /// <inheritdoc />
@@ -59,6 +62,7 @@ namespace Ccs.Models
             RankingStrategy = entity.RankingStrategy;
             Kind = entity.Kind;
             Settings = Entities.ContestSettings.Parse(entity.SettingsJson);
+            Feature = entity.Kind == 0 && Settings.PreferGymUI == true ? 1 : entity.Kind;
             StartTime = entity.StartTime;
             TeamCount = entity.TeamCount;
             ProblemCount = entity.ProblemCount;

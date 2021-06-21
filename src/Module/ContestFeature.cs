@@ -64,6 +64,7 @@ namespace SatelliteSite.ContestModule
         int IContestInformation.RankingStrategy => Context.Contest.RankingStrategy;
         bool IContestInformation.IsPublic => Context.Contest.IsPublic;
         int IContestInformation.Kind => Context.Contest.Kind;
+        int IContestInformation.Feature => Context.Contest.Feature;
         TimeSpan? IContestTime.FreezeTime => Context.Contest.FreezeTime;
         TimeSpan? IContestTime.EndTime => Context.Contest.EndTime;
         TimeSpan? IContestTime.UnfreezeTime => Context.Contest.UnfreezeTime;

@@ -41,11 +41,23 @@
         /// </summary>
         /// <remarks>
         /// This represent the kind of contest.
-        /// <list type="bullet"><c>0</c>: Normal contest with DOMjudge UI</list>
-        /// <list type="bullet"><c>1</c>: Practice contest with Codeforces UI</list>
-        /// <list type="bullet"><c>2</c>: Problem set with legacy OJ UI</list>
+        /// <list type="bullet"><c>0</c>: Normal contest</list>
+        /// <list type="bullet"><c>1</c>: Practice contest</list>
+        /// <list type="bullet"><c>2</c>: Problem set</list>
         /// </remarks>
         int Kind { get; }
+
+        /// <summary>
+        /// The flags for UI kind
+        /// </summary>
+        /// <remarks>
+        /// The presentation defaults to the contest kind.
+        /// <list type="bullet"><c>0</c>: DOMjudge UI and features</list>
+        /// <list type="bullet"><c>1</c>: Codeforces UI and features</list>
+        /// <list type="bullet"><c>2</c>: Legacy OJ problem set UI</list>
+        /// When <see cref="Kind"/> is <c>0</c> and <see cref="IContestSettings.PreferGymUI"/> is set, this will be changed to <c>1</c>.
+        /// </remarks>
+        int Feature { get; }
 
         /// <summary>
         /// The contest settings

@@ -56,6 +56,10 @@ namespace Ccs.Entities
         [JsonPropertyName("scoreboard-paging")]
         public bool? ScoreboardPaging { get; set; }
 
+        /// <inheritdoc />
+        [JsonPropertyName("prefer-gym-ui")]
+        public bool? PreferGymUI { get; set; }
+
         /// <summary>
         /// Parse the settings out from the <paramref name="settingsJson"/>.
         /// </summary>
@@ -82,6 +86,7 @@ namespace Ccs.Entities
                 IpRanges = IpRanges,
                 PenaltyTime = PenaltyTime,
                 ScoreboardPaging = ScoreboardPaging,
+                PreferGymUI = PreferGymUI,
             };
         }
 

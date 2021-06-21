@@ -93,7 +93,12 @@ namespace Ccs.Models
         /// <list type="bullet">If this field is true, the scoreboard will display 100 entries per page.</list>
         /// <list type="bullet">If this field is null, it will be determined by whether the number of teams exceeds 400.</list>
         /// </remarks>
-        bool? ScoreboardPaging { get; set; }
+        bool? ScoreboardPaging { get; }
+
+        /// <summary>
+        /// Whether to use Gym UI when loading the normal contest kind
+        /// </summary>
+        bool? PreferGymUI { get; }
 
         /// <summary>
         /// Clone a copy of this settings.
