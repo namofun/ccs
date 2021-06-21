@@ -1,8 +1,10 @@
-﻿using Ccs.Models;
+﻿using Ccs.Entities;
+using Ccs.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace SatelliteSite.ContestModule.Models
 {
@@ -38,6 +40,9 @@ namespace SatelliteSite.ContestModule.Models
 
         [DisplayName("Use scoreboard paging")]
         public int UseScoreboardPaging { get; set; }
+
+        [DisplayName("Prefer Gym UI")]
+        public bool PreferGymUI { get; set; }
 
         [DisplayName("Emit CCS events")]
         public bool UseEvents { get; set; }
@@ -101,6 +106,7 @@ namespace SatelliteSite.ContestModule.Models
             UsePrintings = cont.Settings.PrintingAvailable;
             UseBalloon = cont.Settings.BalloonAvailable;
             UseEvents = cont.Settings.EventAvailable;
+            PreferGymUI = cont.Settings.PreferGymUI ?? false;
             StatusAvailable = cont.Settings.StatusAvailable;
             Languages = cont.Settings.Languages;
             PenaltyTime = cont.Settings.PenaltyTime ?? 20;
@@ -114,6 +120,47 @@ namespace SatelliteSite.ContestModule.Models
                 RestrictToMinimalSite = (cont.Settings.RestrictIp.Value & 2) == 2;
                 RestrictToLastLoginIp = (cont.Settings.RestrictIp.Value & 4) == 4;
             }
+        }
+
+        public ContestSettings CreateSettings(IContestInformation contest)
+        {
+            var defaultCat = RegisterCategory?
+                .Where(k => k.Value != 0)
+                .ToDictionary(k => k.Key, v => v.Value);
+            if (defaultCat?.Count == 0) defaultCat = null;
+
+            if (RestrictToIpRanges) IpRanges ??= string.Empty; else IpRanges = null;
+            int restriction =
+                (RestrictToIpRanges ? 1 : 0)
+                | (RestrictToMinimalSite ? 2 : 0)
+                | (RestrictToLastLoginIp ? 4 : 0);
+
+            var penaltyTime =
+                contest.RankingStrategy == Ccs.CcsDefaults.RuleXCPC
+                && PenaltyTime != 20
+                ? PenaltyTime : default(int?);
+
+            var scoreboardPagingEnabled =
+                UseScoreboardPaging switch
+                {
+                    1 => true,
+                    2 => false,
+                    _ => default(bool?),
+                };
+
+            var settings = contest.Settings.Clone();
+            settings.BalloonAvailable = UseBalloon;
+            settings.EventAvailable = UseEvents;
+            settings.Languages = Languages;
+            settings.PrintingAvailable = UsePrintings;
+            settings.RegisterCategory = defaultCat;
+            settings.StatusAvailable = StatusAvailable;
+            settings.PenaltyTime = penaltyTime;
+            settings.ScoreboardPaging = scoreboardPagingEnabled;
+            settings.PreferGymUI = PreferGymUI ? true : default(bool?);
+            settings.RestrictIp = restriction == 0 ? default(int?) : restriction;
+            settings.IpRanges = IpRanges?.Split(';', StringSplitOptions.RemoveEmptyEntries);
+            return settings;
         }
     }
 }

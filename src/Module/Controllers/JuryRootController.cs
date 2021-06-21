@@ -274,11 +274,6 @@ namespace SatelliteSite.ContestModule.Controllers
             if (!string.IsNullOrWhiteSpace(model.UnfreezeTime))
                 model.UnfreezeTime.TryParseAsTimeSpan(out unfreezeTime);
 
-            var defaultCat = model.RegisterCategory?
-                .Where(k => k.Value != 0)
-                .ToDictionary(k => k.Key, v => v.Value);
-            if (defaultCat?.Count == 0) defaultCat = null;
-
             if (!endTime.HasValue
                 || (freezeTime.HasValue && freezeTime.Value > endTime.Value)
                 || (unfreezeTime.HasValue && unfreezeTime.Value < endTime.Value))
@@ -301,40 +296,7 @@ namespace SatelliteSite.ContestModule.Controllers
                 || unfreezeTime != Contest.UnfreezeTime)
                 contestTimeChanged = true;
 
-            if (model.RestrictToIpRanges)
-                model.IpRanges ??= string.Empty;
-            else
-                model.IpRanges = null;
-
-            int restriction =
-                (model.RestrictToIpRanges ? 1 : 0)
-                | (model.RestrictToMinimalSite ? 2 : 0)
-                | (model.RestrictToLastLoginIp ? 4 : 0);
-
-            var penaltyTime =
-                Contest.RankingStrategy == CcsDefaults.RuleXCPC
-                && model.PenaltyTime != 20
-                ? model.PenaltyTime : default(int?);
-
-            var scoreboardPagingEnabled =
-                model.UseScoreboardPaging switch
-                {
-                    1 => true,
-                    2 => false,
-                    _ => default(bool?),
-                };
-
-            var settings = Contest.Settings.Clone();
-            settings.BalloonAvailable = model.UseBalloon;
-            settings.EventAvailable = model.UseEvents;
-            settings.Languages = model.Languages;
-            settings.PrintingAvailable = model.UsePrintings;
-            settings.RegisterCategory = defaultCat;
-            settings.StatusAvailable = model.StatusAvailable;
-            settings.PenaltyTime = penaltyTime;
-            settings.ScoreboardPaging = scoreboardPagingEnabled;
-            settings.RestrictIp = restriction == 0 ? default(int?) : restriction;
-            settings.IpRanges = model.IpRanges?.Split(';', StringSplitOptions.RemoveEmptyEntries);
+            var settings = model.CreateSettings(Contest);
             var settingsJson = settings.ToString();
 
             await Context.UpdateContestAsync(
