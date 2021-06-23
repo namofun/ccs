@@ -67,11 +67,8 @@ namespace Ccs.Scoreboard
         /// <inheritdoc />
         public async Task Handle(ScoreboardRefreshEvent notification, CancellationToken cancellationToken)
         {
-            if (notification.Contest.Feature == CcsDefaults.KindProblemset)
-            {
-                await Store.RebuildStatisticsAsync(notification.Contest.Id);
-            }
-            else
+            await Store.RebuildStatisticsAsync(notification.Contest.Id);
+            if (notification.Contest.Feature != CcsDefaults.KindProblemset)
             {
                 var data = await Select(notification.Contest).RefreshCache(Store, notification);
                 await Store.RefreshAsync(data);

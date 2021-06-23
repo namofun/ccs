@@ -44,7 +44,7 @@
                 continue;
             }
             WriteLiteral("<td class=\"text-center score-cell\"><span class=\"font-weight-bold");
-            WriteLiteral(Contest.RankingStrategy == CcsDefaults.RuleXCPC || Contest.RankingStrategy == CcsDefaults.RuleCodeforces ? penalty.Score.HasValue ? " text-success" : " text-danger" : "");
+            WriteLiteral(Contest.RankingStrategy == CcsDefaults.RuleXCPC || Contest.RankingStrategy == CcsDefaults.RuleCodeforces ? penalty.Score.HasValue ? " text-success" : penalty.PendingCount > 0 ? " text-primary-dark" : " text-danger" : "");
             WriteLiteral("\">");
             WriteLiteral(Contest.RankingStrategy switch
             {

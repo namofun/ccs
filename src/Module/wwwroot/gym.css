@@ -104,6 +104,10 @@ table.table-text-middle > tbody > tr > td {
   color: #dc3545 !important;
 }
 
+.text-primary-dark {
+  color: #0060ca;
+}
+
 .container-gym .main h3,
 .container-gym .sidebar h3 {
   font-size: 1.5rem;

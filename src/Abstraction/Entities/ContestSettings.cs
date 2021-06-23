@@ -60,6 +60,10 @@ namespace Ccs.Entities
         [JsonPropertyName("prefer-gym-ui")]
         public bool? PreferGymUI { get; set; }
 
+        /// <inheritdoc />
+        [JsonPropertyName("system-test")]
+        public int? SystemTestRejudgingId { get; set; }
+
         /// <summary>
         /// Parse the settings out from the <paramref name="settingsJson"/>.
         /// </summary>
@@ -87,6 +91,7 @@ namespace Ccs.Entities
                 PenaltyTime = PenaltyTime,
                 ScoreboardPaging = ScoreboardPaging,
                 PreferGymUI = PreferGymUI,
+                SystemTestRejudgingId = SystemTestRejudgingId,
             };
         }
 

@@ -196,5 +196,50 @@ namespace SatelliteSite.ContestModule.Controllers
             StatusMessage = "Rejudging applied. Scoreboard cache will be refreshed.";
             return RedirectToAction(nameof(Detail));
         }
+
+
+        [HttpGet("[action]")]
+        public async Task<IActionResult> SystemTest()
+        {
+            if (Contest.RankingStrategy != Ccs.CcsDefaults.RuleCodeforces || Contest.Kind != Ccs.CcsDefaults.KindDom)
+                return NotFound();
+
+            if (Contest.GetState() < Ccs.Entities.ContestState.Ended)
+                return Message("Launch system test", "Precheck failed. Contest should be over.", BootstrapColor.danger);
+
+            if (Contest.Settings.SystemTestRejudgingId is int rejudgingid)
+                return RedirectToAction(nameof(Detail), new { rejudgingid });
+
+            var prevs = await Context.ListAsync();
+            var non_close = prevs.Where(r => !r.Applied.HasValue).Select(r => $"r{r.Id}").ToList();
+            if (non_close.Count > 0)
+                return Message("Launch system test", $"Precheck failed. Rejudgings {string.Join(',', non_close)} are not closed.", BootstrapColor.danger);
+
+            return AskPost(
+                title: "Launch system test",
+                message: "Are you sure to run system test? This will cause heavy system load.",
+                type: BootstrapColor.warning);
+        }
+
+
+        [HttpPost("[action]")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SystemTest(bool _ = true)
+        {
+            if (Contest.RankingStrategy != Ccs.CcsDefaults.RuleCodeforces || Contest.Kind != Ccs.CcsDefaults.KindDom)
+                return NotFound();
+
+            var r = await Context.SystemTestAsync(int.Parse(User.GetUserId()));
+            if (r.Success)
+            {
+                if (Contest.Settings.SystemTestRejudgingId == null) StatusMessage = "System test started.";
+                return RedirectToAction(nameof(Detail), new { rejudgingid = r.Result.Id });
+            }
+            else
+            {
+                StatusMessage = "Error Precheck failed. " + r.Message;
+                return RedirectToAction(nameof(List));
+            }
+        }
     }
 }

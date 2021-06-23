@@ -110,8 +110,9 @@ namespace Ccs.Scoreboard.Query
         /// </remarks>
         public Task Reject(IScoreboard store, IContestInformation contest, JudgingFinishedEvent args)
         {
-            #warning Should check whether this is system test
-            bool fst = args.Judging.Active && args.Judging.RejudgingId.HasValue;
+            bool fst = args.Judging.Active
+                && contest.Settings.SystemTestRejudgingId.HasValue
+                && args.Judging.RejudgingId == contest.Settings.SystemTestRejudgingId;
 
             return store.ScoreUpdateAsync(
                 cid: args.ContestId!.Value,
@@ -214,7 +215,8 @@ namespace Ccs.Scoreboard.Query
                 else if (s.Status < Verdict.CompileError)
                 {
                     // Should check whether this is system test
-                    sc.FirstToSolve = s.RejudgingId.HasValue;
+                    sc.FirstToSolve = args.Contest.Settings.SystemTestRejudgingId.HasValue
+                        && s.RejudgingId == args.Contest.Settings.SystemTestRejudgingId;
                 }
 
                 sc.SubmissionRestricted++;

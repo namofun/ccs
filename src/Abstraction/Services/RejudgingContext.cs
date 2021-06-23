@@ -85,5 +85,12 @@ namespace Ccs.Services
         /// <param name="uid">The operator user ID.</param>
         /// <returns>The task for applying.</returns>
         Task ApplyAsync(Rejudging rejudge, int uid);
+
+        /// <summary>
+        /// Starts a rejudging as system test.
+        /// </summary>
+        /// <param name="uid">The operating user ID.</param>
+        /// <returns>The task for creating system test.</returns>
+        Task<Models.CheckResult<Rejudging>> SystemTestAsync(int uid);
     }
 }

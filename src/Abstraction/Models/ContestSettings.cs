@@ -101,6 +101,11 @@ namespace Ccs.Models
         bool? PreferGymUI { get; }
 
         /// <summary>
+        /// The rejudging ID of system test
+        /// </summary>
+        int? SystemTestRejudgingId { get; }
+
+        /// <summary>
         /// Clone a copy of this settings.
         /// </summary>
         /// <remarks>This is not a performance-significant function.</remarks>

@@ -94,7 +94,7 @@
 </span>
 
 <div class="d-none" data-new-rejudging-buttons>
-    <p asp-show-if="Model.OperatedBy != null">
+    <p asp-show-if="Model.OperatedBy != null && Contest.Settings.SystemTestRejudgingId != Model.Id">
         <a asp-action="Repeat" class="btn btn-primary" data-toggle="ajaxWindow" data-target="repeat">
             <i class="fas fa-sync"></i> Repeat rejudging
         </a>
