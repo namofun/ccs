@@ -16,6 +16,11 @@ namespace Ccs.Services
         bool SupportRatingUpdate { get; }
 
         /// <summary>
+        /// Gets the initial rating value.
+        /// </summary>
+        int InitialRating { get; }
+
+        /// <summary>
         /// Rolls back the contest ratings.
         /// </summary>
         /// <param name="contest">The contest information.</param>
@@ -54,6 +59,9 @@ namespace Ccs.Services
 
         /// <inheritdoc />
         public bool SupportRatingUpdate => true;
+
+        /// <inheritdoc />
+        public abstract int InitialRating { get; }
 
         /// <summary>
         /// Initialize the <see cref="IRatingUpdater"/>.
@@ -134,6 +142,9 @@ namespace Ccs.Services
     {
         /// <inheritdoc />
         public bool SupportRatingUpdate => false;
+
+        /// <inheritdoc />
+        public int InitialRating => 0;
 
         /// <inheritdoc />
         public Task ApplyAsync(IContestInformation contest)

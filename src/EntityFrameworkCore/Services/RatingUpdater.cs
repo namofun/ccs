@@ -16,6 +16,8 @@ namespace Ccs.Services
         private readonly TContext _context;
         private const int _eligibleCategory = -3; // Category of Participants
 
+        public override int InitialRating => _ratingCalculator.InitialRating;
+
         public RatingUpdater(TContext context, IRatingCalculator ratingCalculator) : base(ratingCalculator)
         {
             _context = context;
