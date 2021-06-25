@@ -98,20 +98,30 @@ namespace Ccs.Services
                         ConcurrencyStamp = concurrencyStamp,
                     });
         }
-    }
 
-    public class NullRatingUpdater : IRatingUpdater
-    {
-        public bool SupportRatingUpdate => false;
-
-        public Task ApplyAsync(IContestInformation contest)
+        public override Task<List<RatingListModel>> GetRatedUsersAsync(int page, int count)
         {
-            throw new NotSupportedException();
+            return _context.Set<TUser>()
+                .Where(u => u.Rating != null)
+                .OrderBy(u => u.Rating)
+                .Select(u => new RatingListModel(u.Id, u.UserName, (int)u.Rating!))
+                .Skip((page - 1) * count)
+                .Take(count)
+                .ToListAsync();
         }
 
-        public Task RollbackAsync(IContestInformation contest)
+        public override Task<List<RatingListModel>> GetContestsForUserAsync(int userId)
         {
-            throw new NotSupportedException();
+            return _context.Set<Member>()
+                .Where(m => m.UserId == userId)
+                .Join(
+                    inner: _context.Set<Contest>(),
+                    outerKeySelector: m => m.ContestId,
+                    innerKeySelector: c => c.Id,
+                    resultSelector: (m, c) => new { m, c })
+                .OrderBy(a => a.c.StartTime)
+                .Select(a => new RatingListModel(a.c.Id, a.c.Name, a.m.RatingDelta))
+                .ToListAsync();
         }
     }
 }

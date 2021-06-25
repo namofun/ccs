@@ -28,6 +28,21 @@ namespace Ccs.Services
         /// <param name="contest">The contest information.</param>
         /// <returns>The task for applying the rating changes.</returns>
         Task ApplyAsync(IContestInformation contest);
+
+        /// <summary>
+        /// Gets the rated user lists.
+        /// </summary>
+        /// <param name="page">The page.</param>
+        /// <param name="count">The count per page.</param>
+        /// <returns>The task for fetching rating models.</returns>
+        Task<List<RatingListModel>> GetRatedUsersAsync(int page, int count);
+
+        /// <summary>
+        /// Gets the contest list with rating changes for user.
+        /// </summary>
+        /// <param name="userId">The user ID.</param>
+        /// <returns>The task for fetching rating models.</returns>
+        Task<List<RatingListModel>> GetContestsForUserAsync(int userId);
     }
 
     /// <summary>
@@ -104,5 +119,36 @@ namespace Ccs.Services
             await ValidateAsync(contest, shouldHaveBeen: true);
             await RollbackRatingChangesAsync(contest);
         }
+
+        /// <inheritdoc />
+        public abstract Task<List<RatingListModel>> GetRatedUsersAsync(int page, int count);
+
+        /// <inheritdoc />
+        public abstract Task<List<RatingListModel>> GetContestsForUserAsync(int userId);
+    }
+
+    /// <summary>
+    /// The null-default implementation for rating updater.
+    /// </summary>
+    public class NullRatingUpdater : IRatingUpdater
+    {
+        /// <inheritdoc />
+        public bool SupportRatingUpdate => false;
+
+        /// <inheritdoc />
+        public Task ApplyAsync(IContestInformation contest)
+            => Task.CompletedTask;
+
+        /// <inheritdoc />
+        public Task<List<RatingListModel>> GetContestsForUserAsync(int userId)
+            => Task.FromResult(new List<RatingListModel>());
+
+        /// <inheritdoc />
+        public Task<List<RatingListModel>> GetRatedUsersAsync(int page, int count)
+            => Task.FromResult(new List<RatingListModel>());
+
+        /// <inheritdoc />
+        public Task RollbackAsync(IContestInformation contest)
+            => Task.CompletedTask;
     }
 }

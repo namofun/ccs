@@ -14,15 +14,15 @@ namespace Ccs
     {
         public void Configure(IServiceCollection services)
         {
-            var userType = typeof(TUser);
-            var ratingUpdaterType = typeof(NullRatingUpdater);
-            if (typeof(IUserWithRating).IsAssignableFrom(userType))
+            if (typeof(IUserWithRating).IsAssignableFrom(typeof(TUser)))
             {
-                ratingUpdaterType = typeof(RatingUpdater<,>).MakeGenericType(userType, typeof(TContext));
+                services.AddScoped(typeof(IRatingUpdater), typeof(RatingUpdater<,>).MakeGenericType(typeof(TUser), typeof(TContext)));
+                services.AddScoped<Microsoft.AspNetCore.Identity.IUserClaimsProvider, RatingClaimsProvider>();
             }
             else
             {
                 services.AddDbModelSupplier<TContext, RemoveRatingRelatedConfiguration<TContext>>();
+                services.AddScoped<IRatingUpdater, NullRatingUpdater>();
             }
 
             services.AddDbModelSupplier<TContext, ContestEntityConfiguration<TUser, TRole, TContext>>();
@@ -33,7 +33,6 @@ namespace Ccs
             services.AddScoped<IPrintingService, PrintingService<TContext>>();
             services.AddScoped<IScoreboard, Scoreboard<TContext>>();
             services.AddScoped<IContestRepository2, CachedContestRepository2<TContext>>();
-            services.Add(ServiceDescriptor.Scoped(typeof(IRatingUpdater), ratingUpdaterType));
 
             services.AddSingleton<IContestContextFactory, CachedContestContextFactory>();
         }
