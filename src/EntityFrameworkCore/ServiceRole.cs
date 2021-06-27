@@ -16,6 +16,7 @@ namespace Ccs
         {
             if (typeof(IUserWithRating).IsAssignableFrom(typeof(TUser)))
             {
+                CcsDefaults.SupportsRating = true;
                 services.AddScoped(typeof(IRatingUpdater), typeof(RatingUpdater<,>).MakeGenericType(typeof(TUser), typeof(TContext)));
                 services.AddScoped<Microsoft.AspNetCore.Identity.IUserClaimsProvider, RatingClaimsProvider>();
             }

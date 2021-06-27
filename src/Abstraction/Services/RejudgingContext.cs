@@ -92,5 +92,17 @@ namespace Ccs.Services
         /// <param name="uid">The operating user ID.</param>
         /// <returns>The task for creating system test.</returns>
         Task<Models.CheckResult<Rejudging>> SystemTestAsync(int uid);
+
+        /// <summary>
+        /// Applies the rating changes.
+        /// </summary>
+        /// <returns>The task for result.</returns>
+        Task ApplyRatingChangesAsync();
+
+        /// <summary>
+        /// Rolls back the rating changes.
+        /// </summary>
+        /// <returns>The task for result.</returns>
+        Task RollbackRatingChangesAsync();
     }
 }

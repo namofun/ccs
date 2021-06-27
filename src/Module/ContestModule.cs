@@ -15,6 +15,7 @@ using JuryLevel = Ccs.Entities.JuryLevel;
 [assembly: RoleDefinition(30, "CDS", "cds_api", "CDS API user")]
 [assembly: RoleDefinition(31, "ContestCreator", "cont", "Contest Creator")]
 [assembly: RoleDefinition(32, "TemporaryTeamAccount", "temp_team", "Temporary Team Account")]
+[assembly: ConfigurationItem(0, "Contest", CcsDefaults.ConfigurationLastRatingChangeTime, typeof(System.DateTimeOffset?), null!, "Last rating update time.", IsPublic = false)]
 
 namespace SatelliteSite.ContestModule
 {

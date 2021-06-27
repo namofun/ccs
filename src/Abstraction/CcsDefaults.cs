@@ -1,4 +1,6 @@
-﻿namespace Ccs
+﻿[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Ccs.Storage.Relational")]
+
+namespace Ccs
 {
     /// <summary>
     /// The ccs defaults.
@@ -56,6 +58,11 @@
         public const string ComponentImportExport = "Component_Contest_ImportExport";
 
         /// <summary>
+        /// The configuration name for last rating change time
+        /// </summary>
+        public const string ConfigurationLastRatingChangeTime = "contest_last_rating_change_time";
+
+        /// <summary>
         /// The kind for contests
         /// </summary>
         public const int KindDom = 0;
@@ -89,5 +96,10 @@
         /// The default scoreboard paging size
         /// </summary>
         public const int DefaultScoreboardPagingSize = 50;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public static bool SupportsRating { get; internal set; }
     }
 }

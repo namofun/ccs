@@ -106,6 +106,11 @@ namespace Ccs.Models
         int? SystemTestRejudgingId { get; }
 
         /// <summary>
+        /// Whether the rating changes is applied
+        /// </summary>
+        bool? RatingChangesApplied { get; }
+
+        /// <summary>
         /// Clone a copy of this settings.
         /// </summary>
         /// <remarks>This is not a performance-significant function.</remarks>

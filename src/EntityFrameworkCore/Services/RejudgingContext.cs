@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Polygon.Entities;
 using Polygon.Models;
+using SatelliteSite.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -142,6 +143,37 @@ namespace Ccs.Services
                 .BatchUpdateAsync(j => new Judging { Status = Verdict.Pending });
 
             return CheckResult<Rejudging>.Succeed(rejudging);
+        }
+
+        async Task IRejudgingContext.ApplyRatingChangesAsync()
+        {
+            var ratingUpdater = Get<IRatingUpdater>();
+            var conf = Get<IConfigurationRegistry>();
+
+            var lastTime = await conf.GetDateTimeOffsetAsync(CcsDefaults.ConfigurationLastRatingChangeTime);
+            if (lastTime > Contest.StartTime) throw new InvalidOperationException();
+
+            await ratingUpdater.ApplyAsync(Contest);
+            var settings = Contest.Settings.Clone();
+            settings.RatingChangesApplied = true;
+            var settingsJson = settings.ToJson();
+            await UpdateContestAsync(c => new Entities.Contest { SettingsJson = settingsJson });
+            await conf.UpdateAsync(CcsDefaults.ConfigurationLastRatingChangeTime, Contest.StartTime.ToJson());
+        }
+
+        async Task IRejudgingContext.RollbackRatingChangesAsync()
+        {
+            var ratingUpdater = Get<IRatingUpdater>();
+            var conf = Get<IConfigurationRegistry>();
+
+            var lastTime = await conf.GetDateTimeOffsetAsync(CcsDefaults.ConfigurationLastRatingChangeTime);
+            if (lastTime != Contest.StartTime) throw new InvalidOperationException();
+
+            await ratingUpdater.RollbackAsync(Contest);
+            var settings = Contest.Settings.Clone();
+            settings.RatingChangesApplied = null;
+            var settingsJson = settings.ToJson();
+            await UpdateContestAsync(c => new Entities.Contest { SettingsJson = settingsJson });
         }
     }
 }

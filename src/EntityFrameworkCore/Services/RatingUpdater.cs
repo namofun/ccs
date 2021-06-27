@@ -77,7 +77,7 @@ namespace Ccs.Services
             return teamsQuery.ToListAsync();
         }
 
-        protected override Task RollbackRatingChangesAsync(IContestInformation contest)
+        protected override async Task RollbackRatingChangesAsync(IContestInformation contest)
         {
             int cid = contest.Id;
             var concurrencyStamp = Guid.NewGuid().ToString();
@@ -89,7 +89,7 @@ namespace Ccs.Services
                 where m.RatingDelta != null
                 select new { m.UserId, m.PreviousRating };
 
-            return _context.Set<TUser>()
+            await _context.Set<TUser>()
                 .BatchUpdateJoinAsync(
                     inner: rollbackQuery,
                     outerKeySelector: u => u.Id,
@@ -99,6 +99,11 @@ namespace Ccs.Services
                         Rating = u2.PreviousRating,
                         ConcurrencyStamp = concurrencyStamp,
                     });
+
+            // revert the calculated rating delta
+            await _context.Set<Member>()
+                .Where(m => m.ContestId == cid)
+                .BatchUpdateAsync(m => new Member { RatingDelta = null });
         }
 
         public override Task<List<RatingListModel>> GetRatedUsersAsync(int page, int count)

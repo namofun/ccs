@@ -64,6 +64,10 @@ namespace Ccs.Entities
         [JsonPropertyName("system-test")]
         public int? SystemTestRejudgingId { get; set; }
 
+        /// <inheritdoc />
+        [JsonPropertyName("rating-changes-applied")]
+        public bool? RatingChangesApplied { get; set; }
+
         /// <summary>
         /// Parse the settings out from the <paramref name="settingsJson"/>.
         /// </summary>
@@ -92,6 +96,7 @@ namespace Ccs.Entities
                 ScoreboardPaging = ScoreboardPaging,
                 PreferGymUI = PreferGymUI,
                 SystemTestRejudgingId = SystemTestRejudgingId,
+                RatingChangesApplied = RatingChangesApplied,
             };
         }
 
