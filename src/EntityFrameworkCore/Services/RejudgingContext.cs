@@ -84,6 +84,8 @@ namespace Ccs.Services
 
             rejudging = await Polygon.Rejudgings.CreateAsync(rejudging);
             int cid = rejudging.ContestId, rid = rejudging.Id;
+            var startTime = Contest.StartTime!.Value;
+            var endTime = (Contest.StartTime + Contest.EndTime)!.Value;
             var locks = Db.Submissions
                 .Where(s => s.ContestId == cid)
                 .Join(
@@ -91,7 +93,7 @@ namespace Ccs.Services
                     outerKeySelector: s => new { SubmissionId = s.Id, Active = true },
                     innerKeySelector: j => new { j.SubmissionId, j.Active },
                     resultSelector: (s, j) => new { s, j })
-                .Where(a => a.j.Status == Verdict.Accepted)
+                .Where(a => a.j.Status == Verdict.Accepted && a.s.Time >= startTime && a.s.Time <= endTime)
                 .Select(s => s.s.Id);
 
             int count = await Db.Submissions

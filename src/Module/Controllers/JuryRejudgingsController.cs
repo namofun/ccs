@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Polygon.Entities;
 using SatelliteSite.ContestModule.Models;
+using SatelliteSite.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -201,7 +202,9 @@ namespace SatelliteSite.ContestModule.Controllers
         [HttpGet("[action]")]
         public async Task<IActionResult> SystemTest()
         {
-            if (Contest.RankingStrategy != Ccs.CcsDefaults.RuleCodeforces || Contest.Kind != Ccs.CcsDefaults.KindDom)
+            if (!Ccs.CcsDefaults.SupportsRating
+                || Contest.RankingStrategy != Ccs.CcsDefaults.RuleCodeforces
+                || Contest.Kind != Ccs.CcsDefaults.KindDom)
                 return NotFound();
 
             if (Contest.GetState() < Ccs.Entities.ContestState.Ended)
@@ -226,7 +229,9 @@ namespace SatelliteSite.ContestModule.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SystemTest(bool _ = true)
         {
-            if (Contest.RankingStrategy != Ccs.CcsDefaults.RuleCodeforces || Contest.Kind != Ccs.CcsDefaults.KindDom)
+            if (!Ccs.CcsDefaults.SupportsRating
+                || Contest.RankingStrategy != Ccs.CcsDefaults.RuleCodeforces
+                || Contest.Kind != Ccs.CcsDefaults.KindDom)
                 return NotFound();
 
             var r = await Context.SystemTestAsync(int.Parse(User.GetUserId()));
@@ -240,6 +245,97 @@ namespace SatelliteSite.ContestModule.Controllers
                 StatusMessage = "Error Precheck failed. " + r.Message;
                 return RedirectToAction(nameof(List));
             }
+        }
+
+
+        [HttpGet("[action]")]
+        public async Task<IActionResult> ApplyRatingChanges(
+            [FromServices] IConfigurationRegistry conf)
+        {
+            var rejudgingid = Contest.Settings.SystemTestRejudgingId;
+            if (!Ccs.CcsDefaults.SupportsRating
+                || rejudgingid == null
+                || Contest.Settings.RatingChangesApplied == true)
+                return NotFound();
+
+            if ((await conf.GetDateTimeOffsetAsync(Ccs.CcsDefaults.ConfigurationLastRatingChangeTime)) > Contest.StartTime)
+            {
+                StatusMessage = "A later contest has done some rating changes. The history has been frozen.";
+                return RedirectToAction(nameof(Detail), new { rejudgingid });
+            }
+            else if ((await Context.CountJudgingsAsync(j => j.RejudgingId == rejudgingid && (j.Status == Verdict.Pending || j.Status == Verdict.Running))) > 0)
+            {
+                StatusMessage = "System test is not finished. Please wait patiently.";
+                return RedirectToAction(nameof(Detail), new { rejudgingid });
+            }
+            else
+            {
+                return AskPost(
+                    title: "Finish system test",
+                    message: "Are you sure to apply rating?",
+                    type: BootstrapColor.warning);
+            }
+        }
+
+
+        [HttpPost("[action]")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ApplyRatingChanges(
+            [FromServices] IRatingUpdater ratingUpdater)
+        {
+            var rejudgingid = Contest.Settings.SystemTestRejudgingId;
+            if (!Ccs.CcsDefaults.SupportsRating
+                || rejudgingid == null
+                || Contest.Settings.RatingChangesApplied == true)
+                return NotFound();
+
+            if ((await Context.CountJudgingsAsync(j => j.RejudgingId == rejudgingid && (j.Status == Verdict.Pending || j.Status == Verdict.Running))) > 0)
+            {
+                StatusMessage = "System test is not finished. Please wait patiently.";
+                return RedirectToAction(nameof(Detail), new { rejudgingid });
+            }
+
+            await Context.ApplyRatingChangesAsync();
+            StatusMessage = "Rating changes has been applied to participants.";
+            return RedirectToAction(nameof(Detail), new { rejudgingid });
+        }
+
+
+        [HttpGet("[action]")]
+        public async Task<IActionResult> RollbackRatingChanges(
+            [FromServices] IConfigurationRegistry conf)
+        {
+            if (!Ccs.CcsDefaults.SupportsRating
+                || Contest.Settings.RatingChangesApplied != true)
+                return NotFound();
+
+            if ((await conf.GetDateTimeOffsetAsync(Ccs.CcsDefaults.ConfigurationLastRatingChangeTime)) > Contest.StartTime)
+            {
+                StatusMessage = "A later contest has done some rating changes. The history has been frozen.";
+                return RedirectToAction(nameof(Detail), new { rejudgingid = Contest.Settings.SystemTestRejudgingId });
+            }
+            else
+            {
+                return AskPost(
+                    title: "Finish system test",
+                    message: "Are you sure to rollback rating changes?",
+                    type: BootstrapColor.warning);
+            }
+        }
+
+
+        [HttpPost("[action]")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RollbackRatingChanges(
+            [FromServices] IRatingUpdater ratingUpdater)
+        {
+            if (!Ccs.CcsDefaults.SupportsRating
+                || Contest.Settings.RatingChangesApplied != true)
+                return NotFound();
+
+            await Context.RollbackRatingChangesAsync();
+            StatusMessage = "Rating changes has been rolled back.";
+            return RedirectToAction(nameof(Detail), new { rejudgingid = Contest.Settings.SystemTestRejudgingId });
         }
     }
 }

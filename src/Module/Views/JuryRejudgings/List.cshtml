@@ -71,5 +71,5 @@
 
 <p>
     <a asp-action="Add" class="btn btn-primary" title="Add new rejudging"><i class="fas fa-plus"></i>&nbsp;Add new rejudging</a>
-    <a asp-action="SystemTest" class="btn btn-success" title="System test" asp-show-if="Contest.RankingStrategy == CcsDefaults.RuleCodeforces && Contest.Kind == CcsDefaults.KindDom"><i class="fas fa-rocket"></i>&nbsp;System test</a>
+    <a asp-action="SystemTest" class="btn btn-success" title="System test" asp-show-if="CcsDefaults.SupportsRating && Contest.RankingStrategy == CcsDefaults.RuleCodeforces && Contest.Kind == CcsDefaults.KindDom"><i class="fas fa-rocket"></i>&nbsp;System test</a>
 </p>

@@ -99,6 +99,14 @@
             <i class="fas fa-sync"></i> Repeat rejudging
         </a>
     </p>
+    <p asp-show-if="CcsDefaults.SupportsRating && Contest.Settings.SystemTestRejudgingId == Model.Id">
+        <a asp-show-if="Contest.Settings.RatingChangesApplied != true" asp-action="ApplyRatingChanges" class="btn btn-warning @(Model.UndoneCount > 0 ? "disabled" : "")" data-toggle="ajaxWindow" data-target="apply">
+            <i class="fas fa-plus"></i> Apply rating changes
+        </a>
+        <a asp-show-if="Contest.Settings.RatingChangesApplied == true" asp-action="RollbackRatingChanges" class="btn btn-warning" data-toggle="ajaxWindow" data-target="rollback">
+            <i class="fas fa-step-backward"></i> Rollback rating changes
+        </a>
+    </p>
     <form asp-show-if="Model.OperatedBy == null && Model.UndoneCount <= 0" method="post">
         <button asp-action="Cancel" type="submit" class="btn btn-danger">
             <i class="fas fa-times"></i> Cancel rejudging
