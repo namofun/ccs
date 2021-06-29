@@ -15,6 +15,14 @@ namespace Ccs.Registration
             options.Add(new BatchByTeamNameRegisterProvider());
             options.Add(new IndividualParticipantRegisterProvider("individual-participant", 1));
             options.Add(new IndividualParticipantRegisterProvider("individual-part-verify", 0));
+
+            if (CcsDefaults.SupportsRating)
+            {
+                foreach (var provider in RatingRangeRegisterProvider.Presets)
+                {
+                    options.Add(provider);
+                }
+            }
         }
 
         /// <inheritdoc />

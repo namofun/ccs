@@ -12,12 +12,17 @@ namespace Ccs.Services
     /// </summary>
     public class RatingClaimsProvider : IUserClaimsProvider
     {
+        /// <summary>
+        /// The claims name of rating
+        /// </summary>
+        public const string RatingClaimsName = "rating";
+
         /// <inheritdoc />
         public Task<IEnumerable<Claim>> GetClaimsAsync(IUser user)
         {
             var rating = ((IUserWithRating)user).Rating;
             return Task.FromResult(rating.HasValue
-                ? new[] { new Claim("rating", rating.Value.ToString()) }
+                ? new[] { new Claim(RatingClaimsName, rating.Value.ToString()) }
                 : Enumerable.Empty<Claim>());
         }
     }

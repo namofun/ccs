@@ -1,9 +1,10 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Ccs.Entities;
+using Microsoft.AspNetCore.Identity;
 using System;
 
 namespace Ccs.Registration
 {
-    public sealed class FakeRegisterUser : IUser
+    public class FakeRegisterUser : IUser
     {
         public int Id { get; }
 
@@ -26,5 +27,15 @@ namespace Ccs.Registration
         bool IUser.SubscribeNews { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         bool IUser.HasPassword() => throw new NotImplementedException();
         bool IUser.HasUserName(string username) => throw new NotImplementedException();
+    }
+
+    public class FakeRegisterUserWithRating : FakeRegisterUser, IUserWithRating
+    {
+        public int? Rating { get; set; }
+
+        public FakeRegisterUserWithRating(int uid, int? rating) : base(uid)
+        {
+            Rating = rating;
+        }
     }
 }

@@ -151,6 +151,7 @@ namespace Ccs.Services
                         ContestId = team.ContestId,
                         TeamId = team.TeamId,
                         UserId = uid.Id,
+                        PreviousRating = (uid as IUserWithRating)?.Rating,
                         Temporary = false
                     });
                 }
