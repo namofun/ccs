@@ -16,7 +16,7 @@
         WriteLiteral("<tr data-team-id=\"");
         Write(row.TeamId);
         WriteLiteral("\"><td scope=\"row\">");
-        Write(firstSortOrder ? row.Rank?.ToString() : "*");
+        Write(firstSortOrder ? row.Rank?.ToString() + (row.Eligible ? "" : "*") : "*");
         WriteLiteral("</td><td class=\"text-left\"><a class=\"font-weight-semibold\">");
         Write(row.TeamName);
         WriteLiteral("</a>");

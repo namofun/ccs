@@ -60,6 +60,7 @@ namespace SatelliteSite.ContestModule.Controllers
                 SortOrder = cat.SortOrder,
                 IsPublic = cat.IsPublic,
                 Name = cat.Name,
+                IsEligible = cat.IsEligible,
             });
         }
 
@@ -75,6 +76,7 @@ namespace SatelliteSite.ContestModule.Controllers
                 IsPublic = model.IsPublic,
                 Name = model.Name,
                 ContestId = Contest.Id,
+                IsEligible = model.IsEligible,
             });
 
             await HttpContext.AuditAsync("created", $"{e.Id}");
@@ -94,6 +96,7 @@ namespace SatelliteSite.ContestModule.Controllers
             cat.Color = model.Color;
             cat.IsPublic = model.IsPublic;
             cat.Name = model.Name;
+            cat.IsEligible = model.IsEligible;
             cat.SortOrder = model.SortOrder;
 
             await Context.UpdateCategoryAsync(cat);

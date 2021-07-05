@@ -20,5 +20,8 @@ namespace SatelliteSite.ContestModule.Models
 
         [DisplayName("Is Public")]
         public bool IsPublic { get; set; }
+
+        [DisplayName("Is eligible")]
+        public bool IsEligible { get; set; }
     }
 }

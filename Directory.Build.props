@@ -5,7 +5,7 @@
     <PreviewBuild>14</PreviewBuild>
     <AspNetCoreVersion>3.1.15</AspNetCoreVersion>
     <PolygonVersion>1.0.19</PolygonVersion>
-    <TenantVersion>1.0.12</TenantVersion>
+    <TenantVersion>1.0.13</TenantVersion>
     <EFCoreBulkVersion>3.1.26</EFCoreBulkVersion>
     <PlagVersion>1.2.20</PlagVersion>
   </PropertyGroup>

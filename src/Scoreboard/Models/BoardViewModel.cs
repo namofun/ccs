@@ -61,6 +61,7 @@ namespace Ccs.Models
                 AffiliationId = aff?.Abbreviation ?? "null",
                 Category = cat?.Name ?? "",
                 CategoryColor = cat?.Color ?? "#ffffff",
+                Eligible = cat?.IsEligible ?? false,
                 Points = points,
                 Penalty = penalty,
                 LastAc = lastac,

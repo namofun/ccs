@@ -13,6 +13,7 @@
                 <th scope="col" class="sortable searchable">sort</th>
                 <th scope="col" class="sortable searchable">name</th>
                 <th scope="col" class="sortable">visible</th>
+                <th scope="col" class="sortable">eligible</th>
                 <th scope="col" class="sortable"># teams</th>
                 <th></th>
                 <th></th>
@@ -26,6 +27,7 @@
                     <td use-a>@cat.SortOrder</td>
                     <td style="background:@cat.Color" use-a>@cat.Name</td>
                     <td use-a>@(cat.IsPublic ? "yes" : "no")</td>
+                    <td use-a>@(cat.IsEligible ? "yes" : "no")</td>
                     <td use-a>@Model.TeamCount.GetValueOrDefault(cat.Id)</td>
                     <td><a asp-action="Edit" asp-route-catid="@cat.Id"><i class="fas fa-edit"></i></a></td>
                     <td><a asp-action="Delete" asp-route-catid="@cat.Id" data-toggle="ajaxWindow" data-target="delete"><i class="fas fa-trash-alt"></i></a></td>
@@ -45,7 +47,7 @@
             "paging": false,
             "searching": true,
             "ordering": true,
-            "order": [[4, 'desc'], [1, 'asc']],
+            "order": [[5, 'desc'], [1, 'asc']],
             "info": false,
             "autoWidth": true,
             "language": {

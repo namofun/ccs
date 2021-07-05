@@ -25,8 +25,12 @@
                 <td style="background:@Model.Category.Color">@Model.Category.Color</td>
             </tr>
             <tr>
-                <th>Visible</th>
+                <th>Visible?</th>
                 <td>@(Model.Category.IsPublic ? "Yes" : "No")</td>
+            </tr>
+            <tr>
+                <th>Eligible?</th>
+                <td>@(Model.Category.IsEligible ? "Yes" : "No")</td>
             </tr>
         </table>
     </div>
