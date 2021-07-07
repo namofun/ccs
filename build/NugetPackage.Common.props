@@ -18,4 +18,8 @@
     <FileVersion>$(PackageVersion).0</FileVersion>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(CIRevision)' != ''">
+    <PackageVersion>1.0.$(PreviewBuild)-r$(CIRevision)</PackageVersion>
+  </PropertyGroup>
+
 </Project>
