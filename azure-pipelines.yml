@@ -54,6 +54,8 @@ jobs:
 
 - ${{ if startsWith(variables['Build.SourceBranch'], 'refs/heads/') }}:
   - job: BuildDevVersion
+    dependsOn: Build
+    condition: succeeded()
     displayName: "Develop Version Build"
 
     pool:
@@ -70,7 +72,7 @@ jobs:
       inputs:
         command: 'custom'
         custom: 'pack'
-        arguments: '-c Debug -p:CIRevision=$(Build.BuildId)-$(Build.SourceVersion) -o $(Build.ArtifactStagingDirectory)'
+        arguments: '-c Release -p:CIRevision=$(Build.BuildId)-$(Build.SourceVersion) -o $(Build.ArtifactStagingDirectory)'
       displayName: 'Build Preview Version'
 
     - task: DotNetCoreCLI@2
