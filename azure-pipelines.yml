@@ -52,7 +52,7 @@ jobs:
     displayName: 'Push to NuGet Feed'
     condition: startsWith(variables['Build.SourceBranch'], 'refs/tags/')
 
-- {{ if startsWith(variables['Build.SourceBranch'], 'refs/heads/') }}:
+- ${{ if startsWith(variables['Build.SourceBranch'], 'refs/heads/') }}:
   - job: BuildDevVersion
     displayName: "Develop Version Build"
 
