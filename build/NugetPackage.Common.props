@@ -9,17 +9,19 @@
     <RepositoryUrl>https://github.com/namofun/ccs</RepositoryUrl>
     <Authors>yang-er</Authors>
     <Version>1.0.0</Version>
-    <PackageVersion>1.0.$(PreviewBuild)</PackageVersion>
+    <BasicPackageVersion>1.0.$(PreviewBuild)</BasicPackageVersion>
+    <PackageVersion>$(BasicPackageVersion)</PackageVersion>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
-    <AssemblyVersion>$(PackageVersion).0</AssemblyVersion>
-    <FileVersion>$(PackageVersion).0</FileVersion>
+    <AssemblyVersion>$(BasicPackageVersion).0</AssemblyVersion>
+    <FileVersion>$(BasicPackageVersion).0</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(CIRevision)' != ''">
-    <PackageVersion>1.0.$(PreviewBuild)-r$(CIRevision)</PackageVersion>
+    <_ShortenedCIRevision>$([System.String]::Concat($(CIRevision), 'xxxxxxxxxxx').Substring(0, 11))</_ShortenedCIRevision><!-- XXX-abcdefg -->
+    <PackageVersion>0.0.$(_ShortenedCIRevision)</PackageVersion>
   </PropertyGroup>
 
 </Project>

@@ -51,3 +51,32 @@ jobs:
       publishVstsFeed: '5f8d36de-7004-4c36-a8b5-8a4bda9eb598/c2949ad7-bda3-4f23-a41b-3109c9419cb7'
     displayName: 'Push to NuGet Feed'
     condition: startsWith(variables['Build.SourceBranch'], 'refs/tags/')
+
+- {{ if startsWith(variables['Build.SourceBranch'], 'refs/heads/') }}:
+  - job: BuildDevVersion
+    displayName: "Develop Version Build"
+
+    pool:
+      vmImage: ubuntu-latest
+
+    steps:
+    - task: Bash@3
+      inputs:
+        targetType: 'inline'
+        script: 'echo "ref: $(Build.SourceBranch)" > $(Build.SourcesDirectory)/.git/ADO_OVERRIDE_HEAD'
+      displayName: 'Set Source Branch'
+
+    - task: DotNetCoreCLI@2
+      inputs:
+        command: 'custom'
+        custom: 'pack'
+        arguments: '-c Debug -p:CIRevision=$(Build.BuildId)-$(Build.SourceVersion) -o $(Build.ArtifactStagingDirectory)'
+      displayName: 'Build Preview Version'
+
+    - task: DotNetCoreCLI@2
+      inputs:
+        command: 'push'
+        packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg'
+        nuGetFeedType: 'internal'
+        publishVstsFeed: '5f8d36de-7004-4c36-a8b5-8a4bda9eb598/a195bd6e-4492-4434-b152-e450f6b11d5d'
+      displayName: 'Push to Dev Feed'
