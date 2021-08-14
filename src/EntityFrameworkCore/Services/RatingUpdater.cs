@@ -110,7 +110,7 @@ namespace Ccs.Services
         {
             return _context.Set<TUser>()
                 .Where(u => u.Rating != null)
-                .OrderBy(u => u.Rating)
+                .OrderByDescending(u => u.Rating)
                 .Select(u => new RatingListModel(u.Id, u.UserName, (int)u.Rating!))
                 .Skip((page - 1) * count)
                 .Take(count)
