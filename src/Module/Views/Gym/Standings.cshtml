@@ -11,7 +11,7 @@
 }
 
 @functions {
-    void ShowRow(TeamModel row, bool firstSortOrder)
+    async Task ShowRow(TeamModel row, bool firstSortOrder)
     {
         WriteLiteral("<tr data-team-id=\"");
         Write(row.TeamId);
@@ -23,13 +23,10 @@
         if (Model.TeamMembers.Contains(row.TeamId))
         {
             bool fst = true;
-            foreach (var userName in Model.TeamMembers[row.TeamId])
+            foreach (var user in Model.TeamMembers[row.TeamId])
             {
-                WriteLiteral(fst ? " : <a href=\"" : ", <a href=\"");
-                Write(Url.RouteUrl("AccountProfile", new { username = userName }));
-                WriteLiteral("\">");
-                Write(userName);
-                WriteLiteral("</a>");
+                WriteLiteral(fst ? " : " : ", ");
+                Write(await ViewContext.User(user, user));
                 fst = false;
             }
         }
@@ -89,7 +86,7 @@
         {
             for (int i = Math.Max(0, start); i < end && i < sortOrder.Count; i++)
             {
-                ShowRow(sortOrder[i], firstSortOrder);
+                await ShowRow(sortOrder[i], firstSortOrder);
             }
 
             totalRows += sortOrder.Count;

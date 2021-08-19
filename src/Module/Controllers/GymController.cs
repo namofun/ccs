@@ -48,7 +48,7 @@ namespace SatelliteSite.ContestModule.Controllers
             if (TooEarly && !Contest.IsJury) return NotStarted();
             if (Contest.ShouldScoreboardPaging() && page <= 0) return BadRequest();
             var scb = await Context.GetScoreboardAsync();
-            var members = await Context.GetTeamMembersAsync();
+            var members = await Context.GetTeamMembersV2Async();
             return View(new GymStandingViewModel(scb, members) { Page = page });
         }
 

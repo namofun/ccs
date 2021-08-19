@@ -98,7 +98,7 @@ namespace Ccs
         public const int DefaultScoreboardPagingSize = 50;
 
         /// <summary>
-        /// 
+        /// Whether current system supports rating
         /// </summary>
         public static bool SupportsRating { get; internal set; }
     }

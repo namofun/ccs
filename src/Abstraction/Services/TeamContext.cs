@@ -78,7 +78,7 @@ namespace Ccs.Services
         /// </summary>
         /// <param name="team">The team.</param>
         /// <returns>The task for getting member.</returns>
-        Task<List<Models.TeamMemberModel>> GetTeamMember2Async(Team team);
+        Task<List<Models.TeamMemberModel>> GetTeamMemberV2Async(Team team);
 
         /// <summary>
         /// Creates a team with users.
@@ -207,5 +207,12 @@ namespace Ccs.Services
         /// <param name="predicate">The predicate.</param>
         /// <returns>The task for monitor status.</returns>
         Task<Monitor> GetMonitorAsync(Expression<Func<Team, bool>> predicate);
+
+        /// <summary>
+        /// Gets the team members with rating and last access ip as a lookup dictionary.
+        /// When rating is not supported, returns normal lookup dictionary like <see cref="ITeamContext.GetTeamMembersAsync"/>.
+        /// </summary>
+        /// <returns>The task for getting this lookup.</returns>
+        Task<ILookup<int, TeamMemberModel>> GetTeamMembersV2Async();
     }
 }

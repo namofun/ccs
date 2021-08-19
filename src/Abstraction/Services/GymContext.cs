@@ -66,9 +66,10 @@ namespace Ccs.Services
         Task<IReadOnlyDictionary<int, (int, int, int, int)>> StatisticsGlobalAsync();
 
         /// <summary>
-        /// Gets the team members as a lookup dictionary.
+        /// Gets the team members with rating and last access ip as a lookup dictionary.
+        /// When rating is not supported, returns normal lookup dictionary like <see cref="ITeamContext.GetTeamMembersAsync"/>.
         /// </summary>
         /// <returns>The task for getting this lookup.</returns>
-        Task<ILookup<int, string>> GetTeamMembersAsync();
+        Task<ILookup<int, TeamMemberModel>> GetTeamMembersV2Async();
     }
 }

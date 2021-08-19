@@ -106,9 +106,20 @@ namespace Ccs.Services
                 async () => await base.GetTeamMembersAsync());
         }
 
+        public override Task<ILookup<int, TeamMemberModel>> GetTeamMembersV2Async()
+        {
+            return CacheAsync("Teams::MembersV2", _options.Teams,
+                async () => await base.GetTeamMembersV2Async());
+        }
+
         public override async Task<IEnumerable<string>> GetTeamMemberAsync(Team team)
         {
             return (await GetTeamMembersAsync())[team.TeamId];
+        }
+
+        public override async Task<List<TeamMemberModel>> GetTeamMemberV2Async(Team team)
+        {
+            return (await GetTeamMembersV2Async())[team.TeamId].ToList();
         }
 
         public override Task<IReadOnlyDictionary<int, AnalyticalTeam>> GetAnalyticalTeamsAsync()
@@ -161,6 +172,8 @@ namespace Ccs.Services
             ExpireTeamThings(
                 "Teams::Members",
                 result.Select(m => $"Teams::User({m.UserId})"));
+
+            ExpireTeamThings("Teams::MembersV2");
 
             return result;
         }

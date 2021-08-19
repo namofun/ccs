@@ -6,13 +6,13 @@ namespace SatelliteSite.ContestModule.Models
 {
     public class GymStandingViewModel : FullBoardViewModel
     {
-        public ILookup<int, string> TeamMembers { get; }
+        public ILookup<int, TeamMemberModel> TeamMembers { get; }
 
         public int Page { get; set; }
 
         public GymStandingViewModel(
             ScoreboardModel scoreboard,
-            ILookup<int, string> teamMembers)
+            ILookup<int, TeamMemberModel> teamMembers)
             : base(scoreboard, true, false)
         {
             TeamMembers = teamMembers;

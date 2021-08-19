@@ -382,17 +382,22 @@ namespace Ccs.Services
                 .ToDictionaryAsync(k => k.Key, v => v.Value);
         }
 
-        public virtual Task<List<TeamMemberModel>> GetTeamMember2Async(Team team)
+        public virtual Task<List<TeamMemberModel>> GetTeamMemberV2Async(Team team)
         {
             int cid = team.ContestId, teamid = team.TeamId;
             return Db.TeamMembers
                 .Where(m => m.ContestId == cid && m.TeamId == teamid)
-                .Join(
-                    inner: Db.Users,
-                    outerKeySelector: m => m.UserId,
-                    innerKeySelector: u => u.Id,
-                    resultSelector: (m, u) => new TeamMemberModel(m.TeamId, m.UserId, u.UserName, m.LastLoginIp))
+                .JoinAsModelV2(Db.Users)
                 .ToListAsync();
+        }
+
+        public virtual Task<ILookup<int, TeamMemberModel>> GetTeamMembersV2Async()
+        {
+            int cid = Contest.Id;
+            return Db.TeamMembers
+                .Where(t => t.ContestId == cid)
+                .JoinAsModelV2(Db.Users)
+                .ToLookupAsync(m => m.TeamId, m => m);
         }
 
         public virtual async Task<Monitor> GetMonitorAsync(Expression<Func<Team, bool>> predicate)
@@ -402,16 +407,8 @@ namespace Ccs.Services
             var teams = await baseQuery.ToListAsync();
 
             var members = await baseQuery
-                .Join(
-                    inner: Db.TeamMembers,
-                    outerKeySelector: t => new { t.ContestId, t.TeamId },
-                    innerKeySelector: m => new { m.ContestId, m.TeamId },
-                    resultSelector: (t, m) => m)
-                .Join(
-                    inner: Db.Users,
-                    outerKeySelector: m => m.UserId,
-                    innerKeySelector: u => u.Id,
-                    resultSelector: (m, u) => new TeamMemberModel(m.TeamId, m.UserId, u.UserName, m.LastLoginIp))
+                .JoinMember(Db.TeamMembers, (t, m) => m)
+                .JoinAsModelV2(Db.Users)
                 .ToListAsync();
 
             return new Monitor(teams, members);
@@ -462,6 +459,45 @@ namespace Ccs.Services
                     Name = category.Name,
                     SortOrder = category.SortOrder,
                 });
+        }
+    }
+
+    internal static class QueryExtensions
+    {
+        public static IQueryable<TeamMemberModel> JoinAsModelV2(
+            this IQueryable<Member> members,
+            IQueryable<IUser> users)
+        {
+            if (!CcsDefaults.SupportsRating)
+            {
+                return Queryable.Join(
+                    outer: members,
+                    inner: users,
+                    outerKeySelector: m => m.UserId,
+                    innerKeySelector: u => u.Id,
+                    resultSelector: (m, u) => new TeamMemberModel(m.TeamId, m.UserId, u.UserName, m.LastLoginIp));
+            }
+            else
+            {
+                return Queryable.Join(
+                    outer: members,
+                    inner: (IQueryable<IUserWithRating>)users,
+                    outerKeySelector: m => m.UserId,
+                    innerKeySelector: u => u.Id,
+                    resultSelector: (m, u) => new TeamMemberModel(m.TeamId, m.UserId, u.UserName, m.PreviousRating, m.LastLoginIp));
+            }
+        }
+
+        public static IQueryable<TModel> JoinMember<TModel>(
+            this IQueryable<Team> teams,
+            IQueryable<Member> members,
+            Expression<Func<Team, Member, TModel>> selector)
+        {
+            return teams.Join(
+                inner: members,
+                outerKeySelector: t => new { t.ContestId, t.TeamId },
+                innerKeySelector: m => new { m.ContestId, m.TeamId },
+                resultSelector: selector);
         }
     }
 }
