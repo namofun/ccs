@@ -11,25 +11,54 @@
 }
 
 @functions {
+    void ShowTeamName(TeamModel row)
+    {
+        WriteLiteral("<a class=\"font-weight-semibold\">");
+        Write(row.TeamName);
+        WriteLiteral("</a>");
+    }
+
+    void ShowManagementLink(int teamId)
+    {
+        if (!Contest.IsJury) return;
+        WriteLiteral("<sup> <a href=\"");
+        Write(Url.Action("Detail", "JuryTeams", new { teamId }));
+        WriteLiteral("\"><i class=\"far fa-lightbulb\"></i></a></sup>");
+    }
+
     async Task ShowRow(TeamModel row, bool firstSortOrder)
     {
         WriteLiteral("<tr data-team-id=\"");
         Write(row.TeamId);
         WriteLiteral("\"><td scope=\"row\">");
         Write(firstSortOrder ? row.Rank?.ToString() + (row.Eligible ? "" : "*") : "*");
-        WriteLiteral("</td><td class=\"text-left\"><a class=\"font-weight-semibold\">");
-        Write(row.TeamName);
-        WriteLiteral("</a>");
-        if (Model.TeamMembers.Contains(row.TeamId))
+        WriteLiteral("</td><td class=\"text-left\">");
+
+        var members = Model.TeamMembers[row.TeamId].ToList();
+        if (members.Count == 0)
         {
+            ShowTeamName(row);
+            ShowManagementLink(row.TeamId);
+        }
+        else if (members.Count == 1 && members[0].UserName == row.TeamName)
+        {
+            Write(await ViewContext.User(members[0], members[0]));
+            ShowManagementLink(row.TeamId);
+        }
+        else
+        {
+            ShowTeamName(row);
+            ShowManagementLink(row.TeamId);
+
             bool fst = true;
-            foreach (var user in Model.TeamMembers[row.TeamId])
+            foreach (var user in members)
             {
                 WriteLiteral(fst ? " : " : ", ");
                 Write(await ViewContext.User(user, user));
                 fst = false;
             }
         }
+
         WriteLiteral("</td><td>");
         Write(row.Points);
         WriteLiteral("</td>");

@@ -51,7 +51,7 @@
                 <tr>
                     <th>User u@(item.UserId)</th>
                     <td>
-                        <a class="text-reset" asp-area="Account" asp-controller="Profile" asp-action="Show" asp-route-username="@item.UserName" title="@(item.LastLoginIp != null ? "Last login at: " + item.LastLoginIp : "")">@item.UserName</a>
+                        <user username="@item.UserName" class="text-reset" title="@(item.LastLoginIp != null ? "Last login at: " + item.LastLoginIp : "")" />
                         <div class="float-right">
                             <a asp-show-if="item.LastLoginIp != null" class="text-warning" asp-action="ResetRestrictions" asp-route-userid="@item.UserId" title="reset login IP of user" data-toggle="ajaxWindow" data-target="resetUser"><i class="fas fa-user-shield"></i></a>
                             <a class="text-danger" asp-action="Detach" asp-route-userid="@item.UserId" title="detach the user" data-toggle="ajaxWindow" data-target="detachUser"><i class="fas fa-user-times"></i></a>
