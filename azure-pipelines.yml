@@ -11,6 +11,15 @@ trigger:
     include:
     - '*'
 
+resources:
+  repositories:
+  - repository: "Azure Repos Mirror"
+    type: git
+    name: namomo/uikit
+
+variables:
+- group: azure-repos-sync
+
 jobs:
 - job: Build
   displayName: "Build, Test and Publish"
@@ -24,6 +33,12 @@ jobs:
       targetType: 'inline'
       script: 'echo "ref: $(Build.SourceBranch)" > $(Build.SourcesDirectory)/.git/ADO_OVERRIDE_HEAD'
     displayName: 'Set Source Branch'
+
+  - task: UseDotNet@2
+    inputs:
+      packageType: 'sdk'
+      version: '6.0.x'
+    displayName: 'Setup Build Environment'
 
   - task: DotNetCoreCLI@2
     inputs:
@@ -68,6 +83,12 @@ jobs:
         script: 'echo "ref: $(Build.SourceBranch)" > $(Build.SourcesDirectory)/.git/ADO_OVERRIDE_HEAD'
       displayName: 'Set Source Branch'
 
+    - task: UseDotNet@2
+      inputs:
+        packageType: 'sdk'
+        version: '6.0.x'
+      displayName: 'Setup Build Environment'
+
     - task: DotNetCoreCLI@2
       inputs:
         command: 'custom'
@@ -82,3 +103,15 @@ jobs:
         nuGetFeedType: 'internal'
         publishVstsFeed: '5f8d36de-7004-4c36-a8b5-8a4bda9eb598/a195bd6e-4492-4434-b152-e450f6b11d5d'
       displayName: 'Push to Dev Feed'
+
+- job: Sync
+  displayName: "Sync with Azure Repos"
+
+  pool:
+    vmImage: windows-latest
+
+  steps:
+  - task: gitmirror@0
+    inputs:
+      GitRepoUrl: 'https://tlylz:$(SYNC_PAT)@dev.azure.com/tlylz/namomo/_git/uikit'
+    displayName: 'Sync via Git Tools'

@@ -31,7 +31,7 @@ namespace SatelliteSite
                 .AddModule<TelemetryModule.TelemetryModule>()
                 .AddModule<HostModule>()
                 .AddModule<JobsModule.JobsModule<MyUser, DefaultContext>>()
-                .AddDatabase<DefaultContext>((c, b) => b.UseSqlServer(c.GetConnectionString("UserDbConnection"), b => b.UseBulk()))
+                .AddDatabase<DefaultContext>((c, b) => b.UseSqlServer(c.GetConnectionString("UserDbConnection"), b => b.UseBulk().UseMathExtensions()))
                 .AddDatabase<PdsContext>((c, b) => b.UseSqlServer(c.GetConnectionString("PlagDbConnection"), b => b.UseBulk()))
                 .ConfigureSubstrateDefaults<DefaultContext>();
     }
