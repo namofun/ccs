@@ -8,8 +8,8 @@ namespace SatelliteSite.ContestModule.Routing
 {
     public class InitializeContestMiddleware
     {
-        private static readonly PathString _contestBase = new PathString("/contest");
-        private static readonly PathString _problemsetBase = new PathString("/problemset");
+        private static readonly PathString _contestBase = new("/contest");
+        private static readonly PathString _problemsetBase = new("/problemset");
         private readonly RequestDelegate _next;
         private readonly IContestContextFactory _factory;
 
@@ -35,7 +35,7 @@ namespace SatelliteSite.ContestModule.Routing
 
             var cidSegment = remaining.Value.AsSpan().TrimStart('/');
             int firstSlash = cidSegment.IndexOf('/');
-            if (firstSlash != -1) cidSegment = cidSegment.Slice(0, firstSlash);
+            if (firstSlash != -1) cidSegment = cidSegment[..firstSlash];
 
             if (!int.TryParse(cidSegment, out int cid)
                 || cid <= 0)

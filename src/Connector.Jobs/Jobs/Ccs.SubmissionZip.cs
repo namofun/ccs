@@ -134,7 +134,7 @@ namespace Ccs.Connector.Jobs
 
                 var options = new JsonSerializerOptions
                 {
-                    IgnoreNullValues = true,
+                    DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull,
                     WriteIndented = true,
                 };
 

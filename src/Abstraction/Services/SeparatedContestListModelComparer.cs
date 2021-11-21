@@ -7,9 +7,17 @@ namespace Ccs.Services
     {
         public static IComparer<ContestListModel> Instance { get; } = new SeparatedContestListModelComparer();
 
-        public int Compare(ContestListModel x, ContestListModel y)
+        public int Compare(ContestListModel? x, ContestListModel? y)
         {
-            if (x.Kind != y.Kind)
+            if (x == null && y == null)
+            {
+                return 0;
+            }
+            else if (x == null || y == null)
+            {
+                return x == null ? 1 : -1;
+            }
+            else if (x.Kind != y.Kind)
             {
                 return x.Kind.CompareTo(y.Kind);
             }

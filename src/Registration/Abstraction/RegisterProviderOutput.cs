@@ -39,7 +39,7 @@ namespace Ccs.Registration
         /// <summary>
         /// Provides model.
         /// </summary>
-        public object Model => ViewData.Model;
+        public object Model => ViewData.Model!;
 
         /// <summary>
         /// Provides <see cref="ModelExpression"/> for expressions.
@@ -386,7 +386,7 @@ namespace Ccs.Registration
         public new ViewDataDictionary<TModel> ViewData => (ViewDataDictionary<TModel>)base.ViewData;
 
         /// <inheritdoc cref="RegisterProviderOutput.Model"/>
-        public new TModel Model => ViewData.Model;
+        public new TModel Model => ViewData.Model!;
 
         /// <inheritdoc cref="IHtmlContentBuilder.Append(string)" />
         public new RegisterProviderOutput<TModel> Append(string unencoded)

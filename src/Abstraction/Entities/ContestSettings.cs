@@ -107,7 +107,7 @@ namespace Ccs.Entities
                 this,
                 new JsonSerializerOptions
                 {
-                    IgnoreNullValues = true
+                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
                 });
         }
     }

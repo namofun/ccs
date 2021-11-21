@@ -65,11 +65,22 @@ namespace Ccs.Services
         async Task<CheckResult<Rejudging>> IRejudgingContext.SystemTestAsync(int uid)
         {
             if (Contest.GetState() < Entities.ContestState.Ended)
+            {
                 return CheckResult<Rejudging>.Fail("Contest should be ended first.");
+            }
+
             if (Contest.Settings.SystemTestRejudgingId != null)
-                return CheckResult<Rejudging>.Succeed(await Polygon.Rejudgings.FindAsync(Contest.Id, Contest.Settings.SystemTestRejudgingId.Value));
+            {
+                var rej = await Polygon.Rejudgings.FindAsync(Contest.Id, Contest.Settings.SystemTestRejudgingId.Value);
+                return rej != null
+                    ? CheckResult<Rejudging>.Succeed(rej)
+                    : CheckResult<Rejudging>.Fail($"Rejudging {Contest.Settings.SystemTestRejudgingId.Value} not found.");
+            }
+
             if (await Polygon.Rejudgings.CountUndoneAsync(Contest.Id) != 0)
+            {
                 return CheckResult<Rejudging>.Fail("There's pending rejudgings.");
+            }
 
             var rejudging = new Rejudging
             {

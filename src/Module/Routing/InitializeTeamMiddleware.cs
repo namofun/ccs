@@ -62,7 +62,7 @@ namespace SatelliteSite.ContestModule.Routing
                 && feature.Context.Contest.Kind == Ccs.CcsDefaults.KindDom
                 && feature.Context.Contest.Settings.RestrictIp is int restrictIp)
             {
-                var clientIp = context.Connection.RemoteIpAddress;
+                var clientIp = context.Connection.RemoteIpAddress ?? System.Net.IPAddress.Parse("255.255.255.255");
                 if (clientIp.IsIPv4MappedToIPv6) clientIp = clientIp.MapToIPv4();
 
                 if ((restrictIp & 1) == 1)

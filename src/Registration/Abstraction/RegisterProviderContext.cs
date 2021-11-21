@@ -43,7 +43,7 @@ namespace Ccs.Registration
         /// </summary>
         /// <typeparam name="TService">The service type.</typeparam>
         /// <returns>The service instance.</returns>
-        public TService GetRequiredService<TService>()
+        public TService GetRequiredService<TService>() where TService : class
             => HttpContext.RequestServices.GetRequiredService<TService>();
 
         /// <summary>

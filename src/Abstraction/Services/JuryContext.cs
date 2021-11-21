@@ -36,7 +36,7 @@ namespace Ccs.Services
         /// Fetch the of the latest event.
         /// </summary>
         /// <returns>The task for ID of event.</returns>
-        Task<Event> GetMaxEventAsync();
+        Task<Event?> GetMaxEventAsync();
 
         /// <summary>
         /// Fetch the event for a contest after some ID.

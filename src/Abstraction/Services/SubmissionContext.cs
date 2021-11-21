@@ -95,7 +95,7 @@ namespace Ccs.Services
         /// </summary>
         /// <param name="submitid">The submission ID.</param>
         /// <returns>The task for fetching solution.</returns>
-        Task<Polygon.Models.Solution> FindSolutionAsync(int submitid);
+        Task<Polygon.Models.Solution?> FindSolutionAsync(int submitid);
 
         /// <summary>
         /// List the submissions.
@@ -154,7 +154,7 @@ namespace Ccs.Services
         /// <remarks>It is guaranteed that contest ID is correct.</remarks>
         /// <param name="id">The judging ID.</param>
         /// <returns>The task for finding judgement.</returns>
-        Task<Judging> FindJudgingAsync(int id);
+        Task<Judging?> FindJudgingAsync(int id);
 
         /// <summary>
         /// List the judgings with predicate.
@@ -185,6 +185,6 @@ namespace Ccs.Services
         /// </summary>
         /// <param name="predicate">The submission condition.</param>
         /// <returns>The task for fetching source code.</returns>
-        Task<SubmissionSource> GetSourceCodeAsync(Expression<Func<Submission, bool>> predicate);
+        Task<SubmissionSource?> GetSourceCodeAsync(Expression<Func<Submission, bool>> predicate);
     }
 }

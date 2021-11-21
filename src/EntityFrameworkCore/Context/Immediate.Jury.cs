@@ -28,8 +28,8 @@ namespace Ccs.Services
             {
                 var idx = range.IndexOf('/');
                 return (
-                    IPAddress.Parse(range.Substring(0, idx)),
-                    int.Parse(range.Substring(idx + 1)));
+                    IPAddress.Parse(range[..idx]),
+                    int.Parse(range[(idx + 1)..]));
             }
         }
 
@@ -103,7 +103,7 @@ namespace Ccs.Services
             int cid = Contest.Id;
             return Db.ContestEvents
                 .Where(e => e.ContestId == cid && e.Id > after)
-                .WhereIf(type != null, e => type.Contains(e.EndpointType))
+                .WhereIf(type != null, e => type!.Contains(e.EndpointType))
                 .ToListAsync();
         }
 
@@ -115,7 +115,7 @@ namespace Ccs.Services
                 .BatchDeleteAsync();
         }
 
-        public virtual Task<Event> GetMaxEventAsync()
+        public virtual Task<Event?> GetMaxEventAsync()
         {
             int cid = Contest.Id;
             return Db.ContestEvents

@@ -81,7 +81,7 @@ $(function () {
             }
         }
         $('.sel-user').attr('checked', true);
-        $('#sel-user").AppendHtml(context.User.GetUserId()).AppendHtml(@"').attr('disabled', true);
+        $('#sel-user").AppendHtml(context.User.GetUserId()!).AppendHtml(@"').attr('disabled', true);
     });
 });");
 

@@ -19,7 +19,7 @@ namespace Ccs.Services
                 .ToListAsync();
         }
 
-        public virtual Task<Clarification> FindClarificationAsync(int id)
+        public virtual Task<Clarification?> FindClarificationAsync(int id)
         {
             int cid = Contest.Id;
             return Db.Clarifications

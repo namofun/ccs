@@ -23,7 +23,7 @@ namespace Ccs.Services
         /// </summary>
         /// <param name="id">The clarification ID.</param>
         /// <returns>The task for fetching clarification.</returns>
-        Task<Clarification> FindClarificationAsync(int id);
+        Task<Clarification?> FindClarificationAsync(int id);
 
         /// <summary>
         /// Sends a clarification.

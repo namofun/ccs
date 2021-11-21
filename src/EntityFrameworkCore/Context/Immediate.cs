@@ -28,7 +28,7 @@ namespace Ccs.Services
 
         public IMediator Mediator => _mediator ??= Get<IMediator>();
 
-        protected T Get<T>() => _services.GetRequiredService<T>();
+        protected T Get<T>() where T : class => _services.GetRequiredService<T>();
 
         protected ILogger<IContestContext> Logger { get; }
 

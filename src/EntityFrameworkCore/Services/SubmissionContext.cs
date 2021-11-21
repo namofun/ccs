@@ -68,7 +68,7 @@ namespace Ccs.Services
                     .CombineIf(verdict.HasValue, (s, j) => j.Status == verdict));
         }
 
-        public virtual async Task<Solution> FindSolutionAsync(int submitid)
+        public virtual async Task<Solution?> FindSolutionAsync(int submitid)
         {
             int cid = Contest.Id;
             var res = await Polygon.Submissions.ListWithJudgingAsync(s => s.ContestId == cid && s.Id == submitid, true, 1);
@@ -153,7 +153,7 @@ namespace Ccs.Services
             return Polygon.Judgings.CountAsync(predicate);
         }
 
-        public Task<Judging> FindJudgingAsync(int id)
+        public Task<Judging?> FindJudgingAsync(int id)
         {
             var cid = Contest.Id;
             return Polygon.Judgings.FindAsync(j => j.Id == id && j.s.ContestId == cid, j => j);
@@ -164,7 +164,7 @@ namespace Ccs.Services
             return Polygon.Judgings.ListAsync(predicate, topCount);
         }
 
-        public Task<SubmissionSource> GetSourceCodeAsync(Expression<Func<Submission, bool>> predicate)
+        public Task<SubmissionSource?> GetSourceCodeAsync(Expression<Func<Submission, bool>> predicate)
         {
             var cid = Contest.Id;
             return Db.Submissions

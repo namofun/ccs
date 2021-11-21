@@ -82,7 +82,7 @@ namespace SatelliteSite.ContestModule
                 throw new ObjectDisposedException(nameof(_actionContext));
             }
 
-            return (T)_actionContext.HttpContext.Features.Get<IContestFeature>().Context;
+            return (T)_actionContext.HttpContext.Features.Get<IContestFeature>()!.Context;
         }
 
         /// <inheritdoc />
