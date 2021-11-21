@@ -15,7 +15,7 @@ resources:
   repositories:
   - repository: "Azure Repos Mirror"
     type: git
-    name: namomo/uikit
+    name: namomo/ccs
 
 variables:
 - group: azure-repos-sync
@@ -68,8 +68,22 @@ jobs:
     condition: startsWith(variables['Build.SourceBranch'], 'refs/tags/')
 
 - ${{ if startsWith(variables['Build.SourceBranch'], 'refs/heads/') }}:
-  - job: BuildDevVersion
+
+  - job: WaitForDevVersionApproval
     dependsOn: Build
+    condition: succeeded()
+    displayName: Wait for development approval
+    pool: server
+    timeoutInMinutes: 30
+    steps:
+    - task: ManualValidation@0
+      timeoutInMinutes: 30
+      inputs:
+        instructions: 'Please decide whether to create a development version'
+        onTimeout: 'reject'
+
+  - job: BuildDevVersion
+    dependsOn: WaitForDevVersionApproval
     condition: succeeded()
     displayName: "Develop Version Build"
 
@@ -113,5 +127,5 @@ jobs:
   steps:
   - task: gitmirror@0
     inputs:
-      GitRepoUrl: 'https://tlylz:$(SYNC_PAT)@dev.azure.com/tlylz/namomo/_git/uikit'
+      GitRepoUrl: 'https://tlylz:$(SYNC_PAT)@dev.azure.com/tlylz/namomo/_git/ccs'
     displayName: 'Sync via Git Tools'
