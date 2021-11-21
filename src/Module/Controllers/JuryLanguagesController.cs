@@ -16,7 +16,7 @@ namespace SatelliteSite.ContestModule.Controllers
         [HttpGet]
         public async Task<IActionResult> List()
         {
-            var models = await Context.ListLanguagesAsync(false);
+            var models = await Context.ListLanguagesAsync(contestFiltered: false);
             return View(models);
         }
 
@@ -24,7 +24,7 @@ namespace SatelliteSite.ContestModule.Controllers
         [HttpGet("{langid}")]
         public async Task<IActionResult> Detail(string langid, bool all_submissions = false)
         {
-            var lang = await Context.FindLanguageAsync(langid, false);
+            var lang = await Context.FindLanguageAsync(langid, contestFiltered: false);
             if (lang == null) return NotFound();
 
             var sols = await Context.ListSolutionsAsync(langid: langid, all: all_submissions);

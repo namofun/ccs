@@ -207,7 +207,7 @@ namespace SatelliteSite.ContestModule.Controllers
 
             if (model == null || model.TeamId != Contest.Team.TeamId) return NotFound();
             model.Problem = await Context.FindProblemAsync(model.ProblemId);
-            model.Language = await Context.FindLanguageAsync(model.LanguageId);
+            model.Language = await Context.FindLanguageAsync(model.LanguageId, contestFiltered: false);
             return Window(model);
         }
     }

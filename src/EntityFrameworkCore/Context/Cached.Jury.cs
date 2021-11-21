@@ -34,15 +34,14 @@ namespace Ccs.Services
 
         public override async Task<Language?> FindLanguageAsync(string? langid, bool filtered = true)
         {
-            if (filtered)
+            var langs = await ListLanguagesAsync();
+            var lang = langs.FirstOrDefault(l => l.Id == langid);
+            if (lang == null && !filtered)
             {
-                var langs = await ListLanguagesAsync();
-                return langs.FirstOrDefault(l => l.Id == langid);
+                lang = await base.FindLanguageAsync(langid, filtered: false);
             }
-            else
-            {
-                return await base.FindLanguageAsync(langid, false);
-            }
+
+            return lang;
         }
 
         public override async Task<ContestWrapper> UpdateContestAsync(

@@ -98,7 +98,7 @@ namespace SatelliteSite.ContestModule.Controllers
 
             if (model == null) return NotFound();
             model.Problem = await Context.FindProblemAsync(model.ProblemId);
-            model.Language = await Context.FindLanguageAsync(model.LanguageId);
+            model.Language = await Context.FindLanguageAsync(model.LanguageId, contestFiltered: false);
 
             if (model.Problem == null
                 || model.Language == null

@@ -46,7 +46,7 @@ namespace SatelliteSite.ContestModule.Controllers
                 DetailsV2 = await Context.GetDetailsAsync(submit.ProblemId, judging.Id),
                 Team = await Context.FindTeamByIdAsync(submit.TeamId),
                 Problem = prob,
-                Language = await Context.FindLanguageAsync(submit.Language),
+                Language = await Context.FindLanguageAsync(submit.Language, contestFiltered: false),
             });
         }
 
@@ -87,10 +87,10 @@ namespace SatelliteSite.ContestModule.Controllers
                 TeamId = submit.TeamId,
                 NewCode = submit.SourceCode,
                 NewId = submit.Id,
-                NewLang = await Context.FindLanguageAsync(submit.Language),
+                NewLang = await Context.FindLanguageAsync(submit.Language, contestFiltered: false),
                 OldCode = lastSubmit?.SourceCode,
                 OldId = lastSubmit?.Id,
-                OldLang = await Context.FindLanguageAsync(lastSubmit?.Language),
+                OldLang = await Context.FindLanguageAsync(lastSubmit?.Language, contestFiltered: false),
             });
         }
 
