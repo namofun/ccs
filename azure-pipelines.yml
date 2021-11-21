@@ -51,64 +51,32 @@ jobs:
       testRunTitle: 'Run unit tests'
     displayName: 'Run Unit Tests'
 
-  - task: DotNetCoreCLI@2
-    inputs:
-      command: 'custom'
-      custom: 'pack'
-      arguments: '-c Release -o $(Build.ArtifactStagingDirectory)'
-    displayName: 'Package for NuGet'
+  - ${{ if startsWith(variables['Build.SourceBranch'], 'refs/tags/') }}:
 
-  - task: DotNetCoreCLI@2
-    inputs:
-      command: 'push'
-      packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg'
-      nuGetFeedType: 'internal'
-      publishVstsFeed: '5f8d36de-7004-4c36-a8b5-8a4bda9eb598/c2949ad7-bda3-4f23-a41b-3109c9419cb7'
-    displayName: 'Push to NuGet Feed'
-    condition: startsWith(variables['Build.SourceBranch'], 'refs/tags/')
-
-- ${{ if startsWith(variables['Build.SourceBranch'], 'refs/heads/') }}:
-
-  - job: WaitForDevVersionApproval
-    dependsOn: Build
-    condition: succeeded()
-    displayName: Wait for development approval
-    pool: server
-    timeoutInMinutes: 30
-    steps:
-    - task: ManualValidation@0
-      timeoutInMinutes: 30
+    - task: DotNetCoreCLI@2
       inputs:
-        instructions: 'Please decide whether to create a development version'
-        onTimeout: 'reject'
+        command: 'custom'
+        custom: 'pack'
+        arguments: '-c Release -o $(Build.ArtifactStagingDirectory)'
+      displayName: 'Package for NuGet'
 
-  - job: BuildDevVersion
-    dependsOn: WaitForDevVersionApproval
-    condition: succeeded()
-    displayName: "Develop Version Build"
-
-    pool:
-      vmImage: ubuntu-latest
-
-    steps:
-    - task: Bash@3
+    - task: DotNetCoreCLI@2
       inputs:
-        targetType: 'inline'
-        script: 'echo "ref: $(Build.SourceBranch)" > $(Build.SourcesDirectory)/.git/ADO_OVERRIDE_HEAD'
-      displayName: 'Set Source Branch'
+        command: 'push'
+        packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg'
+        nuGetFeedType: 'internal'
+        publishVstsFeed: '5f8d36de-7004-4c36-a8b5-8a4bda9eb598/c2949ad7-bda3-4f23-a41b-3109c9419cb7'
+      displayName: 'Push to NuGet Feed'
+      condition: startsWith(variables['Build.SourceBranch'], 'refs/tags/')
 
-    - task: UseDotNet@2
-      inputs:
-        packageType: 'sdk'
-        version: '6.0.x'
-      displayName: 'Setup Build Environment'
+  - ${{ if startsWith(variables['Build.SourceBranch'], 'refs/heads/') }}:
 
     - task: DotNetCoreCLI@2
       inputs:
         command: 'custom'
         custom: 'pack'
         arguments: '-c Release -p:CIRevision=$(Build.BuildId)-$(Build.SourceVersion) -o $(Build.ArtifactStagingDirectory)'
-      displayName: 'Build Preview Version'
+      displayName: 'Package for Preview Version'
 
     - task: DotNetCoreCLI@2
       inputs:
@@ -116,7 +84,7 @@ jobs:
         packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg'
         nuGetFeedType: 'internal'
         publishVstsFeed: '5f8d36de-7004-4c36-a8b5-8a4bda9eb598/a195bd6e-4492-4434-b152-e450f6b11d5d'
-      displayName: 'Push to Dev Feed'
+      displayName: 'Push to Dev NuGet Feed'
 
 - job: Sync
   displayName: "Sync with Azure Repos"
