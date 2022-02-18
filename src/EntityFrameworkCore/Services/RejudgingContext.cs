@@ -47,9 +47,11 @@ namespace Ccs.Services
 
         Task<int> IRejudgingContext.RejudgeAsync(
             Expression<Func<Submission, Judging, bool>> predicate,
-            Rejudging? rejudge, bool fullTest)
+            Rejudging rejudging,
+            bool fullTest,
+            bool immediateApply)
         {
-            return Polygon.Rejudgings.BatchRejudgeAsync(predicate, rejudge, fullTest);
+            return Polygon.Rejudgings.BatchRejudgeAsync(predicate, rejudging, fullTest, immediateApply);
         }
 
         Task IRejudgingContext.CancelAsync(Rejudging rejudge, int uid)
@@ -94,55 +96,18 @@ namespace Ccs.Services
             };
 
             rejudging = await Polygon.Rejudgings.CreateAsync(rejudging);
-            int cid = rejudging.ContestId, rid = rejudging.Id;
+
             var startTime = Contest.StartTime!.Value;
             var endTime = (Contest.StartTime + Contest.EndTime)!.Value;
-            var locks = Db.Submissions
-                .Where(s => s.ContestId == cid)
-                .Join(
-                    inner: Db.Judgings,
-                    outerKeySelector: s => new { SubmissionId = s.Id, Active = true },
-                    innerKeySelector: j => new { j.SubmissionId, j.Active },
-                    resultSelector: (s, j) => new { s, j })
-                .Where(a => a.j.Status == Verdict.Accepted && a.s.Time >= startTime && a.s.Time <= endTime)
-                .Select(s => s.s.Id);
-
-            int count = await Db.Submissions
-                .Where(s => locks.Contains(s.Id))
-                .BatchUpdateAsync(s => new Submission { RejudgingId = rid });
+            int count = await Polygon.Rejudgings.BatchRejudgeAsync(
+                (s, j) => j.Status == Verdict.Accepted && s.Time >= startTime && s.Time <= endTime,
+                rejudging, immediateApply: true);
 
             if (count == 0)
             {
                 await Polygon.Rejudgings.DeleteAsync(rejudging);
                 return CheckResult<Rejudging>.Fail("There's no accepted submissions in this contest.");
             }
-
-            locks = Db.Submissions
-                .Where(s => s.RejudgingId == rid)
-                .Select(s => s.Id);
-
-            int inserts = await Db.Submissions
-                .Where(s => s.RejudgingId == rid)
-                .Join(
-                    inner: Db.Judgings,
-                    outerKeySelector: s => new { SubmissionId = s.Id, Active = true },
-                    innerKeySelector: j => new { j.SubmissionId, j.Active },
-                    resultSelector: (s, j) => new Judging
-                    {
-                        Active = false,
-                        SubmissionId = s.Id,
-                        Status = Verdict.Running,
-                        RejudgingId = rid,
-                        PreviousJudgingId = j.Id,
-                        FullTest = j.FullTest,
-                    })
-                .BatchInsertIntoAsync((DbSet<Judging>)Db.Judgings);
-
-            if (count != inserts) throw new ArgumentException("Error database state.");
-
-            await Db.Judgings
-                .Where(j => locks.Contains(j.SubmissionId) && (j.Active || j.RejudgingId == rid))
-                .BatchUpdateAsync(j => new Judging { Active = j.RejudgingId == rid });
 
             var settings = Contest.Settings.Clone();
             settings.SystemTestRejudgingId = rejudging.Id;
@@ -151,9 +116,11 @@ namespace Ccs.Services
 
             await Mediator.Publish(new Events.ScoreboardRefreshEvent(this));
 
+            /*
             await Db.Judgings
-                .Where(j => j.RejudgingId == rid)
+                .Where(j => j.RejudgingId == rejudging.Id)
                 .BatchUpdateAsync(j => new Judging { Status = Verdict.Pending });
+            */
 
             return CheckResult<Rejudging>.Succeed(rejudging);
         }
