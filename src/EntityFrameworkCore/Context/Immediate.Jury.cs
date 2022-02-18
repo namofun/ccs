@@ -126,20 +126,28 @@ namespace Ccs.Services
 
         public virtual async Task<string> GetReadmeAsync(bool source)
         {
-            string fileName = source ? $"c{Contest.Id}/readme.md" : $"c{Contest.Id}/readme.html";
-            var fileInfo = await Get<IProblemFileProvider>().GetFileInfoAsync(fileName);
-            return await fileInfo.ReadAsync() ?? string.Empty;
+            var io = Get<IContestFileProvider>();
+            if (source)
+            {
+                var fileInfo = await io.GetReadmeSourceAsync(Contest.Id);
+                return await fileInfo.ReadAsStringAsync() ?? string.Empty;
+            }
+            else
+            {
+                var fileInfo = await io.GetReadmeAsync(Contest.Id);
+                return await fileInfo.ReadAsStringAndCacheAsync() ?? string.Empty;
+            }
         }
 
         public virtual async Task SetReadmeAsync(string source)
         {
             source ??= "";
-            var io = Get<IProblemFileProvider>();
+            var io = Get<IContestFileProvider>();
             var md = Get<IMarkdownService>();
             var document = md.Parse(source);
 
-            await io.WriteStringAsync($"c{Contest.Id}/readme.md", source);
-            await io.WriteStringAsync($"c{Contest.Id}/readme.html", md.RenderAsHtml(document));
+            await io.WriteReadmeSourceAsync(Contest.Id, source);
+            await io.WriteReadmeAsync(Contest.Id, md.RenderAsHtml(document));
         }
 
         public virtual async Task<IReadOnlyDictionary<string, object>> GetUpdatesAsync()

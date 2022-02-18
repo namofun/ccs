@@ -2,8 +2,11 @@
 using Ccs.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders.Physical;
+using Microsoft.Extensions.Options;
 using Polygon.Storages;
 using SatelliteSite.IdentityModule.Entities;
+using System.IO;
 
 namespace Ccs
 {
@@ -12,6 +15,14 @@ namespace Ccs
         where TRole : Role, new()
         where TContext : DbContext, IContestDbContext, IPolygonDbContext
     {
+        private static void EnsureDirectoryExists(string directory)
+        {
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+        }
+
         public void Configure(IServiceCollection services)
         {
             if (typeof(IUserWithRating).IsAssignableFrom(typeof(TUser)))
@@ -36,6 +47,27 @@ namespace Ccs
             services.AddScoped<IContestRepository2, CachedContestRepository2<TContext>>();
 
             services.AddSingleton<IContestContextFactory, CachedContestContextFactory>();
+
+            services.AddOptions<ContestFileOptions>()
+            .PostConfigure<IOptions<Polygon.PolygonPhysicalOptions>>((options, polygon) =>
+            {
+                if (options.ContestFileProvider == null)
+                {
+                    if (string.IsNullOrEmpty(options.ContestDirectory)
+                        && !string.IsNullOrEmpty(polygon.Value.ProblemDirectory))
+                    {
+                        options.ContestDirectory = polygon.Value.ProblemDirectory;
+                    }
+
+                    EnsureDirectoryExists(options.ContestDirectory);
+                }
+            });
+
+            services.AddSingleton<IContestFileProvider>(sp =>
+            {
+                var options = sp.GetRequiredService<IOptions<ContestFileOptions>>();
+                return options.Value.ContestFileProvider ?? new ContestFileProvider(new PhysicalBlobProvider(options.Value.ContestDirectory));
+            });
         }
     }
 }
