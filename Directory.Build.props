@@ -1,13 +1,20 @@
 ﻿<Project>
+
   <PropertyGroup>
     <GitRepositoryDirectory>$(MSBuildThisFileDirectory).git</GitRepositoryDirectory>
-    <SubstrateVersion>1.0.42</SubstrateVersion>
+    <SubstrateVersion>1.1.44</SubstrateVersion>
     <PreviewBuild>15</PreviewBuild>
     <CIRevision></CIRevision>
     <AspNetCoreVersion>6.0.0</AspNetCoreVersion>
-    <PolygonVersion>1.0.20</PolygonVersion>
-    <TenantVersion>1.0.14</TenantVersion>
-    <EFCoreBulkVersion>6.0.27-preview</EFCoreBulkVersion>
-    <PlagVersion>1.2.21</PlagVersion>
+    <PolygonVersion>1.1.21</PolygonVersion>
+    <TenantVersion>1.1.15</TenantVersion>
+    <EFCoreBulkVersion>6.0.29</EFCoreBulkVersion>
+    <PlagVersion>1.3.24</PlagVersion>
   </PropertyGroup>
+
+  <PropertyGroup>
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)build\xylab.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+
 </Project>

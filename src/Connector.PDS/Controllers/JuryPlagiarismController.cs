@@ -165,7 +165,15 @@ namespace Ccs.Connector.PlagiarismDetect.Controllers
             var report = await Service.FindReportAsync(rid);
             if (report == null || PlagiarismSet.Id != report.SetId) return NotFound();
 
-            await Service.JustificateAsync(report.Id, status switch { 0 => default(bool?), 1 => false, _ => true });
+            ReportJustification justification = status switch
+            {
+                0 => ReportJustification.Unspecified,
+                1 => ReportJustification.Ignored,
+                2 => ReportJustification.Claimed,
+                _ => throw new InvalidCastException(),
+            };
+
+            await Service.JustificateAsync(report.Id, justification);
             StatusMessage = $"Plagiarism Report between s{report.SubmissionB} and s{report.SubmissionA} has been justificated.";
             return RedirectToAction(nameof(Report), new { rid });
         }

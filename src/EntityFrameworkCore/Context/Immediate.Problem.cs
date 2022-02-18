@@ -221,7 +221,7 @@ namespace Ccs.Services
             return CheckResult.Succeed(prob.Title);
         }
 
-        public virtual async Task<IFileInfo?> GetTestcaseAsync(ProblemModel problem, int testcaseId, string filetype)
+        public virtual async Task<IBlobInfo?> GetTestcaseAsync(ProblemModel problem, int testcaseId, string filetype)
         {
             var testcase = await Polygon.Testcases.FindAsync(testcaseId, problem.ProblemId);
             if (testcase == null || (!problem.Shared && testcase.IsSecret)) return null;

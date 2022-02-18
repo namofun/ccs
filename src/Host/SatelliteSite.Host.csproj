@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Plag.Backend.Generation" Version="$(PlagVersion)" />
     <PackageReference Include="Plag.Backend.Roles.Rest" Version="$(PlagVersion)" />
     <PackageReference Include="Plag.Backend.Roles.Storage" Version="$(PlagVersion)" />
     <PackageReference Include="SatelliteSite.GroupModule" Version="$(TenantVersion)" />
@@ -28,8 +29,7 @@
     <PackageReference Include="SatelliteSite.Substrate" Version="$(SubstrateVersion)" />
     <PackageReference Include="SatelliteSite.HostBuilder" Version="$(SubstrateVersion)" />
     <PackageReference Include="SatelliteSite.IdentityModule" Version="$(SubstrateVersion)" />
-    <PackageReference Include="SatelliteSite.TelemetryModule" Version="$(SubstrateVersion)" />
-    <PackageReference Include="SatelliteSite.JobsModule" Version="$(SubstrateVersion)" />
+    <PackageReference Include="SatelliteSite.AzureCloud" Version="$(SubstrateVersion)" />
     <PackageReference Include="XiaoYang.EntityFrameworkCore.Bulk.SqlServer" Version="$(EFCoreBulkVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="$(AspNetCoreVersion)" />
   </ItemGroup>

@@ -14,29 +14,33 @@ namespace SatelliteSite.ContestModule
         {
             if (notification.Type != "c") return;
 
-            if (!(notification.Id is int cid) ||
+            if (notification.Id is not int cid ||
                 !int.TryParse(notification.Context.User.GetUserId(), out int userid))
             {
-                notification.Handled = false;
+                notification.Reject();
                 return;
             }
 
             if (notification.Context.User.IsInRole("Administrator"))
             {
-                notification.Handled = true;
+                notification.Accept("contest");
                 return;
             }
 
-            notification.Handled = false;
             var store = notification.Context.RequestServices.GetRequiredService<ScopedContestContextFactory>();
             var c = await store.CreateAsync(cid, false);
             if (c != null)
             {
                 var jury = await c.ListJuriesAsync();
-                if (jury.TryGetValue(userid, out var val))
+                if (jury.TryGetValue(userid, out var val) && val.Item2 >= Ccs.Entities.JuryLevel.Jury)
                 {
-                    notification.Handled = val.Item2 >= Ccs.Entities.JuryLevel.Jury;
+                    notification.Accept("contest");
                 }
+            }
+
+            if (!notification.Handled.HasValue)
+            {
+                notification.Reject();
             }
         }
     }

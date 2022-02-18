@@ -1,6 +1,4 @@
-﻿[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Ccs.Storage.Relational")]
-
-namespace Ccs
+﻿namespace Ccs
 {
     /// <summary>
     /// The ccs defaults.

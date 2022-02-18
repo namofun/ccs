@@ -68,7 +68,7 @@ namespace Ccs.Services
         /// <param name="testcaseId">The testcase ID.</param>
         /// <param name="filetype">The file type.</param>
         /// <returns>The task for getting file info.</returns>
-        Task<IFileInfo?> GetTestcaseAsync(ProblemModel problem, int testcaseId, string filetype);
+        Task<IBlobInfo?> GetTestcaseAsync(ProblemModel problem, int testcaseId, string filetype);
 
         /// <summary>
         /// Lists the testcases of all problems in this contest.

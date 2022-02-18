@@ -82,7 +82,7 @@ namespace Ccs.Connector.Jobs
                 _cad = cad;
             }
 
-            public async Task<JobStatus> ExecuteAsync(string arguments, Guid guid, ILogger logger)
+            public async Task<JobStatus> ExecuteAsync(string arguments, Job job, ILogger logger)
             {
                 var args = arguments.AsJson<Record>();
                 var context = await _factory.CreateAsync(args.ContestId);
@@ -116,7 +116,7 @@ namespace Ccs.Connector.Jobs
                 var pdf = await _pdf.GenerateAsync(html);
 
                 logger.LogInformation("Saving to storage.");
-                await _file.WriteBinaryAsync(guid + "/main", pdf);
+                await _file.SaveOutputAsync(job, pdf);
                 return JobStatus.Finished;
             }
         }

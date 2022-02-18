@@ -63,7 +63,7 @@ namespace Ccs.Connector.Jobs
                 _scoreboard = serviceProvider.GetRequiredService<IScoreboard>();
             }
 
-            public async Task<JobStatus> ExecuteAsync(string arguments, Guid guid, ILogger logger)
+            public async Task<JobStatus> ExecuteAsync(string arguments, Job job, ILogger logger)
             {
                 var args = arguments.AsJson<Models.ScoreboardArguments>();
                 var context = await _factory.CreateAsync(args.ContestId, _serviceProvider, true);
@@ -120,7 +120,7 @@ namespace Ccs.Connector.Jobs
                 workbook.SaveAs(memoryStream);
                 memoryStream.Position = 0;
 
-                await _files.WriteStreamAsync(guid + "/main", memoryStream);
+                await _files.SaveOutputAsync(job, memoryStream);
                 logger.LogInformation("Export succeeded.");
                 return JobStatus.Finished;
             }

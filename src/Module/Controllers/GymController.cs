@@ -242,7 +242,7 @@ namespace SatelliteSite.ContestModule.Controllers
             if (file == null || !file.Exists) return NotFound();
 
             return File(
-                fileStream: file.CreateReadStream(),
+                fileStream: await file.CreateReadStreamAsync(),
                 contentType: "application/octet-stream",
                 fileDownloadName: $"{problem.ShortName}.t{tcid}.{filetype}");
         }

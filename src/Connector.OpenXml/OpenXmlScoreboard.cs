@@ -59,7 +59,7 @@ namespace Ccs.Scoreboard
                         }
                         else if (board.RankingStrategy.Id == CcsDefaults.RuleIOI)
                         {
-                            if (!(team.Problems[i]?.Score is int sc)) continue;
+                            if (team.Problems[i]?.Score is not int sc) continue;
                             row.Cell(5 + i).Align().Value(sc);
                         }
                     }
