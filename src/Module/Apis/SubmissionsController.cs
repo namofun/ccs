@@ -15,7 +15,7 @@ namespace SatelliteSite.ContestModule.Apis
     /// </summary>
     [Area("Api")]
     [Route("[area]/contests/{cid}/[controller]")]
-    [Authorize(AuthenticationSchemes = "Basic")]
+    [AuthenticateWithAllSchemes]
     [Authorize(Roles = "CDS,Administrator")]
     [Produces("application/json")]
     public class SubmissionsController : ApiControllerBase<ISubmissionContext>

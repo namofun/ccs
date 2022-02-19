@@ -1,5 +1,4 @@
-﻿using Ccs;
-using Ccs.Entities;
+﻿using Ccs.Entities;
 using Ccs.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -15,12 +14,12 @@ namespace SatelliteSite.ContestModule.Apis
     /// </summary>
     [Area("Api")]
     [Route("[area]/[controller]/[action]")]
-    [Authorize(AuthenticationSchemes = "Basic")]
+    [AuthenticateWithAllSchemes]
     [Authorize(Roles = "CDS,Administrator")]
     [Produces("application/json")]
-    public class PrintingController : Microsoft.AspNetCore.Mvc.ApiControllerBase
+    public class PrintingController : ApiControllerBase
     {
-        private static readonly AsyncLock _locker = new AsyncLock();
+        private static readonly AsyncLock _locker = new();
         private readonly IPrintingService _store;
         private readonly ScopedContestContextFactory _factory;
         private readonly IUserManager _userManager;
