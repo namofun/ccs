@@ -97,11 +97,16 @@ namespace Ccs.Services
 
             rejudging = await Polygon.Rejudgings.CreateAsync(rejudging);
 
+            var settings = Contest.Settings.Clone();
+            settings.SystemTestRejudgingId = rejudging.Id;
+            var settingsJson = settings.ToJson();
+            await UpdateContestAsync(c => new Entities.Contest { SettingsJson = settingsJson });
+
             var startTime = Contest.StartTime!.Value;
             var endTime = (Contest.StartTime + Contest.EndTime)!.Value;
             int count = await Polygon.Rejudgings.BatchRejudgeAsync(
                 (s, j) => j.Status == Verdict.Accepted && s.Time >= startTime && s.Time <= endTime,
-                rejudging, immediateApply: true);
+                rejudging, immediateApply: true, stageAsRunning: true);
 
             if (count == 0)
             {
@@ -109,18 +114,11 @@ namespace Ccs.Services
                 return CheckResult<Rejudging>.Fail("There's no accepted submissions in this contest.");
             }
 
-            var settings = Contest.Settings.Clone();
-            settings.SystemTestRejudgingId = rejudging.Id;
-            var settingsJson = settings.ToJson();
-            await UpdateContestAsync(c => new Entities.Contest { SettingsJson = settingsJson });
-
             await Mediator.Publish(new Events.ScoreboardRefreshEvent(this));
 
-            /*
             await Db.Judgings
                 .Where(j => j.RejudgingId == rejudging.Id)
                 .BatchUpdateAsync(j => new Judging { Status = Verdict.Pending });
-            */
 
             return CheckResult<Rejudging>.Succeed(rejudging);
         }

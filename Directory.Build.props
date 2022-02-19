@@ -13,6 +13,11 @@
   </PropertyGroup>
 
   <PropertyGroup>
+    <DevelopMode Condition=" '$(DevelopMode)' == '' ">Preview</DevelopMode>
+    <PolygonVersion Condition=" '$(DevelopMode)' == 'Preview' ">0.0.*-*</PolygonVersion>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)build\xylab.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>

@@ -57,7 +57,7 @@ jobs:
       inputs:
         command: 'custom'
         custom: 'pack'
-        arguments: '-c Release -o $(Build.ArtifactStagingDirectory)'
+        arguments: '-c Release -p:DevelopMode=Release -o $(Build.ArtifactStagingDirectory)'
       displayName: 'Package for NuGet'
 
     - task: DotNetCoreCLI@2
