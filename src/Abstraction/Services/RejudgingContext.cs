@@ -67,9 +67,8 @@ namespace Ccs.Services
         /// <param name="predicate">The submissions to rejudge.</param>
         /// <param name="rejudge">The rejudging entity.</param>
         /// <param name="fullTest">Whether to take a full test.</param>
-        /// <param name="immediateApply">Whether to apply the rejudging immediately.</param>
         /// <returns>The task for batch rejudge submissions, returning the count of submissions being rejudged.</returns>
-        Task<int> RejudgeAsync(Expression<Func<Submission, Judging, bool>> predicate, Rejudging rejudge, bool fullTest = false, bool immediateApply = false);
+        Task<int> RejudgeAsync(Expression<Func<Submission, Judging, bool>> predicate, Rejudging rejudge, bool fullTest = false);
 
         /// <summary>
         /// Cancels the rejudging.

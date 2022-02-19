@@ -48,10 +48,9 @@ namespace Ccs.Services
         Task<int> IRejudgingContext.RejudgeAsync(
             Expression<Func<Submission, Judging, bool>> predicate,
             Rejudging rejudging,
-            bool fullTest,
-            bool immediateApply)
+            bool fullTest)
         {
-            return Polygon.Rejudgings.BatchRejudgeAsync(predicate, rejudging, fullTest, immediateApply);
+            return Polygon.Rejudgings.BatchRejudgeAsync(predicate, rejudging, fullTest);
         }
 
         Task IRejudgingContext.CancelAsync(Rejudging rejudge, int uid)
