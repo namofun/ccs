@@ -8,8 +8,8 @@
     <PackageReleaseNotes>Contest Control Module</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/namofun/ccs</RepositoryUrl>
     <Authors>yang-er</Authors>
-    <Version>1.0.0</Version>
-    <BasicPackageVersion>1.0.$(PreviewBuild)</BasicPackageVersion>
+    <Version>1.1.0</Version>
+    <BasicPackageVersion>1.1.$(PreviewBuild)</BasicPackageVersion>
     <PackageVersion>$(BasicPackageVersion)</PackageVersion>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <IncludeSymbols>true</IncludeSymbols>
