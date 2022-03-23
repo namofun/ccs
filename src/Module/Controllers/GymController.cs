@@ -234,6 +234,7 @@ namespace SatelliteSite.ContestModule.Controllers
             else if (filetype == "output") filetype = "out";
             else return NotFound();
 
+            if (!Contest.HasTeam) return StatusCode(403);
             if (TooEarly && !Contest.IsJury) return NotFound();
             var problem = await Context.FindProblemAsync(prob);
             if (problem == null || !problem.Shared) return NotFound();
