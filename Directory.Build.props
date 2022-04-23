@@ -2,6 +2,11 @@
 
   <PropertyGroup>
     <GitRepositoryDirectory>$(MSBuildThisFileDirectory).git</GitRepositoryDirectory>
+    <BaseOutputPath>$(MSBuildThisFileDirectory)artifacts\$(MSBuildProjectName)\bin\</BaseOutputPath>
+    <BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)artifacts\$(MSBuildProjectName)\obj\</BaseIntermediateOutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <SubstrateVersion>1.1.45</SubstrateVersion>
     <PreviewBuild>16</PreviewBuild>
     <CIRevision></CIRevision>
@@ -9,6 +14,7 @@
     <PolygonVersion>1.1.23</PolygonVersion>
     <TenantVersion>1.1.16</TenantVersion>
     <EFCoreBulkVersion>6.0.29</EFCoreBulkVersion>
+    <WorkflowsVersion>1.2.0</WorkflowsVersion>
     <PlagVersion>1.3.27</PlagVersion>
   </PropertyGroup>
 

@@ -1,13 +1,13 @@
-﻿using Ccs.Entities;
-using Ccs.Events;
-using Ccs.Models;
-using Ccs.Services;
-using Polygon.Events;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Xylab.Contesting.Entities;
+using Xylab.Contesting.Events;
+using Xylab.Contesting.Models;
+using Xylab.Contesting.Services;
+using Xylab.Polygon.Events;
 
-namespace Ccs.Scoreboard
+namespace Xylab.Contesting.Scoreboard
 {
     /// <inheritdoc />
     public interface IRankingStrategyV2 : IRankingStrategy

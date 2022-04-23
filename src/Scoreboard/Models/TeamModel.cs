@@ -1,6 +1,6 @@
 ﻿#nullable disable
 
-namespace Ccs.Models
+namespace Xylab.Contesting.Models
 {
     public class TeamModel
     {

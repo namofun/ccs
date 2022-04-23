@@ -1,16 +1,16 @@
-﻿using Ccs.Entities;
-using Ccs.Events;
-using Ccs.Models;
-using Ccs.Services;
-using MediatR;
-using Polygon.Entities;
-using Polygon.Events;
+﻿using MediatR;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Xylab.Contesting.Entities;
+using Xylab.Contesting.Events;
+using Xylab.Contesting.Models;
+using Xylab.Contesting.Services;
+using Xylab.Polygon.Entities;
+using Xylab.Polygon.Events;
 
-namespace Ccs.Scoreboard
+namespace Xylab.Contesting.Scoreboard
 {
     /// <summary>
     /// The solver for ranking.

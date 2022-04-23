@@ -1,9 +1,9 @@
 ﻿#nullable enable
-using Ccs.Scoreboard;
 using System.Collections;
 using System.Collections.Generic;
+using Xylab.Contesting.Scoreboard;
 
-namespace Ccs.Models
+namespace Xylab.Contesting.Models
 {
     public abstract class BoardViewModel : IEnumerable<SortOrderModel>
     {

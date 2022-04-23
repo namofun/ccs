@@ -3,6 +3,8 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
+    <AssemblyName>Xylab.Contesting.Scoreboard</AssemblyName>
+    <RootNamespace>Xylab.Contesting.Scoreboard</RootNamespace>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <DescriptionAttach>The scoreboard calculator</DescriptionAttach>
   </PropertyGroup>

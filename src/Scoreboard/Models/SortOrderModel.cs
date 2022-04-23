@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 
-namespace Ccs.Models
+namespace Xylab.Contesting.Models
 {
     public class SortOrderModel : IReadOnlyList<TeamModel>
     {

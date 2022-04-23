@@ -1,14 +1,14 @@
-﻿using Ccs.Entities;
-using Ccs.Events;
-using Ccs.Models;
-using Ccs.Services;
-using Polygon.Entities;
-using Polygon.Events;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Xylab.Contesting.Entities;
+using Xylab.Contesting.Events;
+using Xylab.Contesting.Models;
+using Xylab.Contesting.Services;
+using Xylab.Polygon.Entities;
+using Xylab.Polygon.Events;
 
-namespace Ccs.Scoreboard.Query
+namespace Xylab.Contesting.Scoreboard.Query
 {
     /// <summary>
     /// The queries for scoreboard in OI rules.

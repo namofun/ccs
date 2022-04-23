@@ -1,6 +1,6 @@
-﻿using Polygon.Events;
+﻿using Xylab.Polygon.Events;
 
-namespace Ccs.Scoreboard
+namespace Xylab.Contesting.Scoreboard
 {
     internal class JudgingFinishedEvent2 : JudgingFinishedEvent
     {

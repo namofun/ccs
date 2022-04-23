@@ -1,11 +1,11 @@
-﻿using Ccs.Entities;
-using Ccs.Models;
-using Ccs.Services;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Xylab.Contesting.Entities;
+using Xylab.Contesting.Models;
+using Xylab.Contesting.Services;
 
-namespace Ccs.Scoreboard.Rating
+namespace Xylab.Contesting.Scoreboard.Rating
 {
     /// <summary>
     /// Calculator for elo-probabilistic Codeforces Rating System.
