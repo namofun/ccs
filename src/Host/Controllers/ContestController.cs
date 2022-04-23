@@ -1,8 +1,8 @@
-﻿using Ccs.Services;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Text.Encodings.Web;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using Xylab.Contesting.Services;
 
 namespace SatelliteSite.Controllers
 {

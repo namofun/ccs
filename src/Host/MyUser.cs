@@ -1,6 +1,6 @@
-﻿using Ccs.Entities;
-using SatelliteSite.IdentityModule.Entities;
-using Tenant.Entities;
+﻿using SatelliteSite.IdentityModule.Entities;
+using Xylab.Contesting.Entities;
+using Xylab.Tenant.Entities;
 
 namespace SatelliteSite
 {

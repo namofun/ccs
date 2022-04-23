@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
-using Plag.Backend;
 using SatelliteSite.IdentityModule.Entities;
+using Xylab.PlagiarismDetect.Backend;
 
 namespace SatelliteSite
 {
@@ -25,10 +25,10 @@ namespace SatelliteSite
                 .MarkDomain<Program>()
                 .AddModule<IdentityModule.IdentityModule<MyUser, Role, DefaultContext>>()
                 .EnableIdentityModuleBasicAuthentication()
-                .AddModule<PolygonModule.PolygonModule<Polygon.DefaultRole<DefaultContext, QueryCache>>>()
+                .AddModule<PolygonModule.PolygonModule<Xylab.Polygon.DefaultRole<DefaultContext, QueryCache>>>()
                 .AddModule<GroupModule.GroupModule<DefaultContext>>()
                 .AddModule<StudentModule.StudentModule<MyUser, Role, DefaultContext>>()
-                .AddModule<ContestModule.ContestModule<Ccs.RelationalRole<MyUser, Role, DefaultContext>>>()
+                .AddModule<ContestModule.ContestModule<Xylab.Contesting.RelationalRole<MyUser, Role, DefaultContext>>>()
                 .AddModule<PlagModule.PlagModule<StorageBackendRole<PdsContext>>>()
                 .AddPlagBackgroundService()
                 .AddModule<HostModule>()

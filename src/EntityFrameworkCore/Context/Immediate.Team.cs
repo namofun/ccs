@@ -427,7 +427,7 @@ namespace Xylab.Contesting.Services
         {
             if (category.ContestId != Contest.Id)
             {
-                throw new ArgumentOutOfRangeException();
+                throw new ArgumentOutOfRangeException(nameof(category));
             }
 
             return Get<ICategoryStore>().DeleteAsync(category);
@@ -437,7 +437,7 @@ namespace Xylab.Contesting.Services
         {
             if (category.ContestId != Contest.Id)
             {
-                throw new ArgumentOutOfRangeException();
+                throw new ArgumentOutOfRangeException(nameof(category));
             }
 
             return Get<ICategoryStore>().CreateAsync(category);
@@ -447,7 +447,7 @@ namespace Xylab.Contesting.Services
         {
             if (category.ContestId != Contest.Id)
             {
-                throw new ArgumentOutOfRangeException();
+                throw new ArgumentOutOfRangeException(nameof(category));
             }
 
             return Get<ICategoryStore>().UpdateAsync(

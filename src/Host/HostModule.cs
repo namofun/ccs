@@ -1,15 +1,17 @@
-﻿using Ccs.Registration;
-using Markdig;
+﻿using Markdig;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Polygon.FakeJudgehost;
 using SatelliteSite.ContestModule.Routing;
 using System.IO;
 using System.Threading.Tasks;
+using Xylab.Contesting.Connector.Jobs;
+using Xylab.Contesting.Registration;
+using Xylab.Polygon.Judgement.Daemon.Fake;
+using Xylab.Polygon.Storages;
 
 namespace SatelliteSite
 {
@@ -36,7 +38,7 @@ namespace SatelliteSite
         {
             services.AddMarkdown();
 
-            services.AddDbModelSupplier<DefaultContext, Polygon.Storages.PolygonIdentityEntityConfiguration<MyUser, DefaultContext>>();
+            services.AddDbModelSupplier<DefaultContext, PolygonIdentityEntityConfiguration<MyUser, DefaultContext>>();
 
             services.ConfigurePolygonStorage(options =>
             {
@@ -62,7 +64,7 @@ namespace SatelliteSite
                 options.RealIpHeaderName = "Jluds-hhh";
             });
 
-            services.Configure<Ccs.Connector.Jobs.ExportPdfOptions>(options =>
+            services.Configure<ExportPdfOptions>(options =>
             {
                 options.Url = "http://localhost:43982/api/render";
             });

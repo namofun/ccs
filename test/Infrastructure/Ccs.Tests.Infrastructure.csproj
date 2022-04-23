@@ -3,6 +3,8 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <IsPackable>false</IsPackable>
+    <AssemblyName>Xylab.Contesting.$(MSBuildProjectName.Substring(4))</AssemblyName>
+    <RootNamespace>Xylab.Contesting.$(MSBuildProjectName.Substring(4))</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

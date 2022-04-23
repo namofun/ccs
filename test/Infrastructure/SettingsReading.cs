@@ -1,7 +1,7 @@
-using Ccs.Entities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xylab.Contesting.Entities;
 
-namespace Ccs.Tests.Infrastructure
+namespace Xylab.Contesting.Tests.Infrastructure
 {
     [TestClass]
     public class SettingsReading

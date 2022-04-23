@@ -1,8 +1,8 @@
-﻿using Ccs.Services;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Net;
+using Xylab.Contesting.Services;
 
-namespace Ccs.Tests.Infrastructure
+namespace Xylab.Contesting.Tests.Infrastructure
 {
     [TestClass]
     public class IpMatching
