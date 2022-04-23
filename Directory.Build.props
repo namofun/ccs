@@ -8,7 +8,7 @@
 
   <PropertyGroup>
     <SubstrateVersion>1.1.45</SubstrateVersion>
-    <PreviewBuild>16</PreviewBuild>
+    <PreviewBuild>17</PreviewBuild>
     <CIRevision></CIRevision>
     <AspNetCoreVersion>6.0.0</AspNetCoreVersion>
     <PolygonVersion>1.1.23</PolygonVersion>
