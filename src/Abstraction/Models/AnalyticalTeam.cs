@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Tenant.Entities;
+using Xylab.Tenant.Entities;
 
-namespace Ccs.Models
+namespace Xylab.Contesting.Models
 {
     /// <summary>
     /// The model class for team information in analysis.

@@ -1,7 +1,7 @@
-﻿using Ccs.Entities;
-using System;
+﻿using System;
+using Xylab.Contesting.Entities;
 
-namespace Ccs.Models
+namespace Xylab.Contesting.Models
 {
     /// <summary>
     /// The extensions for entity interfaces.

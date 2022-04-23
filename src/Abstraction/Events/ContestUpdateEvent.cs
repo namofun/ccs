@@ -1,7 +1,7 @@
-﻿using Ccs.Models;
-using Ccs.Services;
+﻿using Xylab.Contesting.Models;
+using Xylab.Contesting.Services;
 
-namespace Ccs.Events
+namespace Xylab.Contesting.Events
 {
     public class ContestUpdateEvent : IContextedNotification
     {

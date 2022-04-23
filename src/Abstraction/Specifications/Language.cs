@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Ccs.Specifications
+namespace Xylab.Contesting.Specifications
 {
     /// <summary>
     /// Languages that are available for submission at the contest.
@@ -52,7 +52,7 @@ namespace Ccs.Specifications
         /// Construct a <see cref="Language"/>.
         /// </summary>
         /// <param name="l">The language entity.</param>
-        public Language(Polygon.Entities.Language l)
+        public Language(Xylab.Polygon.Entities.Language l)
         {
             AllowJudge = l.AllowJudge;
             AllowSubmit = l.AllowSubmit;

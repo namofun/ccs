@@ -1,14 +1,14 @@
-﻿using Ccs.Entities;
-using Ccs.Models;
-using Polygon.Entities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Net;
 using System.Threading.Tasks;
-using Tenant.Entities;
+using Xylab.Contesting.Entities;
+using Xylab.Contesting.Models;
+using Xylab.Polygon.Entities;
+using Xylab.Tenant.Entities;
 
-namespace Ccs.Services
+namespace Xylab.Contesting.Services
 {
     /// <summary>
     /// The context interface for fetching the information of a contest.
@@ -148,7 +148,7 @@ namespace Ccs.Services
         /// <param name="teamid">The team ID.</param>
         /// <param name="all">Whether to show all solutions.</param>
         /// <returns>The task for fetching solution list.</returns>
-        Task<List<Polygon.Models.Solution>> ListSolutionsAsync(
+        Task<List<Xylab.Polygon.Models.Solution>> ListSolutionsAsync(
             int? probid = null, string? langid = null, int? teamid = null, bool all = false);
 
         /// <summary>

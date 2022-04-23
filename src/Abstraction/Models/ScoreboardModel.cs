@@ -1,9 +1,9 @@
-﻿using Ccs.Scoreboard;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using Tenant.Entities;
+using Xylab.Tenant.Entities;
+using Xylab.Contesting.Scoreboard;
 
-namespace Ccs.Models
+namespace Xylab.Contesting.Models
 {
     public class ScoreboardModel
     {

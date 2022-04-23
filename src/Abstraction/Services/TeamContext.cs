@@ -1,14 +1,14 @@
-﻿using Ccs.Entities;
-using Ccs.Models;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Tenant.Entities;
+using Xylab.Contesting.Entities;
+using Xylab.Contesting.Models;
+using Xylab.Tenant.Entities;
 
-namespace Ccs.Services
+namespace Xylab.Contesting.Services
 {
     /// <summary>
     /// Provides contract for team controlling.

@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Ccs.Specifications
+namespace Xylab.Contesting.Specifications
 {
     /// <summary>
     /// Teams can be associated with organizations which will have some associated information, e.g. a logo. Typically organizations will be universities.
@@ -51,7 +51,7 @@ namespace Ccs.Specifications
         /// Construct an <see cref="Organization"/>.
         /// </summary>
         /// <param name="a">The affiliation entity.</param>
-        public Organization(Tenant.Entities.Affiliation a)
+        public Organization(Xylab.Tenant.Entities.Affiliation a)
         {
             Id = a.Abbreviation;
             Name = ShortName = a.Abbreviation.ToUpper();

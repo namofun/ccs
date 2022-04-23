@@ -1,11 +1,11 @@
-﻿using Ccs.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Xylab.Contesting.Models;
 
-namespace Ccs.Entities
+namespace Xylab.Contesting.Entities
 {
     /// <summary>
     /// The entity class for contest settings.

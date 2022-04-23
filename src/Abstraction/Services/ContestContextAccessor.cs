@@ -1,7 +1,7 @@
-﻿using Ccs.Entities;
-using Ccs.Models;
+﻿using Xylab.Contesting.Entities;
+using Xylab.Contesting.Models;
 
-namespace Ccs.Services
+namespace Xylab.Contesting.Services
 {
     /// <summary>
     /// The accessor to contest informations.

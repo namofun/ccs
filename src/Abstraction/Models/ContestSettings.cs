@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Ccs.Models
+namespace Xylab.Contesting.Models
 {
     /// <summary>
     /// The interface for contest settings.
@@ -38,7 +38,7 @@ namespace Ccs.Models
         /// </summary>
         /// <remarks>
         /// <para>
-        /// When <c>null</c>, the allowed languages list comes from <see cref="Polygon.Entities.Language.AllowSubmit"/>.
+        /// When <c>null</c>, the allowed languages list comes from <see cref="Xylab.Polygon.Entities.Language.AllowSubmit"/>.
         /// </para>
         /// <para>
         /// Otherwise, a string of JSON array like <c>["c","cpp","java","python3"]</c>.

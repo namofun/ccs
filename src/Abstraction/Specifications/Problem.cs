@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Ccs.Specifications
+namespace Xylab.Contesting.Specifications
 {
     /// <summary>
     /// The problems to be solved in the contest.

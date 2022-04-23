@@ -1,11 +1,11 @@
-﻿using Ccs.Models;
-using Polygon.Entities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Xylab.Contesting.Models;
+using Xylab.Polygon.Entities;
 
-namespace Ccs.Services
+namespace Xylab.Contesting.Services
 {
     /// <summary>
     /// Provides contract for submission controlling.
@@ -78,7 +78,7 @@ namespace Ccs.Services
         /// <param name="teamid">The team ID.</param>
         /// <param name="verdict">The judging verdict.</param>
         /// <returns>The task for fetching solution list.</returns>
-        Task<IPagedList<Polygon.Models.Solution>> ListSolutionsAsync(
+        Task<IPagedList<Xylab.Polygon.Models.Solution>> ListSolutionsAsync(
             int page, int perPage,
             int? probid = null, string? langid = null, int? teamid = null, Verdict? verdict = null);
 
@@ -88,14 +88,14 @@ namespace Ccs.Services
         /// <param name="page">The page.</param>
         /// <param name="perPage">The count per page.</param>
         /// <returns>The task for fetching solution list.</returns>
-        Task<IPagedList<Polygon.Models.Solution>> ListSolutionsAsync(int page, int perPage);
+        Task<IPagedList<Xylab.Polygon.Models.Solution>> ListSolutionsAsync(int page, int perPage);
 
         /// <summary>
         /// Finds the specified solutions in this contest.
         /// </summary>
         /// <param name="submitid">The submission ID.</param>
         /// <returns>The task for fetching solution.</returns>
-        Task<Polygon.Models.Solution?> FindSolutionAsync(int submitid);
+        Task<Xylab.Polygon.Models.Solution?> FindSolutionAsync(int submitid);
 
         /// <summary>
         /// List the submissions.

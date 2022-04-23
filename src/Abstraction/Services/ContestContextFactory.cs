@@ -2,7 +2,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace Ccs.Services
+namespace Xylab.Contesting.Services
 {
     /// <summary>
     /// The interface for creating <see cref="IContestContext"/>.

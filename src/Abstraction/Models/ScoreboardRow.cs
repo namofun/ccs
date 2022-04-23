@@ -1,9 +1,8 @@
-﻿using Ccs.Entities;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using Xylab.Contesting.Entities;
 
-namespace Ccs.Models
+namespace Xylab.Contesting.Models
 {
     /// <summary>
     /// The model interface representing single row in the scoreboard.

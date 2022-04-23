@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Ccs.Entities
+namespace Xylab.Contesting.Entities
 {
     /// <summary>
     /// The entity class for contest teams.

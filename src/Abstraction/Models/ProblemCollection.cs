@@ -1,9 +1,9 @@
-﻿using Ccs.Entities;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Xylab.Contesting.Entities;
 
-namespace Ccs.Models
+namespace Xylab.Contesting.Models
 {
     /// <summary>
     /// Represents a read-only collection of contest problems.

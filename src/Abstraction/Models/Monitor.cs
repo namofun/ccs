@@ -1,9 +1,9 @@
-﻿using Ccs.Entities;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Xylab.Contesting.Entities;
 
-namespace Ccs.Models
+namespace Xylab.Contesting.Models
 {
     public class Monitor : IEnumerable<IGrouping<Team, TeamMemberModel>>
     {

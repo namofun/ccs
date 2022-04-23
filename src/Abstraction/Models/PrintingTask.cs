@@ -1,7 +1,7 @@
 ﻿#nullable disable
 using System;
 
-namespace Ccs.Models
+namespace Xylab.Contesting.Models
 {
     /// <summary>
     /// The model class for a task of printing.

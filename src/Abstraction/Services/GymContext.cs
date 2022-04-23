@@ -1,13 +1,13 @@
-﻿using Ccs.Entities;
-using Ccs.Models;
-using Microsoft.Extensions.FileProviders;
-using Polygon.Entities;
-using Polygon.Models;
+﻿using Microsoft.Extensions.FileProviders;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Xylab.Contesting.Entities;
+using Xylab.Contesting.Models;
+using Xylab.Polygon.Entities;
+using Xylab.Polygon.Models;
 
-namespace Ccs.Services
+namespace Xylab.Contesting.Services
 {
     /// <summary>
     /// Provides contract for gym.

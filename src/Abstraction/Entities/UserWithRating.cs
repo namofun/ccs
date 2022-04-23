@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace Ccs.Entities
+namespace Xylab.Contesting.Entities
 {
     /// <summary>
     /// Represents a user with rating in the identity system.

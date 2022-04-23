@@ -1,7 +1,7 @@
-﻿using Polygon.Entities;
-using System;
+﻿using System;
+using Xylab.Polygon.Entities;
 
-namespace Ccs.Models
+namespace Xylab.Contesting.Models
 {
     /// <summary>
     /// The core model for recalculating scoreboard.

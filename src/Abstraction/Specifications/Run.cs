@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text.Json.Serialization;
 
-namespace Ccs.Specifications
+namespace Xylab.Contesting.Specifications
 {
     /// <summary>
     /// Runs are judgements of individual test cases of a submission.
@@ -68,7 +68,7 @@ namespace Ccs.Specifications
         /// <param name="v">The verdict.</param>
         /// <param name="rank">The testcase rank.</param>
         /// <param name="timems">The time in milliseconds.</param>
-        public Run(DateTimeOffset time, TimeSpan span, int runid, int jid, Polygon.Entities.Verdict v, int rank, int timems)
+        public Run(DateTimeOffset time, TimeSpan span, int runid, int jid, Xylab.Polygon.Entities.Verdict v, int rank, int timems)
         {
             Time = time;
             ContestTime = span;
@@ -86,7 +86,7 @@ namespace Ccs.Specifications
         /// <param name="contestTime">The contest time.</param>
         /// <param name="rank">The rank.</param>
         public Run(
-            Polygon.Entities.JudgingRun run,
+            Xylab.Polygon.Entities.JudgingRun run,
             DateTimeOffset contestTime,
             int rank)
             : this(run.CompleteTime,

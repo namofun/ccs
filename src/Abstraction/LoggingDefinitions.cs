@@ -1,8 +1,8 @@
-﻿using Ccs.Models;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using System;
+using Xylab.Contesting.Models;
 
-namespace Ccs
+namespace Xylab.Contesting
 {
     /// <summary>
     /// Logging definitions for <see cref="ILogger"/>.

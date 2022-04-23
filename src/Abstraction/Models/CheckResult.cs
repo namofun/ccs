@@ -1,4 +1,4 @@
-﻿namespace Ccs.Models
+﻿namespace Xylab.Contesting.Models
 {
     /// <summary>
     /// The check result of things like availability.

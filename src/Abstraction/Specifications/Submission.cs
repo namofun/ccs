@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text.Json.Serialization;
 
-namespace Ccs.Specifications
+namespace Xylab.Contesting.Specifications
 {
     /// <summary>
     /// Submissions, a.k.a. attempts to solve problems in the contest.
@@ -92,7 +92,7 @@ namespace Ccs.Specifications
         /// <param name="submission">The submission entity.</param>
         /// <param name="contestStart">The contest start time.</param>
         public Submission(
-            Polygon.Entities.Submission submission,
+            Xylab.Polygon.Entities.Submission submission,
             DateTimeOffset contestStart)
             : this(submission.ContestId,
                   submission.Language,
@@ -110,7 +110,7 @@ namespace Ccs.Specifications
         /// <param name="solution">The solution entity.</param>
         /// <param name="contestStart">The contest start time.</param>
         public Submission(
-            Polygon.Models.Solution solution,
+            Xylab.Polygon.Models.Solution solution,
             DateTimeOffset contestStart)
             : this(solution.ContestId,
                   solution.Language,

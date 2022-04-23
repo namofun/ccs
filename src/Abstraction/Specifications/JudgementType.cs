@@ -1,7 +1,7 @@
-﻿using Polygon.Entities;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
+using Xylab.Polygon.Entities;
 
-namespace Ccs.Specifications
+namespace Xylab.Contesting.Specifications
 {
     /// <summary>
     /// Judgement types are the possible responses from the system when judging a submission.

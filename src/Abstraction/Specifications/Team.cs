@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Ccs.Specifications
+namespace Xylab.Contesting.Specifications
 {
     /// <summary>
     /// Teams competing in the contest.
@@ -54,7 +54,7 @@ namespace Ccs.Specifications
         /// </summary>
         /// <param name="t">The team entity.</param>
         /// <param name="a">The affiliation entity.</param>
-        public Team(Entities.Team t, Tenant.Entities.Affiliation a)
+        public Team(Entities.Team t, Xylab.Tenant.Entities.Affiliation a)
         {
             GroupIds = new[] { $"{t.CategoryId}" };
             OrganizationId = a.Abbreviation;

@@ -1,7 +1,7 @@
-﻿using Ccs.Models;
-using System;
+﻿using System;
+using Xylab.Contesting.Models;
 
-namespace Ccs.Entities
+namespace Xylab.Contesting.Entities
 {
     /// <summary>
     /// The entity class for contests.

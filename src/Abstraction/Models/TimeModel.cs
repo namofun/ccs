@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Ccs.Models
+namespace Xylab.Contesting.Models
 {
     /// <inheritdoc cref="IContestTime" />
     public class TimeOnlyModel : IContestTime

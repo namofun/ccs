@@ -1,4 +1,4 @@
-﻿namespace Ccs.Entities
+﻿namespace Xylab.Contesting.Entities
 {
     /// <summary>
     /// The enum for contest state.

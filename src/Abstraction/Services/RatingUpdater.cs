@@ -1,9 +1,9 @@
-﻿using Ccs.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Xylab.Contesting.Models;
 
-namespace Ccs.Services
+namespace Xylab.Contesting.Services
 {
     /// <summary>
     /// The conventional interface for rating updater.

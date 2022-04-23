@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text.Json.Serialization;
 
-namespace Ccs.Specifications
+namespace Xylab.Contesting.Specifications
 {
     /// <summary>
     /// Judgements for submissions in the contest.
@@ -90,7 +90,7 @@ namespace Ccs.Specifications
         /// <param name="contestTime">The contest start time.</param>
         /// <param name="verdict">The verdict to use instead.</param>
         /// <param name="fakeTime">The fake event time for rejudgings.</param>
-        public Judgement(Polygon.Entities.Judging j, DateTimeOffset contestTime, Polygon.Entities.Verdict? verdict = null, DateTimeOffset? fakeTime = null)
+        public Judgement(Xylab.Polygon.Entities.Judging j, DateTimeOffset contestTime, Xylab.Polygon.Entities.Verdict? verdict = null, DateTimeOffset? fakeTime = null)
         {
             _fakeTime = fakeTime;
             Id = $"{j.Id}";

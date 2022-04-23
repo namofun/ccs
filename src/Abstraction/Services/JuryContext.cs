@@ -1,12 +1,12 @@
-﻿using Ccs.Entities;
-using Ccs.Models;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Xylab.Contesting.Entities;
+using Xylab.Contesting.Models;
 
-namespace Ccs.Services
+namespace Xylab.Contesting.Services
 {
     /// <summary>
     /// Provides contract for jury.
@@ -17,7 +17,7 @@ namespace Ccs.Services
         /// Get the status of judge queue.
         /// </summary>
         /// <returns>The list of judge queues.</returns>
-        Task<Polygon.Models.ServerStatus> GetJudgeQueueAsync();
+        Task<Xylab.Polygon.Models.ServerStatus> GetJudgeQueueAsync();
 
         /// <summary>
         /// Asynchronously update the contest.

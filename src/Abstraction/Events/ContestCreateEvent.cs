@@ -1,7 +1,7 @@
-﻿using Ccs.Entities;
-using MediatR;
+﻿using MediatR;
+using Xylab.Contesting.Entities;
 
-namespace Ccs.Events
+namespace Xylab.Contesting.Events
 {
     public class ContestCreateEvent : INotification
     {

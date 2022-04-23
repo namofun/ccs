@@ -1,11 +1,11 @@
-﻿using Ccs.Models;
-using Polygon.Entities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Xylab.Contesting.Models;
+using Xylab.Polygon.Entities;
 
-namespace Ccs.Services
+namespace Xylab.Contesting.Services
 {
     /// <summary>
     /// Provides contract for contest analysis.

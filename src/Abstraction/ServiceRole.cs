@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 
-namespace Ccs
+namespace Xylab.Contesting
 {
     /// <summary>
     /// The role definition for contest related operations.

@@ -1,8 +1,8 @@
-﻿using Ccs.Models;
-using Ccs.Services;
-using System;
+﻿using System;
+using Xylab.Contesting.Models;
+using Xylab.Contesting.Services;
 
-namespace Ccs.Events
+namespace Xylab.Contesting.Events
 {
     public class ScoreboardRefreshEvent : IContextedNotification
     {

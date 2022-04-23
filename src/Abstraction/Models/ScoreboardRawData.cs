@@ -1,8 +1,8 @@
-﻿using Ccs.Entities;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Xylab.Contesting.Entities;
 
-namespace Ccs.Models
+namespace Xylab.Contesting.Models
 {
     /// <summary>
     /// The scoreboard raw data.

@@ -1,7 +1,7 @@
-﻿using Ccs.Models;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Xylab.Contesting.Models;
 
-namespace Ccs.Services
+namespace Xylab.Contesting.Services
 {
     public class SeparatedContestListModelComparer : IComparer<ContestListModel>
     {

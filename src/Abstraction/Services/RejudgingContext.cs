@@ -1,11 +1,11 @@
-﻿using Polygon.Entities;
-using Polygon.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Xylab.Polygon.Entities;
+using Xylab.Polygon.Models;
 
-namespace Ccs.Services
+namespace Xylab.Contesting.Services
 {
     /// <summary>
     /// Provides contract for solution rejudging.

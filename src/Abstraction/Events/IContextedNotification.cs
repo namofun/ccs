@@ -1,7 +1,7 @@
-﻿using Ccs.Services;
-using MediatR;
+﻿using MediatR;
+using Xylab.Contesting.Services;
 
-namespace Ccs.Events
+namespace Xylab.Contesting.Events
 {
     public interface IContextedNotification : INotification
     {

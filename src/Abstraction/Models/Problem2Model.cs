@@ -1,4 +1,4 @@
-﻿namespace Ccs.Models
+﻿namespace Xylab.Contesting.Models
 {
     /// <summary>
     /// The model class for contest problems.
@@ -15,10 +15,10 @@
         /// </summary>
         public string BigTitle { get; }
 
-        /// <inheritdoc cref="Ccs.Entities.Contest.Kind"/>
+        /// <inheritdoc cref="Entities.Contest.Kind"/>
         public int Kind { get; }
 
-        /// <inheritdoc cref="Ccs.Entities.Contest.RankingStrategy"/>
+        /// <inheritdoc cref="Entities.Contest.RankingStrategy"/>
         public int RankStrategy { get; }
 
         /// <summary>

@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Ccs.Models
+namespace Xylab.Contesting.Models
 {
     public class SortOrderLookup : ILookup<int, IScoreboardRow>
     {
@@ -41,7 +41,7 @@ namespace Ccs.Models
                 .ToDictionary(s => s.Key);
 
         public SortOrderLookup(
-            IReadOnlyDictionary<int, Tenant.Entities.Category> categories,
+            IReadOnlyDictionary<int, Xylab.Tenant.Entities.Category> categories,
             IReadOnlyDictionary<int, IScoreboardRow> rows,
             bool isPublic,
             Scoreboard.IRankingStrategy sort)

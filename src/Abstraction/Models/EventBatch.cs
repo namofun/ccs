@@ -4,11 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Ccs.Models
+namespace Xylab.Contesting.Models
 {
-    public sealed class EventBatch : IEnumerable<Ccs.Entities.Event>, IDisposable
+    public sealed class EventBatch : IEnumerable<Entities.Event>, IDisposable
     {
-        private readonly List<Ccs.Entities.Event> _events;
+        private readonly List<Entities.Event> _events;
         private readonly DateTimeOffset _preferredTime;
         private readonly int _cid;
         private ILoggable? _loggable;
@@ -23,7 +23,7 @@ namespace Ccs.Models
         public EventBatch(int cid, DateTimeOffset preferredTime, ILoggable loggable)
         {
             _preferredTime = preferredTime;
-            _events = new List<Ccs.Entities.Event>();
+            _events = new List<Entities.Event>();
             _cid = cid;
             _loggable = loggable;
         }
@@ -84,12 +84,12 @@ namespace Ccs.Models
             _events.Clear();
         }
 
-        public IEnumerable<Ccs.Entities.Event> GetEnumerable()
+        public IEnumerable<Entities.Event> GetEnumerable()
         {
             return _events.OrderBy(e => e.EventTime);
         }
 
-        public IEnumerator<Ccs.Entities.Event> GetEnumerator()
+        public IEnumerator<Entities.Event> GetEnumerator()
         {
             return GetEnumerable().GetEnumerator();
         }

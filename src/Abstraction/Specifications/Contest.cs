@@ -1,8 +1,8 @@
-﻿using Ccs.Models;
-using System;
+﻿using System;
 using System.Text.Json.Serialization;
+using Xylab.Contesting.Models;
 
-namespace Ccs.Specifications
+namespace Xylab.Contesting.Specifications
 {
     /// <summary>
     /// Provides information on the current contest.

@@ -1,9 +1,9 @@
-﻿using Polygon.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Xylab.Polygon.Models;
 
-namespace Ccs.Services
+namespace Xylab.Contesting.Services
 {
     /// <summary>
     /// Extension methods for ccs related things.

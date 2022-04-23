@@ -1,4 +1,4 @@
-﻿namespace Ccs
+﻿namespace Xylab.Contesting
 {
     /// <summary>
     /// The ccs defaults.

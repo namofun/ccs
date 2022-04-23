@@ -2,14 +2,14 @@
 
   <PropertyGroup>
     <GitRepositoryDirectory>$(MSBuildThisFileDirectory).git</GitRepositoryDirectory>
-    <SubstrateVersion>1.1.44</SubstrateVersion>
+    <SubstrateVersion>1.1.45</SubstrateVersion>
     <PreviewBuild>16</PreviewBuild>
     <CIRevision></CIRevision>
     <AspNetCoreVersion>6.0.0</AspNetCoreVersion>
-    <PolygonVersion>1.1.22</PolygonVersion>
-    <TenantVersion>1.1.15</TenantVersion>
+    <PolygonVersion>1.1.23</PolygonVersion>
+    <TenantVersion>1.1.16</TenantVersion>
     <EFCoreBulkVersion>6.0.29</EFCoreBulkVersion>
-    <PlagVersion>1.3.24</PlagVersion>
+    <PlagVersion>1.3.27</PlagVersion>
   </PropertyGroup>
 
   <PropertyGroup>

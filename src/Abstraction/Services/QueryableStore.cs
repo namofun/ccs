@@ -1,7 +1,7 @@
-﻿using Ccs.Entities;
-using System.Linq;
+﻿using System.Linq;
+using Xylab.Contesting.Entities;
 
-namespace Ccs.Services
+namespace Xylab.Contesting.Services
 {
     /// <summary>
     /// The marker interface to gets the <see cref="IQueryable{T}"/>s.

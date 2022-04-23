@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Ccs.Specifications
+namespace Xylab.Contesting.Specifications
 {
     /// <summary>
     /// Grouping of teams. At the World Finals these are the super regions, at regionals these are often different sites.
@@ -51,7 +51,7 @@ namespace Ccs.Specifications
         /// Construct a <see cref="Group"/>.
         /// </summary>
         /// <param name="c">The category entity.</param>
-        public Group(Tenant.Entities.Category c)
+        public Group(Xylab.Tenant.Entities.Category c)
         {
             Hidden = !c.IsPublic;
             Color = c.Color;

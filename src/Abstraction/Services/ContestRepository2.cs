@@ -1,9 +1,9 @@
-﻿using Ccs.Models;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Xylab.Contesting.Models;
 
-namespace Ccs.Services
+namespace Xylab.Contesting.Services
 {
     /// <summary>
     /// The special used contest repository to list the contests for users.

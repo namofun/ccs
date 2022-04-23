@@ -1,11 +1,11 @@
-﻿using Ccs.Entities;
-using Ccs.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Xylab.Contesting.Entities;
+using Xylab.Contesting.Models;
 
-namespace Ccs.Services
+namespace Xylab.Contesting.Services
 {
     /// <summary>
     /// The interface for updating scoreboard.

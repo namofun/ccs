@@ -1,7 +1,7 @@
-﻿using Ccs.Entities;
-using Ccs.Services;
+﻿using Xylab.Contesting.Entities;
+using Xylab.Contesting.Services;
 
-namespace Ccs.Events
+namespace Xylab.Contesting.Events
 {
     public class ClarificationCreateEvent : IContextedNotification
     {

@@ -1,12 +1,12 @@
-﻿using Ccs.Events;
-using Ccs.Models;
-using Ccs.Services;
-using Polygon.Entities;
-using Polygon.Events;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Xylab.Contesting.Events;
+using Xylab.Contesting.Models;
+using Xylab.Contesting.Services;
+using Xylab.Polygon.Entities;
+using Xylab.Polygon.Events;
 
-namespace Ccs.Scoreboard
+namespace Xylab.Contesting.Scoreboard
 {
     /// <summary>
     /// The interface definition for ranking strategy.
