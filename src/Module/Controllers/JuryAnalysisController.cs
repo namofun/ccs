@@ -1,15 +1,15 @@
-﻿using Ccs.Models;
-using Ccs.Services;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Polygon.Entities;
 using SatelliteSite.ContestModule.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Xylab.Contesting.Models;
+using Xylab.Contesting.Services;
+using Xylab.Polygon.Entities;
 
 namespace SatelliteSite.ContestModule.Controllers
 {

@@ -1,6 +1,4 @@
-﻿using Ccs.Registration;
-using Ccs.Services;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using SatelliteSite.ContestModule.Models;
@@ -8,6 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Xylab.Contesting.Registration;
+using Xylab.Contesting.Services;
 
 namespace SatelliteSite.ContestModule.Controllers
 {
@@ -29,7 +29,7 @@ namespace SatelliteSite.ContestModule.Controllers
 
         public override async Task OnActionExecutingAsync(ActionExecutingContext context)
         {
-            ViewData["NavbarName"] = Ccs.CcsDefaults.NavbarGym;
+            ViewData["NavbarName"] = Xylab.Contesting.CcsDefaults.NavbarGym;
             ViewData["BigUrl"] = Url.Action("Home", "Gym");
             ViewData["UseLightTheme"] = true;
             await base.OnActionExecutingAsync(context);
@@ -254,7 +254,7 @@ namespace SatelliteSite.ContestModule.Controllers
             if (TooEarly && !Contest.IsJury) return NotStarted();
             if (page <= 0) return BadRequest();
 
-            var verd2 = (Polygon.Entities.Verdict?)verd;
+            var verd2 = (Xylab.Polygon.Entities.Verdict?)verd;
             if (filter != 1 || reset == 1)
             {
                 verd2 = null;

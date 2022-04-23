@@ -1,10 +1,11 @@
-﻿using Ccs.Services;
-using MediatR;
+﻿using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using SatelliteSite.Substrate.Dashboards;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Xylab.Contesting.Entities;
+using Xylab.Contesting.Services;
 
 namespace SatelliteSite.ContestModule
 {
@@ -32,7 +33,7 @@ namespace SatelliteSite.ContestModule
             if (c != null)
             {
                 var jury = await c.ListJuriesAsync();
-                if (jury.TryGetValue(userid, out var val) && val.Item2 >= Ccs.Entities.JuryLevel.Jury)
+                if (jury.TryGetValue(userid, out var val) && val.Item2 >= JuryLevel.Jury)
                 {
                     notification.Accept("contest");
                 }

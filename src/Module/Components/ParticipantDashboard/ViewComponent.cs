@@ -1,7 +1,7 @@
-﻿using Ccs.Services;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using SatelliteSite.IdentityModule.Models;
 using System.Threading.Tasks;
+using Xylab.Contesting.Services;
 
 namespace SatelliteSite.ContestModule.Components.ParticipantDashboard
 {

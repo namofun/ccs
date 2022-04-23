@@ -1,12 +1,12 @@
-﻿using Ccs;
-using Ccs.Models;
-using Ccs.Services;
-using Ccs.Specifications;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Xylab.Contesting;
+using Xylab.Contesting.Models;
+using Xylab.Contesting.Services;
+using Xylab.Contesting.Specifications;
 
 namespace SatelliteSite.ContestModule.Apis
 {
@@ -53,7 +53,7 @@ namespace SatelliteSite.ContestModule.Apis
                 });
 
             var maxEvent = await Context.GetMaxEventAsync();
-            maxEvent ??= new Ccs.Entities.Event { EventTime = DateTimeOffset.Now };
+            maxEvent ??= new Xylab.Contesting.Entities.Event { EventTime = DateTimeOffset.Now };
             return new Scoreboard
             {
                 Time = AbstractEvent.TrimToMilliseconds(maxEvent.EventTime),

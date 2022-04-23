@@ -1,8 +1,8 @@
-﻿using Ccs.Services;
-using Ccs.Specifications;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using Xylab.Contesting.Services;
+using Xylab.Contesting.Specifications;
 
 namespace SatelliteSite.ContestModule.Apis
 {

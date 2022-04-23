@@ -1,11 +1,11 @@
-﻿using Ccs.Services;
-using Ccs.Specifications;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Xylab.Contesting.Services;
+using Xylab.Contesting.Specifications;
 
 namespace SatelliteSite.ContestModule.Apis
 {
@@ -33,7 +33,7 @@ namespace SatelliteSite.ContestModule.Apis
             [FromQuery] int? problem = null)
         {
             var cond = Expr
-                .Of<Ccs.Entities.Clarification>(null)
+                .Of<Xylab.Contesting.Entities.Clarification>(null)
                 .CombineIf(ids != null && ids.Length > 0, c => ids.Contains(c.Id))
                 .CombineIf(problem.HasValue, c => c.ProblemId == problem);
             var contestTime = Contest.StartTime ?? DateTimeOffset.Now;

@@ -1,11 +1,10 @@
-﻿using Ccs.Models;
-using Ccs.Services;
-using Ccs.Specifications;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Polygon.Models;
 using System;
 using System.Threading.Tasks;
+using Xylab.Contesting.Services;
+using Xylab.Contesting.Specifications;
+using Xylab.Polygon.Models;
 
 namespace SatelliteSite.ContestModule.Apis
 {
@@ -50,7 +49,7 @@ namespace SatelliteSite.ContestModule.Apis
             var newTime = start_time ?? (now + TimeSpan.FromSeconds(30));
             var oldtime = Contest.StartTime.Value;
 
-            if (Contest.GetState(now) >= Ccs.Entities.ContestState.Started)
+            if (Contest.GetState(now) >= Xylab.Contesting.Entities.ContestState.Started)
                 return StatusCode(403); // contest is started
             if (newTime < now + TimeSpan.FromSeconds(29.5))
                 return StatusCode(403); // new start time is in the past or within 30s
@@ -58,7 +57,7 @@ namespace SatelliteSite.ContestModule.Apis
                 return StatusCode(403); // left time
 
             await Context.UpdateContestAsync(
-                _ => new Ccs.Entities.Contest
+                _ => new()
                 {
                     StartTime = newTime,
                 });

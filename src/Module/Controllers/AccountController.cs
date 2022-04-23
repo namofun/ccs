@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using SatelliteSite.ContestModule.Routing;
 using SatelliteSite.IdentityModule.Models;
 using System.Threading.Tasks;
+using Xylab.Contesting;
 
 namespace SatelliteSite.ContestModule.Controllers
 {
@@ -31,9 +32,9 @@ namespace SatelliteSite.ContestModule.Controllers
 
             ViewData["NavbarName"] = ccs.Context.Contest.Feature switch
             {
-                0 => Ccs.CcsDefaults.NavbarPublic,
-                1 => Ccs.CcsDefaults.NavbarGym,
-                2 => Ccs.CcsDefaults.NavbarProblemset,
+                0 => CcsDefaults.NavbarPublic,
+                1 => CcsDefaults.NavbarGym,
+                2 => CcsDefaults.NavbarProblemset,
                 _ => null,
             };
 

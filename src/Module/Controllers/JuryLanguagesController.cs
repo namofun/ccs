@@ -1,9 +1,9 @@
-﻿using Ccs.Services;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SatelliteSite.ContestModule.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Xylab.Contesting.Services;
 
 namespace SatelliteSite.ContestModule.Controllers
 {

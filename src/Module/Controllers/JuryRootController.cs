@@ -1,13 +1,14 @@
-﻿using Ccs;
-using Ccs.Entities;
-using Ccs.Models;
-using Ccs.Services;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SatelliteSite.ContestModule.Models;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Xylab.Contesting;
+using Xylab.Contesting.Entities;
+using Xylab.Contesting.Events;
+using Xylab.Contesting.Models;
+using Xylab.Contesting.Services;
 
 namespace SatelliteSite.ContestModule.Controllers
 {
@@ -336,7 +337,7 @@ namespace SatelliteSite.ContestModule.Controllers
         [ActionName("RefreshCache")]
         public async Task<IActionResult> RefreshCacheConfirmation()
         {
-            await Mediator.Publish(new Ccs.Events.ScoreboardRefreshEvent(Context));
+            await Mediator.Publish(new ScoreboardRefreshEvent(Context));
             StatusMessage = "Scoreboard cache has been refreshed.";
             await HttpContext.AuditAsync("refresh scoreboard cache", Contest.Id.ToString());
             return RedirectToAction(nameof(Home));

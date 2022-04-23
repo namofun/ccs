@@ -1,8 +1,8 @@
-﻿using Ccs.Services;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Threading.Tasks;
+using Xylab.Contesting.Services;
 
 namespace SatelliteSite.ContestModule.Routing
 {

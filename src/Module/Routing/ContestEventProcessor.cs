@@ -1,13 +1,13 @@
-﻿using Ccs.Events;
-using Ccs.Specifications;
-using MediatR;
-using Polygon.Events;
+﻿using MediatR;
 using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Xylab.Contesting.Events;
+using Xylab.Contesting.Specifications;
+using Xylab.Polygon.Events;
 
-namespace Ccs.Services
+namespace Xylab.Contesting.Services
 {
     public class ContestEventProcessor :
         INotificationHandler<ClarificationCreateEvent>,

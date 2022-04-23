@@ -1,8 +1,8 @@
-﻿using Ccs.Models;
-using Ccs.Scoreboard;
-using Microsoft.AspNetCore.Html;
+﻿using Microsoft.AspNetCore.Html;
 using System.IO;
 using System.Text.Encodings.Web;
+using Xylab.Contesting.Models;
+using Xylab.Contesting.Scoreboard;
 
 namespace SatelliteSite.ContestModule.Components.ContestScoreboard
 {

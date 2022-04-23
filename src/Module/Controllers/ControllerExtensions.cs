@@ -1,13 +1,14 @@
-﻿using Ccs.Entities;
-using Ccs.Models;
-using Ccs.Registration;
-using Ccs.Services;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Xylab.Contesting;
+using Xylab.Contesting.Entities;
+using Xylab.Contesting.Models;
+using Xylab.Contesting.Registration;
+using Xylab.Contesting.Services;
 
 namespace SatelliteSite.ContestModule.Controllers
 {
@@ -65,7 +66,7 @@ namespace SatelliteSite.ContestModule.Controllers
             int[] filtered_affiliations, int[] filtered_categories, int? page)
             where T : class, IContestContext
         {
-            if (that.Contest.Feature != Ccs.CcsDefaults.KindDom)
+            if (that.Contest.Feature != CcsDefaults.KindDom)
             {
                 throw new NotSupportedException();
             }

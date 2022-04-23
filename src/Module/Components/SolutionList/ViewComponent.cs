@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Polygon.Models;
 using System.Collections.Generic;
+using Xylab.Polygon.Models;
 
 namespace SatelliteSite.ContestModule.Components.SolutionList
 {

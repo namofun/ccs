@@ -1,6 +1,6 @@
-﻿using Ccs.Services;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
+using Xylab.Contesting.Services;
 
 namespace SatelliteSite.ContestModule
 {

@@ -1,10 +1,11 @@
 ﻿#nullable enable
-using Ccs.Entities;
-using Ccs.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
+using Xylab.Contesting;
+using Xylab.Contesting.Entities;
+using Xylab.Contesting.Services;
 
 namespace SatelliteSite.ContestModule.Routing
 {
@@ -59,7 +60,7 @@ namespace SatelliteSite.ContestModule.Routing
 
             bool restrictionFailed = false;
             if (team != null && member != null
-                && feature.Context.Contest.Kind == Ccs.CcsDefaults.KindDom
+                && feature.Context.Contest.Kind == CcsDefaults.KindDom
                 && feature.Context.Contest.Settings.RestrictIp is int restrictIp)
             {
                 var clientIp = context.Connection.RemoteIpAddress ?? System.Net.IPAddress.Parse("255.255.255.255");

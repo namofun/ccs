@@ -1,7 +1,5 @@
-﻿using Ccs.Services;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Polygon.Entities;
 using SatelliteSite.ContestModule.Models;
 using SatelliteSite.Services;
 using System;
@@ -9,6 +7,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Xylab.Contesting;
+using Xylab.Contesting.Entities;
+using Xylab.Contesting.Events;
+using Xylab.Contesting.Services;
+using Xylab.Polygon.Entities;
 
 namespace SatelliteSite.ContestModule.Controllers
 {
@@ -96,7 +99,7 @@ namespace SatelliteSite.ContestModule.Controllers
                 .CombineIf(ta, (s, j) => s.Time >= tat)
                 .CombineIf(tb, (s, j) => s.Time <= tbt);
 
-            int tok = await Context.RejudgeAsync(cond, r, fullTest: Contest.RankingStrategy == Ccs.CcsDefaults.RuleIOI);
+            int tok = await Context.RejudgeAsync(cond, r, fullTest: Contest.RankingStrategy == CcsDefaults.RuleIOI);
 
             if (tok == 0)
             {
@@ -193,7 +196,7 @@ namespace SatelliteSite.ContestModule.Controllers
 
             await Context.ApplyAsync(rej, int.Parse(User.GetUserId()));
             await HttpContext.AuditAsync("applied", $"{rejudgingid}");
-            await Mediator.Publish(new Ccs.Events.ScoreboardRefreshEvent(Context));
+            await Mediator.Publish(new ScoreboardRefreshEvent(Context));
             StatusMessage = "Rejudging applied. Scoreboard cache will be refreshed.";
             return RedirectToAction(nameof(Detail));
         }
@@ -202,12 +205,12 @@ namespace SatelliteSite.ContestModule.Controllers
         [HttpGet("[action]")]
         public async Task<IActionResult> SystemTest()
         {
-            if (!Ccs.CcsDefaults.SupportsRating
-                || Contest.RankingStrategy != Ccs.CcsDefaults.RuleCodeforces
-                || Contest.Kind != Ccs.CcsDefaults.KindDom)
+            if (!CcsDefaults.SupportsRating
+                || Contest.RankingStrategy != CcsDefaults.RuleCodeforces
+                || Contest.Kind != CcsDefaults.KindDom)
                 return NotFound();
 
-            if (Contest.GetState() < Ccs.Entities.ContestState.Ended)
+            if (Contest.GetState() < ContestState.Ended)
                 return Message("Launch system test", "Precheck failed. Contest should be over.", BootstrapColor.danger);
 
             if (Contest.Settings.SystemTestRejudgingId is int rejudgingid)
@@ -229,9 +232,9 @@ namespace SatelliteSite.ContestModule.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SystemTest(bool _ = true)
         {
-            if (!Ccs.CcsDefaults.SupportsRating
-                || Contest.RankingStrategy != Ccs.CcsDefaults.RuleCodeforces
-                || Contest.Kind != Ccs.CcsDefaults.KindDom)
+            if (!CcsDefaults.SupportsRating
+                || Contest.RankingStrategy != CcsDefaults.RuleCodeforces
+                || Contest.Kind != CcsDefaults.KindDom)
                 return NotFound();
 
             var r = await Context.SystemTestAsync(int.Parse(User.GetUserId()));
@@ -253,12 +256,12 @@ namespace SatelliteSite.ContestModule.Controllers
             [FromServices] IConfigurationRegistry conf)
         {
             var rejudgingid = Contest.Settings.SystemTestRejudgingId;
-            if (!Ccs.CcsDefaults.SupportsRating
+            if (!CcsDefaults.SupportsRating
                 || rejudgingid == null
                 || Contest.Settings.RatingChangesApplied == true)
                 return NotFound();
 
-            if ((await conf.GetDateTimeOffsetAsync(Ccs.CcsDefaults.ConfigurationLastRatingChangeTime)) > Contest.StartTime)
+            if ((await conf.GetDateTimeOffsetAsync(CcsDefaults.ConfigurationLastRatingChangeTime)) > Contest.StartTime)
             {
                 StatusMessage = "A later contest has done some rating changes. The history has been frozen.";
                 return RedirectToAction(nameof(Detail), new { rejudgingid });
@@ -284,7 +287,7 @@ namespace SatelliteSite.ContestModule.Controllers
             [FromServices] IRatingUpdater ratingUpdater)
         {
             var rejudgingid = Contest.Settings.SystemTestRejudgingId;
-            if (!Ccs.CcsDefaults.SupportsRating
+            if (!CcsDefaults.SupportsRating
                 || rejudgingid == null
                 || Contest.Settings.RatingChangesApplied == true)
                 return NotFound();
@@ -305,11 +308,11 @@ namespace SatelliteSite.ContestModule.Controllers
         public async Task<IActionResult> RollbackRatingChanges(
             [FromServices] IConfigurationRegistry conf)
         {
-            if (!Ccs.CcsDefaults.SupportsRating
+            if (!CcsDefaults.SupportsRating
                 || Contest.Settings.RatingChangesApplied != true)
                 return NotFound();
 
-            if ((await conf.GetDateTimeOffsetAsync(Ccs.CcsDefaults.ConfigurationLastRatingChangeTime)) > Contest.StartTime)
+            if ((await conf.GetDateTimeOffsetAsync(CcsDefaults.ConfigurationLastRatingChangeTime)) > Contest.StartTime)
             {
                 StatusMessage = "A later contest has done some rating changes. The history has been frozen.";
                 return RedirectToAction(nameof(Detail), new { rejudgingid = Contest.Settings.SystemTestRejudgingId });
@@ -329,7 +332,7 @@ namespace SatelliteSite.ContestModule.Controllers
         public async Task<IActionResult> RollbackRatingChanges(
             [FromServices] IRatingUpdater ratingUpdater)
         {
-            if (!Ccs.CcsDefaults.SupportsRating
+            if (!CcsDefaults.SupportsRating
                 || Contest.Settings.RatingChangesApplied != true)
                 return NotFound();
 

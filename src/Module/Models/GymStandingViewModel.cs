@@ -1,6 +1,6 @@
 ﻿#nullable enable
-using Ccs.Models;
 using System.Linq;
+using Xylab.Contesting.Models;
 
 namespace SatelliteSite.ContestModule.Models
 {

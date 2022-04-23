@@ -1,5 +1,5 @@
-﻿using Ccs.Models;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Xylab.Contesting.Models;
 
 namespace SatelliteSite.ContestModule.Models
 {

@@ -1,12 +1,12 @@
 ﻿@namespace SatelliteSite.ContestModule.Views
-@using Ccs
-@using Ccs.Entities
-@using Ccs.Models
 @using SatelliteSite.ContestModule.Models
-@using Polygon.Entities
-@using Polygon.Models
+@using Xylab.Contesting
+@using Xylab.Contesting.Entities
+@using Xylab.Contesting.Models
+@using Xylab.Polygon.Entities
+@using Xylab.Polygon.Models
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @addTagHelper *, SatelliteSite.Substrate
-@addTagHelper *, Polygon.TagHelpers
 @addTagHelper *, SatelliteSite.ContestModule
-@inject Ccs.Services.IContestContextAccessor Contest
+@addTagHelper *, Xylab.Polygon.TagHelpers
+@inject Xylab.Contesting.Services.IContestContextAccessor Contest

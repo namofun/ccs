@@ -1,11 +1,12 @@
-﻿using Ccs.Services;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using SatelliteSite.ContestModule.Models;
 using System;
 using System.Threading.Tasks;
+using Xylab.Contesting;
+using Xylab.Contesting.Services;
 
 namespace SatelliteSite.ContestModule.Controllers
 {
@@ -34,7 +35,7 @@ namespace SatelliteSite.ContestModule.Controllers
                     : View("AccessDenied");
             }
 
-            ViewData["NavbarName"] = Ccs.CcsDefaults.NavbarTeam;
+            ViewData["NavbarName"] = CcsDefaults.NavbarTeam;
             ViewData["BigUrl"] = Url.Action("Home", "DomTeam");
             ViewData["ExtraMenu"] = "_NavButton";
             base.OnActionExecuting(context);

@@ -1,6 +1,6 @@
-﻿using Polygon.Entities;
-using Polygon.Models;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Xylab.Polygon.Entities;
+using Xylab.Polygon.Models;
 
 namespace SatelliteSite.ContestModule.Models
 {

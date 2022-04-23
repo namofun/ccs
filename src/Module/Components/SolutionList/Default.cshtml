@@ -1,7 +1,8 @@
 ﻿@namespace SatelliteSite.ContestModule.Components.SolutionList
-@using Polygon.Entities
+@using Xylab.Polygon.Entities
+@using Xylab.Polygon.Models
 @model SolutionListViewModel
-@inject Ccs.Services.IContestContextAccessor Contest
+@inject Xylab.Contesting.Services.IContestContextAccessor Contest
 @functions
 {
     int total, correct;
@@ -58,13 +59,13 @@
         WriteLiteral("</span>");
     }
 
-    void WriteVerdictLine(Polygon.Models.Solution sub)
+    void WriteVerdictLine(Solution sub)
     {
         bool tooLate = ((Contest.StartTime + Contest.EndTime) ?? DateTimeOffset.MaxValue) < sub.Time;
         WriteLiteral("<td><a href=\"");
         WriteLiteral(currentUrl);
         WriteLiteral("\">");
-        if (Contest.RankingStrategy == Ccs.CcsDefaults.RuleIOI)
+        if (Contest.RankingStrategy == Xylab.Contesting.CcsDefaults.RuleIOI)
         {
             WriteLiteral("<span>");
             WriteLiteral(sub.TotalScore?.ToString() ?? "n/a");
@@ -80,7 +81,7 @@
         WriteLiteral("</a></td>");
     }
 
-    void WriteStatusLine(Polygon.Models.Solution sub, int tc)
+    void WriteStatusLine(Solution sub, int tc)
     {
         WriteLiteral("<td class=\"testcase-results\">");
         int t = 0;

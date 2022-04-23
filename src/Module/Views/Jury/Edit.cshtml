@@ -1,7 +1,7 @@
 ﻿@model JuryEditModel
 @{
     ViewData["Title"] = "Edit contest";
-    IReadOnlyDictionary<int, Tenant.Entities.Category> cats = ViewBag.Categories;
+    IReadOnlyDictionary<int, Xylab.Tenant.Entities.Category> cats = ViewBag.Categories;
     var catSel = cats.Values.Select(c => new SelectListItem(c.Name, c.Id.ToString()));
     IReadOnlyList<Language> langs = ViewBag.Languages;
     var langSel = langs.Select(c => new SelectListItem(c.Name, c.Id));

@@ -1,10 +1,11 @@
-﻿using Ccs.Entities;
-using Ccs.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using Xylab.Contesting;
+using Xylab.Contesting.Entities;
+using Xylab.Contesting.Models;
 
 namespace SatelliteSite.ContestModule.Models
 {
@@ -136,7 +137,7 @@ namespace SatelliteSite.ContestModule.Models
                 | (RestrictToLastLoginIp ? 4 : 0);
 
             var penaltyTime =
-                contest.RankingStrategy == Ccs.CcsDefaults.RuleXCPC
+                contest.RankingStrategy == CcsDefaults.RuleXCPC
                 && PenaltyTime != 20
                 ? PenaltyTime : default(int?);
 
@@ -149,16 +150,16 @@ namespace SatelliteSite.ContestModule.Models
                 };
 
             var settings = contest.Settings.Clone();
-            settings.BalloonAvailable = contest.Kind == Ccs.CcsDefaults.KindDom && UseBalloon;
-            settings.EventAvailable = contest.Kind == Ccs.CcsDefaults.KindDom && UseEvents;
+            settings.BalloonAvailable = contest.Kind == CcsDefaults.KindDom && UseBalloon;
+            settings.EventAvailable = contest.Kind == CcsDefaults.KindDom && UseEvents;
             settings.Languages = Languages;
-            settings.PrintingAvailable = contest.Kind == Ccs.CcsDefaults.KindDom && UsePrintings;
+            settings.PrintingAvailable = contest.Kind == CcsDefaults.KindDom && UsePrintings;
             settings.RegisterCategory = defaultCat;
             settings.StatusAvailable = StatusAvailable;
             settings.PenaltyTime = penaltyTime;
             settings.ScoreboardPaging = scoreboardPagingEnabled;
-            settings.PreferGymUI = contest.Kind == Ccs.CcsDefaults.KindDom && PreferGymUI ? true : default(bool?);
-            settings.RestrictIp = contest.Kind != Ccs.CcsDefaults.KindDom || restriction == 0 ? default(int?) : restriction;
+            settings.PreferGymUI = contest.Kind == CcsDefaults.KindDom && PreferGymUI ? true : default(bool?);
+            settings.RestrictIp = contest.Kind != CcsDefaults.KindDom || restriction == 0 ? default(int?) : restriction;
             settings.IpRanges = IpRanges?.Split(';', StringSplitOptions.RemoveEmptyEntries);
             return settings;
         }

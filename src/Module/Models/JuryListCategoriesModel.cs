@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using Tenant.Entities;
+using Xylab.Tenant.Entities;
 
 namespace SatelliteSite.ContestModule.Models
 {

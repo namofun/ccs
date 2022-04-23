@@ -9,13 +9,13 @@ namespace SatelliteSite.ContestModule.Controllers
     /// </summary>
     [Authorize]
     public abstract class JuryControllerBase<TContestContext> : ContestControllerBase<TContestContext>
-        where TContestContext : class, Ccs.Services.IContestContext
+        where TContestContext : class, Xylab.Contesting.Services.IContestContext
     {
         /// <inheritdoc />
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             ViewData["InJury"] = true;
-            ViewData["NavbarName"] = Ccs.CcsDefaults.NavbarJury;
+            ViewData["NavbarName"] = Xylab.Contesting.CcsDefaults.NavbarJury;
             ViewData["BigUrl"] = Url.Action("Home", "Jury");
             base.OnActionExecuting(context);
         }

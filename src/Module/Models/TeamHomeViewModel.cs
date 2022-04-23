@@ -1,8 +1,8 @@
 ﻿#nullable enable
-using Ccs.Entities;
-using Ccs.Models;
 using System.Collections.Generic;
-using Tenant.Entities;
+using Xylab.Contesting.Entities;
+using Xylab.Contesting.Models;
+using Xylab.Tenant.Entities;
 
 namespace SatelliteSite.ContestModule.Models
 {

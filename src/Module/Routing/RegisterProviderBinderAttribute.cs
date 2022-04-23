@@ -1,14 +1,15 @@
-﻿using Ccs.Registration;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Xylab.Contesting.Registration;
 
 namespace SatelliteSite.ContestModule
 {
+    [AttributeUsage(AttributeTargets.Parameter)]
     public sealed class RPBinderAttribute : Attribute, IModelBinder, IBinderTypeProviderMetadata, IBindingSourceMetadata
     {
         public Type BinderType => typeof(RPBinderAttribute);

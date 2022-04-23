@@ -1,9 +1,9 @@
-﻿using Ccs.Entities;
-using Ccs.Services;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using System.Linq;
 using System.Threading.Tasks;
+using Xylab.Contesting.Entities;
+using Xylab.Contesting.Services;
 
 namespace SatelliteSite.ContestModule.Routing
 {

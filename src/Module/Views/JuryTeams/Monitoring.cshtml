@@ -1,10 +1,11 @@
 ﻿@model Monitor
+@using Xylab.Tenant.Entities
 @{
     ViewData["Title"] = "Teams Monitoring";
     int[] filtered_category = ViewBag.FilteredCategories;
     int[] filtered_affiliation = ViewBag.FilteredAffiliations;
-    IReadOnlyDictionary<int, Tenant.Entities.Category> categories = ViewBag.Categories;
-    IReadOnlyDictionary<int, Tenant.Entities.Affiliation> affiliations = ViewBag.Affiliations;
+    IReadOnlyDictionary<int, Category> categories = ViewBag.Categories;
+    IReadOnlyDictionary<int, Affiliation> affiliations = ViewBag.Affiliations;
     var localhosts = new List<IGrouping<string, TeamMemberModel>>();
     var notlogin = new List<IGrouping<string, TeamMemberModel>>();
     var multiTeams = new List<IGrouping<string, TeamMemberModel>>();

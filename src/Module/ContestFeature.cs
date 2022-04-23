@@ -1,8 +1,8 @@
-﻿using Ccs.Entities;
-using Ccs.Models;
-using Ccs.Services;
-using System;
+﻿using System;
 using System.Reflection;
+using Xylab.Contesting.Entities;
+using Xylab.Contesting.Models;
+using Xylab.Contesting.Services;
 
 namespace SatelliteSite.ContestModule
 {
@@ -27,9 +27,9 @@ namespace SatelliteSite.ContestModule
 
         public IContestContext Context { get; set; }
         public Team Team { get; set; }
-        public bool IsJury => JuryLevel.HasValue && JuryLevel.Value >= Ccs.Entities.JuryLevel.Jury;
-        public bool IsBalloonRunner => JuryLevel.HasValue && JuryLevel.Value >= Ccs.Entities.JuryLevel.BalloonRunner;
-        public bool IsAdministrator => JuryLevel.HasValue && JuryLevel.Value >= Ccs.Entities.JuryLevel.Administrator;
+        public bool IsJury => JuryLevel.HasValue && JuryLevel.Value >= Xylab.Contesting.Entities.JuryLevel.Jury;
+        public bool IsBalloonRunner => JuryLevel.HasValue && JuryLevel.Value >= Xylab.Contesting.Entities.JuryLevel.BalloonRunner;
+        public bool IsAdministrator => JuryLevel.HasValue && JuryLevel.Value >= Xylab.Contesting.Entities.JuryLevel.Administrator;
         public JuryLevel? JuryLevel { get; set; }
         public bool HasTeam => Team != null;
         public bool IsTeamAccepted => Team != null && Team.Status == 1 && !IsRestrictionFailed;

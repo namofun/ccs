@@ -75,7 +75,7 @@ namespace SatelliteSite.ContestModule
         /// </summary>
         /// <typeparam name="T">The type of context object to get.</typeparam>
         /// <returns>A context object of type <typeparamref name="T"/>.</returns>
-        protected T GetContext<T>() where T : Ccs.Services.IContestContext
+        protected T GetContext<T>() where T : Xylab.Contesting.Services.IContestContext
         {
             if (_actionContext == null)
             {

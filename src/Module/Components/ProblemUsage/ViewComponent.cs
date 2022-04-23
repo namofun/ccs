@@ -1,7 +1,7 @@
-﻿using Ccs.Services;
-using Microsoft.AspNetCore.Mvc;
-using Polygon.Entities;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using Xylab.Contesting.Services;
+using Xylab.Polygon.Entities;
 
 namespace SatelliteSite.ContestModule.Components.ProblemUsage
 {

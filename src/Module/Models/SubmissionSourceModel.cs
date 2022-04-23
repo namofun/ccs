@@ -1,4 +1,4 @@
-﻿using Polygon.Entities;
+﻿using Xylab.Polygon.Entities;
 
 namespace SatelliteSite.ContestModule.Models
 {

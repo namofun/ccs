@@ -1,12 +1,12 @@
-﻿using Ccs.Services;
-using Ccs.Specifications;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Polygon.Entities;
 using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Xylab.Contesting.Services;
+using Xylab.Contesting.Specifications;
+using Xylab.Polygon.Entities;
 
 namespace SatelliteSite.ContestModule.Apis
 {

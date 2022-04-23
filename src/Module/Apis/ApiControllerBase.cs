@@ -1,10 +1,10 @@
-﻿using Ccs.Models;
-using Ccs.Services;
-using MediatR;
+﻿using MediatR;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Threading.Tasks;
+using Xylab.Contesting.Models;
+using Xylab.Contesting.Services;
 
 namespace SatelliteSite.ContestModule.Apis
 {

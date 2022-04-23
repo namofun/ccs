@@ -1,6 +1,6 @@
-﻿using Ccs.Entities;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using Xylab.Contesting.Entities;
 
 namespace SatelliteSite.ContestModule.Models
 {

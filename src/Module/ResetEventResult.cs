@@ -1,14 +1,14 @@
-﻿using Ccs.Models;
-using Ccs.Services;
-using Ccs.Specifications;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using ContestState = Ccs.Entities.ContestState;
-using Verdict = Polygon.Entities.Verdict;
+using Xylab.Contesting.Models;
+using Xylab.Contesting.Services;
+using Xylab.Contesting.Specifications;
+using ContestState = Xylab.Contesting.Entities.ContestState;
+using Verdict = Xylab.Polygon.Entities.Verdict;
 
 namespace SatelliteSite.ContestModule
 {
@@ -48,7 +48,7 @@ namespace SatelliteSite.ContestModule
                 await ctx.EmitEventAsync(batch);
             }
 
-            IReadOnlyDictionary<int, Tenant.Entities.Affiliation> affs;
+            IReadOnlyDictionary<int, Xylab.Tenant.Entities.Affiliation> affs;
             using (var batch = new EventBatch(cid, earlyTime.AddDays(-5), this))
             {
                 // judgement-types

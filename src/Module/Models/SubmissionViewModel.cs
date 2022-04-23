@@ -1,7 +1,7 @@
-﻿using Ccs.Models;
-using Polygon.Entities;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Xylab.Contesting.Models;
+using Xylab.Polygon.Entities;
 
 namespace SatelliteSite.ContestModule.Models
 {

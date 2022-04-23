@@ -1,7 +1,8 @@
-﻿@{
+﻿@using Xylab.Tenant.Entities
+@{
     ViewData["Title"] = "About this contest";
-    IReadOnlyDictionary<int, Tenant.Entities.Category> cats = ViewBag.Categories;
-    IReadOnlyDictionary<int, Tenant.Entities.Affiliation> affs = ViewBag.Affiliations;
+    IReadOnlyDictionary<int, Category> cats = ViewBag.Categories;
+    IReadOnlyDictionary<int, Affiliation> affs = ViewBag.Affiliations;
 }
 
 <hgroup class="mb-3">

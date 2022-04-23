@@ -1,11 +1,12 @@
-﻿using Ccs.Services;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Polygon.Entities;
 using SatelliteSite.ContestModule.Models;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Xylab.Contesting;
+using Xylab.Contesting.Services;
+using Xylab.Polygon.Entities;
 
 namespace SatelliteSite.ContestModule.Controllers
 {
@@ -98,7 +99,7 @@ namespace SatelliteSite.ContestModule.Controllers
         [HttpGet("{submitid}/[action]")]
         public async Task<IActionResult> Rejudge(int submitid)
         {
-            if (Contest.Feature == Ccs.CcsDefaults.KindProblemset)
+            if (Contest.Feature == CcsDefaults.KindProblemset)
             {
                 return Message(
                     title: "Rejudging",

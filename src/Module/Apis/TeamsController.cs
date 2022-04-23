@@ -1,12 +1,12 @@
-﻿using Ccs.Services;
-using Ccs.Specifications;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Xylab.Contesting.Services;
+using Xylab.Contesting.Specifications;
 
 namespace SatelliteSite.ContestModule.Apis
 {
@@ -50,7 +50,7 @@ namespace SatelliteSite.ContestModule.Apis
             }
 
             var cond = Expr
-                .Of<Ccs.Entities.Team>(t => t.Status == 1)
+                .Of<Xylab.Contesting.Entities.Team>(t => t.Status == 1)
                 .CombineIf(category.HasValue, t => t.CategoryId == category)
                 .CombineIf(ids != null && ids.Length > 0, t => ids.Contains(t.TeamId))
                 .CombineIf(affId.HasValue, t => t.AffiliationId == affId);

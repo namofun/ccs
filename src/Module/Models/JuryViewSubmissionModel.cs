@@ -1,9 +1,9 @@
-﻿using Ccs.Entities;
-using Ccs.Models;
-using Microsoft.AspNetCore.Mvc;
-using Polygon.Entities;
-using Polygon.Models;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using Xylab.Contesting.Entities;
+using Xylab.Contesting.Models;
+using Xylab.Polygon.Entities;
+using Xylab.Polygon.Models;
 
 namespace SatelliteSite.ContestModule.Models
 {

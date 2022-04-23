@@ -1,17 +1,18 @@
-﻿using Ccs.Models;
-using Microsoft.AspNetCore.Html;
+﻿using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Encodings.Web;
+using Xylab.Contesting;
+using Xylab.Contesting.Models;
 
 namespace SatelliteSite.ContestModule.Components.ContestScoreboard
 {
     public class BoardView : IHtmlContent
     {
-        private const int PagingSize = Ccs.CcsDefaults.DefaultScoreboardPagingSize;
+        private const int PagingSize = CcsDefaults.DefaultScoreboardPagingSize;
         private readonly BoardViewModel _model;
         private readonly bool _usefoot, _inJury;
         private readonly IUrlHelper _urlHelper;

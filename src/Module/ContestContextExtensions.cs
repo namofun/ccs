@@ -1,12 +1,11 @@
 ﻿#nullable enable
-using Ccs;
-using Ccs.Entities;
-using Ccs.Services;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using Xylab.Contesting.Entities;
+using Xylab.Contesting.Services;
 
 namespace SatelliteSite.ContestModule
 {

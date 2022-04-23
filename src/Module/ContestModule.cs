@@ -1,6 +1,4 @@
-﻿using Ccs;
-using Ccs.Services;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -10,7 +8,9 @@ using SatelliteSite;
 using SatelliteSite.ContestModule.Routing;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using JuryLevel = Ccs.Entities.JuryLevel;
+using Xylab.Contesting;
+using Xylab.Contesting.Services;
+using JuryLevel = Xylab.Contesting.Entities.JuryLevel;
 
 [assembly: RoleDefinition(30, "CDS", "cds_api", "CDS API user")]
 [assembly: RoleDefinition(31, "ContestCreator", "cont", "Contest Creator")]
@@ -69,11 +69,11 @@ namespace SatelliteSite.ContestModule
 
             services.AddSingleton<IAuthorizationHandler, ContestAuthorizationHandler>();
             services.AddSingleton<IRewriteRule, ContestOnlyRewriteRule>();
-            services.AddMediatRAssembly(typeof(Ccs.Scoreboard.RankingSolver).Assembly);
-            services.AddSingleton<IRatingCalculator, Ccs.Scoreboard.Rating.EloRatingCalculator>();
+            services.AddMediatRAssembly(typeof(Xylab.Contesting.Scoreboard.RankingSolver).Assembly);
+            services.AddSingleton<IRatingCalculator, Xylab.Contesting.Scoreboard.Rating.EloRatingCalculator>();
             services.AddSingleton(SeparatedContestListModelComparer.Instance);
             services.ConfigureOptions<MiddlewareConfigurator>();
-            services.AddSingleton(Ccs.Scoreboard.RankingSolver.Strategies);
+            services.AddSingleton(Xylab.Contesting.Scoreboard.RankingSolver.Strategies);
 
             services.ConfigureRouting(options =>
             {
@@ -411,7 +411,7 @@ namespace SatelliteSite.ContestModule
                     .RequireThat(c => Feature(c).Feature != CcsDefaults.KindProblemset);
             });
 
-            menus.Component(Polygon.ResourceDictionary.ComponentProblemOverview)
+            menus.Component(Xylab.Polygon.ResourceDictionary.ComponentProblemOverview)
                 .HasComponent<Components.ProblemUsage.ProblemUsageViewComponent>(10);
 
             menus.Component(IdentityModule.ExtensionPointDefaults.DashboardUserDetail)

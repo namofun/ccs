@@ -1,12 +1,12 @@
-﻿using Ccs.Services;
-using Ccs.Specifications;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Xylab.Contesting.Services;
+using Xylab.Contesting.Specifications;
 
 namespace SatelliteSite.ContestModule.Apis
 {
@@ -34,7 +34,7 @@ namespace SatelliteSite.ContestModule.Apis
             [FromQuery] string language_id = null)
         {
             var condition = Expr
-                .Of<Polygon.Entities.Submission>(s => s.ContestId == cid)
+                .Of<Xylab.Polygon.Entities.Submission>(s => s.ContestId == cid)
                 .CombineIf(ids != null && ids.Length > 0, s => ids.Contains(s.Id))
                 .CombineIf(language_id != null, s => s.Language == language_id);
 
