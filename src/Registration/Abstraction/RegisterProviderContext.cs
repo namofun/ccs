@@ -1,6 +1,4 @@
-﻿using Ccs.Entities;
-using Ccs.Services;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -9,9 +7,11 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Tenant.Entities;
+using Xylab.Contesting.Entities;
+using Xylab.Contesting.Services;
+using Xylab.Tenant.Entities;
 
-namespace Ccs.Registration
+namespace Xylab.Contesting.Registration
 {
     /// <summary>
     /// The execution context for register provider.

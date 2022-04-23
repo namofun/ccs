@@ -1,6 +1,6 @@
-﻿using Ccs.Entities;
+﻿using Xylab.Contesting.Entities;
 
-namespace Ccs.Registration
+namespace Xylab.Contesting.Registration
 {
     /// <summary>
     /// The model class for status message.

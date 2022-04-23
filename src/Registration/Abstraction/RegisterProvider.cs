@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using System.Threading.Tasks;
 
-namespace Ccs.Registration
+namespace Xylab.Contesting.Registration
 {
     /// <summary>
     /// Provides the basic abstraction for registration.

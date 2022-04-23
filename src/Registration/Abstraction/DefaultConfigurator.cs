@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
 
-namespace Ccs.Registration
+namespace Xylab.Contesting.Registration
 {
     /// <summary>
     /// Configure the default registration.

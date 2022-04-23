@@ -1,10 +1,10 @@
-﻿using Ccs.Services;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Xylab.Contesting.Services;
 
-namespace Ccs.Registration
+namespace Xylab.Contesting.Registration
 {
     public class RatingRangeRegisterProvider : ContestantRegisterProviderBase<EmptyModel>
     {

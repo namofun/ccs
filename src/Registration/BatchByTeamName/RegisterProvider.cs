@@ -1,14 +1,14 @@
-﻿using Ccs.Entities;
-using Ccs.Registration.BatchByTeamName;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Xylab.Contesting.Entities;
+using Xylab.Contesting.Registration.BatchByTeamName;
 
-namespace Ccs.Registration
+namespace Xylab.Contesting.Registration
 {
     public class BatchByTeamNameRegisterProvider : JuryRegisterProviderBase<InputModel, OutputModel>
     {

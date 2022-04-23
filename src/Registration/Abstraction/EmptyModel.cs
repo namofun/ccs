@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Ccs.Registration
+namespace Xylab.Contesting.Registration
 {
     /// <summary>
     /// Place holder for empty model.

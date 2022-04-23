@@ -4,13 +4,14 @@
     <TargetFramework>net6.0</TargetFramework>
     <DescriptionAttach>The team registration for tenant related things</DescriptionAttach>
     <Nullable>enable</Nullable>
-    <RootNamespace>Ccs.Registration</RootNamespace>
+    <AssemblyName>Xylab.Contesting.Registration.TenantRelated</AssemblyName>
+    <RootNamespace>Xylab.Contesting.Registration</RootNamespace>
   </PropertyGroup>
 
   <Import Project="..\..\build\NugetPackage.Backend.props" />
 
   <ItemGroup>
-    <PackageReference Include="Tenant.Students.Abstraction" Version="$(TenantVersion)" />
+    <PackageReference Include="Xylab.Tenant.Students.Abstraction" Version="$(TenantVersion)" />
   </ItemGroup>
 
   <ItemGroup>

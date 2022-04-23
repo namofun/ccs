@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Ccs.Registration.TeachingClass
+namespace Xylab.Contesting.Registration.TeachingClass
 {
     public class OutputModel
     {

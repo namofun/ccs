@@ -2,7 +2,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace Ccs.Registration
+namespace Xylab.Contesting.Registration
 {
     public class StudentSelfRegisterProvider : ContestantRegisterProviderBase<EmptyModel>
     {

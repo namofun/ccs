@@ -1,4 +1,4 @@
-﻿using Ccs.Registration;
+﻿using Xylab.Contesting.Registration;
 
 namespace Microsoft.Extensions.DependencyInjection
 {

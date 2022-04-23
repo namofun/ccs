@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 
-namespace Ccs.Registration.BatchByTeamName
+namespace Xylab.Contesting.Registration.BatchByTeamName
 {
     public class OutputModel : IReadOnlyList<TeamAccount>
     {

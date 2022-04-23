@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System;
-using Tenant.Services;
+using Xylab.Tenant.Services;
 
-namespace Ccs.Registration
+namespace Xylab.Contesting.Registration
 {
     public static class TenantExtensions
     {

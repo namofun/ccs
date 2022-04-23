@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System.Collections.Generic;
 
-namespace Ccs.Registration.TrainingTeam
+namespace Xylab.Contesting.Registration.TrainingTeam
 {
     public class InputModel
     {

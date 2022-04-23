@@ -1,8 +1,8 @@
-﻿using Ccs.Entities;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using System;
+using Xylab.Contesting.Entities;
 
-namespace Ccs.Registration
+namespace Xylab.Contesting.Registration
 {
     public class FakeRegisterUser : IUser
     {

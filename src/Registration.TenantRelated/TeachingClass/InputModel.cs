@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System.Collections.Generic;
 using System.ComponentModel;
-using Tenant.Entities;
+using Xylab.Tenant.Entities;
 
-namespace Ccs.Registration.TeachingClass
+namespace Xylab.Contesting.Registration.TeachingClass
 {
     public class InputModel
     {

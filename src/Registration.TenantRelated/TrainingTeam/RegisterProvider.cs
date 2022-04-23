@@ -1,12 +1,12 @@
-﻿using Ccs.Registration.TrainingTeam;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Tenant.Services;
+using Xylab.Contesting.Registration.TrainingTeam;
+using Xylab.Tenant.Services;
 
-namespace Ccs.Registration
+namespace Xylab.Contesting.Registration
 {
     public class TrainingTeamRegisterProvider : ContestantRegisterProviderBase<InputModel>
     {

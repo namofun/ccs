@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
+    <AssemblyName>Xylab.Contesting.Registration</AssemblyName>
+    <RootNamespace>Xylab.Contesting.Registration</RootNamespace>
     <DescriptionAttach>The team registration abstraction</DescriptionAttach>
     <Nullable>enable</Nullable>
   </PropertyGroup>

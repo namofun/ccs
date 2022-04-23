@@ -1,14 +1,14 @@
-﻿using Ccs.Registration.TeachingClass;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using SatelliteSite;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Tenant.Services;
+using Xylab.Contesting.Registration.TeachingClass;
+using Xylab.Tenant.Services;
 
-namespace Ccs.Registration
+namespace Xylab.Contesting.Registration
 {
     public class TeachingClassRegisterProvider : JuryRegisterProviderBase<InputModel, OutputModel>
     {

@@ -1,7 +1,7 @@
 ﻿#nullable disable
 using Microsoft.AspNetCore.Mvc.DataTables;
 
-namespace Ccs.Registration.BatchByTeamName
+namespace Xylab.Contesting.Registration.BatchByTeamName
 {
     public class TeamAccount
     {

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.Encodings.Web;
 
-namespace Ccs.Registration
+namespace Xylab.Contesting.Registration
 {
     internal static class FluentTagExtensions
     {

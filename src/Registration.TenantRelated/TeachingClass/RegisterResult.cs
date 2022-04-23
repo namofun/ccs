@@ -1,7 +1,7 @@
 ﻿#nullable disable
 using Microsoft.AspNetCore.Mvc.DataTables;
 
-namespace Ccs.Registration.TeachingClass
+namespace Xylab.Contesting.Registration.TeachingClass
 {
     public class RegisterResult
     {
