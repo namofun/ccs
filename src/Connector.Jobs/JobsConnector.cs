@@ -1,12 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
+using Xylab.Workflows.Legacy.Services;
 
 [assembly: AffiliateTo(
-    typeof(Ccs.Connector.Jobs.JobsConnector),
+    typeof(Xylab.Contesting.Connector.Jobs.JobsConnector),
     typeof(SatelliteSite.ContestModule.ContestModule<>),
     typeof(SatelliteSite.JobsModule.JobsModule<,>))]
 
-namespace Ccs.Connector.Jobs
+namespace Xylab.Contesting.Connector.Jobs
 {
     public class JobsConnector : AbstractConnector
     {

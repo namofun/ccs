@@ -1,18 +1,18 @@
-﻿using Ccs.Models;
-using Ccs.Scoreboard;
-using Ccs.Services;
-using Jobs.Entities;
-using Jobs.Models;
-using Jobs.Services;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Xylab.Contesting.Models;
+using Xylab.Contesting.Scoreboard;
+using Xylab.Contesting.Services;
+using Xylab.Workflows.Legacy.Entities;
+using Xylab.Workflows.Legacy.Models;
+using Xylab.Workflows.Legacy.Services;
 
-namespace Ccs.Connector.Jobs
+namespace Xylab.Contesting.Connector.Jobs
 {
     public class ScoreboardXlsx : IJobExecutorProvider
     {

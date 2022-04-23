@@ -1,4 +1,4 @@
-﻿namespace Ccs.Connector.Jobs
+﻿namespace Xylab.Contesting.Connector.Jobs
 {
     public class ExportPdfOptions
     {

@@ -1,8 +1,4 @@
-﻿using Ccs.Services;
-using Jobs.Entities;
-using Jobs.Models;
-using Jobs.Services;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
 using System.IO.Compression;
@@ -10,8 +6,12 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Xylab.Contesting.Services;
+using Xylab.Workflows.Legacy.Entities;
+using Xylab.Workflows.Legacy.Models;
+using Xylab.Workflows.Legacy.Services;
 
-namespace Ccs.Connector.Jobs
+namespace Xylab.Contesting.Connector.Jobs
 {
     public class SubmissionZip : IJobExecutorProvider
     {

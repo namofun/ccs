@@ -3,7 +3,7 @@ using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace Ccs.Connector.Jobs
+namespace Xylab.Contesting.Connector.Jobs
 {
     public class RemotePdfGenerationService
     {

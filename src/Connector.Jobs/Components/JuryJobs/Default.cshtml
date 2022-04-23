@@ -1,7 +1,7 @@
-﻿@namespace Ccs.Connector.Jobs.Components.JuryJobs
+﻿@namespace Xylab.Contesting.Connector.Jobs.Components.JuryJobs
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @addTagHelper *, SatelliteSite.Substrate
-@inject Ccs.Services.IContestContextAccessor Contest
+@inject Xylab.Contesting.Services.IContestContextAccessor Contest
 @inject Microsoft.Extensions.Options.IOptions<ExportPdfOptions> PdfOptions
 @{
     var affs = await Contest.Context.ListAffiliationsAsync();

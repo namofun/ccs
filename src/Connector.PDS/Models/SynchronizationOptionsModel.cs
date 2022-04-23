@@ -1,8 +1,8 @@
-﻿using Ccs.Models;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using Xylab.Contesting.Models;
 
-namespace Ccs.Connector.PlagiarismDetect.Models
+namespace Xylab.Contesting.Connector.PlagiarismDetect.Models
 {
     public class SynchronizationOptionsModel
     {

@@ -1,14 +1,14 @@
-﻿using Ccs.Models;
-using Ccs.Scoreboard;
-using Ccs.Services;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SatelliteSite.ContestModule.Controllers;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Xylab.Contesting.Models;
+using Xylab.Contesting.Scoreboard;
+using Xylab.Contesting.Services;
 
-namespace Ccs.Connector.OpenXml.Controllers
+namespace Xylab.Contesting.Connector.OpenXml.Controllers
 {
     [Area("Contest")]
     [Authorize(Policy = "ContestIsJury")]

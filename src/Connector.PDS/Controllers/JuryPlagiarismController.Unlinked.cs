@@ -1,15 +1,15 @@
-﻿using Ccs.Connector.PlagiarismDetect.Models;
-using Ccs.Services;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Plag.Backend.Models;
-using Plag.Backend.Services;
 using SatelliteSite.ContestModule.Controllers;
 using System;
 using System.Threading.Tasks;
+using Xylab.Contesting.Connector.PlagiarismDetect.Models;
+using Xylab.Contesting.Services;
+using Xylab.PlagiarismDetect.Backend.Models;
+using Xylab.PlagiarismDetect.Backend.Services;
 
-namespace Ccs.Connector.PlagiarismDetect.Controllers
+namespace Xylab.Contesting.Connector.PlagiarismDetect.Controllers
 {
     public partial class JuryPlagiarismController : JuryControllerBase<IJuryContext>
     {

@@ -2,6 +2,12 @@
 @{
     ViewData["Title"] = "Plagiarism Sets";
 }
+@functions {
+    private static string RatioOf(long numerator, long denominator)
+    {
+        return denominator == 0 ? "0.00% (0/0)" : $"{100.0 * numerator / denominator:F2}% ({numerator}/{denominator})";
+    }
+}
 
 <h2 class="mt-2">@ViewData["Title"]</h2>
 
@@ -22,8 +28,8 @@
             <tr asp-action="Detail" asp-route-sid="@pset.Id" asp-controller="Plagiarism" asp-area="Dashboard">
                 <td use-a>@pset.Id</td>
                 <td use-a>@pset.Name</td>
-                <td>@Html.RatioOf(pset.SubmissionSucceeded, pset.SubmissionCount)</td>
-                <td>@Html.RatioOf(pset.ReportCount - pset.ReportPending, pset.ReportCount)</td>
+                <td>@RatioOf(pset.SubmissionSucceeded, pset.SubmissionCount)</td>
+                <td>@RatioOf(pset.ReportCount - pset.ReportPending, pset.ReportCount)</td>
                 <td><a asp-action="Link" asp-route-setid="@pset.Id" data-toggle="ajaxWindow" data-target="link"><i class="fas fa-link"></i></a></td>
             </tr>
             }

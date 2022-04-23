@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using System.Net.Http;
 using System.Net.Sockets;
 
-namespace Ccs.Connector.PlagiarismDetect
+namespace Xylab.Contesting.Connector.PlagiarismDetect
 {
     public sealed class RestfulRoleExceptionFilterAttribute : ExceptionFilterAttribute
     {

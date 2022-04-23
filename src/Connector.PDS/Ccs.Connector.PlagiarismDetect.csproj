@@ -4,6 +4,8 @@
     <TargetFramework>net6.0</TargetFramework>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     <DescriptionAttach>The connector to plagiarism detection system</DescriptionAttach>
+    <AssemblyName>Xylab.Contesting.Connector.PlagiarismDetect</AssemblyName>
+    <RootNamespace>Xylab.Contesting.Connector.PlagiarismDetect</RootNamespace>
   </PropertyGroup>
 
   <Import Project="..\..\build\NugetPackage.Backend.props" />

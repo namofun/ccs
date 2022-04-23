@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace Ccs.Connector.Jobs.Components.JuryJobs
+namespace Xylab.Contesting.Connector.Jobs.Components.JuryJobs
 {
     public class JuryJobsViewComponent : ViewComponent
     {

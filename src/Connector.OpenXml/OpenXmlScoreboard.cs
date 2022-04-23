@@ -1,9 +1,9 @@
-﻿using Ccs.Models;
-using ClosedXML.Excel;
+﻿using ClosedXML.Excel;
 using System;
 using System.Linq;
+using Xylab.Contesting.Models;
 
-namespace Ccs.Scoreboard
+namespace Xylab.Contesting.Scoreboard
 {
     internal static class OpenXmlScoreboard
     {

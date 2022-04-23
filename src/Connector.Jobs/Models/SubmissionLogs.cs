@@ -1,8 +1,8 @@
-﻿using Polygon.Entities;
-using System;
+﻿using System;
 using System.Text.Json.Serialization;
+using Xylab.Polygon.Entities;
 
-namespace Ccs.Connector.Jobs.Models
+namespace Xylab.Contesting.Connector.Jobs.Models
 {
     public class SubmissionLogs
     {

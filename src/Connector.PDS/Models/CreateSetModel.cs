@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Ccs.Connector.PlagiarismDetect.Models
+namespace Xylab.Contesting.Connector.PlagiarismDetect.Models
 {
     public class CreateSetModel
     {

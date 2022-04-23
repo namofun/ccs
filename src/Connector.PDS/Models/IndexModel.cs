@@ -1,8 +1,8 @@
-﻿using Ccs.Models;
-using Plag.Backend.Models;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Xylab.Contesting.Models;
+using Xylab.PlagiarismDetect.Backend.Models;
 
-namespace Ccs.Connector.PlagiarismDetect.Models
+namespace Xylab.Contesting.Connector.PlagiarismDetect.Models
 {
     public class IndexModel
     {

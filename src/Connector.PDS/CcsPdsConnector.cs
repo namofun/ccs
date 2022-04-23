@@ -2,11 +2,11 @@
 using SatelliteSite.ContestModule;
 
 [assembly: AffiliateTo(
-    typeof(Ccs.Connector.PlagiarismDetect.CcsPdsConnector),
+    typeof(Xylab.Contesting.Connector.PlagiarismDetect.CcsPdsConnector),
     typeof(SatelliteSite.ContestModule.ContestModule<>),
     typeof(SatelliteSite.PlagModule.PlagModule<>))]
 
-namespace Ccs.Connector.PlagiarismDetect
+namespace Xylab.Contesting.Connector.PlagiarismDetect
 {
     public class CcsPdsConnector : AbstractConnector
     {

@@ -1,11 +1,11 @@
-﻿using Ccs.Connector.Jobs.Models;
-using Ccs.Services;
-using Polygon.Entities;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Xylab.Contesting.Connector.Jobs.Models;
+using Xylab.Contesting.Services;
+using Xylab.Polygon.Entities;
 
-namespace Ccs.Connector.Jobs
+namespace Xylab.Contesting.Connector.Jobs
 {
     public static class ReportRenderExtensions
     {

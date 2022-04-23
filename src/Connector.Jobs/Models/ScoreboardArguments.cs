@@ -1,4 +1,4 @@
-﻿namespace Ccs.Connector.Jobs.Models
+﻿namespace Xylab.Contesting.Connector.Jobs.Models
 {
     public class ScoreboardArguments
     {

@@ -4,6 +4,8 @@
     <TargetFramework>net6.0</TargetFramework>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     <DescriptionAttach>The connector to export Office Documents</DescriptionAttach>
+    <AssemblyName>Xylab.Contesting.Connector.OpenXml</AssemblyName>
+    <RootNamespace>Xylab.Contesting.Connector.OpenXml</RootNamespace>
   </PropertyGroup>
 
   <Import Project="..\..\build\NugetPackage.Backend.props" />

@@ -1,17 +1,17 @@
-﻿using Ccs.Entities;
-using Ccs.Services;
-using Jobs.Entities;
-using Jobs.Models;
-using Jobs.Services;
-using Microsoft.AspNetCore.Mvc.Controllers;
+﻿using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Xylab.Contesting.Entities;
+using Xylab.Contesting.Services;
+using Xylab.Workflows.Legacy.Entities;
+using Xylab.Workflows.Legacy.Models;
+using Xylab.Workflows.Legacy.Services;
 
-namespace Ccs.Connector.Jobs
+namespace Xylab.Contesting.Connector.Jobs
 {
     public class TeamReportPdf : IJobExecutorProvider
     {

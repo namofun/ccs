@@ -1,16 +1,16 @@
-﻿using Ccs.Connector.PlagiarismDetect.Models;
-using Ccs.Services;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Plag.Backend.Models;
 using SatelliteSite.ContestModule.Controllers;
 using SatelliteSite.PlagModule.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Xylab.Contesting.Connector.PlagiarismDetect.Models;
+using Xylab.Contesting.Services;
+using Xylab.PlagiarismDetect.Backend.Models;
 
-namespace Ccs.Connector.PlagiarismDetect.Controllers
+namespace Xylab.Contesting.Connector.PlagiarismDetect.Controllers
 {
     [Area("Contest")]
     [Authorize(Policy = "ContestIsJury")]

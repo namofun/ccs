@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
 [assembly: AffiliateTo(
-    typeof(Ccs.Connector.OpenXml.OpenXmlConnector),
+    typeof(Xylab.Contesting.Connector.OpenXml.OpenXmlConnector),
     typeof(SatelliteSite.ContestModule.ContestModule<>))]
 
-namespace Ccs.Connector.OpenXml
+namespace Xylab.Contesting.Connector.OpenXml
 {
     public class OpenXmlConnector : AbstractConnector
     {

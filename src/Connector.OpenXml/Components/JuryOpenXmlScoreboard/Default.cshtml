@@ -1,6 +1,6 @@
-﻿@namespace Ccs.Connector.OpenXml.Components.JuryOpenXmlScoreboard
+﻿@namespace Xylab.Contesting.Connector.OpenXml.Components.JuryOpenXmlScoreboard
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
-@inject Ccs.Services.IContestContextAccessor Contest
+@inject Xylab.Contesting.Services.IContestContextAccessor Contest
 @{
     var affs = await Contest.Context.ListAffiliationsAsync();
     var cats = await Contest.Context.ListCategoriesAsync();

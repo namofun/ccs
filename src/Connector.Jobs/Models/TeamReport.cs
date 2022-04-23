@@ -1,12 +1,12 @@
-﻿using Ccs.Entities;
-using Ccs.Models;
-using Polygon.Entities;
-using Polygon.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Xylab.Contesting.Entities;
+using Xylab.Contesting.Models;
+using Xylab.Polygon.Entities;
+using Xylab.Polygon.Models;
 
-namespace Ccs.Connector.Jobs.Models
+namespace Xylab.Contesting.Connector.Jobs.Models
 {
     public class TeamReport
     {

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace Ccs.Connector.OpenXml.Components.JuryOpenXmlScoreboard
+namespace Xylab.Contesting.Connector.OpenXml.Components.JuryOpenXmlScoreboard
 {
     public class JuryOpenXmlScoreboardViewComponent : ViewComponent
     {

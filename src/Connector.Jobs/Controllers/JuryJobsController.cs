@@ -1,15 +1,15 @@
-﻿using Ccs.Connector.Jobs.Models;
-using Ccs.Models;
-using Ccs.Services;
-using Jobs.Services;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SatelliteSite.ContestModule.Controllers;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Xylab.Contesting.Connector.Jobs.Models;
+using Xylab.Contesting.Services;
+using Xylab.Workflows.Legacy.Activities;
+using Xylab.Workflows.Legacy.Services;
 
-namespace Ccs.Connector.Jobs.Controllers
+namespace Xylab.Contesting.Connector.Jobs.Controllers
 {
     [Area("Contest")]
     [Authorize(Policy = "ContestIsJury")]
@@ -110,7 +110,7 @@ namespace Ccs.Connector.Jobs.Controllers
             var teams = await ((ITeamContext)Context).ListTeamsAsync(t => t.Status == 1);
 
             var ownerId = int.Parse(User.GetUserId());
-            var jobDesc = global::Jobs.Works.ComposeArchive.ForChildren(
+            var jobDesc = ComposeArchive.ForChildren(
                 ownerId,
                 $"c{Contest.Id}-team-reports.zip",
                 teams

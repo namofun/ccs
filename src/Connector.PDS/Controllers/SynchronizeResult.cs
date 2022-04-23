@@ -1,15 +1,16 @@
-﻿using Ccs.Connector.PlagiarismDetect.Models;
-using Ccs.Services;
-using Plag.Backend.Models;
-using Plag.Backend.Services;
-using SatelliteSite.ContestModule;
+﻿using SatelliteSite.ContestModule;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Xylab.Contesting.Connector.PlagiarismDetect.Models;
+using Xylab.Contesting.Services;
+using Xylab.PlagiarismDetect.Backend.Models;
+using Xylab.PlagiarismDetect.Backend.Services;
+using Xylab.Polygon.Entities;
 
-namespace Ccs.Connector.PlagiarismDetect.Controllers
+namespace Xylab.Contesting.Connector.PlagiarismDetect.Controllers
 {
     public class SynchronizeResult : LongRunningOperationResult
     {
@@ -92,8 +93,8 @@ namespace Ccs.Connector.PlagiarismDetect.Controllers
                 {
                     if (sids.Contains(s.Id)) continue;
                     if (!problemIds.Contains(s.ProblemId)) continue;
-                    if (s.Status == Polygon.Entities.Verdict.CompileError) continue;
-                    if (s.Status != Polygon.Entities.Verdict.Accepted && ccs.Contest.RankingStrategy != CcsDefaults.RuleIOI) continue;
+                    if (s.Status == Verdict.CompileError) continue;
+                    if (s.Status != Verdict.Accepted && ccs.Contest.RankingStrategy != CcsDefaults.RuleIOI) continue;
                     var prob = problems.Find(s.ProblemId);
 
                     if (!langMapping.ContainsKey(s.Language))

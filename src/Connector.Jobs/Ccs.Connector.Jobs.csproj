@@ -4,6 +4,8 @@
     <TargetFramework>net6.0</TargetFramework>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     <DescriptionAttach>The connector to export as background jobs.</DescriptionAttach>
+    <AssemblyName>Xylab.Contesting.Connector.Jobs</AssemblyName>
+    <RootNamespace>Xylab.Contesting.Connector.Jobs</RootNamespace>
   </PropertyGroup>
 
   <Import Project="..\..\build\NugetPackage.Backend.props" />
@@ -11,7 +13,7 @@
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="ClosedXML.Signed" Version="0.95.4" />
-    <PackageReference Include="SatelliteSite.JobsModule" Version="$(TenantVersion)" />
+    <PackageReference Include="SatelliteSite.JobsModule" Version="$(WorkflowsVersion)" />
   </ItemGroup>
 
   <ItemGroup>
