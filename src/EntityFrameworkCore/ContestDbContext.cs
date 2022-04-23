@@ -1,13 +1,13 @@
-﻿using Ccs.Entities;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Polygon.Entities;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Tenant.Entities;
+using Xylab.Contesting.Entities;
+using Xylab.Polygon.Entities;
+using Xylab.Tenant.Entities;
 
-namespace Ccs.Services
+namespace Xylab.Contesting.Services
 {
     /// <summary>
     /// The marker interface to gets the <see cref="DbSet{TEntity}"/>s.

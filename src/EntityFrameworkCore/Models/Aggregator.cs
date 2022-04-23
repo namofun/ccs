@@ -1,9 +1,9 @@
-﻿using Ccs.Entities;
-using System;
+﻿using System;
 using System.Linq;
 using System.Linq.Expressions;
+using Xylab.Contesting.Entities;
 
-namespace Ccs.Models
+namespace Xylab.Contesting.Models
 {
     internal class Aggregator<TKey, TValue>
     {

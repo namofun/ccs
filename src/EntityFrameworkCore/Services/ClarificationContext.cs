@@ -1,12 +1,12 @@
-﻿using Ccs.Entities;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Xylab.Contesting.Entities;
 
-namespace Ccs.Services
+namespace Xylab.Contesting.Services
 {
     public partial class ImmediateContestContext : IClarificationContext
     {

@@ -1,10 +1,10 @@
-﻿using Ccs.Entities;
-using Ccs.Models;
-using System;
+﻿using System;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Xylab.Contesting.Entities;
+using Xylab.Contesting.Models;
 
-namespace Ccs.Services
+namespace Xylab.Contesting.Services
 {
     public partial class CachedContestContext
     {

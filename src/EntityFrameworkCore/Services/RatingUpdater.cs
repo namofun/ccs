@@ -1,13 +1,13 @@
-﻿using Ccs.Entities;
-using Ccs.Models;
-using Microsoft.EntityFrameworkCore;
-using Polygon.Entities;
+﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Xylab.Contesting.Entities;
+using Xylab.Contesting.Models;
+using Xylab.Polygon.Entities;
 
-namespace Ccs.Services
+namespace Xylab.Contesting.Services
 {
     public class RatingUpdater<TUser, TContext> : RatingUpdaterBase
         where TContext : DbContext

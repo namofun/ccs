@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Ccs.Services
+namespace Xylab.Contesting.Services
 {
     public class CachedContestContextIntervalOptions
     {

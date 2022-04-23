@@ -1,10 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Polygon.Entities;
 using SatelliteSite.IdentityModule.Entities;
-using Tenant.Entities;
+using Xylab.Polygon.Entities;
+using Xylab.Tenant.Entities;
 
-namespace Ccs.Entities
+namespace Xylab.Contesting.Entities
 {
     public class ContestEntityConfiguration<TUser, TRole, TContext> :
         EntityTypeConfigurationSupplier<TContext>,

@@ -1,6 +1,4 @@
-﻿using Ccs.Entities;
-using Ccs.Models;
-using MediatR;
+﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -8,8 +6,10 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Xylab.Contesting.Entities;
+using Xylab.Contesting.Models;
 
-namespace Ccs.Services
+namespace Xylab.Contesting.Services
 {
     public class ContestRepository<TContext> : IContestRepository, ISupportDbContext, IContestQueryableStore
         where TContext : DbContext, IContestDbContext

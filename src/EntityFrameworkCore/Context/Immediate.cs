@@ -1,14 +1,14 @@
-﻿using Ccs.Models;
-using MediatR;
+﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Polygon.Storages;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Xylab.Contesting.Models;
+using Xylab.Polygon.Storages;
 
-namespace Ccs.Services
+namespace Xylab.Contesting.Services
 {
     public partial class ImmediateContestContext : IContestContext
     {

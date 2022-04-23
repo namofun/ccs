@@ -5,7 +5,7 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Threading.Tasks;
 
-namespace Ccs.Services
+namespace Xylab.Contesting.Services
 {
     public class CachedContestContextFactory : IContestContextFactory
     {

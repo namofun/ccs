@@ -1,4 +1,4 @@
-﻿namespace Ccs.Services
+﻿namespace Xylab.Contesting.Services
 {
     /// <summary>
     /// The marker interface to gets the <see cref="IContestDbContext"/>.

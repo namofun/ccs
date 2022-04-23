@@ -1,16 +1,16 @@
-﻿using Ccs.Entities;
-using Ccs.Models;
-using Microsoft.EntityFrameworkCore;
-using Polygon.Entities;
+﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
-using Tenant.Entities;
+using Xylab.Contesting.Entities;
+using Xylab.Contesting.Models;
+using Xylab.Polygon.Entities;
+using Xylab.Tenant.Entities;
 
-namespace Ccs.Services
+namespace Xylab.Contesting.Services
 {
     public class Scoreboard<TContext> : IScoreboard where TContext : DbContext
     {

@@ -1,15 +1,15 @@
-﻿using Ccs.Entities;
-using Ccs.Models;
-using Microsoft.AspNetCore.Identity;
-using Polygon.Entities;
+﻿using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Net;
 using System.Threading.Tasks;
+using Xylab.Contesting.Entities;
+using Xylab.Contesting.Models;
+using Xylab.Polygon.Entities;
 
-namespace Ccs.Services
+namespace Xylab.Contesting.Services
 {
     public partial class CachedContestContext
     {

@@ -1,12 +1,12 @@
-﻿using Ccs.Entities;
-using Ccs.Models;
-using Ccs.Specifications;
+﻿using Xylab.Contesting.Entities;
+using Xylab.Contesting.Models;
+using Xylab.Contesting.Specifications;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using System;
 using System.Threading.Tasks;
 
-namespace Ccs.Services
+namespace Xylab.Contesting.Services
 {
     public partial class CachedContestContext : ImmediateContestContext
     {

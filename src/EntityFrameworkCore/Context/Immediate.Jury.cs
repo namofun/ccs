@@ -1,12 +1,6 @@
-﻿using Ccs.Entities;
-using Ccs.Models;
-using Markdig;
+﻿using Markdig;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.FileProviders;
-using Polygon.Entities;
-using Polygon.Models;
-using Polygon.Storages;
 using SatelliteSite.Entities;
 using System;
 using System.Collections.Generic;
@@ -14,8 +8,13 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Net;
 using System.Threading.Tasks;
+using Xylab.Contesting.Entities;
+using Xylab.Contesting.Models;
+using Xylab.Polygon.Entities;
+using Xylab.Polygon.Models;
+using Xylab.Polygon.Storages;
 
-namespace Ccs.Services
+namespace Xylab.Contesting.Services
 {
     public partial class ImmediateContestContext : IJuryContext
     {

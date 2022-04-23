@@ -1,4 +1,4 @@
-﻿namespace Ccs.Models
+﻿namespace Xylab.Contesting.Models
 {
     internal class PartialScore
     {

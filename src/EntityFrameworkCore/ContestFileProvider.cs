@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.FileProviders;
 using System.Threading.Tasks;
 
-namespace Ccs.Services
+namespace Xylab.Contesting.Services
 {
     public delegate string ContestReadmeNameFormat(int contestId);
     public delegate string ContestReadmeSourceFormat(int contestId);

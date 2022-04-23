@@ -1,16 +1,16 @@
-﻿using Ccs.Entities;
-using Ccs.Models;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Tenant.Entities;
-using Tenant.Services;
+using Xylab.Contesting.Entities;
+using Xylab.Contesting.Models;
+using Xylab.Tenant.Entities;
+using Xylab.Tenant.Services;
 
-namespace Ccs.Services
+namespace Xylab.Contesting.Services
 {
     public partial class ImmediateContestContext : ITeamContext
     {

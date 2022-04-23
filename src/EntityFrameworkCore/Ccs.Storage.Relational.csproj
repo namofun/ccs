@@ -3,7 +3,8 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
-    <RootNamespace>Ccs</RootNamespace>
+    <AssemblyName>Xylab.Contesting.Storage.Relational</AssemblyName>
+    <RootNamespace>Xylab.Contesting</RootNamespace>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <DescriptionAttach>The relational storage role</DescriptionAttach>
   </PropertyGroup>
@@ -12,7 +13,7 @@
 
   <ItemGroup>
     <PackageReference Include="Markdig.Service" Version="0.25.0.4" />
-    <PackageReference Include="Polygon.DataAccess" Version="$(PolygonVersion)" />
+    <PackageReference Include="Xylab.Polygon.DataAccess" Version="$(PolygonVersion)" />
     <PackageReference Include="SatelliteSite.DataAccess" Version="$(SubstrateVersion)" />
   </ItemGroup>
 

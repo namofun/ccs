@@ -1,14 +1,14 @@
-﻿using Ccs.Entities;
-using Ccs.Services;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders.Physical;
 using Microsoft.Extensions.Options;
-using Polygon.Storages;
 using SatelliteSite.IdentityModule.Entities;
 using System.IO;
+using Xylab.Contesting.Entities;
+using Xylab.Contesting.Services;
+using Xylab.Polygon.Storages;
 
-namespace Ccs
+namespace Xylab.Contesting
 {
     public class RelationalRole<TUser, TRole, TContext> : IServiceRole
         where TUser : User, new()

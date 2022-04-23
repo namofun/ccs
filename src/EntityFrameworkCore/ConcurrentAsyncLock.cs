@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Ccs.Services
+namespace Xylab.Contesting.Services
 {
     /// <summary>
     /// The locker for asynchronous functions using <see cref="SemaphoreSlim"/> with concurrent degree.

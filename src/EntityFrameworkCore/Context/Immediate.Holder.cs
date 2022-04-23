@@ -1,23 +1,23 @@
-﻿using Ccs.Entities;
+﻿using Xylab.Contesting.Entities;
 using System.Linq;
 
-namespace Ccs.Services
+namespace Xylab.Contesting.Services
 {
     public partial class ImmediateContestContext :
-        Ccs.Services.IAnalysisContext,
-        Ccs.Services.IBalloonContext,
-        Ccs.Services.IClarificationContext,
-        Ccs.Services.ICompeteContext,
-        Ccs.Services.IContestContext,
-        Ccs.Services.IContestQueryableStore,
-        Ccs.Services.IDomContext,
-        Ccs.Services.IGymContext,
-        Ccs.Services.IJuryContext,
-        Ccs.Services.IProblemContext,
-        Ccs.Services.IProblemsetContext,
-        Ccs.Services.IRejudgingContext,
-        Ccs.Services.ISubmissionContext,
-        Ccs.Services.ITeamContext
+        Xylab.Contesting.Services.IAnalysisContext,
+        Xylab.Contesting.Services.IBalloonContext,
+        Xylab.Contesting.Services.IClarificationContext,
+        Xylab.Contesting.Services.ICompeteContext,
+        Xylab.Contesting.Services.IContestContext,
+        Xylab.Contesting.Services.IContestQueryableStore,
+        Xylab.Contesting.Services.IDomContext,
+        Xylab.Contesting.Services.IGymContext,
+        Xylab.Contesting.Services.IJuryContext,
+        Xylab.Contesting.Services.IProblemContext,
+        Xylab.Contesting.Services.IProblemsetContext,
+        Xylab.Contesting.Services.IRejudgingContext,
+        Xylab.Contesting.Services.ISubmissionContext,
+        Xylab.Contesting.Services.ITeamContext
     {
         IQueryable<Contest> IContestQueryableStore.Contests => Db.Contests;
         IQueryable<ContestProblem> IContestQueryableStore.ContestProblems => Db.ContestProblems;
